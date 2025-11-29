@@ -60,83 +60,98 @@ After installation, you should see the **ACTP** node available in the n8n node p
 Never expose your private key. Use n8n's credential encryption and environment variables in production.
 :::
 
-## Available Nodes
+## Available Operations
 
-### ACTP Transaction Node
+The ACTP node provides these operations:
 
-The main node for creating and managing ACTP transactions.
+| Operation | Description | Role |
+|-----------|-------------|------|
+| **Create Transaction** | Initialize a new escrow transaction | Requester |
+| **Link Escrow** | Lock funds in escrow (auto-calculates amount + 1% fee) | Requester |
+| **Get Transaction** | Retrieve transaction details and current state | Any |
+| **Transition State** | Move transaction to next state (QUOTED, IN_PROGRESS, DELIVERED) | Provider |
+| **Release With Verification** | Verify attestation and release escrow atomically (recommended) | Requester |
+| **Verify Attestation** | Verify delivery attestation before releasing | Requester |
+| **Release Escrow** | Release funds to provider (legacy, no verification) | Requester |
+| **Raise Dispute** | Raise a dispute on delivered transaction | Requester |
+| **Cancel Transaction** | Cancel transaction before delivery | Requester |
 
-#### Operations
+### Create Transaction
 
-| Operation | Description |
-|-----------|-------------|
-| **Create Transaction** | Initialize a new escrow transaction |
-| **Get Transaction** | Retrieve transaction details by ID |
-| **Link Escrow** | Link escrow funds to a transaction |
-| **Transition State** | Move transaction to next state |
-| **Release Escrow** | Release funds to provider |
+Creates a new ACTP transaction with escrow.
 
-#### Create Transaction Example
+**Parameters:**
+- **Provider Address**: Ethereum address of the service provider
+- **Amount (USDC)**: Transaction amount (minimum $0.05)
+- **Deadline**: ISO date string or Unix timestamp
+- **Dispute Window**: Duration in seconds (default: 172800 = 2 days)
 
-```json
-{
-  "operation": "createTransaction",
-  "provider": "0x742d35Cc6634C0532925a3b844Bc9e7595f12345",
-  "amount": "100000000",
-  "deadline": 1735689600,
-  "serviceRef": "ai-image-generation-job-001"
-}
-```
+### Link Escrow
 
-### ACTP Trigger Node
+Locks funds in the escrow vault. If amount is not specified, automatically calculates transaction amount + 1% fee.
 
-Listen for on-chain events and trigger workflows automatically.
+**Parameters:**
+- **Transaction ID**: The transaction to link escrow to
+- **Escrow Amount**: Optional - auto-calculated if not provided
 
-#### Supported Events
+### Transition State
 
-| Event | Description |
-|-------|-------------|
-| **TransactionCreated** | New transaction initiated |
-| **EscrowLinked** | Funds locked in escrow |
-| **StateTransitioned** | Transaction state changed |
-| **EscrowReleased** | Funds released to provider |
-| **DisputeRaised** | Consumer disputed delivery |
+Provider moves the transaction through states.
+
+**Target States:**
+- **Quoted**: Provider submitted price quote (optional)
+- **In Progress**: Provider actively working (optional)
+- **Delivered**: Provider completed work
+
+### Release With Verification
+
+Atomically verifies the EAS attestation and releases escrow. This is the **recommended** way to release funds.
+
+**Parameters:**
+- **Transaction ID**: The delivered transaction
+- **Attestation UID**: EAS attestation from provider's delivery
 
 ## Example Workflows
 
-### Basic Payment Flow
+### Requester Flow (Pay for AI Service)
 
-This workflow creates a transaction when a webhook is received and releases payment upon completion:
-
-```
-[Webhook] → [ACTP: Create Transaction] → [Wait for Delivery] → [ACTP: Release Escrow]
-```
-
-1. **Webhook Node**: Receives job request from AI agent
-2. **ACTP Create**: Creates escrow transaction with provider address
-3. **Wait Node**: Polls for DELIVERED state
-4. **ACTP Release**: Releases funds to provider
-
-### Automated Service Provider
-
-Build an AI agent that automatically accepts jobs and delivers results:
+This workflow creates a transaction, waits for delivery, and releases payment:
 
 ```
-[ACTP Trigger: TransactionCreated] → [Filter: My Address] → [AI Service] → [ACTP: Deliver] → [Notify]
+[Webhook] → [ACTP: Create Transaction] → [ACTP: Link Escrow] → [Wait] → [ACTP: Get Transaction] → [IF: DELIVERED] → [ACTP: Release With Verification]
 ```
 
-1. **ACTP Trigger**: Listens for new transactions targeting your address
-2. **Filter**: Only process transactions where you're the provider
-3. **AI Service**: Execute your AI service (e.g., call OpenAI, run local model)
-4. **ACTP Deliver**: Submit delivery proof and transition to DELIVERED
-5. **Notify**: Send confirmation via Slack/Email
+1. **Webhook**: Receives job request
+2. **Create Transaction**: Initializes transaction with provider address
+3. **Link Escrow**: Locks USDC funds
+4. **Wait**: Polls periodically (use n8n's Wait node)
+5. **Get Transaction**: Check current state
+6. **IF Node**: Check if state is DELIVERED
+7. **Release With Verification**: Verify attestation and release funds
+
+### Provider Flow (Deliver AI Service)
+
+Build an AI agent that delivers results when notified:
+
+```
+[Webhook: Job Notification] → [AI Service] → [ACTP: Transition State (DELIVERED)] → [Notify]
+```
+
+1. **Webhook**: Receives notification that work is needed (off-chain)
+2. **AI Service**: Execute your AI service (OpenAI, local model, etc.)
+3. **Transition State**: Move transaction to DELIVERED
+4. **Notify**: Send confirmation via Slack/Email
+
+:::tip Polling for New Transactions
+Since there's no trigger node yet, providers can poll for new transactions using a Schedule Trigger + Get Transaction flow, or receive off-chain notifications via webhooks.
+:::
 
 ### Multi-Agent Orchestration
 
 Coordinate multiple AI agents with sequential payments:
 
 ```
-[Start] → [ACTP: Pay Agent 1] → [Wait] → [ACTP: Pay Agent 2] → [Wait] → [Aggregate Results]
+[Start] → [ACTP: Create + Link (Agent 1)] → [Wait for Delivery] → [Release] → [ACTP: Create + Link (Agent 2)] → [Wait] → [Release] → [Aggregate Results]
 ```
 
 ## Troubleshooting
