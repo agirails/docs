@@ -77,10 +77,11 @@ const wallet = Wallet.createRandom();
 console.log('Private key:', wallet.privateKey); // STORE SECURELY!
 console.log('Address:', wallet.address);
 
-// Option 2: From mnemonic (HD wallet)
-const mnemonic = Wallet.createRandom().mnemonic.phrase;
-const hdNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
-const wallet = new Wallet(hdNode.privateKey);
+// Option 2: From mnemonic (HD wallet) - ethers v6 syntax
+import { HDNodeWallet } from 'ethers';
+const mnemonic = Wallet.createRandom().mnemonic?.phrase;
+const hdWallet = HDNodeWallet.fromPhrase(mnemonic);
+const wallet = new Wallet(hdWallet.privateKey);
 
 // Option 3: From environment variable (production)
 const wallet = new Wallet(process.env.AGENT_PRIVATE_KEY, provider);
@@ -135,11 +136,12 @@ const sharedWallet = new Wallet(MASTER_PRIVATE_KEY);
 // Pros: Simple, single reputation
 // Cons: No sub-agent accountability
 
-// Option B: Hierarchical deterministic (HD) wallets
-const masterNode = ethers.utils.HDNode.fromMnemonic(MASTER_MNEMONIC);
-const agent1Wallet = new Wallet(masterNode.derivePath("m/44'/60'/0'/0/0"));
-const agent2Wallet = new Wallet(masterNode.derivePath("m/44'/60'/0'/0/1"));
-const agent3Wallet = new Wallet(masterNode.derivePath("m/44'/60'/0'/0/2"));
+// Option B: Hierarchical deterministic (HD) wallets - ethers v6 syntax
+import { HDNodeWallet } from 'ethers';
+const masterNode = HDNodeWallet.fromPhrase(MASTER_MNEMONIC);
+const agent1Wallet = masterNode.derivePath("m/44'/60'/0'/0/0");
+const agent2Wallet = masterNode.derivePath("m/44'/60'/0'/0/1");
+const agent3Wallet = masterNode.derivePath("m/44'/60'/0'/0/2");
 // Pros: Separate identities, recoverable from one seed
 // Cons: More complex
 
@@ -201,15 +203,13 @@ function registerAgent(
 **How reputation is built today:**
 
 ```typescript
-// Query all transactions for an agent
-const providerTxs = await kernel.queryFilter(
-  kernel.filters.TransactionCreated(null, null, providerAddress)
-);
+// Query transaction history using SDK EventMonitor
+const history = await client.events.getTransactionHistory(providerAddress, 'provider');
 
 // Calculate reputation metrics
-const totalTxs = providerTxs.length;
-const successfulTxs = providerTxs.filter(tx => tx.state === State.SETTLED).length;
-const disputedTxs = providerTxs.filter(tx => tx.state === State.DISPUTED).length;
+const totalTxs = history.length;
+const successfulTxs = history.filter(tx => tx.state === 'SETTLED').length;
+const disputedTxs = history.filter(tx => tx.state === 'DISPUTED').length;
 const successRate = (successfulTxs / totalTxs) * 100;
 
 console.log(`Provider ${providerAddress}:`);
@@ -231,9 +231,9 @@ console.log(`  Disputes: ${disputedTxs}`);
 - No service categorization (data cleaning vs. analysis)
 - No dispute resolution outcomes (who won?)
 
-### Future: Ethereum Attestation Service (EAS)
+### Ethereum Attestation Service (EAS)
 
-**EAS integration** (planned Month 6-9) will provide rich, verifiable attestations.
+**EAS integration** is implemented in the SDK (`EASHelper` class) and provides rich, verifiable attestations.
 
 #### What is EAS?
 

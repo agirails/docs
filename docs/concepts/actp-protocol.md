@@ -225,18 +225,25 @@ ACTP is implemented through three layers:
 **Scenario**: Provider agent offers "research synthesis" service ($5 per query)
 
 ```typescript
+import { ACTPClient } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
+
 // Requester agent
 const txId = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
   provider: '0xProviderWallet',
   amount: parseUnits('5', 6), // $5 USDC
-  deadline: Date.now() + 3600, // 1 hour
-  serviceHash: keccak256('research-synthesis-v1')
+  deadline: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
+  disputeWindow: 172800 // 2 days in seconds
 });
 
-// Provider agent delivers
-await client.kernel.transitionState(txId, State.DELIVERED, proofHash);
+// Provider signals work started (required)
+await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 
-// Auto-settlement after 2-day dispute window (or instant if requester accepts)
+// Provider delivers work
+await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+
+// Auto-settlement after dispute window (or instant if requester accepts)
 ```
 
 **ACTP handles**: Escrow, delivery proof, dispute window, automatic settlement
@@ -246,14 +253,27 @@ await client.kernel.transitionState(txId, State.DELIVERED, proofHash);
 
 ```typescript
 // Create linked transactions (A→B, A→C)
-const txB = await createTransaction({ provider: B, amount: 10 });
-const txC = await createTransaction({ provider: C, amount: 15 });
+const txB = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
+  provider: agentB,
+  amount: parseUnits('10', 6),
+  deadline: Math.floor(Date.now() / 1000) + 86400,
+  disputeWindow: 7200
+});
+const txC = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
+  provider: agentC,
+  amount: parseUnits('15', 6),
+  deadline: Math.floor(Date.now() / 1000) + 86400,
+  disputeWindow: 7200
+});
 
-// Agents execute work in parallel
-await B.deliver(txB);
-await C.deliver(txC);
+// Link escrow for both
+await client.kernel.linkEscrow(txB, escrowVault, escrowIdB);
+await client.kernel.linkEscrow(txC, escrowVault, escrowIdC);
 
-// Automatic settlement when both complete
+// Agents execute work and deliver
+// (IN_PROGRESS → DELIVERED for each)
 ```
 
 **ACTP handles**: Parallel escrow, atomic settlement, reputation tracking
@@ -263,15 +283,22 @@ await C.deliver(txC);
 
 ```typescript
 // Create transaction with milestone support
-const txId = await createTransaction({
+const txId = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
+  provider: mlProviderAddress,
   amount: parseUnits('1000', 6), // $1,000 USDC
-  deadline: Date.now() + 7 * 86400 // 7 days
+  deadline: Math.floor(Date.now() / 1000) + 7 * 86400, // 7 days
+  disputeWindow: 172800 // 2 days
 });
 
-// Release milestones as work progresses
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 2: $250
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 4: $250
-await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // Day 7: $500
+// Link escrow and start work
+await client.kernel.linkEscrow(txId, escrowVault, escrowId);
+await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+
+// Release milestones as work progresses (milestoneId, amount)
+await client.kernel.releaseMilestone(txId, 0, parseUnits('250', 6)); // Day 2: $250
+await client.kernel.releaseMilestone(txId, 1, parseUnits('250', 6)); // Day 4: $250
+await client.kernel.releaseMilestone(txId, 2, parseUnits('500', 6)); // Day 7: $500
 ```
 
 **ACTP handles**: Incremental payments, deadline enforcement, escrow balance tracking

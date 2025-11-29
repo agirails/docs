@@ -139,20 +139,20 @@ function createEscrow(
     address requester,
     address provider,
     uint256 amount
-) external onlyValidator {
+) external onlyKernel {
     // 1. Verify escrow doesn't already exist
-    require(escrows[escrowId].amount == 0, "Escrow exists");
+    require(!escrows[escrowId].active, "Escrow exists");
 
     // 2. Pull USDC from requester
-    IERC20(USDC).safeTransferFrom(requester, address(this), amount);
+    token.safeTransferFrom(requester, address(this), amount);
 
     // 3. Lock funds in escrow
-    escrows[escrowId] = Escrow({
+    escrows[escrowId] = EscrowData({
         requester: requester,
         provider: provider,
         amount: amount,
-        released: 0,
-        createdAt: block.timestamp
+        releasedAmount: 0,
+        active: true
     });
 
     emit EscrowCreated(escrowId, requester, provider, amount);
@@ -226,19 +226,21 @@ function _releaseEscrow(Transaction storage tx) internal {
 **In EscrowVault.sol:**
 
 ```solidity
-function payoutToProvider(bytes32 escrowId, uint256 amount) external onlyValidator {
-    Escrow storage e = escrows[escrowId];
+function payoutToProvider(bytes32 escrowId, uint256 amount) external onlyKernel returns (uint256) {
+    EscrowData storage e = escrows[escrowId];
+    require(e.active, "Escrow not active");
 
     // Verify sufficient balance
-    require(e.amount - e.released >= amount, "Insufficient balance");
+    require(e.amount - e.releasedAmount >= amount, "Insufficient balance");
 
     // Update released amount
-    e.released += amount;
+    e.releasedAmount += amount;
 
     // Transfer USDC to provider
-    IERC20(USDC).safeTransfer(e.provider, amount);
+    token.safeTransfer(e.provider, amount);
 
     emit EscrowReleased(escrowId, e.provider, amount);
+    return amount;
 }
 ```
 
@@ -271,19 +273,19 @@ assert(vaultBalance >= sumOfAllLockedEscrows);
 
 ```solidity
 // In EscrowVault.sol
-modifier onlyValidator() {
-    require(validators[msg.sender], "Not authorized");
+modifier onlyKernel() {
+    require(msg.sender == kernel, "Only kernel");
     _;
 }
 
-function createEscrow(...) external onlyValidator { /* ... */ }
-function payout(...) external onlyValidator { /* ... */ }
+function createEscrow(...) external onlyKernel { /* ... */ }
+function payout(...) external onlyKernel { /* ... */ }
 ```
 
 **How it's enforced:**
-- Admin approves ACTPKernel as validator: `approveValidator(kernelAddress, true)`
-- All escrow operations check `onlyValidator` modifier
-- Validators are immutable after approval (no revocation)
+- Kernel address is set at deployment (constructor parameter)
+- All escrow operations check `onlyKernel` modifier
+- Kernel address is immutable (cannot be changed)
 
 **Why it matters**: Prevents direct escrow manipulation - all releases must go through kernel's state machine.
 
@@ -306,57 +308,28 @@ function payout(...) external onlyValidator { /* ... */ }
 | Requires trust in platform | Requires trust in code (audited) |
 | Regulated as money transmitter | Not a money transmitter (infrastructure) |
 
-### 4. Emergency Withdrawal Protection
+### 4. Fund Permanence (No Emergency Withdrawal)
 
-**Scenario**: What if ACTPKernel has a critical bug and funds are stuck?
+**Important**: The EscrowVault does **NOT** have emergency withdrawal functions.
 
-**Solution**: EscrowVault has emergency recovery, but with severe constraints:
-
+:::warning Design Decision
+Per the contract code (ACTPKernel.sol line 61):
 ```solidity
-// In EscrowVault.sol
-uint256 public constant EMERGENCY_WITHDRAW_DELAY = 7 days;
-
-struct PendingEmergencyWithdraw {
-    address recipient;
-    uint256 amount;
-    uint256 executeAfter;
-    bool active;
-}
-
-PendingEmergencyWithdraw private pendingWithdraw;
-
-function scheduleEmergencyWithdraw(address recipient, uint256 amount) external onlyAdmin {
-    require(!pendingWithdraw.active, "Pending withdrawal exists");
-
-    pendingWithdraw = PendingEmergencyWithdraw({
-        recipient: recipient,
-        amount: amount,
-        executeAfter: block.timestamp + EMERGENCY_WITHDRAW_DELAY,
-        active: true
-    });
-
-    emit EmergencyWithdrawScheduled(recipient, amount, pendingWithdraw.executeAfter);
-}
-
-function executeEmergencyWithdraw() external onlyAdmin {
-    require(pendingWithdraw.active, "No pending withdrawal");
-    require(block.timestamp >= pendingWithdraw.executeAfter, "Too early");
-
-    // Transfer funds
-    IERC20(USDC).safeTransfer(pendingWithdraw.recipient, pendingWithdraw.amount);
-
-    emit EmergencyWithdrawExecuted(pendingWithdraw.recipient, pendingWithdraw.amount);
-    delete pendingWithdraw;
-}
+// C-4 FIX: EMERGENCY_WITHDRAW_DELAY removed - kernel never holds funds
 ```
 
-**Key protections:**
-- **7-day timelock** - Users have a week to withdraw their funds normally
-- **Public visibility** - `EmergencyWithdrawScheduled` event alerts all users
-- **Cancellable** - Admin can cancel if it was a mistake
-- **Multisig required** - 3-of-5 signatures needed to schedule
+If tokens are accidentally sent directly to the vault (not through `createEscrow()`), they are **permanently locked**. This is intentional - it prevents any admin backdoor to user funds.
+:::
 
-**Why it exists**: Escrow funds should never be permanently locked due to bugs. But it must be slow/visible enough that users can exit.
+**Why no emergency withdrawal:**
+- **Prevents rug pulls** - Admin cannot drain escrow under any circumstances
+- **Maximum user security** - No mechanism exists to bypass the state machine
+- **Immutable guarantees** - Trust the code, not the operators
+
+**Risk mitigation:**
+- Thorough auditing before deployment
+- Extensive testing of all edge cases
+- Users only interact through ACTPKernel (never send USDC directly to vault)
 
 ### 5. Reentrancy Protection
 
@@ -403,17 +376,18 @@ console.log(`Escrow balance: ${formatUnits(remaining, 6)} USDC`);
 **Internal tracking:**
 
 ```solidity
-struct Escrow {
+struct EscrowData {
     address requester;
     address provider;
-    uint256 amount;    // Total deposited
-    uint256 released;  // Total paid out
-    uint256 createdAt;
+    uint256 amount;           // Total deposited
+    uint256 releasedAmount;   // Total paid out
+    bool active;              // Whether escrow exists
 }
 
 function remaining(bytes32 escrowId) external view returns (uint256) {
-    Escrow storage e = escrows[escrowId];
-    return e.amount - e.released;
+    EscrowData memory e = escrows[escrowId];
+    if (e.amount == 0) return 0;
+    return e.amount - e.releasedAmount;
 }
 ```
 
