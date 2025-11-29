@@ -170,7 +170,7 @@ Platform fees fund protocol operations: infrastructure, development, security au
 uint16 public constant MAX_PLATFORM_FEE_CAP = 500; // 5%
 
 function _validatePlatformFee(uint16 newFee) internal pure {
-    require(newFee <= MAX_PLATFORM_FEE_CAP, "Fee exceeds cap");
+    require(newFee <= MAX_PLATFORM_FEE_CAP, "Fee cap");
 }
 ```
 
