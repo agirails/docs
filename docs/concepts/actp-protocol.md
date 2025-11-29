@@ -214,9 +214,8 @@ ACTP is implemented through three layers:
 - **EAS Schema** - Attestation structure for reputation
 
 :::info Decentralization Roadmap
-**Today**: Smart contracts are immutable, but admin keys exist (3-of-5 multisig, 2-day timelocks)
-**Month 12**: Governance transitions to on-chain DAO voting
-**Month 18**: Full decentralization - protocol is unstoppable public infrastructure
+**Today**: Smart contracts are immutable, with multi-signature governance and time-delayed parameter changes for security
+**Future**: Gradual transition to on-chain DAO voting, culminating in full decentralization as public infrastructure
 :::
 
 ## Real-World Use Cases
@@ -237,7 +236,7 @@ const txId = await client.kernel.createTransaction({
   disputeWindow: 172800 // 2 days in seconds
 });
 
-// Provider signals work started (required)
+// Provider signals work started (optional, but required for milestones)
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 
 // Provider delivers work
@@ -295,10 +294,10 @@ const txId = await client.kernel.createTransaction({
 await client.kernel.linkEscrow(txId, escrowVault, escrowId);
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 
-// Release milestones as work progresses (milestoneId, amount)
-await client.kernel.releaseMilestone(txId, 0, parseUnits('250', 6)); // Day 2: $250
-await client.kernel.releaseMilestone(txId, 1, parseUnits('250', 6)); // Day 4: $250
-await client.kernel.releaseMilestone(txId, 2, parseUnits('500', 6)); // Day 7: $500
+// Release milestones as work progresses
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 2: $250
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 4: $250
+await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // Day 7: $500
 ```
 
 **ACTP handles**: Incremental payments, deadline enforcement, escrow balance tracking
@@ -319,20 +318,15 @@ These aren't "best efforts" - they're **invariants enforced by the Ethereum Virt
 
 ACTP is designed for **credible neutrality**:
 
-**Phase 1 (Months 0-12): Foundation Control**
-- 3-of-5 multisig admin (founders + advisors)
-- 2-day timelock on economic parameters (fees, penalties)
-- Emergency pause requires 3/5 signatures
+**Current Phase: Foundation Control**
+- Multi-signature admin with time-delayed parameter changes
+- Economic parameter changes require advance notice period
+- Emergency pause capability for security incidents
 
-**Phase 2 (Months 12-18): Transitional Governance**
-- Token launch (only after proven PMF)
-- Gradual transition to DAO voting
-- Immutable core protocol, extensible periphery
-
-**Phase 3 (Month 18+): Full Decentralization**
-- On-chain governance (snapshot voting → on-chain execution)
-- Protocol is public infrastructure
-- Foundation steps back, community steps up
+**Future Phase: Full Decentralization**
+- On-chain governance via DAO voting
+- Protocol becomes public infrastructure
+- Community-driven protocol evolution
 
 :::warning No Token Required
 You do **not** need to buy a governance token to use ACTP. Transactions are paid in USDC only. Governance tokens are for protocol decision-making, not payment rails.

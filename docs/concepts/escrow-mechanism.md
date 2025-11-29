@@ -239,7 +239,7 @@ function payoutToProvider(bytes32 escrowId, uint256 amount) external onlyKernel 
     // Transfer USDC to provider
     token.safeTransfer(e.provider, amount);
 
-    emit EscrowReleased(escrowId, e.provider, amount);
+    emit EscrowPayout(escrowId, e.provider, amount);
     return amount;
 }
 ```
@@ -341,7 +341,7 @@ If tokens are accidentally sent directly to the vault (not through `createEscrow
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 contract EscrowVault is ReentrancyGuard {
-    function payout(...) external onlyValidator nonReentrant {
+    function payout(...) external onlyKernel nonReentrant {
         // Checks-Effects-Interactions pattern:
         // 1. Checks: Verify balance
         require(escrow.amount >= amount, "Insufficient");
@@ -536,6 +536,7 @@ contract EscrowVault {
 ### Events for Indexing
 
 ```solidity
+// EscrowVault events
 event EscrowCreated(
     bytes32 indexed escrowId,
     address indexed requester,
@@ -543,23 +544,26 @@ event EscrowCreated(
     uint256 amount
 );
 
-event EscrowReleased(
+event EscrowPayout(
     bytes32 indexed escrowId,
     address indexed recipient,
     uint256 amount
 );
 
-event EscrowRefunded(
+event EscrowCompleted(
     bytes32 indexed escrowId,
-    address indexed requester,
-    uint256 amount
+    uint256 totalReleased
 );
+
+// ACTPKernel events (for transaction context)
+event EscrowReleased(bytes32 indexed transactionId, address recipient, uint256 amount, uint256 timestamp);
+event EscrowRefunded(bytes32 indexed transactionId, address recipient, uint256 amount, uint256 timestamp);
 ```
 
 **Use cases:**
 - Build analytics dashboard (total escrow volume, active escrows)
-- Alert on emergency withdrawal attempts
-- Track solvency invariant (sum of all `EscrowCreated - EscrowReleased`)
+- Track escrow completion and data cleanup (`EscrowCompleted`)
+- Track solvency invariant (sum of all `EscrowCreated` minus `EscrowPayout`)
 
 ### Querying Escrow State
 
@@ -597,7 +601,7 @@ console.log(`Total vault balance: ${formatUnits(vaultBalance, 6)} USDC`);
 ### For Platform Operators
 
 1. **Monitor solvency invariant** - Alert if `vaultBalance < sumLockedEscrows`
-2. **Test emergency withdrawal** - Ensure 7-day timelock works
+2. **Verify escrow completion** - Monitor `EscrowCompleted` events to confirm data cleanup after settlement
 3. **Audit vault regularly** - Third-party security reviews
 
 ## Comparison: ACTP vs. Alternatives

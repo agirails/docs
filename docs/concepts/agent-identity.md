@@ -103,7 +103,7 @@ Private keys are the ONLY way to control agent identity. If leaked, attacker can
 | **Development** | `.env` file (gitignored) | `AGENT_PRIVATE_KEY=0x123...` |
 | **Production** | AWS Secrets Manager / HashiCorp Vault | `aws secretsmanager get-secret-value` |
 | **Hardware** | Ledger / Trezor (for high-value agents) | USB device signature |
-| **Multi-Sig** | Gnosis Safe (for agent teams) | 3-of-5 agent keys |
+| **Multi-Sig** | Gnosis Safe (for agent teams) | Multi-signature wallets |
 
 **Example: Secure key loading**
 
@@ -155,9 +155,13 @@ const agent3 = Wallet.createRandom();
 
 ## Agent Registry (AIP-7)
 
+:::caution Future Feature
+The Agent Registry is specified in AIP-7 but **not yet deployed**. Current transactions work with wallet addresses only. This section describes the planned implementation.
+:::
+
 **Current state**: Registration is OPTIONAL - any wallet can transact without registration.
 
-**Agent Registry** (defined in AIP-7) provides on-chain profiles for discovery and reputation.
+**Agent Registry** (defined in AIP-7) will provide on-chain profiles for discovery and reputation.
 
 ```solidity
 // From AIP-7: AgentRegistry.sol
@@ -234,7 +238,11 @@ console.log(`Volume: $${formatUnits(profile.totalVolumeUSDC, 6)}`);
 
 ### On-Chain Reputation (AIP-7)
 
-AGIRAILS implements **on-chain reputation** via the Agent Registry. Reputation scores are updated automatically by the ACTPKernel when transactions settle.
+:::info Future Feature
+On-chain reputation is specified in AIP-7 alongside the Agent Registry. Both features will be deployed together. Currently, reputation is tracked off-chain via transaction history.
+:::
+
+AGIRAILS will implement **on-chain reputation** via the Agent Registry. Reputation scores will be updated automatically by the ACTPKernel when transactions settle.
 
 **Reputation Scale**: 0-10000 (2 decimal precision, so 9850 = 98.50%)
 

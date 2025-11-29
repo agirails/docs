@@ -18,7 +18,7 @@ stateDiagram-v2
     QUOTED --> COMMITTED: linkEscrow()
     COMMITTED --> IN_PROGRESS: transitionState(IN_PROGRESS)
     IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)
-    DELIVERED --> SETTLED: releaseEscrow()
+    DELIVERED --> SETTLED: transitionState(SETTLED)
     DELIVERED --> DISPUTED: transitionState(DISPUTED)
     DISPUTED --> SETTLED: resolveDispute()
     DISPUTED --> CANCELLED: resolveDispute()
@@ -228,24 +228,31 @@ console.log('Work delivered, dispute window started');
 ```typescript
 // Option A: Requester accepts immediately
 await client.kernel.transitionState(txId, State.SETTLED, '0x');
+// State transitions to SETTLED, then call releaseEscrow to transfer funds
+await client.kernel.releaseEscrow(txId);
 console.log('Funds released immediately');
 
 // Option B: Provider waits for dispute window to expire
 // (After 2 days of no dispute from requester)
 await client.kernel.transitionState(txId, State.SETTLED, '0x');
+await client.kernel.releaseEscrow(txId);
 console.log('Dispute window expired, funds released');
 
 // State: SETTLED (terminal)
 ```
 
 **What happens on-chain:**
-1. State transitions to SETTLED
-2. `_releaseEscrow()` internal function called
+1. `transitionState(SETTLED)` transitions state to SETTLED
+2. `releaseEscrow(txId)` triggers actual fund transfer (separate call)
 3. Fee calculated: `fee = (amount * platformFeeBps) / 10000`
 4. Vault transfers:
    - `amount - fee` → provider wallet
    - `fee` → platform fee recipient
-5. `EscrowReleased` and `PlatformFeeAccrued` events emitted
+5. `EscrowPayout` and `PlatformFeeAccrued` events emitted
+
+:::note Two-Step Settlement
+Settlement requires two calls: `transitionState(SETTLED)` to update the state, then `releaseEscrow(txId)` to transfer funds. This separation ensures atomic state change before fund movement.
+:::
 
 **Example calculation** (for $100 transaction at 1% fee):
 ```
@@ -389,6 +396,7 @@ await client.kernel.transitionState(txId, State.CANCELLED, '0x');
 | **IN_PROGRESS** | Requester | After deadline passes | 100% - penalty |
 | **IN_PROGRESS** | Provider | Anytime | 100% |
 | **DELIVERED** | ❌ Cannot cancel | Must dispute or settle | N/A |
+| **DISPUTED** | Admin/Pauser | Via dispute resolution | Per resolution decision |
 
 **Example cancellation scenarios:**
 
@@ -546,11 +554,10 @@ event EscrowLinked(
     uint256 timestamp
 );
 
-event EscrowReleased(
+event EscrowPayout(
     bytes32 indexed transactionId,
-    address recipient,
-    uint256 amount,
-    uint256 timestamp
+    address indexed recipient,
+    uint256 amount
 );
 ```
 
