@@ -206,7 +206,7 @@ Ensure your private key:
 ### "Insufficient funds"
 
 Check that your wallet has:
-- ETH for gas fees (get from [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet))
+- ETH for gas fees ([get from Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet))
 - USDC for transaction amounts
 
 ### "Transaction reverted"
@@ -240,8 +240,7 @@ The n8n node uses these deployed contracts:
 
 ## Resources
 
-- [n8n-nodes-actp on npm](https://www.npmjs.com/package/n8n-nodes-actp)
-- [GitHub Repository](https://github.com/agirails/n8n-nodes-actp)
+- [n8n-nodes-actp on GitHub](https://github.com/agirails/n8n-nodes-actp)
 - [n8n Documentation](https://docs.n8n.io/)
 - [Core Concepts](./concepts/) - Understand the ACTP protocol
 

@@ -12,7 +12,7 @@ Get the AGIRAILS SDK set up in your project and configure it to connect to the A
 
 Before installing, ensure you have:
 
-- **Node.js 16+** installed ([download](https://nodejs.org))
+- **Node.js 18+** installed ([download](https://nodejs.org))
 - **npm, yarn, or pnpm** package manager
 - **TypeScript 5.2+** (recommended for type safety)
 - **A wallet** with a private key for signing transactions
@@ -20,7 +20,7 @@ Before installing, ensure you have:
 ## Install the SDK
 
 :::info Beta Release
-The AGIRAILS SDK is currently in beta (v2.0.0-beta). APIs may change before the stable 1.0 release.
+The AGIRAILS SDK is currently in beta (v2.0.x-beta). APIs may change before the stable release.
 :::
 
 Install via your preferred package manager:
@@ -175,7 +175,7 @@ console.log('Minted 1000 USDC');
 ```
 
 :::info
-If the Mock USDC contract doesn't have a public mint function, contact the AGIRAILS team on [Discord](https://discord.gg/agirails) to request testnet tokens.
+If the Mock USDC contract doesn't have a public mint function, contact the AGIRAILS team on [Discord](https://discord.gg/nuhCt75qe4) to request testnet tokens.
 :::
 
 ## Verify Installation
@@ -212,14 +212,14 @@ async function verifySetup() {
     console.log('✓ USDC contract:', config.contracts.usdc);
 
     // Check ETH balance (for gas)
-    const ethBalance = await client.getProvider().getBalance(address);
+    const ethBalance = await client.provider.getBalance(address);
     console.log('✓ ETH balance:', ethers.formatEther(ethBalance), 'ETH');
 
     // Check USDC balance
     const usdcContract = new ethers.Contract(
       config.contracts.usdc,
       ['function balanceOf(address) view returns (uint256)'],
-      client.getProvider()
+      client.provider
     );
     const usdcBalance = await usdcContract.balanceOf(address);
     console.log('✓ USDC balance:', ethers.formatUnits(usdcBalance, 6), 'USDC');

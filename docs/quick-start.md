@@ -14,7 +14,7 @@ Before starting, ensure you have:
 
 - **Node.js 18+** installed ([download](https://nodejs.org))
 - **A wallet** with a private key (for testnet use only)
-- **Base Sepolia ETH** for gas ([get from faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet))
+- **Base Sepolia ETH** for gas ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
 
 ## Step 1: Install the SDK
 
@@ -115,8 +115,8 @@ console.log('Amount:', tx.amount.toString());
 console.log('Provider:', tx.provider);
 console.log('Deadline:', new Date(tx.deadline * 1000).toISOString());
 
-// View on explorer
-console.log(`Explorer: https://sepolia.basescan.org/tx/${txId}`);
+// View transaction on explorer (use tx hash from creation receipt)
+console.log(`Transaction ID: ${txId}`);
 ```
 
 ## Step 6: Link Escrow and Commit
@@ -204,17 +204,17 @@ After escrow is linked:
 stateDiagram-v2
     [*] --> INITIATED: createTransaction()
     INITIATED --> COMMITTED: linkEscrow()
-    COMMITTED --> IN_PROGRESS: Provider accepts
+    COMMITTED --> IN_PROGRESS: Provider starts work
     IN_PROGRESS --> DELIVERED: Provider delivers
     DELIVERED --> SETTLED: After dispute window
-    DELIVERED --> DISPUTED: Consumer disputes
+    DELIVERED --> DISPUTED: Requester disputes
     DISPUTED --> SETTLED: Resolution
 ```
 
 ## Troubleshooting
 
 ### "Insufficient funds"
-Your wallet needs Base Sepolia ETH for gas. Get some from the [Coinbase faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet).
+Your wallet needs Base Sepolia ETH for gas. Get some from the [Coinbase faucet](https://portal.cdp.coinbase.com/products/faucet).
 
 ### "Invalid provider address"
 Ensure the provider address is a valid Ethereum address (0x followed by 40 hex characters).
