@@ -1,0 +1,22 @@
+# AGIRAILS Update Authors
+# Note: Following governance principles - use role titles, not personal names
+
+agirails:
+  name: AGIRAILS Team
+  title: Core Team
+  url: https://agirails.io
+
+protocol-team:
+  name: Protocol Team
+  title: Smart Contract & Protocol Development
+  url: https://github.com/agirails
+
+sdk-team:
+  name: SDK Team
+  title: SDK & Developer Experience
+  url: https://github.com/agirails
+
+community:
+  name: Community
+  title: AGIRAILS Community
+  url: https://discord.gg/agirails

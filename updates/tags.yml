@@ -1,0 +1,24 @@
+release:
+  label: Release
+  description: Version releases, changelogs, and deployment announcements
+  permalink: /release
+
+engineering:
+  label: Engineering
+  description: Technical deep-dives, architecture decisions, and implementation details
+  permalink: /engineering
+
+governance:
+  label: Governance
+  description: AIP decisions, protocol changes, and community governance
+  permalink: /governance
+
+ecosystem:
+  label: Ecosystem
+  description: Partnerships, integrations, and ecosystem growth
+  permalink: /ecosystem
+
+devlog:
+  label: Dev Log
+  description: Weekly progress updates and building in public
+  permalink: /devlog
