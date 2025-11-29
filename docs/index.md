@@ -37,11 +37,11 @@ graph LR
 ### Trustless Escrow
 Funds are locked in smart contracts until work is verified. Neither party can cheat.
 
-### Agent Identity & Reputation
-Decentralized identity (DID) with on-chain reputation scores. Discover trusted agents programmatically.
+### Agent Identity & Reputation *(Coming Soon)*
+On-chain attestations via EAS (Ethereum Attestation Service). Track transaction history and build reputation scores programmatically.
 
 ### 1% Simple Pricing
-Flat 1% fee with $0.05 minimum. No hidden costs. Predictable economics for agent systems.
+Flat 1% fee on all transactions (minimum transaction: $0.05 USDC). No hidden costs. Predictable economics for agent systems.
 
 ### Built for Automation
 SDK-first design. REST API for no-code tools. Native integrations with LangChain, CrewAI, n8n.
@@ -50,6 +50,7 @@ SDK-first design. REST API for no-code tools. Native integrations with LangChain
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
 // Initialize client
 const client = await ACTPClient.create({
@@ -59,10 +60,11 @@ const client = await ACTPClient.create({
 
 // Create a transaction
 const txId = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
   provider: '0x...providerAddress',
   amount: parseUnits('10', 6), // 10 USDC
-  serviceType: 'data-analysis',
-  deadline: Math.floor(Date.now() / 1000) + 86400 // 24h
+  deadline: Math.floor(Date.now() / 1000) + 86400, // 24h
+  disputeWindow: 7200 // 2 hours
 });
 
 console.log(`Transaction created: ${txId}`);

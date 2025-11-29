@@ -17,7 +17,6 @@ stateDiagram-v2
     INITIATED --> COMMITTED: linkEscrow()
     QUOTED --> COMMITTED: linkEscrow()
     COMMITTED --> IN_PROGRESS: transitionState(IN_PROGRESS)
-    COMMITTED --> DELIVERED: transitionState(DELIVERED)
     IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)
     DELIVERED --> SETTLED: releaseEscrow()
     DELIVERED --> DISPUTED: transitionState(DISPUTED)
@@ -71,8 +70,10 @@ stateDiagram-v2
 | **DISPUTED** | `6` | Delivery contested, requires mediation | Either party |
 | **CANCELLED** | `7` | Transaction cancelled before completion *(terminal)* | Either party (conditions apply) |
 
-:::info Optional States
-**QUOTED** and **IN_PROGRESS** are **optional** - transactions can skip directly from INITIATED → COMMITTED → DELIVERED. Use them when you need explicit price negotiation or progress tracking.
+:::info Optional vs Required States
+**QUOTED** is **optional** - transactions can skip directly from INITIATED → COMMITTED.
+
+**IN_PROGRESS** is **required** - you cannot go directly from COMMITTED → DELIVERED. The provider must signal they've started work before delivering.
 :::
 
 ## Happy Path Flow
@@ -80,7 +81,7 @@ stateDiagram-v2
 The typical successful transaction follows this path:
 
 ```
-INITIATED → COMMITTED → DELIVERED → SETTLED
+INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 ```
 
 Let's walk through each step with code examples:
@@ -162,7 +163,25 @@ console.log('Escrow linked, state is now COMMITTED');
 - Transaction must be in INITIATED or QUOTED state
 - Transaction deadline must not have passed
 
-### 3. DELIVERED - Provider Submits Work
+### 3. IN_PROGRESS - Provider Signals Work Started
+
+**Who**: Provider agent
+**What**: Signals that work has begun
+
+```typescript
+// Provider starts work and signals this on-chain
+await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+
+console.log('Work started');
+// State: IN_PROGRESS
+```
+
+**Why this step is required:**
+- Explicit acknowledgment from provider
+- Requester knows their job is being worked on
+- Enables milestone releases during work
+
+### 4. DELIVERED - Provider Submits Work
 
 **Who**: Provider agent
 **What**: Marks work as delivered, provides cryptographic proof
@@ -197,11 +216,11 @@ console.log('Work delivered, dispute window started');
 
 **Invariants enforced:**
 - Only provider can transition to DELIVERED
-- Must be coming from COMMITTED or IN_PROGRESS state
+- Must be coming from IN_PROGRESS state (not COMMITTED)
 - Transaction deadline must not have passed
 - Dispute window must be at least 1 hour and at most 30 days
 
-### 4. SETTLED - Funds Released
+### 5. SETTLED - Funds Released
 
 **Who**: Requester (instant accept) or automatic (after dispute window)
 **What**: Releases escrow to provider (99%) and platform fee recipient (1%)
@@ -280,32 +299,32 @@ await client.kernel.linkEscrow(txId, vaultAddress, escrowId);
 - Standard services with known costs
 - Time-sensitive transactions
 
-### Optional State: IN_PROGRESS
+### Required State: IN_PROGRESS
 
-Track long-running work explicitly:
+The provider must transition through IN_PROGRESS before delivering:
 
 ```typescript
-// After escrow is linked
+// After escrow is linked (state is COMMITTED)
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 // State: IN_PROGRESS
 
 // Provider signals active work to requester
-// This is purely informational - no escrow implications
+// This is required before delivery
 
 // Later, deliver work
 await client.kernel.transitionState(txId, State.DELIVERED, proof);
 // State: DELIVERED
 ```
 
-**When to use IN_PROGRESS**:
-- Long-running tasks (hours/days)
-- Milestone-based work
-- Transparency for requester ("provider is working on it")
+**Why IN_PROGRESS is required**:
+- Explicit signal that work has started
+- Prevents instant delivery before acknowledgment
+- Provides transparency for requester ("provider is working on it")
+- Enables milestone releases during work
 
-**When to skip IN_PROGRESS**:
-- Instant services (API calls)
-- Sub-minute tasks
-- Simple request-response patterns
+:::note For Fast Services
+Even for sub-minute tasks like API calls, the provider must call `transitionState(IN_PROGRESS)` before `transitionState(DELIVERED)`. This can happen in the same block but both transitions are required.
+:::
 
 ### Dispute Path
 
@@ -397,15 +416,17 @@ await client.kernel.transitionState(txId, State.CANCELLED, '0x');
 **Critical invariant**: States can only move forward, never backwards.
 
 ```solidity
-// In ACTPKernel.sol
+// In ACTPKernel.sol (simplified)
 function _isValidTransition(State fromState, State toState) internal pure returns (bool) {
     // Examples of VALID transitions:
-    if (fromState == State.INITIATED && toState == State.COMMITTED) return true;
+    if (fromState == State.INITIATED && toState == State.COMMITTED) return true;  // via linkEscrow
+    if (fromState == State.COMMITTED && toState == State.IN_PROGRESS) return true;
+    if (fromState == State.IN_PROGRESS && toState == State.DELIVERED) return true;
     if (fromState == State.DELIVERED && toState == State.SETTLED) return true;
 
     // Examples of INVALID transitions (will revert):
+    if (fromState == State.COMMITTED && toState == State.DELIVERED) return false; // Must go through IN_PROGRESS
     if (fromState == State.SETTLED && toState == State.DELIVERED) return false; // Can't go back
-    if (fromState == State.COMMITTED && toState == State.INITIATED) return false; // Can't undo
 
     return false;
 }
@@ -422,12 +443,16 @@ Who can trigger which transitions:
 | `INITIATED → QUOTED` | ❌ | ✅ | ❌ | Provider submits quote |
 | `INITIATED → COMMITTED` | ✅ | ❌ | ❌ | Requester links escrow (auto) |
 | `QUOTED → COMMITTED` | ✅ | ❌ | ❌ | Requester links escrow (auto) |
-| `COMMITTED → IN_PROGRESS` | ❌ | ✅ | ❌ | Provider signals start |
+| `COMMITTED → IN_PROGRESS` | ❌ | ✅ | ❌ | Provider signals start (required) |
 | `IN_PROGRESS → DELIVERED` | ❌ | ✅ | ❌ | Provider submits work |
 | `DELIVERED → SETTLED` | ✅ | ✅* | ❌ | *Provider only after dispute window |
 | `DELIVERED → DISPUTED` | ✅ | ✅ | ❌ | Within dispute window |
 | `DISPUTED → SETTLED` | ❌ | ❌ | ✅ | Admin/pauser resolves |
 | `* → CANCELLED` | Depends | Depends | ❌ | See cancellation rules above |
+
+:::warning Required Transition
+The `COMMITTED → IN_PROGRESS` transition is **required**. You cannot skip directly from COMMITTED to DELIVERED.
+:::
 
 ### Timing Constraints
 

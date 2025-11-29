@@ -6,44 +6,48 @@ description: Understanding ACTP's 1% fee with $0.05 minimum - the economics, cal
 
 # Fee Model
 
-ACTP implements a **simple, transparent fee model**: **1% of transaction value with a $0.05 minimum**.
+ACTP implements a **simple, transparent fee model**: **1% of transaction value**.
 
 No hidden fees. No tiered pricing. No surprise charges.
 
 ## The Fee Structure
 
 ```
-Platform Fee = max(1% of amount, $0.05)
+Platform Fee = 1% of transaction amount
+Minimum Transaction = $0.05 USDC
 ```
+
+:::warning Important Distinction
+The **$0.05 minimum** applies to the **transaction amount**, NOT the fee. Transactions below $0.05 USDC are rejected by the smart contract. There is no minimum fee floor - a $1.00 transaction pays $0.01 fee (1%), not $0.05.
+:::
 
 ### Fee Calculation Examples
 
-| Transaction Amount | 1% Calculation | Minimum Check | Actual Fee | Effective Rate |
-|-------------------|----------------|---------------|------------|----------------|
-| $0.50 | $0.005 | ✅ Apply minimum | **$0.05** | 10.0% |
-| $1.00 | $0.01 | ✅ Apply minimum | **$0.05** | 5.0% |
-| $5.00 | $0.05 | ⚖️ Equals minimum | **$0.05** | 1.0% |
-| $10.00 | $0.10 | ❌ Above minimum | **$0.10** | 1.0% |
-| $100.00 | $1.00 | ❌ Above minimum | **$1.00** | 1.0% |
-| $1,000.00 | $10.00 | ❌ Above minimum | **$10.00** | 1.0% |
-| $10,000.00 | $100.00 | ❌ Above minimum | **$100.00** | 1.0% |
+| Transaction Amount | Fee Calculation | Platform Fee | Provider Receives |
+|-------------------|-----------------|--------------|-------------------|
+| $0.05 | $0.05 × 1% | **$0.0005** | $0.0495 |
+| $1.00 | $1.00 × 1% | **$0.01** | $0.99 |
+| $5.00 | $5.00 × 1% | **$0.05** | $4.95 |
+| $10.00 | $10.00 × 1% | **$0.10** | $9.90 |
+| $100.00 | $100.00 × 1% | **$1.00** | $99.00 |
+| $1,000.00 | $1,000.00 × 1% | **$10.00** | $990.00 |
 
-**Breakeven point**: $5.00 (where 1% = $0.05 minimum)
+**Note**: Transactions below $0.05 USDC are rejected (prevents dust spam).
 
 ### Visual Fee Curve
 
 ```mermaid
 graph LR
     A[Transaction Amount]
-    B{Amount >= $5?}
-    C[Fee = $0.05 minimum]
+    B{Amount >= $0.05?}
+    C[Transaction REJECTED]
     D[Fee = 1% of amount]
 
     A --> B
     B -->|No| C
     B -->|Yes| D
 
-    style C fill:#f59e0b
+    style C fill:#ef4444
     style D fill:#059669
 ```
 
@@ -56,12 +60,14 @@ AI agents need deterministic pricing to make autonomous decisions:
 ```typescript
 // Agent can calculate fee before transacting
 function calculateFee(amount: number): number {
-  const percentFee = amount * 0.01;
-  return Math.max(percentFee, 0.05);
+  return amount * 0.01; // Simple 1%
 }
 
+// Check minimum transaction amount
+const MIN_TRANSACTION = 0.05; // $0.05 USDC
+
 // Decision logic
-if (calculateFee(100) + 100 <= budget) {
+if (amount >= MIN_TRANSACTION && calculateFee(amount) + amount <= budget) {
   executeTransaction();
 }
 ```
@@ -70,45 +76,35 @@ if (calculateFee(100) + 100 <= budget) {
 
 ### 2. Scales with Transaction Value
 
-**Small transactions** ($1-$10): Higher effective rate to cover infrastructure costs
-
-**Medium transactions** ($10-$1,000): Stable 1% rate for typical agent-to-agent commerce
-
-**Large transactions** ($1,000+): Still 1% (no tiered pricing that penalizes success)
+All transactions pay exactly **1%** - no exceptions, no tiers:
 
 **Example:**
-- $1 transaction: $0.05 fee (5% effective) - prevents spam, covers gas costs
-- $100 transaction: $1.00 fee (1% effective) - fair value for escrow + settlement
-- $10,000 transaction: $100 fee (1% effective) - not punished for high value
+- $1 transaction: $0.01 fee (1%)
+- $100 transaction: $1.00 fee (1%)
+- $10,000 transaction: $100 fee (1%)
+
+The **$0.05 minimum transaction amount** prevents dust spam while keeping fees proportional.
 
 ### 3. Spam Prevention
 
-The $0.05 minimum prevents **dust attacks**:
+The $0.05 **minimum transaction amount** prevents dust attacks:
 
 **Without minimum:**
 ```
 Attacker creates 100,000 transactions at $0.01 each
-Platform revenue: 100,000 × $0.0001 = $10
-Platform cost: 100,000 × $0.001 gas = $100
-Net: -$90 loss
+Cost to attacker: $1,000 in principal + $10 in fees + gas
+Attack possible at low cost
 ```
 
 **With $0.05 minimum:**
 ```
-Same attack costs attacker: 100,000 × $0.05 = $5,000 in fees
-Platform revenue: $5,000
-Platform cost: $100 gas
-Net: +$4,900 profit (attack becomes unprofitable)
+Transactions below $0.05 are REJECTED by the smart contract
+Attacker must use at least $0.05 per transaction
+100,000 attacks = $5,000 minimum principal locked
+Attack becomes economically impractical
 ```
 
-**Dust attack economics:**
-
-| Attack Type | Cost to Attacker | Platform Revenue | Platform Cost | Net Result |
-|-------------|------------------|------------------|---------------|------------|
-| **No minimum** | $1,000 | $10 | $100 gas | -$90 loss |
-| **With $0.05 min** | $5,000 | $5,000 | $100 gas | +$4,900 profit |
-
-**Conclusion**: Minimum fee makes spam economically irrational.
+**Key insight**: The minimum isn't about fee revenue - it's about making attacks require real capital commitment.
 
 ### 4. Competitive Positioning
 
@@ -181,15 +177,24 @@ import { parseUnits, formatUnits } from 'ethers';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
+const MIN_TRANSACTION = parseUnits('0.05', USDC_DECIMALS); // $0.05 minimum transaction
 
 function calculateFee(amount: bigint, feeBps: number = 100): bigint {
-  const fee = (amount * BigInt(feeBps)) / BigInt(10_000);
-  const minimum = parseUnits('0.05', USDC_DECIMALS); // $0.05 minimum
-  return fee > minimum ? fee : minimum;
+  // Simple percentage calculation - no minimum fee floor
+  return (amount * BigInt(feeBps)) / BigInt(10_000);
+}
+
+function validateTransaction(amount: bigint): boolean {
+  return amount >= MIN_TRANSACTION;
 }
 
 // Example usage
 const amount = parseUnits('100', USDC_DECIMALS); // $100 USDC
+
+if (!validateTransaction(amount)) {
+  throw new Error('Amount below minimum ($0.05)');
+}
+
 const fee = calculateFee(amount); // 1e6 = $1.00
 const providerNet = amount - fee; // 99e6 = $99.00
 
@@ -331,10 +336,10 @@ await client.kernel.createTransaction({
 });
 
 // REVERTS with: "Amount below minimum"
-// Minimum transaction: $0.05 USDC
+// Minimum transaction amount: $0.05 USDC (50,000 wei at 6 decimals)
 ```
 
-**Why**: Prevents dust spam, ensures fee covers gas costs.
+**Why**: Prevents dust spam, ensures each transaction requires meaningful capital commitment.
 
 ### Scenario 2: Milestone Releases (Incremental Fees)
 

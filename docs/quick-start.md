@@ -44,7 +44,7 @@ Create a new file `agent.ts`:
 
 ```typescript title="agent.ts"
 import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
+import { parseUnits, id } from 'ethers';
 import 'dotenv/config';
 
 async function main() {
@@ -56,7 +56,7 @@ async function main() {
   });
 
   console.log('Agent address:', await client.getAddress());
-  console.log('Connected to:', client.network);
+  console.log('Connected to:', client.getNetworkConfig().name);
 }
 
 main().catch(console.error);
@@ -74,12 +74,15 @@ You should see your agent's address printed.
 
 Add this to your `agent.ts`:
 
-```typescript title="agent.ts" {3-16}
+```typescript title="agent.ts" {3-19}
 async function main() {
   const client = await ACTPClient.create({...});
 
   // Create a transaction
   const txId = await client.kernel.createTransaction({
+    // Requester address (your agent - the one paying)
+    requester: await client.getAddress(),
+
     // Provider agent address (the agent that will do the work)
     provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
 
@@ -121,11 +124,17 @@ console.log(`Explorer: https://sepolia.basescan.org/tx/${txId}`);
 Before the provider can work, funds must be locked in escrow:
 
 ```typescript
-// Approve USDC spending (one-time per amount)
-await client.escrow.approve(parseUnits('100', 6));
+// Get network config for contract addresses
+const config = client.getNetworkConfig();
+
+// Approve USDC spending to the escrow vault
+await client.escrow.approveToken(config.contracts.usdc, parseUnits('100', 6));
+
+// Generate unique escrow ID
+const escrowId = id(`escrow-${txId}-${Date.now()}`);
 
 // Link escrow - this locks funds and moves state to COMMITTED
-await client.kernel.linkEscrow(txId);
+await client.kernel.linkEscrow(txId, config.contracts.escrowVault, escrowId);
 
 console.log('Funds locked in escrow!');
 
@@ -140,7 +149,7 @@ Here's the full working code:
 
 ```typescript title="agent.ts"
 import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
+import { parseUnits, id } from 'ethers';
 import 'dotenv/config';
 
 async function main() {
@@ -151,10 +160,12 @@ async function main() {
     rpcUrl: process.env.RPC_URL
   });
 
-  console.log('Agent:', await client.getAddress());
+  const myAddress = await client.getAddress();
+  console.log('Agent:', myAddress);
 
   // 2. Create transaction
   const txId = await client.kernel.createTransaction({
+    requester: myAddress,
     provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
     amount: parseUnits('1', 6),
     deadline: Math.floor(Date.now() / 1000) + 86400,
@@ -163,16 +174,18 @@ async function main() {
 
   console.log('Created:', txId);
 
-  // 3. Approve and lock escrow
-  await client.escrow.approve(parseUnits('1', 6));
-  await client.kernel.linkEscrow(txId);
+  // 3. Approve USDC and lock escrow
+  const config = client.getNetworkConfig();
+  await client.escrow.approveToken(config.contracts.usdc, parseUnits('1', 6));
+
+  const escrowId = id(`escrow-${txId}-${Date.now()}`);
+  await client.kernel.linkEscrow(txId, config.contracts.escrowVault, escrowId);
 
   console.log('Escrow locked!');
 
   // 4. Get final status
   const tx = await client.kernel.getTransaction(txId);
   console.log('Status:', tx.state);
-  console.log('Explorer:', `https://sepolia.basescan.org/tx/${txId}`);
 }
 
 main().catch(console.error);
