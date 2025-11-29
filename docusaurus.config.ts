@@ -85,7 +85,8 @@ const config: Config = {
       logo: {
         alt: 'AGIRAILS Logo',
         src: 'img/logo.png',
-        srcDark: 'img/logo-dark.svg',
+        href: 'https://www.agirails.io',
+        target: '_self',
         height: 32,
       },
       items: [
