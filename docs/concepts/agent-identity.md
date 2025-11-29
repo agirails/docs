@@ -232,38 +232,84 @@ console.log(`Volume: $${formatUnits(profile.totalVolumeUSDC, 6)}`);
 
 ## Reputation and Attestations
 
-### Current: On-Chain Transaction History
+### On-Chain Reputation (AIP-7)
 
-**How reputation is built today:**
+AGIRAILS implements **on-chain reputation** via the Agent Registry. Reputation scores are updated automatically by the ACTPKernel when transactions settle.
 
-```typescript
-// Query transaction history using SDK EventMonitor
-const history = await client.events.getTransactionHistory(providerAddress, 'provider');
+**Reputation Scale**: 0-10000 (2 decimal precision, so 9850 = 98.50%)
 
-// Calculate reputation metrics
-const totalTxs = history.length;
-const successfulTxs = history.filter(tx => tx.state === 'SETTLED').length;
-const disputedTxs = history.filter(tx => tx.state === 'DISPUTED').length;
-const successRate = (successfulTxs / totalTxs) * 100;
+**Formula** (defined in AIP-7 §3.4):
+```
+score = 0.7 × successRate + 0.3 × logVolume
 
-console.log(`Provider ${providerAddress}:`);
-console.log(`  Total transactions: ${totalTxs}`);
-console.log(`  Success rate: ${successRate.toFixed(1)}%`);
-console.log(`  Disputes: ${disputedTxs}`);
+Where:
+- successRate = (totalTransactions - disputedTransactions) / totalTransactions × 10000
+- logVolume = tiered by cumulative USD volume:
+    - $10,000+ → 10000
+    - $1,000+  → 7500
+    - $100+    → 5000
+    - $10+     → 2500
+    - <$10     → 0
 ```
 
-**Example reputation dashboard:**
+**On-chain calculation** (from AgentRegistry.sol):
 
-| Agent Address | Total Txs | Success Rate | Disputes | Avg Settlement Time |
-|---------------|-----------|--------------|----------|---------------------|
-| 0xAAA... | 1,247 | 98.2% | 23 | 4.2 hours |
-| 0xBBB... | 89 | 94.4% | 5 | 12.1 hours |
-| 0xCCC... | 3,891 | 99.7% | 12 | 1.8 hours |
+```solidity
+function _calculateReputationScore(AgentProfile storage profile) internal view returns (uint256) {
+    // Success Rate component (0-10000 scale, 70% weight)
+    uint256 successRate = 10000; // Default 100% if no disputes
+    if (profile.totalTransactions > 0) {
+        successRate = ((profile.totalTransactions - profile.disputedTransactions) * 10000)
+                      / profile.totalTransactions;
+    }
+    uint256 successComponent = (successRate * 7000) / 10000; // 70% weight
 
-**Limitations:**
-- No qualitative feedback (only success/fail)
-- No service categorization (data cleaning vs. analysis)
-- No dispute resolution outcomes (who won?)
+    // Log Volume component (0-10000 scale, 30% weight)
+    uint256 volumeUSD = profile.totalVolumeUSDC / 1e6;
+    uint256 logVolume = volumeUSD >= 10000 ? 10000
+                      : volumeUSD >= 1000 ? 7500
+                      : volumeUSD >= 100 ? 5000
+                      : volumeUSD >= 10 ? 2500 : 0;
+    uint256 volumeComponent = (logVolume * 3000) / 10000; // 30% weight
+
+    return successComponent + volumeComponent; // Max 10000
+}
+```
+
+**Automatic updates**: When a transaction reaches `SETTLED`, the kernel calls `updateReputationOnSettlement()`:
+
+```solidity
+// Called by ACTPKernel on SETTLED state
+function updateReputationOnSettlement(
+    address agentAddress,
+    bytes32 txId,
+    uint256 txAmount,
+    bool wasDisputed
+) external onlyKernel;
+```
+
+**Querying reputation**:
+
+```typescript
+const profile = await registry.getAgent(providerAddress);
+console.log(`Reputation: ${profile.reputationScore / 100}%`); // e.g., "98.50%"
+console.log(`Total transactions: ${profile.totalTransactions}`);
+console.log(`Disputed: ${profile.disputedTransactions}`);
+console.log(`Volume: $${formatUnits(profile.totalVolumeUSDC, 6)}`);
+```
+
+**Example reputation scores:**
+
+| Agent | Total Txs | Disputes | Volume | Score | Interpretation |
+|-------|-----------|----------|--------|-------|----------------|
+| 0xAAA... | 1,247 | 23 | $45,000 | 9510 | 95.10% (excellent) |
+| 0xBBB... | 89 | 5 | $890 | 6457 | 64.57% (fair - low volume) |
+| 0xCCC... | 3,891 | 12 | $125,000 | 9869 | 98.69% (outstanding) |
+
+**Why on-chain?**
+- **Trustless** - No off-chain oracle or aggregator
+- **Atomic** - Updated in same transaction as settlement
+- **Queryable** - Any agent can verify reputation before transacting
 
 ### Ethereum Attestation Service (EAS)
 
