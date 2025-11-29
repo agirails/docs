@@ -6,119 +6,44 @@ description: Understanding ACTP's 1% fee with $0.05 minimum - the economics, cal
 
 # Fee Model
 
-ACTP implements a **simple, transparent fee model**: **1% of transaction value**.
+| | |
+|---|---|
+| **Platform Fee** | 1% of transaction amount |
+| **Minimum Transaction** | $0.05 USDC |
+| **Fee on Minimum** | $0.0005 (not $0.05) |
 
-No hidden fees. No tiered pricing. No surprise charges.
-
-## The Fee Structure
-
-```
-Platform Fee = 1% of transaction amount
-Minimum Transaction = $0.05 USDC
-```
-
-:::warning Important Distinction
-The **$0.05 minimum** applies to the **transaction amount**, NOT the fee. Transactions below $0.05 USDC are rejected by the smart contract. There is no minimum fee floor - a $1.00 transaction pays $0.01 fee (1%), not $0.05.
+:::info Key Point
+The $0.05 minimum is a **transaction floor**, not a fee floor. A $1.00 transaction pays $0.01 fee (1%).
 :::
 
-### Fee Calculation Examples
+## Fee Examples
 
-| Transaction Amount | Fee Calculation | Platform Fee | Provider Receives |
-|-------------------|-----------------|--------------|-------------------|
-| $0.05 | $0.05 × 1% | **$0.0005** | $0.0495 |
-| $1.00 | $1.00 × 1% | **$0.01** | $0.99 |
-| $5.00 | $5.00 × 1% | **$0.05** | $4.95 |
-| $10.00 | $10.00 × 1% | **$0.10** | $9.90 |
-| $100.00 | $100.00 × 1% | **$1.00** | $99.00 |
-| $1,000.00 | $1,000.00 × 1% | **$10.00** | $990.00 |
+| Amount | Fee (1%) | Provider Receives |
+|--------|----------|-------------------|
+| $0.05 | $0.0005 | $0.0495 |
+| $1.00 | $0.01 | $0.99 |
+| $10.00 | $0.10 | $9.90 |
+| $100.00 | $1.00 | $99.00 |
+| $1,000.00 | $10.00 | $990.00 |
 
-**Note**: Transactions below $0.05 USDC are rejected (prevents dust spam).
+## Why 1% Flat?
 
-### Visual Fee Curve
+**Predictability** - Agents calculate fees deterministically: `fee = amount × 0.01`
 
-```mermaid
-graph LR
-    A[Transaction Amount]
-    B{Amount >= $0.05?}
-    C[Transaction REJECTED]
-    D[Fee = 1% of amount]
+**Competitiveness** - Cheaper than Stripe (2.9%+$0.30), PayPal (3.49%+$0.49), comparable to Coinbase Commerce (1%)
 
-    A --> B
-    B -->|No| C
-    B -->|Yes| D
+**No tiers** - Same rate for $1 and $10,000 transactions
 
-    style C fill:#ef4444
-    style D fill:#059669
-```
+## Why $0.05 Minimum?
 
-## Why This Model?
+The minimum transaction amount prevents **dust spam attacks**:
 
-### 1. Predictable for Agents
+| Without minimum | With $0.05 minimum |
+|-----------------|-------------------|
+| 100K transactions × $0.01 = $1,000 attack cost | 100K transactions × $0.05 = $5,000 attack cost |
+| Low barrier to state bloat | Economically impractical |
 
-AI agents need deterministic pricing to make autonomous decisions:
-
-```typescript
-// Agent can calculate fee before transacting
-function calculateFee(amount: number): number {
-  return amount * 0.01; // Simple 1%
-}
-
-// Check minimum transaction amount
-const MIN_TRANSACTION = 0.05; // $0.05 USDC
-
-// Decision logic
-if (amount >= MIN_TRANSACTION && calculateFee(amount) + amount <= budget) {
-  executeTransaction();
-}
-```
-
-**No surprises**: Fee function is pure math, no human discretion.
-
-### 2. Scales with Transaction Value
-
-All transactions pay exactly **1%** - no exceptions, no tiers:
-
-**Example:**
-- $1 transaction: $0.01 fee (1%)
-- $100 transaction: $1.00 fee (1%)
-- $10,000 transaction: $100 fee (1%)
-
-The **$0.05 minimum transaction amount** prevents dust spam while keeping fees proportional.
-
-### 3. Spam Prevention
-
-The $0.05 **minimum transaction amount** prevents dust attacks:
-
-**Without minimum:**
-```
-Attacker creates 100,000 transactions at $0.01 each
-Cost to attacker: $1,000 in principal + $10 in fees + gas
-Attack possible at low cost
-```
-
-**With $0.05 minimum:**
-```
-Transactions below $0.05 are REJECTED by the smart contract
-Attacker must use at least $0.05 per transaction
-100,000 attacks = $5,000 minimum principal locked
-Attack becomes economically impractical
-```
-
-**Key insight**: The minimum isn't about fee revenue - it's about making attacks require real capital commitment.
-
-### 4. Competitive Positioning
-
-**Comparison with alternatives:**
-
-| Platform | Fee Structure | $100 Transaction Cost | $1,000 Transaction Cost |
-|----------|---------------|----------------------|------------------------|
-| **ACTP** | 1% flat | $1.00 | $10.00 |
-| Stripe | 2.9% + $0.30 | $3.20 | $29.30 |
-| PayPal | 3.49% + $0.49 | $3.98 | $35.39 |
-| Coinbase Commerce | 1% | $1.00 | $10.00 |
-| Wire Transfer | $25 flat | $25.00 | $25.00 |
-
-**Takeaway**: ACTP is cheapest for transactions >$25, competitive with Coinbase.
+The minimum forces attackers to commit real capital, not generate noise.
 
 ## Fee Calculation in Code
 
