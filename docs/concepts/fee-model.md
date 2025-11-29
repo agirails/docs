@@ -156,27 +156,11 @@ graph LR
     style E fill:#4f46e5
 ```
 
-**Fee recipient address** (Base Sepolia testnet):
-- Set at contract deployment: `feeRecipient` parameter
-- Currently: 3-of-5 multisig controlled by founders + advisors
-- Changeable by admin with 2-day timelock (prevents surprise extraction)
+**Fee recipient**: Configurable address set at deployment, changeable by admin with 2-day timelock.
 
-**Future (Month 12+)**: Fee recipient transitions to DAO treasury, community-governed.
+### Fee Usage
 
-### Fee Usage Breakdown (Projected)
-
-At scale ($10M monthly GMV):
-
-| Category | % of Fees | Monthly (at $10M GMV) | Purpose |
-|----------|-----------|----------------------|---------|
-| **Infrastructure** | 30% | $30,000 | Base L2 gas, RPC nodes, indexers |
-| **Development** | 40% | $40,000 | Engineering, product, design |
-| **Security** | 20% | $20,000 | Audits, bug bounties, insurance |
-| **Reserves** | 10% | $10,000 | Emergency fund, market volatility buffer |
-
-**Total revenue**: $100,000/month at 1% of $10M GMV
-
-**Burn rate**: $100,000/month (breakeven at $10M GMV)
+Platform fees fund protocol operations: infrastructure, development, security audits, and reserves.
 
 ## Fee Caps and Limits
 
@@ -405,49 +389,12 @@ const stripeFee = 3.20; // 2.9% + $0.30
 
 **Still cheaper than**: Stripe ($3.20), PayPal ($3.98), Square ($2.70)
 
-## Fee Economics and Sustainability
+## Fee Change Governance
 
-### Revenue Projections
-
-**Assumptions**:
-- Average transaction: $50
-- Platform fee: 1%
-- Fee per transaction: $0.50
-
-**Monthly GMV targets:**
-
-| Month | Transactions/mo | GMV | Revenue (1%) | Expenses | Net |
-|-------|----------------|-----|--------------|----------|-----|
-| **6** | 1,000 | $50K | $500 | $5K | -$4.5K |
-| **12** | 10,000 | $500K | $5K | $10K | -$5K |
-| **18** | 100,000 | $5M | $50K | $30K | +$20K |
-| **24** | 500,000 | $25M | $250K | $60K | +$190K |
-
-**Breakeven**: ~$3M monthly GMV (~60,000 transactions at $50 avg)
-
-**Profitability**: Achieved at Month 18-24 (projected)
-
-### Fee Model Evolution
-
-**Current (Month 0-12)**: 1% flat with $0.05 minimum
-- Simple, predictable
-- Competitive with Coinbase Commerce
-- Sustainable for early stage
-
-**Future considerations (Month 12+)** (NO COMMITMENT):
-
-| Potential Change | Rationale | Impact |
-|------------------|-----------|--------|
-| **Volume discounts** | Reward high-volume agents | Lower revenue, higher adoption |
-| **Dynamic minimums** | Adjust for gas price volatility | Protect against spam in congestion |
-| **Service tiers** | Premium features (priority support) | New revenue streams |
-| **Subscription model** | Fixed monthly fee for unlimited txs | Predictable for agents, risky for platform |
-
-**Commitment**: Any fee changes require:
-1. Community governance vote (after DAO launch)
-2. 30-day public notice
-3. 2-day on-chain timelock
-4. Existing transactions grandfathered (locked fees)
+Any fee changes require:
+1. 30-day public notice
+2. 2-day on-chain timelock (enforced by smart contract)
+3. Existing transactions grandfathered (use locked fee from creation)
 
 ## Best Practices
 
@@ -465,7 +412,7 @@ const stripeFee = 3.20; // 2.9% + $0.30
 
 ### For Both Parties
 
-1. **Use fee calculator** - Don't guess, compute: `max(amount * 0.01, 0.05)`
+1. **Use fee calculator** - Don't guess, compute: `fee = amount × 0.01` (and ensure `amount >= $0.05`)
 2. **Understand locked fees** - Fee at transaction creation is final
 3. **Plan for milestones** - Fee charged on each release, not just final
 
