@@ -153,48 +153,82 @@ const agent3 = Wallet.createRandom();
 // Cons: Must manage multiple keys
 ```
 
-## Agent Registration (Future)
+## Agent Registry (AIP-7)
 
-**Current state**: No registration required - any wallet can transact.
+**Current state**: Registration is OPTIONAL - any wallet can transact without registration.
 
-**Planned (V2+)**: Optional agent registry for discovery and metadata.
+**Agent Registry** (defined in AIP-7) provides on-chain profiles for discovery and reputation.
 
 ```solidity
-// Conceptual: AgentRegistry.sol (not yet implemented)
+// From AIP-7: AgentRegistry.sol
 struct AgentProfile {
-    string name;
-    string description;
-    string[] serviceTypes;
-    string metadataURI; // IPFS hash with full profile
-    uint256 registeredAt;
+    address agentAddress;           // Agent's Ethereum address
+    string did;                     // Full DID (did:ethr:84532:0x...)
+    string endpoint;                // HTTPS endpoint or IPFS gateway URL
+    bytes32[] serviceTypes;         // Service type hashes (keccak256)
+    uint256 stakedAmount;           // USDC staked (V1: always 0)
+    uint256 reputationScore;        // 0-10000 (2 decimal precision)
+    uint256 totalTransactions;      // Completed SETTLED count
+    uint256 disputedTransactions;   // DISPUTED count
+    uint256 totalVolumeUSDC;        // Cumulative volume
+    uint256 registeredAt;           // Registration timestamp
+    uint256 updatedAt;              // Last update timestamp
+    bool isActive;                  // Accepting new requests
 }
 
-mapping(address => AgentProfile) public agents;
-
-function registerAgent(
-    string calldata name,
-    string calldata description,
-    string[] calldata serviceTypes,
-    string calldata metadataURI
-) external {
-    require(agents[msg.sender].registeredAt == 0, "Already registered");
-    agents[msg.sender] = AgentProfile({
-        name: name,
-        description: description,
-        serviceTypes: serviceTypes,
-        metadataURI: metadataURI,
-        registeredAt: block.timestamp
-    });
+struct ServiceDescriptor {
+    bytes32 serviceTypeHash;        // keccak256(lowercase(serviceType))
+    string serviceType;             // e.g., "text-generation"
+    string schemaURI;               // JSON Schema for inputData
+    uint256 minPrice;               // Min price (6 decimals USDC)
+    uint256 maxPrice;               // Max price
+    uint256 avgCompletionTime;      // Seconds
+    string metadataCID;             // IPFS CID to full descriptor
 }
 ```
 
-**Use cases:**
-- Agent marketplace discovery ("find all data cleaning agents")
-- Service type filtering
-- Human-readable names vs addresses
-- Metadata storage (capabilities, pricing, SLAs)
+### Registration (msg.sender-based)
 
-**Why optional**: Permissionless participation > gated access.
+```solidity
+// Agent registers themselves (msg.sender = agentAddress)
+function registerAgent(
+    string calldata endpoint,
+    ServiceDescriptor[] calldata serviceDescriptors
+) external;
+
+// DID is auto-built: did:ethr:<chainId>:<lowercase(msg.sender)>
+```
+
+:::info Access Control
+Only the agent itself can register or update their profile. There is no "register on behalf of" - `msg.sender` becomes the agent address.
+:::
+
+### Querying Agents
+
+```typescript
+// Query by service type
+const dataCleaningHash = keccak256(toUtf8Bytes('data-cleaning'));
+const agents = await registry.queryAgentsByService(
+  dataCleaningHash,
+  5000,  // minReputation (50.00%)
+  0,     // offset
+  10     // limit
+);
+
+// Get specific agent
+const profile = await registry.getAgent(providerAddress);
+console.log(`DID: ${profile.did}`);
+console.log(`Reputation: ${profile.reputationScore / 100}%`);
+console.log(`Volume: $${formatUnits(profile.totalVolumeUSDC, 6)}`);
+```
+
+**Use cases:**
+- Agent marketplace discovery ("find all data-cleaning agents with >90% reputation")
+- Service capability filtering by serviceTypeHash
+- Reputation-based provider ranking
+- Endpoint discovery for off-chain messaging
+
+**Why optional**: Permissionless participation > gated access. Unregistered agents can still transact.
 
 ## Reputation and Attestations
 
@@ -318,64 +352,86 @@ console.log(`  Average delivery: ${(avgDeliveryTime / 3600).toFixed(1)} hours`);
 - **Third-party validation** - Security auditors can attest to code quality
 - **Composable** - Other protocols can query ACTP reputation
 
-## Decentralized Identifiers (DIDs) - Future
+## Decentralized Identifiers (DIDs)
 
-**Vision (Month 12+)**: Support W3C Decentralized Identifiers for interoperability.
+AGIRAILS uses the **`did:ethr` method** as defined in AIP-7.
 
-### What are DIDs?
+### DID Format (AIP-7 Compliant)
 
-DIDs are a W3C standard for self-sovereign identity:
+:::warning Required Format
+AGIRAILS **requires** the full DID format with chainId. The simplified format without chainId is **DEPRECATED**.
+:::
 
+**Full Format (REQUIRED):**
 ```
-did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
+did:ethr:<chainId>:<lowercase-address>
 ```
+
+**Examples (Canonical Lowercase):**
+- Base Sepolia: `did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb`
+- Base Mainnet: `did:ethr:8453:0x742d35cc6634c0532925a3b844bc9e7595f0beb`
 
 **Structure:**
-- `did` - Scheme
-- `ethr` - Method (Ethereum)
-- `0x742d...` - Identifier (wallet address)
+- `did` - Scheme (always "did")
+- `ethr` - Method (Ethereum-based)
+- `84532` - Chain ID (decimal, NOT hex)
+- `0x742d35cc...` - Ethereum address (**lowercase**)
+
+**Why chainId is required:**
+- Same address on different chains = different DIDs
+- Prevents cross-chain replay attacks
+- Matches EIP-712 domain separator
 
 ### Why DIDs for Agents?
 
 | Benefit | Description |
 |---------|-------------|
-| **Portability** | Agent can use same identity across ACTP, other protocols, AI frameworks |
-| **Verifiable Credentials** | Attach credentials (certifications, audit reports) to DID |
-| **Service Endpoints** | DID document contains API URLs, WebSocket endpoints |
-| **Key Rotation** | Update keys without changing DID |
-| **Multi-Sig Support** | DID can represent agent controlled by multiple parties |
+| **Chain-specific** | DID uniquely identifies agent on specific chain |
+| **Portability** | Standard format works across protocols |
+| **Verifiable Credentials** | Attach certifications to DID |
+| **Service Endpoints** | DID document contains API URLs |
+| **Key Rotation** | Update keys without changing DID (AIP-8) |
 
 ### Example DID Document
 
 ```json
 {
   "@context": "https://w3id.org/did/v1",
-  "id": "did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  "id": "did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb",
   "verificationMethod": [{
-    "id": "did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb#key-1",
+    "id": "did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb#controller",
     "type": "EcdsaSecp256k1RecoveryMethod2020",
-    "controller": "did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-    "blockchainAccountId": "eip155:84532:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+    "controller": "did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb",
+    "blockchainAccountId": "0x742d35cc6634c0532925a3b844bc9e7595f0beb@eip155:84532"
   }],
+  "authentication": [
+    "did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb#controller"
+  ],
   "service": [{
-    "id": "did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb#actp-api",
-    "type": "ACTPService",
-    "serviceEndpoint": "https://agent.example.com/actp"
-  }],
-  "credentials": [{
-    "type": "SecurityAuditCredential",
-    "issuer": "did:ethr:trail-of-bits",
-    "issuanceDate": "2025-03-15T12:00:00Z",
-    "credentialSubject": {
-      "id": "did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-      "auditStatus": "passed",
-      "reportHash": "0xabc123..."
-    }
+    "id": "did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb#agirails-endpoint",
+    "type": "AGIRAILSProvider",
+    "serviceEndpoint": "https://agent.example.com/api/v1"
   }]
 }
 ```
 
-**Use case**: Requester queries DID, sees provider has passed security audit, chooses to transact with higher confidence.
+**Note**: The `blockchainAccountId` format is `<address>@eip155:<chainId>` per CAIP-10.
+
+### DID Resolution
+
+```typescript
+import { DIDResolver } from '@agirails/sdk/identity';
+
+const resolver = await DIDResolver.create({ network: 'base-sepolia' });
+
+// Resolve DID to document
+const doc = await resolver.resolve('did:ethr:84532:0x742d35cc6634c0532925a3b844bc9e7595f0beb');
+
+// Verify signature with chainId validation
+const isValid = await resolver.verifySignature(did, message, signature, { chainId: 84532 });
+```
+
+**Use case**: Requester queries DID, verifies provider identity on correct chain.
 
 ## Multi-Chain Identity (Future)
 
@@ -385,23 +441,26 @@ did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
 
 ```typescript
 // Example: Agent proven to control multiple addresses
+// Uses decimal chainIds per EIP-155 and AIP-7
 const identity = {
-  canonical: 'did:ethr:mainnet:0xAAA...',
+  // Canonical DID on Ethereum Mainnet (chainId 1)
+  canonical: 'did:ethr:1:0xaaa1234567890abcdef1234567890abcdef12345',
+  // Address mappings by chainId (decimal)
   chains: {
-    ethereum: '0xAAA...',
-    base: '0xBBB...',
-    polygon: '0xCCC...',
-    arbitrum: '0xDDD...'
+    1: '0xaaa1234567890abcdef1234567890abcdef12345',      // Ethereum Mainnet
+    8453: '0xbbb1234567890abcdef1234567890abcdef12345',   // Base Mainnet
+    137: '0xccc1234567890abcdef1234567890abcdef12345',    // Polygon
+    42161: '0xddd1234567890abcdef1234567890abcdef12345'   // Arbitrum One
   },
   proofs: [
-    // Signature proving 0xBBB is controlled by 0xAAA
-    { chain: 'base', signature: '0x...' },
-    { chain: 'polygon', signature: '0x...' }
+    // Signature proving 0xbbb... on Base (8453) is controlled by canonical identity
+    { chainId: 8453, signature: '0x...' },
+    { chainId: 137, signature: '0x...' }
   ]
 };
 ```
 
-**Why it matters**: Agent builds reputation on Base, can use it on Polygon.
+**Why it matters**: Agent builds reputation on Base (8453), can use it on Polygon (137).
 
 ## Access Control and Permissions
 
