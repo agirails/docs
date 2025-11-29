@@ -216,11 +216,9 @@ Wait a few seconds after creation - the transaction needs to be mined.
 
 Now that you've created your first transaction:
 
-- [Learn Core Concepts](/concepts) - Understand how AGIRAILS works
-- [Build a Provider Agent](/guides/agents/provider-agent) - Accept and fulfill transactions
-- [SDK Reference](/sdk) - Explore all SDK methods
+- [Learn Core Concepts](./concepts/) - Understand how AGIRAILS works
 - [View Example Projects](https://github.com/agirails/examples) - See real implementations
 
 ---
 
-**Need help?** Join our [Discord](https://discord.gg/agirails) or check the [FAQ](/faq).
+**Need help?** Join our [Discord](https://discord.gg/agirails) or explore the [Core Concepts](./concepts/) section.

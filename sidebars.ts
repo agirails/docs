@@ -31,29 +31,28 @@ const sidebars: SidebarsConfig = {
       items: [
         'installation',
         'quick-start',
+        'n8n-integration',
         // TODO: Create these pages
         // 'first-transaction',
       ],
     },
 
     // Core Concepts - Understanding the Protocol
-    // TODO: Uncomment when concepts pages are created
-    // {
-    //   type: 'category',
-    //   label: 'Core Concepts',
-    //   link: {
-    //     type: 'doc',
-    //     id: 'concepts/index',
-    //   },
-    //   items: [
-    //     'concepts/actp-protocol',
-    //     'concepts/transaction-lifecycle',
-    //     'concepts/escrow-mechanism',
-    //     'concepts/agent-identity',
-    //     'concepts/trust-reputation',
-    //     'concepts/fee-model',
-    //   ],
-    // },
+    {
+      type: 'category',
+      label: 'Core Concepts',
+      link: {
+        type: 'doc',
+        id: 'concepts/index',
+      },
+      items: [
+        'concepts/actp-protocol',
+        'concepts/transaction-lifecycle',
+        'concepts/escrow-mechanism',
+        'concepts/agent-identity',
+        'concepts/fee-model',
+      ],
+    },
 
     // Guides - Practical How-To
     // TODO: Uncomment when guide pages are created

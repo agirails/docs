@@ -20,12 +20,18 @@ Before installing, ensure you have:
 ## Install the SDK
 
 :::info Beta Release
-The AGIRAILS SDK is currently in beta (v2.0.1-beta). The package is not yet published to npm. Choose one of the installation methods below.
+The AGIRAILS SDK is currently in beta (v2.0.0-beta). APIs may change before the stable 1.0 release.
 :::
 
-### Option 1: From Source (Current)
+Install via your preferred package manager:
 
-Clone the repository and build locally:
+```bash npm2yarn
+npm install @agirails/sdk
+```
+
+### Alternative: From Source
+
+For development or to use the latest unreleased features:
 
 ```bash
 # Clone the repository
@@ -46,14 +52,6 @@ Then in your project:
 
 ```bash
 npm link @agirails/sdk
-```
-
-### Option 2: From npm (Coming Soon)
-
-Once published, install via your preferred package manager:
-
-```bash npm2yarn
-npm install @agirails/sdk
 ```
 
 ## TypeScript Configuration
@@ -299,6 +297,5 @@ Expected output:
 
 Now that you have the SDK installed, continue with:
 
-- [Quick Start](/quick-start) - Create your first transaction in 5 minutes
-- [First Transaction](/first-transaction) - Deep dive into transaction creation
-- [SDK Reference](/sdk/actp-client) - Explore the full API
+- [Quick Start](./quick-start) - Create your first transaction in 5 minutes
+- [Core Concepts](./concepts/) - Understand the ACTP protocol
