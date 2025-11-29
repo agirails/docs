@@ -52,9 +52,9 @@ After installation, you should see the **ACTP** node available in the n8n node p
 
 | Field | Description | Example |
 |-------|-------------|---------|
+| **Network** | Target network (currently testnet only) | `base-sepolia` |
 | **Private Key** | Your wallet's private key (with 0x prefix) | `0x1234...` |
-| **RPC URL** | Base Sepolia or Mainnet RPC | `https://sepolia.base.org` |
-| **Network** | Target network | `base-sepolia` or `base` |
+| **RPC URL** | Optional custom RPC endpoint (leave empty for default) | `https://sepolia.base.org` |
 
 :::danger Security
 Never expose your private key. Use n8n's credential encryption and environment variables in production.
@@ -69,10 +69,10 @@ The ACTP node provides these operations:
 | **Create Transaction** | Initialize a new escrow transaction | Requester |
 | **Link Escrow** | Lock funds in escrow (auto-calculates amount + 1% fee) | Requester |
 | **Get Transaction** | Retrieve transaction details and current state | Any |
-| **Transition State** | Move transaction to next state (QUOTED, IN_PROGRESS, DELIVERED) | Provider |
+| **Transition State** | Move to QUOTED, IN_PROGRESS, DELIVERED (provider) or SETTLED (requester) | Provider/Requester |
 | **Release With Verification** | Verify attestation and release escrow atomically (recommended) | Requester |
 | **Verify Attestation** | Verify delivery attestation before releasing | Requester |
-| **Release Escrow** | Release funds to provider (legacy, no verification) | Requester |
+| **Release Escrow (Legacy)** | Release funds without verification (not recommended) | Requester |
 | **Raise Dispute** | Raise a dispute on delivered transaction | Requester |
 | **Cancel Transaction** | Cancel transaction before delivery | Requester |
 
@@ -96,12 +96,13 @@ Locks funds in the escrow vault. If amount is not specified, automatically calcu
 
 ### Transition State
 
-Provider moves the transaction through states.
+Moves the transaction through states. Typically used by provider, but SETTLED can be triggered by requester.
 
 **Target States:**
 - **Quoted**: Provider submitted price quote (optional)
 - **In Progress**: Provider actively working (optional)
 - **Delivered**: Provider completed work
+- **Settled**: Release escrow to provider and finalize (requester)
 
 ### Release With Verification
 
@@ -109,7 +110,46 @@ Atomically verifies the EAS attestation and releases escrow. This is the **recom
 
 **Parameters:**
 - **Transaction ID**: The delivered transaction
-- **Attestation UID**: EAS attestation from provider's delivery
+- **Attestation UID**: EAS attestation UID (bytes32) from provider's delivery
+
+### Verify Attestation
+
+Verifies a delivery attestation without releasing escrow. Use this to check attestation validity before deciding to release.
+
+**Parameters:**
+- **Transaction ID**: The transaction to verify
+- **Attestation UID**: EAS attestation UID (bytes32) to verify
+
+**Returns:** `verified: true/false`
+
+### Release Escrow (Legacy)
+
+:::warning Not Recommended
+This operation releases escrow **without** verifying the delivery attestation. Use "Release With Verification" instead for secure payments.
+:::
+
+**Parameters:**
+- **Transaction ID**: The transaction to release
+
+### Raise Dispute
+
+Raises a dispute on a delivered transaction. Only available when transaction is in DELIVERED state.
+
+**Parameters:**
+- **Transaction ID**: The delivered transaction
+- **Dispute Reason**: Text explanation of why you're disputing (required)
+- **Evidence**: Optional supporting evidence (IPFS hash, URLs, etc.)
+
+### Cancel Transaction
+
+Cancels a transaction before delivery. Uses `transitionState` internally to move to CANCELLED state.
+
+**Parameters:**
+- **Transaction ID**: The transaction to cancel
+
+:::info
+Cancellation is only possible before the transaction reaches DELIVERED state.
+:::
 
 ## Example Workflows
 
