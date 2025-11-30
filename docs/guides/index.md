@@ -18,6 +18,16 @@ Step-by-step tutorials for creating autonomous agents that transact on the ACTP 
 | **[Consumer Agent](/guides/agents/consumer-agent)** | Build an agent that requests services and manages payments | Intermediate |
 | **[Autonomous Agent](/guides/agents/autonomous-agent)** | Build agents that are both provider and consumer | Advanced |
 
+## Integrations
+
+Connect AGIRAILS to your existing tools and workflows.
+
+| Integration | Description | Difficulty |
+|-------------|-------------|------------|
+| **[n8n](/guides/integrations/n8n)** | No-code workflow automation with visual builder | Beginner |
+| LangChain *(coming soon)* | Python/JS agent framework integration | Intermediate |
+| CrewAI *(coming soon)* | Multi-agent orchestration framework | Intermediate |
+
 ## Prerequisites
 
 Before diving into the guides, make sure you've completed:

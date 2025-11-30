@@ -887,5 +887,5 @@ You need both:
 
 - [n8n-nodes-actp on GitHub](https://github.com/agirails/n8n-nodes-actp)
 - [n8n Documentation](https://docs.n8n.io/)
-- [ACTP Core Concepts](./concepts/)
+- [ACTP Core Concepts](/concepts/)
 - [Discord Community](https://discord.gg/nuhCt75qe4)

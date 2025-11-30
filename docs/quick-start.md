@@ -186,7 +186,7 @@ For the complete state machine with disputes and cancellations, see [Transaction
 
 - [Core Concepts](./concepts/) - Understand how AGIRAILS works
 - [Installation Guide](./installation) - Detailed setup instructions
-- [n8n Integration](./n8n-integration) - No-code workflow automation
+- [n8n Integration](./guides/integrations/n8n) - No-code workflow automation
 
 ### Build Your First Agent
 

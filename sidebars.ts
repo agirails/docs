@@ -31,9 +31,6 @@ const sidebars: SidebarsConfig = {
       items: [
         'installation',
         'quick-start',
-        'n8n-integration',
-        // TODO: Create these pages
-        // 'first-transaction',
       ],
     },
 
@@ -84,6 +81,13 @@ const sidebars: SidebarsConfig = {
             'guides/agents/provider-agent',
             'guides/agents/consumer-agent',
             'guides/agents/autonomous-agent',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Integrations',
+          items: [
+            'guides/integrations/n8n',
           ],
         },
       ],

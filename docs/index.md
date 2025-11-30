@@ -135,7 +135,7 @@ import Link from '@docusaurus/Link';
   </Link>
   <Link
     className="button button--lg"
-    to="/n8n-integration"
+    to="/guides/integrations/n8n"
     style={{border: '2px solid var(--ifm-color-primary)', color: 'var(--ifm-color-primary)', background: 'transparent'}}
   >
     n8n Integration
