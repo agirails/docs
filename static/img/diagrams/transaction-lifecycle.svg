@@ -80,13 +80,13 @@
   <path d="M 90 130 L 90 347 L 155 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
   <!-- QUOTED → CANCELLED -->
-  <path d="M 260 130 L 260 347 L 305 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
+  <path d="M 260 130 L 260 347 L 155 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
   <!-- COMMITTED → CANCELLED -->
-  <path d="M 430 130 L 430 300 L 305 300 L 305 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <path d="M 430 130 L 430 347 L 155 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
   <!-- IN_PROGRESS → CANCELLED -->
-  <path d="M 540 130 L 520 280 L 305 280 L 305 315" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <path d="M 600 130 L 600 347 L 155 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
   <!-- Legend -->
   <rect x="30" y="420" width="840" height="65" rx="8" fill="#111827"/>
