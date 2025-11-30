@@ -61,6 +61,13 @@ const sidebars: SidebarsConfig = {
       label: 'SDK Reference',
     },
 
+    // Smart Contract Reference - Complete Contract Documentation
+    {
+      type: 'doc',
+      id: 'contract-reference',
+      label: 'Contract Reference',
+    },
+
     // Guides - Practical How-To
     // TODO: Uncomment when guide pages are created
     // {
