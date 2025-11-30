@@ -119,6 +119,10 @@ const config: Config = {
         },
         // Right side
         {
+          type: 'search',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/agirails',
           label: 'GitHub',
           position: 'right',
