@@ -3,30 +3,30 @@
   <rect width="900" height="120" fill="#0A0A0A"/>
 
   <!-- INITIATED -->
-  <rect x="50" y="35" width="140" height="50" rx="8" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
-  <text x="120" y="65" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500">INITIATED</text>
+  <rect x="40" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
+  <text x="115" y="63" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500">INITIATED</text>
 
   <!-- Arrow 1 -->
-  <line x1="190" y1="60" x2="280" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="235" y="48" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Provider quotes</text>
+  <line x1="190" y1="57" x2="270" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="230" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Provider quotes</text>
 
   <!-- QUOTED -->
-  <rect x="290" y="35" width="140" height="50" rx="8" fill="#1F2937" stroke="#F59E0B" stroke-width="2"/>
-  <text x="360" y="65" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">QUOTED</text>
+  <rect x="280" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#F59E0B" stroke-width="2"/>
+  <text x="355" y="63" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">QUOTED</text>
 
   <!-- Arrow 2 -->
-  <line x1="430" y1="60" x2="520" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="475" y="48" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Requester funds</text>
+  <line x1="430" y1="57" x2="510" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="470" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Requester funds</text>
 
   <!-- COMMITTED -->
-  <rect x="530" y="35" width="140" height="50" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
-  <text x="600" y="65" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500">COMMITTED</text>
+  <rect x="520" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
+  <text x="595" y="63" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500">COMMITTED</text>
 
   <!-- Arrow 3 -->
-  <line x1="670" y1="60" x2="760" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="670" y1="57" x2="750" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
 
   <!-- Continuation dots -->
-  <text x="800" y="65" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="24">...</text>
+  <text x="800" y="63" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="24">...</text>
 
   <!-- Subtitle -->
   <text x="450" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">
