@@ -126,10 +126,10 @@ import Link from '@docusaurus/Link';
   <Link className="button button--primary button--lg" to="/quick-start">
     Quick Start →
   </Link>
-  <Link className="button button--outline button--primary button--lg" to="/concepts">
+  <Link className="button button--secondary button--lg" to="/concepts">
     Learn Concepts
   </Link>
-  <Link className="button button--outline button--secondary button--lg" to="/n8n-integration">
+  <Link className="button button--secondary button--lg" to="/n8n-integration">
     n8n Integration
   </Link>
 </div>
