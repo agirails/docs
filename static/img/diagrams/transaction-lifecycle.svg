@@ -35,9 +35,9 @@
 
   <!-- State nodes - Row 2 (Terminal states) -->
   <!-- SETTLED -->
-  <rect x="630" y="220" width="140" height="55" rx="8" fill="#059669" stroke="#10B981" stroke-width="2"/>
-  <text x="700" y="252" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">SETTLED</text>
-  <text x="690" y="290" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Payment Released</text>
+  <rect x="615" y="220" width="140" height="55" rx="8" fill="#059669" stroke="#10B981" stroke-width="2"/>
+  <text x="685" y="252" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">SETTLED</text>
+  <text x="675" y="290" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Payment Released</text>
 
   <!-- DISPUTED -->
   <rect x="710" y="320" width="120" height="50" rx="8" fill="#1F2937" stroke="#EF4444" stroke-width="2"/>
@@ -64,16 +64,16 @@
   <line x1="660" y1="105" x2="705" y2="105" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
 
   <!-- DELIVERED → SETTLED -->
-  <path d="M 770 130 L 770 170 L 730 170 L 730 215" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="720" y="185" text-anchor="end" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">releaseEscrow()</text>
+  <path d="M 770 130 L 770 170 L 715 170 L 715 215" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="705" y="185" text-anchor="end" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">releaseEscrow()</text>
 
   <!-- DELIVERED → DISPUTED -->
   <line x1="770" y1="130" x2="770" y2="315" stroke="#EF4444" stroke-width="2" marker-end="url(#arrowRed)"/>
   <text x="785" y="225" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9">dispute()</text>
 
   <!-- DISPUTED → SETTLED -->
-  <path d="M 710 345 L 700 345 L 700 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="680" y="320" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
+  <path d="M 710 345 L 685 345 L 685 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="665" y="320" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
 
   <!-- Cancel arrows -->
   <!-- INITIATED → CANCELLED -->
