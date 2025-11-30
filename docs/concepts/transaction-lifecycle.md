@@ -8,7 +8,48 @@ description: Understanding the 8-state transaction lifecycle in ACTP
 
 Every ACTP transaction flows through an **8-state lifecycle**, enforced by the `ACTPKernel` smart contract. This state machine ensures bilateral fairness - neither party can cheat or skip steps.
 
-## The 8 States
+:::info What You'll Learn
+By the end of this page, you'll understand:
+- **All 8 states** and what triggers each transition
+- **The happy path** from creation to settlement
+- **Alternative paths**: quotes, disputes, cancellations
+- **Who can do what** at each stage
+- **Timing rules** for deadlines and dispute windows
+
+**Reading time:** 20 minutes
+
+**Prerequisite:** [The ACTP Protocol](./actp-protocol) - basic protocol understanding
+:::
+
+---
+
+## Quick Reference
+
+### State Overview
+
+| State | Code | Description | Who Acts |
+|-------|------|-------------|----------|
+| **INITIATED** | `0` | Transaction created, awaiting escrow | Requester creates |
+| **QUOTED** | `1` | Provider submitted price quote *(optional)* | Provider |
+| **COMMITTED** | `2` | USDC locked in escrow, work can begin | Auto on escrow link |
+| **IN_PROGRESS** | `3` | Provider actively working | Provider |
+| **DELIVERED** | `4` | Work complete, dispute window active | Provider |
+| **SETTLED** | `5` | Payment released *(terminal)* | Requester or auto |
+| **DISPUTED** | `6` | Contested, awaiting mediation | Either party |
+| **CANCELLED** | `7` | Cancelled before completion *(terminal)* | Either party |
+
+### Path Cheat Sheet
+
+```
+Happy Path:     INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
+With Quote:     INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
+Dispute Path:   ... → DELIVERED → DISPUTED → SETTLED (with resolution)
+Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
+```
+
+---
+
+## The Complete State Machine
 
 ```mermaid
 stateDiagram-v2
@@ -18,10 +59,10 @@ stateDiagram-v2
     QUOTED --> COMMITTED: linkEscrow()
     COMMITTED --> IN_PROGRESS: transitionState(IN_PROGRESS)
     IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)
-    DELIVERED --> SETTLED: transitionState(SETTLED)
+    DELIVERED --> SETTLED: releaseEscrow()
     DELIVERED --> DISPUTED: transitionState(DISPUTED)
-    DISPUTED --> SETTLED: transitionState() [admin]
-    DISPUTED --> CANCELLED: transitionState() [admin]
+    DISPUTED --> SETTLED: resolveDispute() [admin]
+    DISPUTED --> CANCELLED: resolveDispute() [admin]
 
     INITIATED --> CANCELLED: transitionState(CANCELLED)
     QUOTED --> CANCELLED: transitionState(CANCELLED)
@@ -46,6 +87,11 @@ stateDiagram-v2
         Work can begin
     end note
 
+    note right of IN_PROGRESS
+        Provider signals active work
+        Required before DELIVERED
+    end note
+
     note right of DELIVERED
         Provider submits result + proof
         Dispute window starts
@@ -57,26 +103,14 @@ stateDiagram-v2
     end note
 ```
 
-### State Definitions
-
-| State | Code | Description | Who Controls |
-|-------|------|-------------|--------------|
-| **INITIATED** | `0` | Transaction created, awaiting escrow link | Requester creates |
-| **QUOTED** | `1` | Provider submitted price quote *(optional)* | Provider transitions |
-| **COMMITTED** | `2` | Escrow linked, provider committed to work | Requester links escrow (auto-transition) |
-| **IN_PROGRESS** | `3` | Provider actively working on service *(optional)* | Provider transitions |
-| **DELIVERED** | `4` | Provider delivered result + proof, dispute window active | Provider transitions |
-| **SETTLED** | `5` | Payment released to provider *(terminal)* | Requester or auto after dispute window |
-| **DISPUTED** | `6` | Delivery contested, requires mediation | Either party |
-| **CANCELLED** | `7` | Transaction cancelled before completion *(terminal)* | Either party (conditions apply) |
-
 :::info Optional vs Required States
-**QUOTED** is **optional** - transactions can skip directly from INITIATED → COMMITTED.
-
-**IN_PROGRESS** is **required** - you cannot go directly from COMMITTED → DELIVERED. The provider must signal they've started work before delivering.
+- **QUOTED** is **optional** - transactions can skip directly from INITIATED → COMMITTED
+- **IN_PROGRESS** is **required** - you cannot go directly from COMMITTED → DELIVERED
 :::
 
-## Happy Path Flow
+---
+
+## Happy Path: Step by Step
 
 The typical successful transaction follows this path:
 
@@ -84,15 +118,14 @@ The typical successful transaction follows this path:
 INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 ```
 
-Let's walk through each step with code examples:
+### Step 1: INITIATED - Create Transaction
 
-### 1. INITIATED - Create Transaction
-
-**Who**: Requester agent
-**What**: Creates transaction with provider, amount, deadline, dispute window
+**Who:** Requester agent
+**What:** Creates transaction with provider, amount, deadline, dispute window
 
 ```typescript
-import { ACTPClient, parseUnits } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
   network: 'base-sepolia',
@@ -103,75 +136,69 @@ const txId = await client.kernel.createTransaction({
   provider: '0xProviderWalletAddress',
   requester: await client.getAddress(),
   amount: parseUnits('100', 6), // $100 USDC (6 decimals)
-  deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours from now
-  disputeWindow: 2 * 86400, // 2 days (in seconds)
-  serviceHash: keccak256('data-analysis-service-v1')
+  deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+  disputeWindow: 7200 // 2 hours (in seconds)
 });
 
 console.log('Transaction created:', txId);
 // State: INITIATED
 ```
 
-**What happens on-chain:**
-- `transactionId` generated deterministically: `keccak256(requester, provider, amount, serviceHash, timestamp, blockNumber)`
+**On-chain effects:**
+- Transaction ID generated: `keccak256(requester, provider, amount, timestamp, blockNumber)`
 - Transaction stored in contract storage
 - `TransactionCreated` event emitted
 
-**Invariants enforced:**
-- Amount must be at least MIN_TRANSACTION_AMOUNT ($0.05 USDC)
-- Amount must be at most MAX_TRANSACTION_AMOUNT (1B USDC)
-- Deadline must be in future
-- Deadline must be within 365 days
-- Dispute window must be between 1 hour and 30 days
-- Requester and provider must be different addresses
+**Validation rules:**
 
-### 2. COMMITTED - Link Escrow
+| Rule | Constraint |
+|------|------------|
+| Minimum amount | $0.05 USDC |
+| Maximum amount | 1B USDC |
+| Deadline | Must be future, max 365 days |
+| Dispute window | 1 hour to 30 days |
+| Addresses | Requester ≠ Provider |
 
-**Who**: Requester agent
-**What**: Links escrow vault and deposits USDC
+---
+
+### Step 2: COMMITTED - Link Escrow
+
+**Who:** Requester agent
+**What:** Links escrow vault and deposits USDC (auto-transitions state)
 
 ```typescript
-// First, approve USDC spending
+// Option A: Use convenience method (handles approval + linking)
+const escrowId = await client.fundTransaction(txId);
+console.log('Funded with escrow:', escrowId);
+// State: COMMITTED (automatic transition)
+
+// Option B: Manual flow
 const usdc = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, client.signer);
 await usdc.approve(ESCROW_VAULT_ADDRESS, parseUnits('100', 6));
-
-// Then link escrow (this auto-transitions to COMMITTED)
-const escrowId = keccak256(txId); // Deterministic escrow ID
-await client.kernel.linkEscrow(
-  txId,
-  ESCROW_VAULT_ADDRESS,
-  escrowId
-);
-
-console.log('Escrow linked, state is now COMMITTED');
-// State: COMMITTED (automatic transition)
+await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+// State: COMMITTED
 ```
 
-**What happens on-chain:**
+**On-chain effects:**
 1. `linkEscrow()` calls `EscrowVault.createEscrow()`
 2. Vault pulls USDC from requester wallet
-3. Funds locked in vault under `escrowId`
-4. Transaction state auto-transitions: `INITIATED → COMMITTED` or `QUOTED → COMMITTED`
-5. `EscrowLinked` and `StateTransitioned` events emitted
+3. Funds locked under unique `escrowId`
+4. State auto-transitions: INITIATED → COMMITTED
+5. `EscrowLinked` + `StateTransitioned` events emitted
 
-**Critical detail**: `linkEscrow()` is the **only function that auto-transitions state**. This is by design - linking escrow is the point of no return for the requester.
+:::tip Auto-Transition
+`linkEscrow()` is the **only function that auto-transitions state**. This is by design - linking escrow is the point of no return for the requester.
+:::
 
-**Invariants enforced:**
-- Escrow vault must be approved by admin
-- Requester must have sufficient USDC balance
-- Requester must have approved vault to spend USDC
-- Transaction must be in INITIATED or QUOTED state
-- Transaction deadline must not have passed
+---
 
-### 3. IN_PROGRESS - Provider Signals Work Started
+### Step 3: IN_PROGRESS - Work Starts
 
-**Who**: Provider agent
-**What**: Signals that work has begun
+**Who:** Provider agent
+**What:** Signals that work has begun
 
 ```typescript
-// Provider starts work and signals this on-chain
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
-
 console.log('Work started');
 // State: IN_PROGRESS
 ```
@@ -180,421 +207,420 @@ console.log('Work started');
 - Explicit acknowledgment from provider
 - Requester knows their job is being worked on
 - Enables milestone releases during work
+- Prevents instant delivery without acknowledgment
 
-### 4. DELIVERED - Provider Submits Work
+:::note For Fast Services
+Even for sub-second API calls, the provider must call `transitionState(IN_PROGRESS)` before `transitionState(DELIVERED)`. Both can happen in the same block, but both are required.
+:::
 
-**Who**: Provider agent
-**What**: Marks work as delivered, provides cryptographic proof
+---
+
+### Step 4: DELIVERED - Work Complete
+
+**Who:** Provider agent
+**What:** Marks work as delivered, provides cryptographic proof
 
 ```typescript
 // Provider computes proof of delivery
-const deliveryProof = keccak256(JSON.stringify({
-  result: analysisResults,
-  timestamp: Date.now(),
-  version: '1.0'
-}));
+const deliveryProof = '0x'; // Or keccak256 hash of delivery data
 
-await client.kernel.transitionState(
-  txId,
-  State.DELIVERED,
-  ethers.utils.defaultAbiCoder.encode(['uint256'], [disputeWindow])
-);
-
+await client.kernel.transitionState(txId, State.DELIVERED, deliveryProof);
 console.log('Work delivered, dispute window started');
 // State: DELIVERED
-// Dispute window: block.timestamp + 2 days
+// Dispute window: now + 2 hours
 ```
 
-**What happens on-chain:**
-- Transaction transitions to DELIVERED
-- Dispute window timestamp calculated: `block.timestamp + disputeWindow`
+**On-chain effects:**
+- State transitions to DELIVERED
+- Dispute window timestamp set: `block.timestamp + disputeWindow`
 - `StateTransitioned` event emitted
-- Attestation UID stored (if provided)
+- Delivery proof stored (if provided)
 
-**Invariants enforced:**
-- Only provider can transition to DELIVERED
-- Must be coming from IN_PROGRESS state (not COMMITTED)
-- Transaction deadline must not have passed
-- Dispute window must be at least 1 hour and at most 30 days
+---
 
-### 5. SETTLED - Funds Released
+### Step 5: SETTLED - Payment Released
 
-**Who**: Requester (instant accept) or automatic (after dispute window)
-**What**: Releases escrow to provider (99%) and platform fee recipient (1%)
+**Who:** Requester (immediate) or Provider (after dispute window)
+**What:** Releases escrow to provider (99%) and platform (1%)
 
 ```typescript
 // Option A: Requester accepts immediately
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
-// State transitions to SETTLED, then call releaseEscrow to transfer funds
 await client.kernel.releaseEscrow(txId);
-console.log('Funds released immediately');
+console.log('Funds released');
+// State: SETTLED
 
 // Option B: Provider waits for dispute window to expire
-// (After 2 days of no dispute from requester)
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
+// (After 2 hours with no dispute)
 await client.kernel.releaseEscrow(txId);
 console.log('Dispute window expired, funds released');
-
-// Optionally anchor attestation for reputation
-// Note: anchorAttestation() can only be called when transaction is SETTLED
-// Call this after releaseEscrow() or settlement
-await client.kernel.anchorAttestation(txId, attestationUID);
-
-// State: SETTLED (terminal)
+// State: SETTLED
 ```
 
-**What happens on-chain:**
-1. `transitionState(SETTLED)` transitions state to SETTLED
-2. `releaseEscrow(txId)` triggers actual fund transfer (separate call)
-3. Fee calculated: `fee = (amount * platformFeeBps) / 10000`
-4. Vault transfers:
-   - `amount - fee` → provider wallet
-   - `fee` → platform fee recipient
-5. `EscrowPayout` and `PlatformFeeAccrued` events emitted
+**Fund distribution for $100 transaction:**
 
-:::note Two-Step Settlement
-Settlement requires two calls: `transitionState(SETTLED)` to update the state, then `releaseEscrow(txId)` to transfer funds. This separation ensures atomic state change before fund movement.
-:::
+| Recipient | Calculation | Amount |
+|-----------|-------------|--------|
+| Provider | $100 × 99% | **$99.00** |
+| Platform | $100 × 1% | **$1.00** |
 
-**Example calculation** (for $100 transaction at 1% fee):
-```
-Amount: $100.00 USDC
-Fee: $100.00 * 1% = $1.00 USDC
-Provider receives: $100.00 - $1.00 = $99.00 USDC
-Platform receives: $1.00 USDC
-```
-
-**Invariants enforced:**
-- Requester can release anytime after DELIVERED
-- Provider can only release after `block.timestamp > disputeWindow`
-- Escrow balance must cover full amount + fee
-- Vault must be approved
+---
 
 ## Alternative Paths
 
-### Optional State: QUOTED
+### Path: Using Quotes (QUOTED State)
 
-Some transactions require explicit price negotiation:
+For variable pricing, use the QUOTED state:
+
+```mermaid
+graph LR
+    A[INITIATED] -->|"Provider submits quote"| B[QUOTED]
+    B -->|"Requester approves + funds"| C[COMMITTED]
+    C --> D[...]
+
+    style B fill:#f59e0b,stroke:#d97706,color:#fff
+```
 
 ```typescript
-// Step 1: Requester creates transaction (amount is estimated)
+// Step 1: Requester creates transaction (estimated amount)
 const txId = await client.kernel.createTransaction({
-  amount: parseUnits('100', 6), // Estimated amount
+  amount: parseUnits('100', 6), // Estimated
   // ... other params
 });
 // State: INITIATED
 
-// Step 2: Provider submits actual quote
-const quoteHash = keccak256(JSON.stringify({ price: 120, breakdown: {...} }));
-await client.kernel.transitionState(
-  txId,
-  State.QUOTED,
-  ethers.utils.defaultAbiCoder.encode(['bytes32'], [quoteHash])
-);
+// Step 2: Provider reviews and submits quote
+await client.kernel.transitionState(txId, State.QUOTED, '0x');
 // State: QUOTED
 
-// Step 3: Requester reviews quote and links escrow with updated amount
-await client.kernel.linkEscrow(txId, vaultAddress, escrowId);
+// Step 3: Requester reviews quote and funds
+await client.fundTransaction(txId);
 // State: COMMITTED
 ```
 
-**When to use QUOTED**:
+**When to use QUOTED:**
 - Variable pricing (compute time, data volume)
 - Complex services requiring scope definition
-- Multi-milestone projects with upfront estimation
+- Projects needing upfront cost estimation
 
-**When to skip QUOTED**:
-- Fixed pricing (API calls at $0.01 each)
+**When to skip QUOTED:**
+- Fixed pricing ($0.01 per API call)
 - Standard services with known costs
 - Time-sensitive transactions
 
-### Required State: IN_PROGRESS
+---
 
-The provider must transition through IN_PROGRESS before delivering:
-
-```typescript
-// After escrow is linked (state is COMMITTED)
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
-// State: IN_PROGRESS
-
-// Provider signals active work to requester
-// This is required before delivery
-
-// Later, deliver work
-await client.kernel.transitionState(txId, State.DELIVERED, proof);
-// State: DELIVERED
-```
-
-**Why IN_PROGRESS is required**:
-- Explicit signal that work has started
-- Prevents instant delivery before acknowledgment
-- Provides transparency for requester ("provider is working on it")
-- Enables milestone releases during work
-
-:::note For Fast Services
-Even for sub-minute tasks like API calls, the provider must call `transitionState(IN_PROGRESS)` before `transitionState(DELIVERED)`. This can happen in the same block but both transitions are required.
-:::
-
-### Dispute Path
+### Path: Disputes (DISPUTED State)
 
 If requester contests delivery:
 
-```typescript
-// Requester raises dispute (within dispute window)
-await client.kernel.transitionState(
-  txId,
-  State.DISPUTED,
-  ethers.utils.defaultAbiCoder.encode(['string'], ['Result incomplete'])
-);
-// State: DISPUTED
+```mermaid
+graph LR
+    A[DELIVERED] -->|"Within dispute window"| B[DISPUTED]
+    B -->|"Admin resolves"| C[SETTLED]
 
-// Off-chain mediation occurs (human mediator reviews evidence)
-
-// Mediator resolves dispute (admin/pauser only)
-const resolution = ethers.utils.defaultAbiCoder.encode(
-  ['uint256', 'uint256', 'address', 'uint256'],
-  [
-    parseUnits('30', 6), // Requester refund: $30
-    parseUnits('60', 6), // Provider payment: $60
-    mediatorAddress,     // Mediator address
-    parseUnits('10', 6)  // Mediator fee: $10
-  ]
-);
-
-await client.kernel.transitionState(txId, State.SETTLED, resolution);
-// State: SETTLED
-// Funds distributed: 30% requester, 60% provider, 10% mediator
+    style B fill:#ef4444,stroke:#dc2626,color:#fff
 ```
 
-**Dispute resolution rules:**
-- Either party can raise dispute (requester or provider)
-- Must be raised within dispute window (default: 2 days after DELIVERED)
-- Only admin/pauser can resolve (transition DISPUTED → SETTLED)
-- Resolution must distribute **all** funds (no leftovers)
-- Mediator fee capped at 10% of transaction amount
+```typescript
+// Requester raises dispute (within dispute window)
+await client.kernel.transitionState(txId, State.DISPUTED, '0x');
+// State: DISPUTED
+
+// Off-chain: Mediator reviews evidence
+
+// Admin resolves dispute
+await client.kernel.resolveDispute(
+  txId,
+  parseUnits('30', 6),  // Requester refund
+  parseUnits('70', 6)   // Provider payment
+);
+// State: SETTLED
+// Distribution: 30% requester, 70% provider
+```
+
+**Dispute rules:**
+
+| Rule | Details |
+|------|---------|
+| Who can dispute | Either party |
+| Timing | Within dispute window only |
+| Resolution | Admin/mediator only |
+| Distribution | Must allocate 100% of funds |
 
 :::warning Dispute Economics
-If requester loses dispute, they forfeit funds + platform fee (provider gets original amount + requester's fee as penalty). This discourages false disputes.
+False disputes are penalized. If requester loses, they forfeit their funds. This discourages frivolous disputes.
 :::
 
-### Cancellation Path
+---
+
+### Path: Cancellation (CANCELLED State)
 
 Transactions can be cancelled before delivery:
 
-```typescript
-// Before DELIVERED state, either party can cancel
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
-// State: CANCELLED (terminal)
+```mermaid
+graph LR
+    A[INITIATED] -->|"Cancel"| X[CANCELLED]
+    B[QUOTED] -->|"Cancel"| X
+    C[COMMITTED] -->|"Cancel after deadline"| X
+    D[IN_PROGRESS] -->|"Cancel after deadline"| X
+
+    style X fill:#6b7280,stroke:#4b5563,color:#fff
 ```
 
 **Cancellation rules by state:**
 
-| Current State | Who Can Cancel | Conditions | Refund |
-|---------------|----------------|------------|--------|
-| **INITIATED** | Requester only | Anytime | N/A (no escrow) |
-| **QUOTED** | Requester only | Anytime | N/A (no escrow) |
-| **COMMITTED** | Requester | After deadline passes | 100% - penalty (default 5%) |
-| **COMMITTED** | Provider | Anytime | 100% (voluntary refund) |
-| **IN_PROGRESS** | Requester | After deadline passes | 100% - penalty |
-| **IN_PROGRESS** | Provider | Anytime | 100% |
-| **DELIVERED** | ❌ Cannot cancel | Must dispute or settle | N/A |
-| **DISPUTED** | Admin/Pauser | Via dispute resolution | Per resolution decision |
-
-**Example cancellation scenarios:**
+| State | Who Can Cancel | Conditions | Refund |
+|-------|----------------|------------|--------|
+| INITIATED | Requester | Anytime | N/A (no escrow) |
+| QUOTED | Requester | Anytime | N/A (no escrow) |
+| COMMITTED | Requester | After deadline | 100% |
+| COMMITTED | Provider | Anytime | 100% |
+| IN_PROGRESS | Requester | After deadline | 100% |
+| IN_PROGRESS | Provider | Anytime | 100% |
+| DELIVERED | ❌ | Cannot cancel | Must dispute or settle |
 
 ```typescript
-// Scenario 1: Provider never accepts (requester cancels after deadline)
-// State: COMMITTED, deadline passed
+// Example: Provider cancels voluntarily
 await client.kernel.transitionState(txId, State.CANCELLED, '0x');
-// Requester receives: 95% refund (5% penalty to provider)
-
-// Scenario 2: Provider cancels voluntarily (before deadline)
-// State: COMMITTED or IN_PROGRESS
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
-// Requester receives: 100% refund (no penalty)
-
-// Scenario 3: Requester cancels before escrow linked
-// State: INITIATED or QUOTED
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
-// No refund needed (no escrow was created)
+// Requester receives 100% refund
 ```
 
-## State Transition Rules
+---
 
-### One-Way Progression
-
-**Critical invariant**: States can only move forward, never backwards.
-
-```solidity
-// In ACTPKernel.sol (simplified)
-function _isValidTransition(State fromState, State toState) internal pure returns (bool) {
-    // Examples of VALID transitions:
-    if (fromState == State.INITIATED && toState == State.COMMITTED) return true;  // via linkEscrow
-    if (fromState == State.COMMITTED && toState == State.IN_PROGRESS) return true;
-    if (fromState == State.IN_PROGRESS && toState == State.DELIVERED) return true;
-    if (fromState == State.DELIVERED && toState == State.SETTLED) return true;
-
-    // Examples of INVALID transitions (will revert):
-    if (fromState == State.COMMITTED && toState == State.DELIVERED) return false; // Must go through IN_PROGRESS
-    if (fromState == State.SETTLED && toState == State.DELIVERED) return false; // Can't go back
-
-    return false;
-}
-```
-
-**Why this matters**: Prevents replay attacks, ensures finality, maintains trust.
-
-### Authorization Matrix
+## Authorization Matrix
 
 Who can trigger which transitions:
 
-| Transition | Requester | Provider | Admin/Pauser | Conditions |
-|------------|-----------|----------|--------------|------------|
-| `INITIATED → QUOTED` | ❌ | ✅ | ❌ | Provider submits quote |
-| `INITIATED → COMMITTED` | ✅ | ❌ | ❌ | Requester links escrow (auto) |
-| `QUOTED → COMMITTED` | ✅ | ❌ | ❌ | Requester links escrow (auto) |
-| `COMMITTED → IN_PROGRESS` | ❌ | ✅ | ❌ | Provider signals start (required) |
-| `IN_PROGRESS → DELIVERED` | ❌ | ✅ | ❌ | Provider submits work |
-| `DELIVERED → SETTLED` | ✅ | ✅* | ❌ | *Provider only after dispute window |
-| `DELIVERED → DISPUTED` | ✅ | ✅ | ❌ | Within dispute window |
-| `DISPUTED → SETTLED` | ❌ | ❌ | ✅ | Admin/pauser resolves |
-| `* → CANCELLED` | Depends | Depends | ❌ | See cancellation rules above |
+| Transition | Requester | Provider | Admin |
+|------------|:---------:|:--------:|:-----:|
+| Create → INITIATED | ✅ | ❌ | ❌ |
+| INITIATED → QUOTED | ❌ | ✅ | ❌ |
+| INITIATED/QUOTED → COMMITTED | ✅* | ❌ | ❌ |
+| COMMITTED → IN_PROGRESS | ❌ | ✅ | ❌ |
+| IN_PROGRESS → DELIVERED | ❌ | ✅ | ❌ |
+| DELIVERED → SETTLED | ✅ | ✅** | ❌ |
+| DELIVERED → DISPUTED | ✅ | ✅ | ❌ |
+| DISPUTED → SETTLED | ❌ | ❌ | ✅ |
+| Any → CANCELLED | See table above | See table above | ❌ |
 
-:::warning Required Transition
-The `COMMITTED → IN_PROGRESS` transition is **required**. You cannot skip directly from COMMITTED to DELIVERED.
-:::
+*Via `linkEscrow()` (auto-transition)
+**Only after dispute window expires
 
-### Timing Constraints
+---
 
-Several transitions have time-based requirements:
+## Timing Constraints
 
-```typescript
-// Deadline enforcement (for forward progress)
-require(block.timestamp <= transaction.deadline, "Transaction expired");
-
-// Dispute window enforcement (for DISPUTED transition)
-require(block.timestamp <= transaction.disputeWindow, "Dispute window closed");
-
-// Auto-settle timing (for provider-initiated SETTLED)
-require(
-  block.timestamp > transaction.disputeWindow || msg.sender == requester,
-  "Requester decision pending"
-);
-```
-
-**Visual timeline:**
+### Visual Timeline
 
 ```
 Time →
-├─────────────┬─────────────┬─────────────┬─────────────┬─────────────┤
-0             24h           48h           72h           96h
-│             │             │             │             │
-Create        Link          Deliver       Dispute       Auto-settle
-(INITIATED)   (COMMITTED)   (DELIVERED)   window        (SETTLED)
-                                          ends
-                            ↑─ 2 days ──↑
+├──────────┬──────────┬──────────┬──────────┤
+0          24h        26h        28h
+│          │          │          │
+Create     Deadline   Deliver    Dispute    Auto-settle
+           expires    window     window
+                      starts     ends
+                      ↑── 2h ──↑
 ```
 
-## Milestone Releases (Advanced)
+### Key Timing Rules
+
+| Constraint | Rule |
+|------------|------|
+| **Deadline** | Cannot fund/work after deadline |
+| **Dispute window** | Disputes only allowed during window |
+| **Provider settlement** | Provider can settle only after window expires |
+| **Requester settlement** | Requester can settle anytime after delivery |
+
+```typescript
+// Code enforcement examples
+
+// Deadline check
+require(block.timestamp <= transaction.deadline, "Transaction expired");
+
+// Dispute window check
+require(block.timestamp <= transaction.deliveredAt + disputeWindow, "Window closed");
+
+// Provider settlement check
+require(
+  block.timestamp > transaction.deliveredAt + disputeWindow ||
+  msg.sender == requester,
+  "Window still active"
+);
+```
+
+---
+
+## Milestone Releases
 
 For long-running work, release escrow incrementally:
 
 ```typescript
-// Create transaction with full amount
+// 1. Create and fund full amount
 const txId = await client.kernel.createTransaction({
   amount: parseUnits('1000', 6), // $1,000 total
   // ...
 });
+await client.fundTransaction(txId);
+// Escrow: $1,000
 
-// Link escrow with full amount
-await client.kernel.linkEscrow(txId, vault, escrowId);
-// Escrow balance: $1,000
-
-// Provider marks in progress
+// 2. Provider starts work
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 
-// Requester releases milestone 1 (after reviewing progress)
+// 3. Release milestones as work progresses
 await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
-// Provider receives: $250 - $2.50 (1% fee) = $247.50
-// Escrow balance: $750
+// Provider receives: $247.50 ($250 - 1% fee)
+// Escrow remaining: $750
 
-// Milestone 2
 await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
-// Escrow balance: $500
+// Escrow remaining: $500
 
-// Final delivery
-await client.kernel.transitionState(txId, State.DELIVERED, proof);
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
-// Provider receives remaining: $500 - $5 = $495
+// 4. Final delivery and settlement
+await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+await client.kernel.releaseEscrow(txId);
+// Provider receives: $495 ($500 - 1% fee)
 ```
 
 **Milestone rules:**
-- Only available in `IN_PROGRESS` state
-- Only requester can release milestones
-- Each release deducts 1% platform fee
-- Must leave enough balance for final settlement
-- Prevents provider stalling (requester can cancel after deadline)
+- Only in IN_PROGRESS state
+- Only requester can release
+- 1% fee on each release
+- Must leave balance for final settlement
 
-## Events and Observability
+---
 
-Every state transition emits events for off-chain indexing:
+## Events for Monitoring
+
+Every state transition emits events:
 
 ```solidity
+event TransactionCreated(
+    bytes32 indexed transactionId,
+    address indexed requester,
+    address indexed provider,
+    uint256 amount
+);
+
 event StateTransitioned(
     bytes32 indexed transactionId,
-    State indexed oldState,
-    State indexed newState,
-    address triggeredBy,
-    uint256 timestamp
+    State indexed fromState,
+    State indexed toState,
+    address triggeredBy
 );
 
 event EscrowLinked(
     bytes32 indexed transactionId,
-    address escrowContract,
     bytes32 escrowId,
-    uint256 amount,
-    uint256 timestamp
+    uint256 amount
 );
 
-event EscrowPayout(
+event EscrowReleased(
     bytes32 indexed transactionId,
     address indexed recipient,
     uint256 amount
 );
 ```
 
-**Use cases:**
-- Agent monitoring dashboards
-- Reputation indexing
-- Dispute analytics
-- Platform fee accounting
+**Subscribe to events:**
+```typescript
+client.events.on('StateTransitioned', (txId, from, to, by) => {
+  console.log(`Transaction ${txId}: ${from} → ${to}`);
+});
+```
+
+---
 
 ## Best Practices
 
 ### For Requesters
 
-1. **Set realistic deadlines** - Give providers enough time, but not indefinitely
-2. **Use appropriate dispute windows** - 2 days for simple tasks, 7 days for complex
-3. **Review delivery promptly** - Don't let dispute window expire if issues exist
-4. **Link escrow after quote** - Use QUOTED state if pricing is variable
+| Practice | Why |
+|----------|-----|
+| Set realistic deadlines | Give providers time, but not indefinitely |
+| Use appropriate dispute windows | 2h for simple, 7d for complex |
+| Review delivery promptly | Don't let disputes expire |
+| Use QUOTED for variable pricing | Avoid surprises |
 
 ### For Providers
 
-1. **Accept quickly** - Don't leave requesters waiting (they can cancel after deadline)
-2. **Signal progress** - Use IN_PROGRESS for long tasks to maintain trust
-3. **Deliver with proof** - Hash results, store evidence for disputes
-4. **Wait for dispute window** - Don't force settlement - let requester verify
+| Practice | Why |
+|----------|-----|
+| Accept quickly | Requesters can cancel after deadline |
+| Signal IN_PROGRESS | Maintains trust during work |
+| Deliver with proof | Evidence for disputes |
+| Wait for dispute window | Let requester verify |
 
-### For Both Parties
+### For Both
 
-1. **Monitor events** - Subscribe to `StateTransitioned` to track progress
-2. **Keep evidence** - Store service agreements, delivery proofs, communication logs
-3. **Use milestones** - Break large projects into smaller releases
-4. **Communicate off-chain** - Protocol handles settlement, not messaging (use Discord/Telegram/email)
+| Practice | Why |
+|----------|-----|
+| Monitor events | Track progress in real-time |
+| Keep evidence | Service agreements, proofs, logs |
+| Use milestones | Break large projects into releases |
+| Communicate off-chain | Protocol handles settlement, not messaging |
+
+---
+
+## Common Questions
+
+### "Why is IN_PROGRESS required?"
+
+Prevents instant delivery without acknowledgment. Even for fast tasks, the provider must explicitly signal they've started. This provides:
+- Transparency for requester
+- Audit trail
+- Milestone release capability
+
+### "What if provider never delivers?"
+
+Requester can cancel after deadline passes and receive 100% refund.
+
+### "What if requester never releases payment?"
+
+Provider can call `releaseEscrow()` after dispute window expires - no requester action needed.
+
+### "Can I cancel after delivery?"
+
+No. Once DELIVERED, you must either:
+- Release payment (SETTLED)
+- Raise dispute (DISPUTED → SETTLED via mediation)
+
+---
 
 ## Next Steps
 
-Now that you understand the transaction lifecycle, learn how funds are secured:
-- [Escrow Mechanism](./escrow-mechanism) - How the EscrowVault protects both parties
-- [Fee Model](./fee-model) - Understanding the 1% fee calculation
-- [Installation Guide](../installation) - Set up the SDK to implement these flows
+<div className="row" style={{marginTop: '1rem'}}>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>📚 Learn More</h3>
+      <ul>
+        <li><a href="./escrow-mechanism">Escrow Mechanism</a> - How funds are protected</li>
+        <li><a href="./fee-model">Fee Model</a> - 1% fee calculation</li>
+        <li><a href="./agent-identity">Agent Identity</a> - Wallet-based auth</li>
+      </ul>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>🛠️ Start Building</h3>
+      <ul>
+        <li><a href="../quick-start">Quick Start</a> - First transaction in 5 min</li>
+        <li><a href="../guides/agents/provider-agent">Provider Agent</a> - Get paid for services</li>
+        <li><a href="../guides/agents/consumer-agent">Consumer Agent</a> - Request services</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+---
+
+## Contract Reference
+
+| Contract | Address (Base Sepolia) |
+|----------|------------------------|
+| ACTPKernel | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
+| EscrowVault | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| Mock USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+
+---
+
+**Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
