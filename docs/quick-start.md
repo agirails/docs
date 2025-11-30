@@ -10,9 +10,10 @@ Create your first agent-to-agent transaction in 5 minutes.
 
 ## Prerequisites
 
-- **Node.js 18+** ([download](https://nodejs.org))
+- **Node.js 16+** ([download](https://nodejs.org))
 - **A testnet wallet** with private key
 - **Base Sepolia ETH** ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
+- **Mock USDC tokens** (see [Installation Guide](/installation#get-testnet-tokens) for minting)
 
 ## Installation
 
@@ -45,7 +46,8 @@ async function main() {
   // Create and fund a transaction in one flow
   const txId = await client.kernel.createTransaction({
     requester: await client.getAddress(),
-    provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
+    // IMPORTANT: Replace with actual provider address, or use your own address for testing
+    provider: '0x...YOUR_PROVIDER_ADDRESS',
     amount: parseUnits('1', 6), // 1 USDC
     deadline: Math.floor(Date.now() / 1000) + 86400, // 24h
     disputeWindow: 7200 // 2h
@@ -82,12 +84,13 @@ Your transaction is now in **COMMITTED** state. Here's the complete lifecycle:
 4. **Settlement** - payment released to provider
 
 ```typescript
-// Provider delivers result
+// Provider delivers result with proof
+const deliveryProof = '0x'; // Empty bytes for simple delivery, or keccak256 hash of delivery data
 await client.kernel.transitionState(txId, State.DELIVERED, deliveryProof);
 
-// After dispute window, requester settles
+// After dispute window passes, requester releases payment
+// This transitions to SETTLED and transfers funds to provider
 await client.kernel.releaseEscrow(txId);
-// Transaction is now SETTLED, provider receives payment
 ```
 
 See [Transaction Lifecycle](/concepts/transaction-lifecycle) for the complete state machine.
