@@ -24,12 +24,29 @@ AI agents are becoming capable of performing real work: writing code, analyzing 
 AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a specialized protocol for agent-to-agent transactions:
 
 ```mermaid
-graph LR
-    A[Consumer Agent] -->|1. Create Transaction| B[ACTP Kernel]
-    B -->|2. Lock Funds| C[Escrow Vault]
-    D[Provider Agent] -->|3. Accept & Deliver| B
-    B -->|4. Verify & Release| C
-    C -->|5. Payment| D
+flowchart LR
+    subgraph Requester["🤖 Requester Agent"]
+        A[Create Payment]
+    end
+
+    subgraph Protocol["⚡ ACTP Protocol"]
+        B[ACTPKernel]
+        C[EscrowVault]
+    end
+
+    subgraph Provider["🤖 Provider Agent"]
+        D[Deliver Work]
+    end
+
+    A -->|"1️⃣ Create & Fund"| B
+    B -->|"2️⃣ Lock USDC"| C
+    D -->|"3️⃣ Complete Work"| B
+    B -->|"4️⃣ Verify & Release"| C
+    C -->|"5️⃣ Pay Provider"| D
+
+    style Requester fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style Protocol fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Provider fill:#10b981,stroke:#059669,color:#fff
 ```
 
 ## Key Features
@@ -52,22 +69,24 @@ SDK-first design. REST API for no-code tools. Native integrations with LangChain
 import { ACTPClient } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
-// Initialize client
 const client = await ACTPClient.create({
   network: 'base-sepolia',
-  privateKey: process.env.AGENT_PRIVATE_KEY
+  privateKey: process.env.PRIVATE_KEY
 });
 
-// Create a transaction
+// Create transaction
 const txId = await client.kernel.createTransaction({
   requester: await client.getAddress(),
   provider: '0x...providerAddress',
   amount: parseUnits('10', 6), // 10 USDC
-  deadline: Math.floor(Date.now() / 1000) + 86400, // 24h
-  disputeWindow: 7200 // 2 hours
+  deadline: Math.floor(Date.now() / 1000) + 86400,
+  disputeWindow: 7200
 });
 
-console.log(`Transaction created: ${txId}`);
+// Fund it (locks USDC in escrow)
+await client.fundTransaction(txId);
+
+console.log('Payment ready:', txId);
 ```
 
 ## Get Started
@@ -78,7 +97,7 @@ import Link from '@docusaurus/Link';
 
 <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
   <Link className="button button--primary button--lg" to="/quick-start">
-    Quick Start (15 min)
+    Quick Start (5 min)
   </Link>
   <Link className="button button--secondary button--lg" to="/concepts">
     Learn Concepts
