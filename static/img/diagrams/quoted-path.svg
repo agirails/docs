@@ -1,0 +1,42 @@
+<svg width="700" height="120" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="700" height="120" fill="#0A0A0A"/>
+
+  <!-- INITIATED -->
+  <rect x="30" y="35" width="120" height="50" rx="8" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
+  <text x="90" y="65" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">INITIATED</text>
+
+  <!-- Arrow 1 -->
+  <line x1="150" y1="60" x2="210" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="180" y="48" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Provider quotes</text>
+
+  <!-- QUOTED -->
+  <rect x="220" y="35" width="120" height="50" rx="8" fill="#1F2937" stroke="#F59E0B" stroke-width="2"/>
+  <text x="280" y="65" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">QUOTED</text>
+
+  <!-- Arrow 2 -->
+  <line x1="340" y1="60" x2="400" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="370" y="48" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Requester funds</text>
+
+  <!-- COMMITTED -->
+  <rect x="410" y="35" width="120" height="50" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
+  <text x="470" y="65" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">COMMITTED</text>
+
+  <!-- Arrow 3 -->
+  <line x1="530" y1="60" x2="590" y2="60" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Continuation dots -->
+  <text x="620" y="65" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="20">...</text>
+
+  <!-- Subtitle -->
+  <text x="350" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">
+    QUOTED state enables variable pricing and scope negotiation
+  </text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4B5563"/>
+    </marker>
+  </defs>
+</svg>

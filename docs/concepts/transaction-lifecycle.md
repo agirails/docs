@@ -221,14 +221,7 @@ console.log('Dispute window expired, funds released');
 
 For variable pricing, use the QUOTED state:
 
-```mermaid
-graph LR
-    A[INITIATED] -->|"Provider submits quote"| B[QUOTED]
-    B -->|"Requester approves + funds"| C[COMMITTED]
-    C --> D[...]
-
-    style B fill:#f59e0b,stroke:#d97706,color:#fff
-```
+![QUOTED path - Provider submits quote before escrow](/img/diagrams/quoted-path.svg)
 
 ```typescript
 // Step 1: Requester creates transaction (estimated amount)
