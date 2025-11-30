@@ -11,22 +11,22 @@
   <!-- INITIATED -->
   <rect x="30" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
   <text x="90" y="110" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">INITIATED</text>
-  <text x="90" y="145" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Created</text>
+  <text x="100" y="145" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Created</text>
 
   <!-- QUOTED (optional) -->
   <rect x="200" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4,2"/>
   <text x="260" y="110" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">QUOTED</text>
-  <text x="260" y="145" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10">Optional</text>
+  <text x="270" y="145" text-anchor="start" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10">Optional</text>
 
   <!-- COMMITTED -->
   <rect x="370" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#F59E0B" stroke-width="2"/>
   <text x="430" y="110" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">COMMITTED</text>
-  <text x="430" y="145" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Escrow Locked</text>
+  <text x="440" y="145" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Escrow Locked</text>
 
   <!-- IN_PROGRESS -->
   <rect x="540" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#06B6D4" stroke-width="2"/>
   <text x="600" y="110" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">IN_PROGRESS</text>
-  <text x="600" y="145" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Working</text>
+  <text x="550" y="145" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Working</text>
 
   <!-- DELIVERED -->
   <rect x="710" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
