@@ -218,7 +218,6 @@ div[class*='announcementBar'] {
 code {
   background-color: rgba(0, 82, 255, 0.08);
   border-radius: 4px;
-  padding: 0.1rem 0.3rem;
   font-size: 0.85em;
 }
 
@@ -376,10 +375,6 @@ article {
 /* Code block padding - using Docusaurus variable */
 :root {
   --ifm-pre-padding: 1.25rem;
-}
-
-pre.prism-code {
-  padding: 1rem var(--ifm-pre-padding) !important;
 }
 
 div[class*='codeBlockTitle'] {
