@@ -72,8 +72,8 @@
   <text x="785" y="225" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9">dispute()</text>
 
   <!-- DISPUTED → SETTLED -->
-  <path d="M 710 345 L 685 345 L 685 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="665" y="320" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
+  <path d="M 710 345 L 625 345 L 625 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="605" y="320" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
 
   <!-- Cancel arrows -->
   <!-- INITIATED → CANCELLED -->
