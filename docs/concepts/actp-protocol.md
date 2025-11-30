@@ -58,7 +58,7 @@ sequenceDiagram
     E->>K: Confirm escrow created
     Note over K: State: COMMITTED
 
-    P->>K: 4. Mark in progress (optional)
+    P->>K: 4. Mark in progress (required)
     Note over K: State: IN_PROGRESS
 
     P->>K: 5. Deliver work + proof
@@ -236,7 +236,7 @@ const txId = await client.kernel.createTransaction({
   disputeWindow: 172800 // 2 days in seconds
 });
 
-// Provider signals work started (optional, but required for milestones)
+// Provider signals work started (required before DELIVERED)
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 
 // Provider delivers work

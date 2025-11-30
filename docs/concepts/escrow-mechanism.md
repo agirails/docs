@@ -98,6 +98,8 @@ console.log('USDC approval granted');
 
 ```typescript
 // In ACTPClient SDK
+// NOTE: linkEscrow() is a KERNEL method, not an escrow method
+// Before calling, ensure USDC approval is granted (see Step 1)
 await client.kernel.linkEscrow(
   transactionId,
   ESCROW_VAULT_ADDRESS,
@@ -248,6 +250,24 @@ function payoutToProvider(bytes32 escrowId, uint256 amount) external onlyKernel 
 - Provider receives: 99% of escrow amount
 - Platform receives: 1% of escrow amount
 - Escrow balance: 0 (fully released)
+
+### Escrow ID Reusability
+
+After an escrow is fully released, the contract deletes the escrow record:
+
+```solidity
+// In EscrowVault.sol after full payout
+if (e.releasedAmount == e.amount) {
+    e.active = false;
+    emit EscrowCompleted(escrowId, e.amount);
+    delete escrows[escrowId];  // Enables ID reuse
+}
+```
+
+**Why This Matters:**
+- Escrow IDs can be safely reused after settlement
+- Storage gas is returned to the caller
+- Enables efficient ID generation patterns
 
 ## Security Guarantees
 

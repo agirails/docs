@@ -20,8 +20,8 @@ stateDiagram-v2
     IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)
     DELIVERED --> SETTLED: transitionState(SETTLED)
     DELIVERED --> DISPUTED: transitionState(DISPUTED)
-    DISPUTED --> SETTLED: resolveDispute()
-    DISPUTED --> CANCELLED: resolveDispute()
+    DISPUTED --> SETTLED: transitionState() [admin]
+    DISPUTED --> CANCELLED: transitionState() [admin]
 
     INITIATED --> CANCELLED: transitionState(CANCELLED)
     QUOTED --> CANCELLED: transitionState(CANCELLED)
@@ -200,9 +200,6 @@ await client.kernel.transitionState(
   ethers.utils.defaultAbiCoder.encode(['uint256'], [disputeWindow])
 );
 
-// Optionally anchor attestation for reputation
-await client.kernel.anchorAttestation(txId, attestationUID);
-
 console.log('Work delivered, dispute window started');
 // State: DELIVERED
 // Dispute window: block.timestamp + 2 days
@@ -237,6 +234,11 @@ console.log('Funds released immediately');
 await client.kernel.transitionState(txId, State.SETTLED, '0x');
 await client.kernel.releaseEscrow(txId);
 console.log('Dispute window expired, funds released');
+
+// Optionally anchor attestation for reputation
+// Note: anchorAttestation() can only be called when transaction is SETTLED
+// Call this after releaseEscrow() or settlement
+await client.kernel.anchorAttestation(txId, attestationUID);
 
 // State: SETTLED (terminal)
 ```

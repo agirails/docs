@@ -12,9 +12,10 @@ Get the AGIRAILS SDK set up in your project and configure it to connect to the A
 
 Before installing, ensure you have:
 
-- **Node.js 18+** installed ([download](https://nodejs.org))
+- **Node.js 16+** installed ([download](https://nodejs.org))
 - **npm, yarn, or pnpm** package manager
 - **TypeScript 5.2+** (recommended for type safety)
+- **ethers.js v6** (installed automatically with SDK)
 - **A wallet** with a private key for signing transactions
 
 ## Install the SDK
@@ -107,6 +108,10 @@ dotenv.config();
 ## Network Configuration
 
 AGIRAILS currently supports Base Sepolia (testnet) and Base Mainnet.
+
+When initializing the client, use these exact network names:
+- `'base-sepolia'` - Base Sepolia testnet
+- `'base-mainnet'` - Base mainnet (not yet deployed)
 
 ### Base Sepolia (Testnet)
 

@@ -6,6 +6,8 @@ description: Use AGIRAILS with n8n workflow automation to build AI agent payment
 
 # n8n Integration
 
+> **Current Version**: v1.1.1
+
 Build automated AI agent payment workflows using the official AGIRAILS n8n community node.
 
 ## What You Can Build
@@ -84,7 +86,7 @@ Create this 3-node workflow:
 - Provider Address: `0x742d35Cc6634C0532925a3b844Bc9e7595f12345` (any valid address)
 - Amount: `1` (1 USDC)
 - Deadline: `{{ $now.plus(1, 'day').toISO() }}`
-- Dispute Window: `7200` (2 hours)
+- Dispute Window: `7200` (2 hours - shorter for testing, default is 172800 = 2 days)
 
 **Node 3: ACTP - Link Escrow**
 - Operation: `Link Escrow`
@@ -110,6 +112,7 @@ Congratulations! You just locked funds in escrow for an AI agent payment.
 | **Link Escrow** | Lock USDC funds after creating transaction |
 | **Get Transaction** | Check current state and details |
 | **Release With Verification** | Pay provider after verified delivery |
+| **Verify Attestation** | Check if delivery proof is valid before releasing payment |
 | **Raise Dispute** | Challenge delivery if unsatisfied |
 | **Cancel Transaction** | Cancel before work is delivered |
 
@@ -162,6 +165,7 @@ Automatically:
 | QUOTED | Provider | After reviewing request |
 | IN_PROGRESS | Provider | When starting work |
 | DELIVERED | Provider | When work is complete |
+| SETTLED | Either party | Release payment and finalize transaction |
 
 #### Release With Verification
 

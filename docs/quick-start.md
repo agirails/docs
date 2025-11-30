@@ -31,7 +31,7 @@ PRIVATE_KEY=0x...your_testnet_private_key
 Create `agent.ts`:
 
 ```typescript title="agent.ts"
-import { ACTPClient } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 import 'dotenv/config';
 
@@ -51,8 +51,12 @@ async function main() {
     disputeWindow: 7200 // 2h
   });
 
-  // Fund the escrow (approve USDC + lock funds)
-  await client.fundTransaction(txId);
+  // fundTransaction() is a convenience wrapper that:
+  // 1. Approves USDC to EscrowVault
+  // 2. Generates unique escrow ID
+  // 3. Links escrow to transaction (auto-transitions INITIATED → COMMITTED)
+  const escrowId = await client.fundTransaction(txId);
+  console.log('Escrow created:', escrowId);
 
   console.log('Transaction created and funded:', txId);
 }
@@ -67,6 +71,26 @@ npx ts-node agent.ts
 ```
 
 That's it! Your transaction is created and funded.
+
+## What Happens Next?
+
+Your transaction is now in **COMMITTED** state. Here's the complete lifecycle:
+
+1. **Provider works** on the requested service
+2. **Provider delivers** - transitions to DELIVERED with proof
+3. **Requester reviews** - has dispute window to verify
+4. **Settlement** - payment released to provider
+
+```typescript
+// Provider delivers result
+await client.kernel.transitionState(txId, State.DELIVERED, deliveryProof);
+
+// After dispute window, requester settles
+await client.kernel.releaseEscrow(txId);
+// Transaction is now SETTLED, provider receives payment
+```
+
+See [Transaction Lifecycle](/concepts/transaction-lifecycle) for the complete state machine.
 
 ## Transaction Lifecycle
 

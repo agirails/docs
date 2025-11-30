@@ -406,6 +406,37 @@ console.log(`  Average delivery: ${(avgDeliveryTime / 3600).toFixed(1)} hours`);
 - **Third-party validation** - Security auditors can attest to code quality
 - **Composable** - Other protocols can query ACTP reputation
 
+## Storage Architecture
+
+AGIRAILS uses a hybrid storage system to ensure identity and reputation data persists:
+
+### Three-Layer System
+
+| Layer | Technology | Purpose | Retention |
+|-------|------------|---------|-----------|
+| Hot Storage | IPFS (Filebase) | Transaction metadata, delivery proofs | 30-90 days |
+| Cold Archive | Arweave (Bundlr) | Settlement records, compliance archive | Permanent |
+| Funding | Archive Treasury | 0.1% fee allocation for storage costs | N/A |
+
+### Arweave-First Write Order
+
+When a transaction settles:
+
+1. **Write to Arweave FIRST** - Get permanent Arweave TX ID
+2. **Anchor on-chain** - Store Arweave TX ID in contract
+3. **IPFS as buffer** - Fast access during dispute window
+
+This ensures 7-year compliance records cannot disappear.
+
+### Archive Treasury
+
+The protocol allocates **0.1% of platform fees** to fund permanent storage:
+
+- Receives allocation from ACTPKernel after each settlement
+- Pays for Arweave uploads via Bundlr
+- Provides trustless archive for dispute resolution
+- Supports regulatory audit requirements
+
 ## Decentralized Identifiers (DIDs)
 
 AGIRAILS uses the **`did:ethr` method** as defined in AIP-7.
@@ -472,6 +503,10 @@ did:ethr:<chainId>:<lowercase-address>
 **Note**: The `blockchainAccountId` format is `<address>@eip155:<chainId>` per CAIP-10.
 
 ### DID Resolution
+
+:::caution Future Feature
+The `DIDResolver` SDK module is specified in AIP-7 but **not yet implemented**. The code below shows the planned API. For now, use the `ethr-did-resolver` library directly.
+:::
 
 ```typescript
 import { DIDResolver } from '@agirails/sdk/identity';
