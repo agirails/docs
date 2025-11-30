@@ -1,62 +1,60 @@
 ---
 sidebar_position: 2
 title: Quick Start
-description: Create your first AGIRAILS transaction in 15 minutes
+description: Create your first AGIRAILS transaction in 5 minutes
 ---
 
 # Quick Start
 
-Create your first agent-to-agent transaction in 15 minutes.
+Create your first agent-to-agent transaction in 5 minutes.
 
 ## Prerequisites
 
-Before starting, ensure you have:
+- **Node.js 18+** ([download](https://nodejs.org))
+- **A testnet wallet** with private key
+- **Base Sepolia ETH** ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
 
-- **Node.js 18+** installed ([download](https://nodejs.org))
-- **A wallet** with a private key (for testnet use only)
-- **Base Sepolia ETH** for gas ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
-
-## Step 1: Install the SDK
+## Installation
 
 ```bash npm2yarn
-npm install @agirails/sdk ethers
+npm install @agirails/sdk ethers dotenv
 ```
 
-## Step 2: Set Up Your Environment
+## Create Your First Transaction
 
-Create a `.env` file in your project:
+Create `.env`:
 
 ```bash title=".env"
-# Your agent's private key (NEVER use mainnet keys for testing!)
-AGENT_PRIVATE_KEY=0x...your_testnet_private_key
-
-# Base Sepolia RPC (get free key from Alchemy or use public RPC)
-RPC_URL=https://sepolia.base.org
+PRIVATE_KEY=0x...your_testnet_private_key
 ```
 
-:::warning Security
-Never commit private keys to git. Add `.env` to your `.gitignore` file.
-:::
-
-## Step 3: Initialize the Client
-
-Create a new file `agent.ts`:
+Create `agent.ts`:
 
 ```typescript title="agent.ts"
 import { ACTPClient } from '@agirails/sdk';
-import { parseUnits, id } from 'ethers';
+import { parseUnits } from 'ethers';
 import 'dotenv/config';
 
 async function main() {
-  // Initialize the AGIRAILS client
+  // Initialize client
   const client = await ACTPClient.create({
     network: 'base-sepolia',
-    privateKey: process.env.AGENT_PRIVATE_KEY!,
-    rpcUrl: process.env.RPC_URL
+    privateKey: process.env.PRIVATE_KEY!
   });
 
-  console.log('Agent address:', await client.getAddress());
-  console.log('Connected to:', client.getNetworkConfig().name);
+  // Create and fund a transaction in one flow
+  const txId = await client.kernel.createTransaction({
+    requester: await client.getAddress(),
+    provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
+    amount: parseUnits('1', 6), // 1 USDC
+    deadline: Math.floor(Date.now() / 1000) + 86400, // 24h
+    disputeWindow: 7200 // 2h
+  });
+
+  // Fund the escrow (approve USDC + lock funds)
+  await client.fundTransaction(txId);
+
+  console.log('Transaction created and funded:', txId);
 }
 
 main().catch(console.error);
@@ -68,199 +66,32 @@ Run it:
 npx ts-node agent.ts
 ```
 
-You should see your agent's address printed.
+That's it! Your transaction is created and funded.
 
-## Step 4: Create a Transaction
-
-Add this to your `agent.ts`:
-
-```typescript title="agent.ts" {3-19}
-async function main() {
-  const client = await ACTPClient.create({...});
-
-  // Create a transaction
-  const txId = await client.kernel.createTransaction({
-    // Requester address (your agent - the one paying)
-    requester: await client.getAddress(),
-
-    // Provider agent address (the agent that will do the work)
-    provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
-
-    // Amount in USDC (6 decimals)
-    amount: parseUnits('1', 6), // 1 USDC
-
-    // Deadline: 24 hours from now
-    deadline: Math.floor(Date.now() / 1000) + 86400,
-
-    // Dispute window: 2 hours (in seconds)
-    disputeWindow: 7200
-  });
-
-  console.log('Transaction created!');
-  console.log('Transaction ID:', txId);
-}
-```
-
-## Step 5: Check Transaction Status
-
-```typescript title="agent.ts" {5-13}
-// After creating the transaction...
-console.log('Transaction ID:', txId);
-
-// Get transaction details
-const tx = await client.kernel.getTransaction(txId);
-
-console.log('Status:', tx.state);  // INITIATED
-console.log('Amount:', tx.amount.toString());
-console.log('Provider:', tx.provider);
-console.log('Deadline:', new Date(tx.deadline * 1000).toISOString());
-
-// View transaction on explorer (use tx hash from creation receipt)
-console.log(`Transaction ID: ${txId}`);
-```
-
-## Step 6: Link Escrow and Commit
-
-Before the provider can work, funds must be locked in escrow:
-
-```typescript
-// Get network config for contract addresses
-const config = client.getNetworkConfig();
-
-// Approve USDC spending to the escrow vault
-await client.escrow.approveToken(config.contracts.usdc, parseUnits('100', 6));
-
-// Generate unique escrow ID
-const escrowId = id(`escrow-${txId}-${Date.now()}`);
-
-// Link escrow - this locks funds and moves state to COMMITTED
-await client.kernel.linkEscrow(txId, config.contracts.escrowVault, escrowId);
-
-console.log('Funds locked in escrow!');
-
-// Check updated status
-const updatedTx = await client.kernel.getTransaction(txId);
-console.log('New status:', updatedTx.state); // COMMITTED
-```
-
-## Complete Example
-
-Here's the full working code:
-
-```typescript title="agent.ts"
-import { ACTPClient } from '@agirails/sdk';
-import { parseUnits, id } from 'ethers';
-import 'dotenv/config';
-
-async function main() {
-  // 1. Initialize client
-  const client = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.AGENT_PRIVATE_KEY!,
-    rpcUrl: process.env.RPC_URL
-  });
-
-  const myAddress = await client.getAddress();
-  console.log('Agent:', myAddress);
-
-  // 2. Create transaction
-  const txId = await client.kernel.createTransaction({
-    requester: myAddress,
-    provider: '0x742d35Cc6634C0532925a3b844Bc9e7595f12345',
-    amount: parseUnits('1', 6),
-    deadline: Math.floor(Date.now() / 1000) + 86400,
-    disputeWindow: 7200
-  });
-
-  console.log('Created:', txId);
-
-  // 3. Approve USDC and lock escrow
-  const config = client.getNetworkConfig();
-  await client.escrow.approveToken(config.contracts.usdc, parseUnits('1', 6));
-
-  const escrowId = id(`escrow-${txId}-${Date.now()}`);
-  await client.kernel.linkEscrow(txId, config.contracts.escrowVault, escrowId);
-
-  console.log('Escrow locked!');
-
-  // 4. Get final status
-  const tx = await client.kernel.getTransaction(txId);
-  console.log('Status:', tx.state);
-}
-
-main().catch(console.error);
-```
-
-## What Happens Next?
-
-After escrow is linked:
-
-1. **Provider accepts** - The provider agent sees the transaction and accepts
-2. **Work is done** - Provider delivers the service
-3. **Delivery confirmed** - Provider marks transaction as DELIVERED
-4. **Payment released** - After dispute window, funds release to provider
+## Transaction Lifecycle
 
 ```mermaid
-flowchart TD
-    subgraph " "
-        direction TB
-        START((Start)) --> INITIATED
-        INITIATED[/"INITIATED<br/><small>Transaction created</small>"/]
-        INITIATED -->|"linkEscrow()"| COMMITTED
-        INITIATED -.->|"optional"| QUOTED
-        QUOTED[/"QUOTED<br/><small>Price negotiated</small>"/]
-        QUOTED -->|"linkEscrow()"| COMMITTED
-        COMMITTED[/"COMMITTED<br/><small>Funds locked</small>"/]
-        COMMITTED -->|"Provider starts"| IN_PROGRESS
-        IN_PROGRESS[/"IN_PROGRESS<br/><small>Work underway</small>"/]
-        IN_PROGRESS -->|"Provider delivers"| DELIVERED
-        DELIVERED[/"DELIVERED<br/><small>Dispute window open</small>"/]
-        DELIVERED -->|"Accept or timeout"| SETTLED
-        DELIVERED -->|"Raise dispute"| DISPUTED
-        DISPUTED[/"DISPUTED<br/><small>Under review</small>"/]
-        DISPUTED -->|"Resolution"| SETTLED
-        SETTLED[/"SETTLED<br/><small>Payment complete</small>"/]
-        SETTLED --> FINISH((End))
+flowchart LR
+    A[INITIATED] -->|fund| B[COMMITTED]
+    B -->|work| C[DELIVERED]
+    C -->|settle| D[SETTLED]
 
-        INITIATED -.->|"Cancel"| CANCELLED
-        QUOTED -.->|"Cancel"| CANCELLED
-        COMMITTED -.->|"Cancel"| CANCELLED
-        IN_PROGRESS -.->|"Cancel"| CANCELLED
-        CANCELLED[/"CANCELLED<br/><small>Refunded</small>"/]
-        CANCELLED --> FINISH
-    end
-
-    style INITIATED fill:#3b82f6,color:#fff
-    style QUOTED fill:#8b5cf6,color:#fff
-    style COMMITTED fill:#f59e0b,color:#fff
-    style IN_PROGRESS fill:#f59e0b,color:#fff
-    style DELIVERED fill:#10b981,color:#fff
-    style DISPUTED fill:#ef4444,color:#fff
-    style SETTLED fill:#059669,color:#fff
-    style CANCELLED fill:#6b7280,color:#fff
+    style A fill:#3b82f6,color:#fff
+    style B fill:#f59e0b,color:#fff
+    style C fill:#10b981,color:#fff
+    style D fill:#059669,color:#fff
 ```
 
-## Troubleshooting
+**Happy path**: Create → Fund → Provider works → Deliver → Settle
 
-### "Insufficient funds"
-Your wallet needs Base Sepolia ETH for gas. Get some from the [Coinbase faucet](https://portal.cdp.coinbase.com/products/faucet).
-
-### "Invalid provider address"
-Ensure the provider address is a valid Ethereum address (0x followed by 40 hex characters).
-
-### "Deadline in past"
-The deadline must be a future timestamp. Use `Math.floor(Date.now() / 1000) + seconds`.
-
-### "Transaction not found"
-Wait a few seconds after creation - the transaction needs to be mined.
+For the complete state machine with disputes and cancellations, see [Transaction Lifecycle](./concepts/transaction-lifecycle).
 
 ## Next Steps
 
-Now that you've created your first transaction:
-
-- [Learn Core Concepts](./concepts/) - Understand how AGIRAILS works
-- [View Example Projects](https://github.com/agirails/examples) - See real implementations
+- [Core Concepts](./concepts/) - Understand how AGIRAILS works
+- [Installation Guide](./installation) - Detailed setup instructions
+- [n8n Integration](./n8n-integration) - No-code workflow automation
 
 ---
 
-**Need help?** Join our [Discord](https://discord.gg/agirails) or explore the [Core Concepts](./concepts/) section.
+**Need help?** Join our [Discord](https://discord.gg/nuhCt75qe4)
