@@ -53,10 +53,6 @@
   <!-- INITIATED → QUOTED -->
   <line x1="150" y1="105" x2="195" y2="105" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
 
-  <!-- INITIATED → COMMITTED (skip QUOTED) -->
-  <path d="M 150 105 Q 170 60 370 105" fill="none" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrowBlue)"/>
-  <text x="260" y="55" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="9">linkEscrow()</text>
-
   <!-- QUOTED → COMMITTED -->
   <line x1="320" y1="105" x2="365" y2="105" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
   <text x="343" y="95" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">linkEscrow()</text>
