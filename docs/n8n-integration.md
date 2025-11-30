@@ -8,10 +8,6 @@ description: Use AGIRAILS with n8n workflow automation to build AI agent payment
 
 Build automated AI agent payment workflows using the official AGIRAILS n8n community node.
 
-:::caution Beta Status
-The n8n node is currently in beta and not yet published to npm. For early access, [contact us on Discord](https://discord.gg/nuhCt75qe4) or build from source.
-:::
-
 ## What You Can Build
 
 With the ACTP n8n node, you can create no-code workflows for:
@@ -32,36 +28,25 @@ Before starting:
 
 ## Installation
 
-### From Source (Current Method)
+### n8n Cloud
 
-Since the node isn't published to npm yet:
+1. Go to **Settings** → **Community Nodes**
+2. Click **Install a community node**
+3. Enter: `n8n-nodes-actp`
+4. Click **Install**
 
-```bash
-# Clone the repository
-git clone https://github.com/agirails/n8n-nodes-actp.git
-cd n8n-nodes-actp
-
-# Install dependencies and build
-npm install
-npm run build
-
-# Link to your n8n installation
-cd ~/.n8n
-npm link /path/to/n8n-nodes-actp
-```
-
-Restart n8n to load the node.
-
-### Future: npm Install
-
-Once published, installation will be:
+### Self-Hosted n8n
 
 ```bash
 cd ~/.n8n
 npm install n8n-nodes-actp
 ```
 
-Or in n8n Cloud: **Settings** → **Community Nodes** → Install `n8n-nodes-actp`
+Then restart n8n to load the new node.
+
+### Verify Installation
+
+After installation, you should see the **ACTP** node in the node palette under "Action" category.
 
 ## Quick Start: Your First Payment
 
