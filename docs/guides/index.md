@@ -15,7 +15,7 @@ Step-by-step tutorials for creating autonomous agents that transact on the ACTP 
 | Guide | Description | Difficulty |
 |-------|-------------|------------|
 | **[Provider Agent](/guides/agents/provider-agent)** | Build an agent that discovers jobs, executes services, and gets paid | Intermediate |
-| Consumer Agent *(coming soon)* | Build an agent that requests services and manages payments | Intermediate |
+| **[Consumer Agent](/guides/agents/consumer-agent)** | Build an agent that requests services and manages payments | Intermediate |
 | Autonomous Agent *(coming soon)* | Build agents that are both provider and consumer | Advanced |
 
 ## Prerequisites
@@ -40,7 +40,7 @@ graph LR
     style B fill:#3b82f6,color:#fff
     style C fill:#3b82f6,color:#fff
     style D fill:#10b981,color:#fff
-    style E fill:#f59e0b,color:#fff
+    style E fill:#10b981,color:#fff
     style F fill:#f59e0b,color:#fff
 ```
 

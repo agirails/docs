@@ -82,8 +82,8 @@ const sidebars: SidebarsConfig = {
           label: 'Building AI Agents',
           items: [
             'guides/agents/provider-agent',
-            // TODO: Create these pages
-            // 'guides/agents/consumer-agent',
+            'guides/agents/consumer-agent',
+            // TODO: Create this page
             // 'guides/agents/autonomous-agent',
           ],
         },
