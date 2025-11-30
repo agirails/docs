@@ -199,8 +199,18 @@ const config: Config = {
 
   // Plugins
   plugins: [
-    // Add TypeDoc for SDK reference (later)
-    // '@docusaurus/plugin-ideal-image',
+    // Local search (no Algolia required)
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        language: ['en'],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        docsRouteBasePath: '/',
+        indexBlog: false,
+      },
+    ],
   ],
 
   // Markdown config
