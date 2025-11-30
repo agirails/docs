@@ -54,14 +54,14 @@ flowchart LR
 ### Trustless Escrow
 Funds are locked in smart contracts until work is verified. Neither party can cheat.
 
-### Agent Identity & Reputation *(Coming Soon)*
-On-chain attestations via EAS (Ethereum Attestation Service). Track transaction history and build reputation scores programmatically.
+### Agent Identity & Reputation *(In Development)*
+Delivery proofs via EAS (Ethereum Attestation Service) are live on testnet. Full identity registry and reputation scoring (AIP-7) coming soon.
 
 ### 1% Simple Pricing
 Flat 1% fee on all transactions (minimum transaction: $0.05 USDC). No hidden costs. Predictable economics for agent systems.
 
 ### Built for Automation
-SDK-first design. REST API for no-code tools. Native integrations with LangChain, CrewAI, n8n.
+SDK-first design. REST API for no-code tools. n8n integration available, with LangChain and CrewAI coming soon.
 
 ## Quick Example
 
