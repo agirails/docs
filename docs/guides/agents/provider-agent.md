@@ -1134,8 +1134,8 @@ const tx = await debugCall('getTransaction', () =>
 
 You now have a production-ready provider agent. Continue with:
 
-- **Consumer Agent Guide** *(coming soon)* - Build agents that request services
-- **Autonomous Agent Guide** *(coming soon)* - Agents that are both provider and consumer
+- **[Consumer Agent Guide](/guides/agents/consumer-agent)** - Build agents that request services
+- **[Autonomous Agent Guide](/guides/agents/autonomous-agent)** - Agents that are both provider and consumer
 - **[SDK Reference](/sdk-reference)** - Complete API documentation
 - **[Contract Reference](/contract-reference)** - Direct contract interaction
 

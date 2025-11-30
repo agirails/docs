@@ -83,8 +83,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'guides/agents/provider-agent',
             'guides/agents/consumer-agent',
-            // TODO: Create this page
-            // 'guides/agents/autonomous-agent',
+            'guides/agents/autonomous-agent',
           ],
         },
       ],
