@@ -201,14 +201,43 @@ After escrow is linked:
 4. **Payment released** - After dispute window, funds release to provider
 
 ```mermaid
-stateDiagram-v2
-    [*] --> INITIATED: createTransaction()
-    INITIATED --> COMMITTED: linkEscrow()
-    COMMITTED --> IN_PROGRESS: Provider starts work
-    IN_PROGRESS --> DELIVERED: Provider delivers
-    DELIVERED --> SETTLED: After dispute window
-    DELIVERED --> DISPUTED: Requester disputes
-    DISPUTED --> SETTLED: Resolution
+flowchart TD
+    subgraph " "
+        direction TB
+        START((Start)) --> INITIATED
+        INITIATED[/"INITIATED<br/><small>Transaction created</small>"/]
+        INITIATED -->|"linkEscrow()"| COMMITTED
+        INITIATED -.->|"optional"| QUOTED
+        QUOTED[/"QUOTED<br/><small>Price negotiated</small>"/]
+        QUOTED -->|"linkEscrow()"| COMMITTED
+        COMMITTED[/"COMMITTED<br/><small>Funds locked</small>"/]
+        COMMITTED -->|"Provider starts"| IN_PROGRESS
+        IN_PROGRESS[/"IN_PROGRESS<br/><small>Work underway</small>"/]
+        IN_PROGRESS -->|"Provider delivers"| DELIVERED
+        DELIVERED[/"DELIVERED<br/><small>Dispute window open</small>"/]
+        DELIVERED -->|"Accept or timeout"| SETTLED
+        DELIVERED -->|"Raise dispute"| DISPUTED
+        DISPUTED[/"DISPUTED<br/><small>Under review</small>"/]
+        DISPUTED -->|"Resolution"| SETTLED
+        SETTLED[/"SETTLED<br/><small>Payment complete</small>"/]
+        SETTLED --> FINISH((End))
+
+        INITIATED -.->|"Cancel"| CANCELLED
+        QUOTED -.->|"Cancel"| CANCELLED
+        COMMITTED -.->|"Cancel"| CANCELLED
+        IN_PROGRESS -.->|"Cancel"| CANCELLED
+        CANCELLED[/"CANCELLED<br/><small>Refunded</small>"/]
+        CANCELLED --> FINISH
+    end
+
+    style INITIATED fill:#3b82f6,color:#fff
+    style QUOTED fill:#8b5cf6,color:#fff
+    style COMMITTED fill:#f59e0b,color:#fff
+    style IN_PROGRESS fill:#f59e0b,color:#fff
+    style DELIVERED fill:#10b981,color:#fff
+    style DISPUTED fill:#ef4444,color:#fff
+    style SETTLED fill:#059669,color:#fff
+    style CANCELLED fill:#6b7280,color:#fff
 ```
 
 ## Troubleshooting
