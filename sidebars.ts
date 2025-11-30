@@ -54,6 +54,13 @@ const sidebars: SidebarsConfig = {
       ],
     },
 
+    // SDK Reference - Complete API Documentation
+    {
+      type: 'doc',
+      id: 'sdk-reference',
+      label: 'SDK Reference',
+    },
+
     // Guides - Practical How-To
     // TODO: Uncomment when guide pages are created
     // {
