@@ -69,22 +69,26 @@ const sidebars: SidebarsConfig = {
     },
 
     // Guides - Practical How-To
-    // TODO: Uncomment when guide pages are created
-    // {
-    //   type: 'category',
-    //   label: 'Guides',
-    //   items: [
-    //     {
-    //       type: 'category',
-    //       label: 'Building AI Agents',
-    //       items: [
-    //         'guides/agents/provider-agent',
-    //         'guides/agents/consumer-agent',
-    //         'guides/agents/autonomous-agent',
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      type: 'category',
+      label: 'Guides',
+      link: {
+        type: 'doc',
+        id: 'guides/index',
+      },
+      items: [
+        {
+          type: 'category',
+          label: 'Building AI Agents',
+          items: [
+            'guides/agents/provider-agent',
+            // TODO: Create these pages
+            // 'guides/agents/consumer-agent',
+            // 'guides/agents/autonomous-agent',
+          ],
+        },
+      ],
+    },
   ],
 
   // SDK Reference sidebar
