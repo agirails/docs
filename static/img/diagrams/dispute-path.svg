@@ -8,7 +8,7 @@
 
   <!-- Arrow 1 -->
   <line x1="190" y1="57" x2="270" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow-dispute)"/>
-  <text x="230" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Within dispute window</text>
+  <text x="230" y="20" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Within dispute window</text>
 
   <!-- DISPUTED -->
   <rect x="280" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#EF4444" stroke-width="2"/>
@@ -16,7 +16,7 @@
 
   <!-- Arrow 2 -->
   <line x1="430" y1="57" x2="510" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow-dispute)"/>
-  <text x="470" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Admin resolves</text>
+  <text x="470" y="20" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Admin resolves</text>
 
   <!-- SETTLED -->
   <rect x="520" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
