@@ -373,15 +373,9 @@ article {
   border: 1px solid var(--agirails-secondary);
 }
 
-/* Code block line padding - the actual code content */
-.prism-code .token-line {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
+/* Code block padding - all sides */
 .prism-code {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
+  padding: 1rem 1.25rem !important;
 }
 
 div[class*='codeBlockTitle'] {
