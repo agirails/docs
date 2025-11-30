@@ -373,9 +373,13 @@ article {
   border: 1px solid var(--agirails-secondary);
 }
 
-/* Code block padding - all sides */
-.prism-code {
-  padding: 1rem 1.25rem !important;
+/* Code block padding - using Docusaurus variable */
+:root {
+  --ifm-pre-padding: 1.25rem;
+}
+
+pre.prism-code {
+  padding: 1rem var(--ifm-pre-padding) !important;
 }
 
 div[class*='codeBlockTitle'] {
