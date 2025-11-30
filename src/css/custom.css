@@ -241,7 +241,8 @@ code {
 }
 
 /* SVG diagrams - full width */
-.markdown img[src*="/diagrams/"] {
+.markdown img[src*="/diagrams/"],
+.markdown img[src^="data:image/svg"] {
   width: 100% !important;
   height: auto !important;
   max-width: 100%;
