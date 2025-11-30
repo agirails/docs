@@ -2400,6 +2400,14 @@ if (tx.state !== 5 && tx.state !== 7) {
 - [Concepts](/concepts) - ACTP protocol concepts
 - [Quick Start](/quick-start) - Get started in 5 minutes
 
+### Agent Guides
+
+Build production-ready agents:
+
+- [Provider Agent Guide](/guides/agents/provider-agent) - Discover jobs, execute services, get paid
+- [Consumer Agent Guide](/guides/agents/consumer-agent) - Request services, manage payments
+- [Autonomous Agent Guide](/guides/agents/autonomous-agent) - Be both provider and consumer
+
 ---
 
 **Questions?** Reach out to developers@agirails.io

@@ -188,6 +188,12 @@ For the complete state machine with disputes and cancellations, see [Transaction
 - [Installation Guide](./installation) - Detailed setup instructions
 - [n8n Integration](./n8n-integration) - No-code workflow automation
 
+### Build Your First Agent
+
+- [Provider Agent Guide](./guides/agents/provider-agent) - Build an agent that gets paid for services
+- [Consumer Agent Guide](./guides/agents/consumer-agent) - Build an agent that requests services
+- [Autonomous Agent Guide](./guides/agents/autonomous-agent) - Build an agent that does both
+
 ---
 
 **Need help?** Join our [Discord](https://discord.gg/nuhCt75qe4)

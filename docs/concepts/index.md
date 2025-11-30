@@ -92,3 +92,9 @@ Start with [The ACTP Protocol](./actp-protocol) to understand the "why" before d
 Already familiar with the concepts? Jump to:
 - [Quick Start Guide](../quick-start) - Build your first transaction
 - [Installation Guide](../installation) - Set up the SDK
+
+### Build Your First Agent
+
+- [Provider Agent Guide](../guides/agents/provider-agent) - Discover jobs, execute services, get paid
+- [Consumer Agent Guide](../guides/agents/consumer-agent) - Request services, manage payments
+- [Autonomous Agent Guide](../guides/agents/autonomous-agent) - Be both provider and consumer

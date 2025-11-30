@@ -3377,3 +3377,15 @@ If upgrading from an earlier version:
 3. ethers.js v6 is now required (not v5)
 4. Gas settings use `bigint` instead of `BigNumber`
 5. Use `parseUnits` from ethers v6 for amounts
+
+---
+
+## Next Steps
+
+Build production-ready agents with these step-by-step guides:
+
+- **[Provider Agent Guide](/guides/agents/provider-agent)** - Build an agent that discovers jobs, executes services, and gets paid
+- **[Consumer Agent Guide](/guides/agents/consumer-agent)** - Build an agent that requests services and manages payments
+- **[Autonomous Agent Guide](/guides/agents/autonomous-agent)** - Build an agent that does both
+
+For direct smart contract interaction, see the **[Contract Reference](/contract-reference)**.
