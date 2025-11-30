@@ -1,0 +1,40 @@
+<svg viewBox="0 0 900 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="120" fill="#0A0A0A"/>
+
+  <!-- DELIVERED -->
+  <rect x="40" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="115" y="63" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500">DELIVERED</text>
+
+  <!-- Arrow 1 -->
+  <line x1="190" y1="57" x2="270" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow-dispute)"/>
+  <text x="230" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Within dispute window</text>
+
+  <!-- DISPUTED -->
+  <rect x="280" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#EF4444" stroke-width="2"/>
+  <text x="355" y="63" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">DISPUTED</text>
+
+  <!-- Arrow 2 -->
+  <line x1="430" y1="57" x2="510" y2="57" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow-dispute)"/>
+  <text x="470" y="45" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Admin resolves</text>
+
+  <!-- SETTLED -->
+  <rect x="520" y="30" width="150" height="55" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
+  <text x="595" y="63" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">SETTLED</text>
+
+  <!-- Terminal indicator -->
+  <circle cx="700" cy="57" r="8" fill="none" stroke="#10B981" stroke-width="2"/>
+  <circle cx="700" cy="57" r="4" fill="#10B981"/>
+
+  <!-- Subtitle -->
+  <text x="450" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">
+    DISPUTED state enables mediated resolution when requester contests delivery
+  </text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow-dispute" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4B5563"/>
+    </marker>
+  </defs>
+</svg>

@@ -256,13 +256,7 @@ await client.fundTransaction(txId);
 
 If requester contests delivery:
 
-```mermaid
-graph LR
-    A[DELIVERED] -->|"Within dispute window"| B[DISPUTED]
-    B -->|"Admin resolves"| C[SETTLED]
-
-    style B fill:#ef4444,stroke:#dc2626,color:#fff
-```
+![Dispute Path](/img/diagrams/dispute-path.svg)
 
 ```typescript
 // Requester raises dispute (within dispute window)
