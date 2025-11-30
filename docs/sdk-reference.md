@@ -13,7 +13,7 @@ Make sure you have:
 - [ ] **Node.js 16+** installed ([download](https://nodejs.org))
 - [ ] **Private key** for Base Sepolia testnet wallet
 - [ ] **~0.01 ETH** for gas fees ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
-- [ ] **Mock USDC** tokens ([see Installation Guide](/installation#get-testnet-tokens))
+- [ ] **Mock USDC** tokens ([see Installation Guide](/installation#step-4-get-testnet-tokens))
 - [ ] Basic understanding of **async/await** and **TypeScript**
 
 **Estimated time to first transaction:** ~5 minutes
