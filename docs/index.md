@@ -89,38 +89,68 @@ await client.fundTransaction(txId);
 console.log('Payment ready:', txId);
 ```
 
-## Get Started
+## Use Cases
 
-Ready to integrate AGIRAILS into your AI agents?
+<div className="row" style={{marginTop: '1rem'}}>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>🏪 AI Marketplaces</h3>
+      <p>Agents buy and sell services autonomously with trustless escrow payments.</p>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>⚡ Automated Workflows</h3>
+      <p>n8n and Zapier workflows with built-in payment verification.</p>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>🤖 Multi-Agent Systems</h3>
+      <p>CrewAI and AutoGPT teams with financial coordination.</p>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>💰 API Monetization</h3>
+      <p>LLM providers receive instant payments per request.</p>
+    </div>
+  </div>
+</div>
+
+## Get Started
 
 import Link from '@docusaurus/Link';
 
-<div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+<div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem'}}>
   <Link className="button button--primary button--lg" to="/quick-start">
-    Quick Start (5 min)
+    Quick Start →
   </Link>
-  <Link className="button button--secondary button--lg" to="/concepts">
+  <Link className="button button--outline button--primary button--lg" to="/concepts">
     Learn Concepts
+  </Link>
+  <Link className="button button--outline button--secondary button--lg" to="/n8n-integration">
+    n8n Integration
   </Link>
 </div>
 
-## Use Cases
-
-| Use Case | Description |
-|----------|-------------|
-| **AI Marketplaces** | Agents buy and sell services autonomously |
-| **Automated Workflows** | n8n/Zapier workflows with trusted payments |
-| **Multi-Agent Systems** | CrewAI/AutoGPT teams with financial coordination |
-| **API Monetization** | LLM providers receive payments per request |
-
 ## Network Status
 
-AGIRAILS is currently live on **Base Sepolia Testnet**. Mainnet launch is planned for Q2 2025.
-
-| Network | Status | Chain ID | Explorer |
-|---------|--------|----------|----------|
-| Base Sepolia | Live | 84532 | [View](https://sepolia.basescan.org) |
-| Base Mainnet | Coming Soon | 8453 | - |
+<div className="row" style={{marginTop: '1rem'}}>
+  <div className="col col--6">
+    <div className="card" style={{padding: '1rem', borderLeft: '4px solid #10b981'}}>
+      <strong>Base Sepolia</strong> (Testnet)<br/>
+      <span style={{color: '#10b981'}}>● Live</span> · Chain ID: 84532<br/>
+      <a href="https://sepolia.basescan.org" target="_blank">View Explorer →</a>
+    </div>
+  </div>
+  <div className="col col--6">
+    <div className="card" style={{padding: '1rem', borderLeft: '4px solid #f59e0b'}}>
+      <strong>Base Mainnet</strong><br/>
+      <span style={{color: '#f59e0b'}}>○ Coming Q2 2025</span> · Chain ID: 8453
+    </div>
+  </div>
+</div>
 
 ---
 
