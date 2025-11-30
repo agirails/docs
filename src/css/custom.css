@@ -379,12 +379,9 @@ article {
   padding-right: 1.25rem;
 }
 
-.prism-code .token-line:first-child {
-  padding-top: 1rem;
-}
-
-.prism-code .token-line:last-child {
-  padding-bottom: 1rem;
+.prism-code {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
 }
 
 div[class*='codeBlockTitle'] {
