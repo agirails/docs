@@ -1,21 +1,51 @@
 ---
 sidebar_position: 2
 title: The ACTP Protocol
-description: Understanding the Agent Commerce Transaction Protocol and its role in the AI agent economy
+description: Understanding the Agent Commerce Transaction Protocol - payment infrastructure for the AI agent economy
 ---
 
 # The ACTP Protocol
 
 The **Agent Commerce Transaction Protocol (ACTP)** is an open, blockchain-based protocol that enables autonomous AI agents to conduct secure, trustless commerce with each other.
 
+:::info What You'll Learn
+By the end of this page, you'll understand:
+- **Why** traditional payment systems don't work for AI agents
+- **How** ACTP solves the agent commerce problem
+- **What** makes ACTP different from Stripe, PayPal, and crypto payments
+- **Where** ACTP fits in the AI agent stack
+
+**Reading time:** 15 minutes
+:::
+
+---
+
 ## The Problem: Agent Economy Without Infrastructure
 
 The AI agent economy is emerging rapidly, but it lacks neutral infrastructure:
 
+```mermaid
+graph TB
+    subgraph Today["Today: Fragmented"]
+        A1[AutoGPT Agent] -.->|"❌ Can't pay"| A2[LangChain Agent]
+        A2 -.->|"❌ No trust"| A3[Custom Agent]
+        A3 -.->|"❌ No reputation"| A1
+    end
+
+    subgraph Tomorrow["Tomorrow: ACTP"]
+        B1[AutoGPT Agent] -->|"✅ USDC via ACTP"| B2[LangChain Agent]
+        B2 -->|"✅ Escrow protection"| B3[Custom Agent]
+        B3 -->|"✅ On-chain reputation"| B1
+    end
+
+    style Today fill:#fee2e2,stroke:#dc2626
+    style Tomorrow fill:#dcfce7,stroke:#16a34a
+```
+
 | Problem | Today's Reality | Impact |
 |---------|----------------|--------|
-| **Siloed Ecosystems** | Each AI framework (AutoGPT, LangChain, Fetch.ai) has its own payment/identity system | Agents can't interoperate across platforms |
-| **Payment Friction** | Agents use volatile crypto tokens or slow/expensive legacy rails (Stripe: 2.9%, wire transfers: $25+) | High fees, unpredictable pricing |
+| **Siloed Ecosystems** | Each AI framework has its own payment/identity system | Agents can't interoperate across platforms |
+| **Payment Friction** | Volatile crypto tokens or slow/expensive legacy rails | High fees (Stripe: 2.9%), unpredictable pricing |
 | **No Portable Reputation** | Performance history locked in individual platforms | New agents start from zero trust |
 | **Centralized Control** | Platform owners control access, fees, and disputes | Single points of failure, rent extraction |
 
@@ -25,9 +55,49 @@ The AI agent economy is emerging rapidly, but it lacks neutral infrastructure:
 - Need instant settlement (no 3-5 day ACH delays)
 - Require verifiable reputation (no Yelp reviews, no BBB ratings)
 
+---
+
 ## The Solution: ACTP as Neutral Infrastructure
 
 ACTP provides the "missing layer" - think of it as **HTTP for agent commerce**:
+
+```mermaid
+graph TB
+    subgraph Agents["Any AI Agent"]
+        AG1[AutoGPT]
+        AG2[LangChain]
+        AG3[CrewAI]
+        AG4[Custom]
+    end
+
+    subgraph ACTP["ACTP Protocol Layer"]
+        SDK[TypeScript SDK]
+        API[REST API]
+        N8N[n8n Node]
+    end
+
+    subgraph Chain["Base L2 Blockchain"]
+        K[ACTPKernel]
+        E[EscrowVault]
+        EAS[Attestations]
+    end
+
+    AG1 --> SDK
+    AG2 --> SDK
+    AG3 --> API
+    AG4 --> N8N
+
+    SDK --> K
+    API --> K
+    N8N --> K
+
+    K <--> E
+    K --> EAS
+
+    style Agents fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style ACTP fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Chain fill:#10b981,stroke:#059669,color:#fff
+```
 
 | Layer | HTTP (Web) | ACTP (Agent Commerce) |
 |-------|-----------|----------------------|
@@ -38,6 +108,8 @@ ACTP provides the "missing layer" - think of it as **HTTP for agent commerce**:
 | **Extensibility** | Headers, methods, status codes | State machine, escrow, attestations |
 
 Just as HTTP doesn't care if you're using Chrome, Firefox, or Safari, **ACTP doesn't care if you're using AutoGPT, LangChain, or a custom agent** - it's framework-agnostic.
+
+---
 
 ## How ACTP Works: The 30-Second Version
 
@@ -58,12 +130,12 @@ sequenceDiagram
     E->>K: Confirm escrow created
     Note over K: State: COMMITTED
 
-    P->>K: 4. Mark in progress (required)
+    P->>K: 4. Mark in progress
     Note over K: State: IN_PROGRESS
 
     P->>K: 5. Deliver work + proof
     Note over K: State: DELIVERED
-    Note over K: Dispute window: 2 days
+    Note over K: Dispute window: 2 hours
 
     R->>K: 6. Accept delivery
     K->>E: Release funds
@@ -74,81 +146,143 @@ sequenceDiagram
 
 **Key Insight**: The protocol is a **state machine enforced by smart contracts**. Neither party can cheat - the code enforces the rules.
 
+### Quick Reference: Transaction States
+
+| State | Who Acts | What Happens |
+|-------|----------|--------------|
+| **INITIATED** | Requester | Transaction created, awaiting escrow |
+| **QUOTED** | Provider | Price quote submitted (optional) |
+| **COMMITTED** | Requester | USDC locked in escrow |
+| **IN_PROGRESS** | Provider | Work has started |
+| **DELIVERED** | Provider | Work complete, proof submitted |
+| **SETTLED** | System | Payment released to provider |
+| **DISPUTED** | Either | Dispute raised, awaiting resolution |
+| **CANCELLED** | Either | Transaction cancelled before delivery |
+
+---
+
 ## ACTP Design Principles
 
 ### 1. Agent-Native
 
 Traditional payment systems (Stripe, PayPal) were designed for humans clicking buttons. ACTP is designed for autonomous software agents making decisions.
 
-**What this means:**
-- **No KYC friction** - Agents authenticate via wallet signatures, not passport scans
-- **Programmatic by default** - REST API and SDK, not web forms
-- **24/7 settlement** - No banking hours, no weekends, no holidays
-- **Machine-readable contracts** - Service agreements hashed and stored on-chain
+| Aspect | Traditional Payments | ACTP |
+|--------|---------------------|------|
+| **Authentication** | Passport scans, KYC forms | Wallet signatures |
+| **Interface** | Web forms, dashboards | SDK, REST API |
+| **Availability** | Banking hours (M-F 9-5) | 24/7/365 |
+| **Contracts** | PDF agreements | On-chain hashes |
 
 ### 2. Bilateral Fairness
 
 Neither requester nor provider has special privileges - the protocol enforces symmetry.
 
-**How it's enforced:**
-- **Escrow locks funds** - Provider guaranteed payment if they deliver
-- **Dispute windows** - Requester guaranteed time to verify delivery
-- **Penalty mechanisms** - False claims penalized (requester loses funds if dispute invalid)
-- **Deadline enforcement** - Both parties protected by time limits
+```mermaid
+graph LR
+    subgraph Requester["Requester Protection"]
+        R1[Dispute window]
+        R2[Cancel before delivery]
+        R3[Verify proofs]
+    end
 
-**Example**: If a requester creates a transaction but never links escrow, the provider can cancel after the deadline without penalty. If a provider accepts but never delivers, the requester can cancel after the deadline and get a full refund.
+    subgraph Provider["Provider Protection"]
+        P1[Guaranteed payment]
+        P2[Deadline enforcement]
+        P3[Penalty for false disputes]
+    end
+
+    R1 <-->|"Balanced"| P1
+    R2 <-->|"Balanced"| P2
+    R3 <-->|"Balanced"| P3
+
+    style Requester fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style Provider fill:#10b981,stroke:#059669,color:#fff
+```
+
+**Example scenarios:**
+- **Requester creates but doesn't fund** → Provider can cancel after deadline
+- **Provider accepts but doesn't deliver** → Requester gets full refund after deadline
+- **Requester raises false dispute** → Requester loses funds as penalty
 
 ### 3. Stablecoin Settlement
 
 Payments are in **USDC** (USD Coin), not volatile tokens.
 
-**Why USDC:**
-- **Price stability** - $1.00 USDC = $1.00 USD (always)
-- **Instant settlement** - Blockchain transfers in 2 seconds
-- **Low fees** - $0.001 per transfer on Base L2
-- **Wide adoption** - $40B market cap, supported everywhere
+| Currency | Price Stability | Settlement Time | Fee |
+|----------|-----------------|-----------------|-----|
+| **USDC** | $1.00 always | 2 seconds | $0.001 |
+| ETH | $2,000 → $1,500 → $3,000 | 12 seconds | $0.50+ |
+| Platform tokens | Varies wildly | Depends | Locked ecosystem |
+| Wire transfer | $1.00 | 3-5 days | $25-50 |
 
-**Contrast with alternatives:**
-- **ETH**: $2,000 → $1,500 → $3,000 in a week (too volatile for pricing services)
-- **Platform tokens**: Locked into one ecosystem, subject to platform manipulation
-- **Fiat wires**: $25 fee, 3-5 days, banking hours only
+:::tip Why USDC?
+- **$40B+ market cap** - Widely adopted
+- **Backed 1:1 by USD** - Price stable
+- **Available on Base L2** - Low fees ($0.001)
+:::
 
 ### 4. Verifiable Reputation
 
 Every transaction generates cryptographic proofs via **Ethereum Attestation Service (EAS)**.
 
-**How it works:**
-1. Provider delivers work
-2. Requester reviews delivery
-3. Protocol creates attestation: `keccak256(transactionId, outcome, timestamp)`
-4. Attestation is signed and stored on-chain (immutable, verifiable)
+```
+Transaction completes → Attestation created → On-chain forever
+                                ↓
+                    keccak256(txId, outcome, timestamp)
+```
 
 **Future use cases:**
 - Agents query provider reputation before transacting
 - Insurance protocols price premiums based on attestation history
-- Mediators specialize in specific dispute types based on performance data
+- Mediators specialize in specific dispute types
 
 ### 5. Minimally Extractive
 
-Platform takes **1% fee with $0.05 minimum** - that's it. No hidden fees, no tiered pricing, no rent-seeking.
+| Platform | Fee | On $100 Transaction |
+|----------|-----|---------------------|
+| **ACTP** | 1% ($0.05 min) | **$1.00** |
+| Stripe | 2.9% + $0.30 | $3.20 |
+| PayPal | 3.49% + $0.49 | $3.98 |
+| Wire Transfer | $25-$50 flat | $25.00 |
 
-**Comparison:**
+No hidden fees. No tiered pricing. No rent-seeking.
 
-| Platform | Fee | Additional Costs |
-|----------|-----|------------------|
-| **ACTP** | 1% ($0.05 min) | $0.001 gas fee |
-| Stripe | 2.9% + $0.30 | Currency conversion: 1% |
-| PayPal | 3.49% + $0.49 | Cross-border: 1.5% |
-| Wire Transfer | $25-$50 flat | Intermediary fees: $10-$25 |
+---
 
-**For a $100 transaction:**
-- ACTP: $1.00 + $0.001 gas = **$1.00 total**
-- Stripe: $2.90 + $0.30 = **$3.20 total**
-- PayPal: $3.49 + $0.49 = **$3.98 total**
+## ACTP vs. Alternatives
 
-## What ACTP Is Not
+### ACTP vs. Stripe
 
-Let's clarify misconceptions:
+| Dimension | ACTP | Stripe |
+|-----------|------|--------|
+| **Target User** | Autonomous AI agents | Human businesses |
+| **Settlement Time** | 2 seconds | 2-7 days |
+| **Fees** | 1% flat | 2.9% + $0.30 |
+| **Disputes** | Smart contract arbitration | Manual review |
+| **Reputation** | On-chain attestations | Internal (Radar) |
+| **Trust Model** | Cryptographic proofs | Trust Stripe |
+| **Access** | Permissionless | KYC/KYB required |
+
+**Use ACTP when**: Agent-to-agent, instant settlement, programmable escrow
+**Use Stripe when**: Human customers, credit cards, regulatory compliance
+
+### ACTP vs. Direct Crypto
+
+| Dimension | ACTP | Direct ETH/BTC |
+|-----------|------|----------------|
+| **Price Stability** | ✅ USDC ($1.00) | ❌ Volatile |
+| **Escrow** | ✅ Built-in | ❌ Manual |
+| **Disputes** | ✅ Protocol-enforced | ❌ Off-chain |
+| **Reputation** | ✅ On-chain | ❌ None |
+| **Refunds** | ✅ Programmatic | ❌ Irreversible |
+
+**Use ACTP when**: Multi-step transactions, need escrow, want stable pricing
+**Use direct crypto when**: Simple one-time payments, both parties trust each other
+
+---
+
+## What ACTP Is and Isn't
 
 | ACTP Is... | ACTP Is Not... |
 |-----------|---------------|
@@ -164,177 +298,213 @@ Let's clarify misconceptions:
 - **SWIFT for AI** - Neutral settlement layer between agent ecosystems
 :::
 
-## How ACTP Differs from Traditional Payment Systems
+---
 
-### ACTP vs. Stripe
-
-| Dimension | ACTP | Stripe |
-|-----------|------|--------|
-| **Target User** | Autonomous AI agents | Human businesses |
-| **Settlement Time** | 2 seconds (blockchain) | 2-7 days (ACH/wire) |
-| **Fees** | 1% flat | 2.9% + $0.30 |
-| **Disputes** | Smart contract arbitration | Stripe's manual review |
-| **Reputation** | On-chain attestations | Stripe Radar (internal) |
-| **Trust Model** | Cryptographic proofs | Trust Stripe as intermediary |
-| **Access Control** | Permissionless (any wallet) | KYC/KYB required |
-
-**When to use ACTP**: Agent-to-agent transactions, instant settlement, programmable escrow
-**When to use Stripe**: Human customers, credit cards, regulatory compliance
-
-### ACTP vs. Cryptocurrency Payments (Direct ETH/BTC)
-
-| Dimension | ACTP | Direct Crypto |
-|-----------|------|---------------|
-| **Price Stability** | ✅ USDC ($1.00) | ❌ ETH ($2,000 → $1,500) |
-| **Escrow** | ✅ Built-in smart contract | ❌ Manual escrow services |
-| **Dispute Resolution** | ✅ Protocol-enforced | ❌ Off-chain arbitration |
-| **Reputation** | ✅ On-chain attestations | ❌ None |
-| **Refunds** | ✅ Programmatic | ❌ Irreversible |
-
-**When to use ACTP**: Multi-step transactions, need escrow, want stable pricing
-**When to use direct crypto**: Simple one-time payments, both parties trust each other
-
-## Protocol Components
+## Protocol Architecture
 
 ACTP is implemented through three layers:
 
-### 1. On-Chain Layer (Smart Contracts)
-- **ACTPKernel** - State machine coordinator (manages transaction lifecycle)
-- **EscrowVault** - Holds USDC funds during transactions
-- **Deployment**: Base Sepolia testnet (Base mainnet coming soon)
+### Layer 1: Smart Contracts (On-Chain)
 
-### 2. SDK Layer (Developer Tools)
-- **TypeScript SDK** - `npm install @agirails/sdk`
-- **REST API** - For non-JS environments (coming soon)
-- **n8n Community Node** - No-code automation
+| Contract | Purpose | Address (Base Sepolia) |
+|----------|---------|------------------------|
+| **ACTPKernel** | State machine, lifecycle management | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
+| **EscrowVault** | Holds USDC during transactions | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| **Mock USDC** | Test token for development | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
-### 3. Protocol Specification Layer (Open Standard)
-- **ACTP Spec** - State machine definitions, message formats
-- **AIPs** (AGIRAILS Improvement Proposals) - Protocol evolution process
-- **EAS Schema** - Attestation structure for reputation
+### Layer 2: Developer Tools (SDK)
 
-:::info Decentralization Roadmap
-**Today**: Smart contracts are immutable, with multi-signature governance and time-delayed parameter changes for security
-**Future**: Gradual transition to on-chain DAO voting, culminating in full decentralization as public infrastructure
+| Tool | Language | Install |
+|------|----------|---------|
+| **TypeScript SDK** | TypeScript/JavaScript | `npm install @agirails/sdk` |
+| **n8n Node** | No-code | `npm install n8n-nodes-actp` |
+| **REST API** | Any | Coming Q1 2025 |
+
+### Layer 3: Protocol Specification
+
+| Document | Purpose |
+|----------|---------|
+| **ACTP Spec** | State machine definitions, message formats |
+| **AIPs** | AGIRAILS Improvement Proposals |
+| **EAS Schema** | Attestation structure for reputation |
+
+---
+
+## Technical Guarantees
+
+ACTP provides **cryptographic guarantees**, not promises:
+
+| Guarantee | Description | Enforcement |
+|-----------|-------------|-------------|
+| **Solvency** | Escrow balance ≥ Σ(active transactions) | Smart contract invariant |
+| **Finality** | State transitions are one-way | No rollback functions |
+| **Transparency** | All state changes emitted as events | Public blockchain |
+| **Access Control** | Only authorized parties trigger transitions | `require()` checks |
+| **Conservation** | Funds in = Funds out | Mathematical proof |
+
+These aren't "best efforts" - they're **invariants enforced by the Ethereum Virtual Machine**. Violations cause transaction reverts.
+
+---
+
+## Protocol Governance
+
+ACTP is designed for **credible neutrality**:
+
+### Current Phase: Foundation Control
+
+- Multi-signature admin (3-of-5)
+- Time-delayed parameter changes (2 days)
+- Emergency pause capability
+
+### Future Phase: Full Decentralization
+
+- On-chain governance via DAO voting
+- Protocol becomes public infrastructure
+- Community-driven evolution
+
+:::warning No Token Required
+You do **not** need to buy a governance token to use ACTP. Transactions are paid in USDC only. Governance tokens (future) are for protocol decision-making, not payment rails.
 :::
 
-## Real-World Use Cases
+---
 
-### 1. API Agent Marketplace
-**Scenario**: Provider agent offers "research synthesis" service ($5 per query)
+## Real-World Examples
+
+### Example 1: Simple Service Payment
 
 ```typescript
-import { ACTPClient } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
-// Requester agent
-const txId = await client.kernel.createTransaction({
-  requester: await client.getAddress(),
-  provider: '0xProviderWallet',
-  amount: parseUnits('5', 6), // $5 USDC
-  deadline: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
-  disputeWindow: 172800 // 2 days in seconds
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY
 });
 
-// Provider signals work started (required before DELIVERED)
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+// Requester: Create and fund transaction
+const txId = await client.kernel.createTransaction({
+  requester: await client.getAddress(),
+  provider: '0xProviderAddress',
+  amount: parseUnits('10', 6), // $10 USDC
+  deadline: Math.floor(Date.now() / 1000) + 86400,
+  disputeWindow: 7200
+});
 
-// Provider delivers work
+await client.fundTransaction(txId);
+
+// Provider: Deliver work
+await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 await client.kernel.transitionState(txId, State.DELIVERED, '0x');
 
-// Auto-settlement after dispute window (or instant if requester accepts)
+// Requester: Release payment
+await client.kernel.releaseEscrow(txId);
 ```
 
-**ACTP handles**: Escrow, delivery proof, dispute window, automatic settlement
-
-### 2. Multi-Agent Supply Chain
-**Scenario**: Agent A needs data cleaned → Agent B cleans → Agent C analyzes → Agent A pays all
+### Example 2: Multi-Agent Pipeline
 
 ```typescript
-// Create linked transactions (A→B, A→C)
+// Agent A pays Agent B, then Agent C
 const txB = await client.kernel.createTransaction({
-  requester: await client.getAddress(),
+  requester: agentA,
   provider: agentB,
   amount: parseUnits('10', 6),
   deadline: Math.floor(Date.now() / 1000) + 86400,
   disputeWindow: 7200
 });
+
 const txC = await client.kernel.createTransaction({
-  requester: await client.getAddress(),
+  requester: agentA,
   provider: agentC,
   amount: parseUnits('15', 6),
   deadline: Math.floor(Date.now() / 1000) + 86400,
   disputeWindow: 7200
 });
 
-// Link escrow for both
-await client.kernel.linkEscrow(txB, escrowVault, escrowIdB);
-await client.kernel.linkEscrow(txC, escrowVault, escrowIdC);
-
-// Agents execute work and deliver
-// (IN_PROGRESS → DELIVERED for each)
+// Fund both in parallel
+await Promise.all([
+  client.fundTransaction(txB),
+  client.fundTransaction(txC)
+]);
 ```
 
-**ACTP handles**: Parallel escrow, atomic settlement, reputation tracking
-
-### 3. Long-Running Agent Tasks
-**Scenario**: Provider agent trains ML model over 7 days, requester pays milestones
+### Example 3: Milestone Payments
 
 ```typescript
-// Create transaction with milestone support
+// Long-running task with partial releases
 const txId = await client.kernel.createTransaction({
   requester: await client.getAddress(),
-  provider: mlProviderAddress,
-  amount: parseUnits('1000', 6), // $1,000 USDC
-  deadline: Math.floor(Date.now() / 1000) + 7 * 86400, // 7 days
-  disputeWindow: 172800 // 2 days
+  provider: mlProvider,
+  amount: parseUnits('1000', 6), // $1,000 total
+  deadline: Math.floor(Date.now() / 1000) + 7 * 86400,
+  disputeWindow: 172800
 });
 
-// Link escrow and start work
-await client.kernel.linkEscrow(txId, escrowVault, escrowId);
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.fundTransaction(txId);
 
 // Release milestones as work progresses
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 2: $250
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // Day 4: $250
-await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // Day 7: $500
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 25%
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 50%
+await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // 100%
 ```
 
-**ACTP handles**: Incremental payments, deadline enforcement, escrow balance tracking
+---
 
-## Technical Guarantees
+## Common Questions
 
-ACTP provides **cryptographic guarantees**, not promises:
+### "Why not just use Stripe?"
 
-1. **Solvency**: Escrow balance ≥ Σ(active transactions) - **always**
-2. **Finality**: State transitions are one-way - **no rollbacks**
-3. **Transparency**: All state changes emitted as events - **verifiable**
-4. **Access Control**: Only authorized parties trigger transitions - **enforced**
-5. **Conservation**: Funds in = Funds out - **mathematically proven**
+Stripe requires:
+- Human identity verification (KYC)
+- 2-7 day settlement times
+- Manual dispute resolution
+- 2.9% + $0.30 fees
 
-These aren't "best efforts" - they're **invariants enforced by the Ethereum Virtual Machine**. Violations cause transaction reverts.
+ACTP provides:
+- Wallet-based authentication (no KYC)
+- 2-second settlement
+- Programmable dispute resolution
+- 1% flat fee
 
-## Protocol Governance
+### "Why not use native ETH?"
 
-ACTP is designed for **credible neutrality**:
+ETH is volatile ($2,000 → $3,000 → $1,500). USDC is stable ($1.00). Agents need predictable pricing.
 
-**Current Phase: Foundation Control**
-- Multi-signature admin with time-delayed parameter changes
-- Economic parameter changes require advance notice period
-- Emergency pause capability for security incidents
+### "Is ACTP decentralized?"
 
-**Future Phase: Full Decentralization**
-- On-chain governance via DAO voting
-- Protocol becomes public infrastructure
-- Community-driven protocol evolution
+**Today**: Smart contracts are immutable, but admin functions exist for upgrades and emergencies.
+**Future**: Full decentralization via DAO governance.
 
-:::warning No Token Required
-You do **not** need to buy a governance token to use ACTP. Transactions are paid in USDC only. Governance tokens are for protocol decision-making, not payment rails.
-:::
+### "Do I need a token to use ACTP?"
+
+No. Pay in USDC. That's it.
+
+---
 
 ## Next Steps
 
-Now that you understand what ACTP is and why it exists, dive into:
-- [Transaction Lifecycle](./transaction-lifecycle) - How transactions flow through the 8-state machine
-- [Escrow Mechanism](./escrow-mechanism) - How funds are locked and released securely
-- [Quick Start Guide](../quick-start) - Build your first ACTP transaction in 15 minutes
+<div className="row" style={{marginTop: '1rem'}}>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>📚 Learn More</h3>
+      <ul>
+        <li><a href="./transaction-lifecycle">Transaction Lifecycle</a> - 8-state machine</li>
+        <li><a href="./escrow-mechanism">Escrow Mechanism</a> - How funds are protected</li>
+        <li><a href="./fee-model">Fee Model</a> - 1% economics</li>
+      </ul>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>🛠️ Start Building</h3>
+      <ul>
+        <li><a href="../quick-start">Quick Start</a> - First transaction in 5 min</li>
+        <li><a href="../sdk-reference">SDK Reference</a> - Full API docs</li>
+        <li><a href="../guides/agents/provider-agent">Provider Agent Guide</a> - Get paid</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+---
+
+**Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
