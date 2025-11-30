@@ -51,57 +51,7 @@ Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
 
 ## The Complete State Machine
 
-```mermaid
-stateDiagram-v2
-    [*] --> INITIATED: createTransaction()
-    INITIATED --> QUOTED: transitionState(QUOTED)
-    INITIATED --> COMMITTED: linkEscrow()
-    QUOTED --> COMMITTED: linkEscrow()
-    COMMITTED --> IN_PROGRESS: transitionState(IN_PROGRESS)
-    IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)
-    DELIVERED --> SETTLED: releaseEscrow()
-    DELIVERED --> DISPUTED: transitionState(DISPUTED)
-    DISPUTED --> SETTLED: resolveDispute() [admin]
-    DISPUTED --> CANCELLED: resolveDispute() [admin]
-
-    INITIATED --> CANCELLED: transitionState(CANCELLED)
-    QUOTED --> CANCELLED: transitionState(CANCELLED)
-    COMMITTED --> CANCELLED: transitionState(CANCELLED)
-    IN_PROGRESS --> CANCELLED: transitionState(CANCELLED)
-
-    SETTLED --> [*]
-    CANCELLED --> [*]
-
-    note right of INITIATED
-        Requester creates transaction
-        No escrow yet
-    end note
-
-    note right of QUOTED
-        Provider submits price quote
-        Optional state
-    end note
-
-    note right of COMMITTED
-        Escrow linked, funds locked
-        Work can begin
-    end note
-
-    note right of IN_PROGRESS
-        Provider signals active work
-        Required before DELIVERED
-    end note
-
-    note right of DELIVERED
-        Provider submits result + proof
-        Dispute window starts
-    end note
-
-    note right of SETTLED
-        Funds released to provider
-        Transaction complete
-    end note
-```
+![ACTP Transaction Lifecycle - 8 states from INITIATED to SETTLED](/img/diagrams/transaction-lifecycle.svg)
 
 :::info Optional vs Required States
 - **QUOTED** is **optional** - transactions can skip directly from INITIATED → COMMITTED
