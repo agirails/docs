@@ -162,4 +162,4 @@ import Link from '@docusaurus/Link';
 
 ---
 
-*Built by developers, for autonomous systems. Open source. Audited. Production-ready.*
+*Built for the autonomous economy. Open source. Currently in beta on Base Sepolia.*
