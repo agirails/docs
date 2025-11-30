@@ -366,7 +366,6 @@ article {
 .prism-code {
   border-radius: var(--ifm-global-radius);
   border: 1px solid var(--ifm-toc-border-color);
-  padding: 1rem 1.25rem !important;
 }
 
 [data-theme='dark'] .prism-code {
@@ -374,13 +373,18 @@ article {
   border: 1px solid var(--agirails-secondary);
 }
 
-/* Code block container padding */
-div[class*='codeBlockContent'] {
-  padding: 0;
+/* Code block line padding - the actual code content */
+.prism-code .token-line {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
-div[class*='codeBlockLines'] {
-  padding: 1rem 1.25rem;
+.prism-code .token-line:first-child {
+  padding-top: 1rem;
+}
+
+.prism-code .token-line:last-child {
+  padding-bottom: 1rem;
 }
 
 div[class*='codeBlockTitle'] {
