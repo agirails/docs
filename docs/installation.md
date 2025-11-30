@@ -101,8 +101,7 @@ Never commit private keys to version control. Add `.env` to your `.gitignore`:
 Load environment variables in your code:
 
 ```typescript title="agent.ts"
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 ```
 
 ## Network Configuration
@@ -128,6 +127,10 @@ When initializing the client, use these exact network names:
 
 :::warning Not Yet Deployed
 Base Mainnet contracts will be deployed after testnet validation. Use Base Sepolia for development.
+:::
+
+:::caution SDK Will Throw Error
+If you attempt to use `network: 'base-mainnet'` in the SDK, you will receive an error because the contract addresses are currently set to zero addresses (`0x000...`). This is intentional to prevent accidental mainnet usage before contracts are deployed. Only use `'base-sepolia'` until mainnet deployment is announced.
 :::
 
 | Resource | Details |
@@ -190,9 +193,7 @@ Test your setup with this verification script:
 ```typescript title="verify-setup.ts"
 import { ACTPClient } from '@agirails/sdk';
 import { ethers } from 'ethers';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import 'dotenv/config';
 
 async function verifySetup() {
   try {
@@ -217,21 +218,21 @@ async function verifySetup() {
     console.log('✓ USDC contract:', config.contracts.usdc);
 
     // Check ETH balance (for gas)
-    const ethBalance = await client.provider.getBalance(address);
+    const ethBalance = await client.getProvider().getBalance(address);
     console.log('✓ ETH balance:', ethers.formatEther(ethBalance), 'ETH');
 
     // Check USDC balance
     const usdcContract = new ethers.Contract(
       config.contracts.usdc,
       ['function balanceOf(address) view returns (uint256)'],
-      client.provider
+      client.getProvider()
     );
     const usdcBalance = await usdcContract.balanceOf(address);
     console.log('✓ USDC balance:', ethers.formatUnits(usdcBalance, 6), 'USDC');
 
     console.log('\n✅ Setup verified! You\'re ready to use AGIRAILS.');
-  } catch (error) {
-    console.error('❌ Setup verification failed:', error.message);
+  } catch (error: unknown) {
+    console.error('❌ Setup verification failed:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }
