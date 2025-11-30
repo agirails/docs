@@ -8,229 +8,293 @@ description: Use AGIRAILS with n8n workflow automation to build AI agent payment
 
 Build automated AI agent payment workflows using the official AGIRAILS n8n community node.
 
-## Overview
+:::caution Beta Status
+The n8n node is currently in beta and not yet published to npm. For early access, [contact us on Discord](https://discord.gg/nuhCt75qe4) or build from source.
+:::
 
-The `n8n-nodes-actp` package provides native n8n nodes for interacting with the ACTP protocol, enabling you to:
+## What You Can Build
 
-- Create and manage escrow transactions
-- Monitor transaction state changes
-- Automate payment releases
-- Build complex multi-agent workflows
+With the ACTP n8n node, you can create no-code workflows for:
+
+- **AI Service Marketplace**: Pay AI agents for completed work automatically
+- **Multi-Agent Pipelines**: Chain multiple AI services with escrow payments
+- **Automated Settlements**: Release funds when delivery is verified
+- **Dispute Handling**: Raise disputes when work doesn't meet requirements
+
+## Prerequisites
+
+Before starting:
+
+1. **n8n instance** - [Self-hosted](https://docs.n8n.io/hosting/) or [n8n Cloud](https://n8n.io/cloud/)
+2. **Ethereum wallet** with private key (testnet only!)
+3. **Base Sepolia ETH** for gas - [Get from faucet](https://portal.cdp.coinbase.com/products/faucet)
+4. **Mock USDC** for transactions - See [Getting Testnet USDC](#getting-testnet-usdc) below
 
 ## Installation
 
-### In n8n Cloud
+### From Source (Current Method)
 
-1. Go to **Settings** > **Community Nodes**
-2. Click **Install a community node**
-3. Enter: `n8n-nodes-actp`
-4. Click **Install**
-
-### In Self-Hosted n8n
+Since the node isn't published to npm yet:
 
 ```bash
-# Navigate to your n8n installation
-cd ~/.n8n
+# Clone the repository
+git clone https://github.com/agirails/n8n-nodes-actp.git
+cd n8n-nodes-actp
 
-# Install the ACTP node
+# Install dependencies and build
+npm install
+npm run build
+
+# Link to your n8n installation
+cd ~/.n8n
+npm link /path/to/n8n-nodes-actp
+```
+
+Restart n8n to load the node.
+
+### Future: npm Install
+
+Once published, installation will be:
+
+```bash
+cd ~/.n8n
 npm install n8n-nodes-actp
 ```
 
-Then restart n8n to load the new node.
+Or in n8n Cloud: **Settings** → **Community Nodes** → Install `n8n-nodes-actp`
 
-### Verify Installation
+## Quick Start: Your First Payment
 
-After installation, you should see the **ACTP** node available in the n8n node palette under the "Action" category.
+Let's create a simple workflow that pays an AI agent.
 
-## Configuration
+### Step 1: Configure Credentials
 
-### Credentials Setup
-
-1. In n8n, go to **Credentials** > **Add Credential**
+1. In n8n, go to **Credentials** → **Add Credential**
 2. Search for **ACTP API**
-3. Configure the following:
+3. Fill in:
 
-| Field | Description | Example |
-|-------|-------------|---------|
-| **Network** | Target network (currently testnet only) | `base-sepolia` |
-| **Private Key** | Your wallet's private key (with 0x prefix) | `0x1234...` |
-| **RPC URL** | Optional custom RPC endpoint (leave empty for default) | `https://sepolia.base.org` |
+| Field | Value |
+|-------|-------|
+| Network | `base-sepolia` |
+| Private Key | `0x...` (your testnet wallet private key) |
+| RPC URL | Leave empty (uses default) |
 
-:::danger Security
-Never expose your private key. Use n8n's credential encryption and environment variables in production.
+:::danger Never Use Real Keys
+Only use testnet wallets with no real funds. Never paste mainnet private keys.
 :::
+
+### Step 2: Create a Simple Workflow
+
+Create this 3-node workflow:
+
+```
+[Manual Trigger] → [ACTP: Create Transaction] → [ACTP: Link Escrow]
+```
+
+**Node 1: Manual Trigger**
+- Just drag in the Manual Trigger node
+
+**Node 2: ACTP - Create Transaction**
+- Operation: `Create Transaction`
+- Provider Address: `0x742d35Cc6634C0532925a3b844Bc9e7595f12345` (any valid address)
+- Amount: `1` (1 USDC)
+- Deadline: `{{ $now.plus(1, 'day').toISO() }}`
+- Dispute Window: `7200` (2 hours)
+
+**Node 3: ACTP - Link Escrow**
+- Operation: `Link Escrow`
+- Transaction ID: `{{ $json.transactionId }}`
+
+### Step 3: Run It
+
+1. Click **Execute Workflow**
+2. Check the output - you should see:
+   - Transaction ID (bytes32 hash)
+   - Escrow ID
+   - State: `COMMITTED`
+
+Congratulations! You just locked funds in escrow for an AI agent payment.
 
 ## Available Operations
 
-The ACTP node provides these operations:
+### For Requesters (Paying for Services)
 
-| Operation | Description | Role |
-|-----------|-------------|------|
-| **Create Transaction** | Initialize a new escrow transaction | Requester |
-| **Link Escrow** | Lock funds in escrow (auto-calculates amount + 1% fee) | Requester |
-| **Get Transaction** | Retrieve transaction details and current state | Any |
-| **Transition State** | Move to QUOTED, IN_PROGRESS, DELIVERED (provider) or SETTLED (requester) | Provider/Requester |
-| **Release With Verification** | Verify attestation and release escrow atomically (recommended) | Requester |
-| **Verify Attestation** | Verify delivery attestation before releasing | Requester |
-| **Release Escrow (Legacy)** | Release funds without verification (not recommended) | Requester |
-| **Raise Dispute** | Raise a dispute on delivered transaction | Requester |
-| **Cancel Transaction** | Cancel transaction before delivery | Requester |
+| Operation | When to Use |
+|-----------|-------------|
+| **Create Transaction** | Start a new payment to a provider |
+| **Link Escrow** | Lock USDC funds after creating transaction |
+| **Get Transaction** | Check current state and details |
+| **Release With Verification** | Pay provider after verified delivery |
+| **Raise Dispute** | Challenge delivery if unsatisfied |
+| **Cancel Transaction** | Cancel before work is delivered |
 
-### Create Transaction
+### For Providers (Delivering Services)
 
-Creates a new ACTP transaction with escrow.
+| Operation | When to Use |
+|-----------|-------------|
+| **Get Transaction** | Check transaction details |
+| **Transition State** | Update to IN_PROGRESS or DELIVERED |
 
-**Parameters:**
-- **Provider Address**: Ethereum address of the service provider
-- **Amount (USDC)**: Transaction amount (minimum $0.05)
-- **Deadline**: ISO date string or Unix timestamp
-- **Dispute Window**: Duration in seconds (default: 172800 = 2 days)
+### Operation Details
 
-### Link Escrow
+#### Create Transaction
 
-Locks funds in the escrow vault. If amount is not specified, automatically calculates transaction amount + 1% fee.
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| Provider Address | Who gets paid | `0x742d35...` |
+| Amount (USDC) | Payment amount (min $0.05) | `10` |
+| Deadline | When offer expires | `2024-12-31T23:59:59Z` |
+| Dispute Window | Seconds to raise dispute | `7200` (2 hours) |
 
-**Parameters:**
-- **Transaction ID**: The transaction to link escrow to
-- **Escrow Amount**: Optional - auto-calculated if not provided
+**Output:**
+```json
+{
+  "transactionId": "0x1234...",
+  "requester": "0xYourAddress...",
+  "provider": "0x742d35...",
+  "amount": "10000000",
+  "state": "INITIATED"
+}
+```
 
-### Transition State
+#### Link Escrow
 
-Moves the transaction through states. Typically used by provider, but SETTLED can be triggered by requester.
+| Parameter | Description |
+|-----------|-------------|
+| Transaction ID | From Create Transaction output |
 
-**Target States:**
-- **Quoted**: Provider submitted price quote (optional)
-- **In Progress**: Provider actively working (optional)
-- **Delivered**: Provider completed work
-- **Settled**: Release escrow to provider and finalize (requester)
+Automatically:
+- Approves USDC to escrow contract
+- Locks exact transaction amount
+- Transitions to COMMITTED state
 
-### Release With Verification
+**Note:** The 1% platform fee is deducted when funds are released, not when linking escrow.
 
-Atomically verifies the EAS attestation and releases escrow. This is the **recommended** way to release funds.
+#### Transition State
 
-**Parameters:**
-- **Transaction ID**: The delivered transaction
-- **Attestation UID**: EAS attestation UID (bytes32) from provider's delivery
+| Target State | Who Can Call | When |
+|--------------|--------------|------|
+| QUOTED | Provider | After reviewing request |
+| IN_PROGRESS | Provider | When starting work |
+| DELIVERED | Provider | When work is complete |
 
-### Verify Attestation
+#### Release With Verification
 
-Verifies a delivery attestation without releasing escrow. Use this to check attestation validity before deciding to release.
+Verifies the provider's delivery proof before releasing payment. **This is the secure way to release funds.**
 
-**Parameters:**
-- **Transaction ID**: The transaction to verify
-- **Attestation UID**: EAS attestation UID (bytes32) to verify
+| Parameter | Description |
+|-----------|-------------|
+| Transaction ID | The delivered transaction |
+| Attestation UID | EAS attestation from provider |
 
-**Returns:** `verified: true/false`
-
-### Release Escrow (Legacy)
-
-:::warning Not Recommended
-This operation releases escrow **without** verifying the delivery attestation. Use "Release With Verification" instead for secure payments.
-:::
-
-**Parameters:**
-- **Transaction ID**: The transaction to release
-
-### Raise Dispute
-
-Raises a dispute on a delivered transaction. Only available when transaction is in DELIVERED state.
-
-**Parameters:**
-- **Transaction ID**: The delivered transaction
-- **Dispute Reason**: Text explanation of why you're disputing (required)
-- **Evidence**: Optional supporting evidence (IPFS hash, URLs, etc.)
-
-### Cancel Transaction
-
-Cancels a transaction before delivery. Uses `transitionState` internally to move to CANCELLED state.
-
-**Parameters:**
-- **Transaction ID**: The transaction to cancel
-
-:::info
-Cancellation is only possible before the transaction reaches DELIVERED state.
+:::tip What's an Attestation UID?
+When the provider marks work as DELIVERED, they create an on-chain attestation (proof) using EAS (Ethereum Attestation Service). The UID is a bytes32 identifier for that proof. The provider should send this to you off-chain.
 :::
 
 ## Example Workflows
 
-### Requester Flow (Pay for AI Service)
-
-This workflow creates a transaction, waits for delivery, and releases payment:
+### Requester: Pay for AI Translation
 
 ```
-[Webhook] → [ACTP: Create Transaction] → [ACTP: Link Escrow] → [Wait] → [ACTP: Get Transaction] → [IF: DELIVERED] → [ACTP: Release With Verification]
+[Webhook] → [Create Transaction] → [Link Escrow] → [HTTP: Notify Provider]
+     ↓
+[Wait 1 hour]
+     ↓
+[Get Transaction] → [IF: state == DELIVERED] → [Release With Verification]
+                            ↓ (else)
+                    [IF: deadline passed] → [Cancel Transaction]
 ```
 
-1. **Webhook**: Receives job request
-2. **Create Transaction**: Initializes transaction with provider address
-3. **Link Escrow**: Locks USDC funds
-4. **Wait**: Polls periodically (use n8n's Wait node)
-5. **Get Transaction**: Check current state
-6. **IF Node**: Check if state is DELIVERED
-7. **Release With Verification**: Verify attestation and release funds
+**Workflow logic:**
+1. Receive translation request via webhook
+2. Create and fund transaction
+3. Notify provider (via HTTP request to their webhook)
+4. Wait and poll for completion
+5. Release payment when delivered, or cancel if expired
 
-### Provider Flow (Deliver AI Service)
-
-Build an AI agent that delivers results when notified:
+### Provider: AI Service Delivery
 
 ```
-[Webhook: Job Notification] → [AI Service] → [ACTP: Transition State (DELIVERED)] → [Notify]
+[Webhook: New Job] → [Get Transaction] → [Transition: IN_PROGRESS]
+        ↓
+[OpenAI: Process] → [Transition: DELIVERED] → [HTTP: Notify Requester]
 ```
 
-1. **Webhook**: Receives notification that work is needed (off-chain)
-2. **AI Service**: Execute your AI service (OpenAI, local model, etc.)
-3. **Transition State**: Move transaction to DELIVERED
-4. **Notify**: Send confirmation via Slack/Email
+**Workflow logic:**
+1. Receive notification of new funded transaction
+2. Verify transaction details
+3. Mark as in progress
+4. Do the AI work
+5. Mark as delivered
+6. Notify requester to release payment
 
-:::tip Polling for New Transactions
-Since there's no trigger node yet, providers can poll for new transactions using a Schedule Trigger + Get Transaction flow, or receive off-chain notifications via webhooks.
-:::
-
-### Multi-Agent Orchestration
-
-Coordinate multiple AI agents with sequential payments:
+### Multi-Agent Pipeline
 
 ```
-[Start] → [ACTP: Create + Link (Agent 1)] → [Wait for Delivery] → [Release] → [ACTP: Create + Link (Agent 2)] → [Wait] → [Release] → [Aggregate Results]
+[Start] → [Create TX: Agent 1] → [Link Escrow] → [Wait for Delivery] → [Release]
+                                                           ↓
+        [Create TX: Agent 2] ← [Pass Output] ← [Get TX 1 Result]
+                ↓
+        [Link Escrow] → [Wait for Delivery] → [Release] → [Aggregate Results]
 ```
+
+## Getting Testnet USDC
+
+The Mock USDC contract allows minting test tokens:
+
+### Using the SDK
+
+```typescript
+import { ethers } from 'ethers';
+
+const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+const usdcAddress = '0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb';
+const usdc = new ethers.Contract(usdcAddress, [
+  'function mint(address to, uint256 amount) public'
+], wallet);
+
+// Mint 1000 USDC (6 decimals)
+await usdc.mint(wallet.address, ethers.parseUnits('1000', 6));
+```
+
+### Using Basescan
+
+1. Go to [Mock USDC on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb#writeContract)
+2. Connect your wallet
+3. Call `mint(your_address, 1000000000)` (1000 USDC)
 
 ## Troubleshooting
 
 ### "Invalid private key"
 
-Ensure your private key:
-- Starts with `0x`
-- Is exactly 66 characters (0x + 64 hex chars)
-- Has no whitespace
+- Must start with `0x`
+- Must be exactly 66 characters
+- No spaces or newlines
 
 ### "Insufficient funds"
 
-Check that your wallet has:
-- ETH for gas fees ([get from Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet))
-- USDC for transaction amounts
+You need both:
+- **ETH** for gas → [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet)
+- **USDC** for transactions → See [Getting Testnet USDC](#getting-testnet-usdc)
 
 ### "Transaction reverted"
 
-Common causes:
-- Transaction already in terminal state
-- Deadline has passed
-- Insufficient escrow balance
-- Wrong caller (only requester/provider can perform certain actions)
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Invalid state" | Transaction already funded/completed | Check state with Get Transaction |
+| "Deadline passed" | Transaction expired | Create new transaction |
+| "Only requester" | Wrong wallet | Use the wallet that created the transaction |
+| "Only provider" | Wrong wallet | Use the provider's wallet |
 
-### Node not appearing
+### Node not appearing in n8n
 
-1. Restart n8n after installation
+1. Restart n8n: `n8n start`
 2. Clear browser cache
-3. Check n8n logs for loading errors:
-   ```bash
-   n8n start --tunnel 2>&1 | grep -i actp
-   ```
+3. Check logs: `n8n start 2>&1 | grep -i actp`
 
-## Contract Addresses
-
-The n8n node uses these deployed contracts:
-
-### Base Sepolia (Testnet)
+## Contract Addresses (Base Sepolia)
 
 | Contract | Address |
 |----------|---------|
@@ -242,10 +306,5 @@ The n8n node uses these deployed contracts:
 
 - [n8n-nodes-actp on GitHub](https://github.com/agirails/n8n-nodes-actp)
 - [n8n Documentation](https://docs.n8n.io/)
-- [Core Concepts](./concepts/) - Understand the ACTP protocol
-
-## Next Steps
-
-- [Quick Start](./quick-start) - Create your first transaction
-- [Installation Guide](./installation) - Set up the ACTP SDK
-- [Discord](https://discord.gg/nuhCt75qe4) - Get help from the community
+- [ACTP Core Concepts](./concepts/)
+- [Discord Community](https://discord.gg/nuhCt75qe4)
