@@ -126,10 +126,18 @@ import Link from '@docusaurus/Link';
   <Link className="button button--primary button--lg" to="/quick-start">
     Quick Start →
   </Link>
-  <Link className="button button--secondary button--lg" to="/concepts">
+  <Link
+    className="button button--lg"
+    to="/concepts"
+    style={{border: '2px solid var(--ifm-color-primary)', color: 'var(--ifm-color-primary)', background: 'transparent'}}
+  >
     Learn Concepts
   </Link>
-  <Link className="button button--secondary button--lg" to="/n8n-integration">
+  <Link
+    className="button button--lg"
+    to="/n8n-integration"
+    style={{border: '2px solid var(--ifm-color-primary)', color: 'var(--ifm-color-primary)', background: 'transparent'}}
+  >
     n8n Integration
   </Link>
 </div>
