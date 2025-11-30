@@ -119,10 +119,6 @@ const config: Config = {
         },
         // Right side
         {
-          type: 'search',
-          position: 'right',
-        },
-        {
           href: 'https://github.com/agirails',
           label: 'GitHub',
           position: 'right',
@@ -213,6 +209,7 @@ const config: Config = {
         explicitSearchResultPath: true,
         docsRouteBasePath: '/',
         indexBlog: false,
+        searchBarPosition: 'right',
       },
     ],
   ],

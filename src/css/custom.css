@@ -599,3 +599,19 @@ html {
 [data-theme='dark'] ::selection {
   background: rgba(0, 212, 255, 0.2);
 }
+
+/* Position search bar before GitHub/Discord links */
+.navbar__items--right {
+  display: flex;
+}
+
+.navbar__items--right > .DocSearch {
+  order: -1; /* Move search to the beginning of right items */
+  margin-right: 0.5rem;
+}
+
+/* Local search plugin styling */
+.navbar__items--right > div[class*='searchBox'] {
+  order: -1;
+  margin-right: 0.5rem;
+}
