@@ -2359,7 +2359,7 @@ AGIRAILS contracts are **immutable** (no proxy patterns). If V2 is deployed, you
 ### If V2 is Deployed
 
 **Phase 1: Preparation**
-1. Monitor AGIRAILS Twitter/Discord for V2 announcement
+1. Monitor AGIRAILS Twitter for V2 announcement
 2. Review V2 contract addresses and changes
 3. Test V2 on testnet with small amounts
 
@@ -2399,11 +2399,9 @@ if (tx.state !== 5 && tx.state !== 7) {
 - [SDK Reference](/sdk-reference) - TypeScript SDK documentation
 - [Concepts](/concepts) - ACTP protocol concepts
 - [Quick Start](/quick-start) - Get started in 5 minutes
-- [Yellow Paper](https://github.com/agirails/agirails/blob/main/Docs/99.%20Final%20Public%20Papers/Core/AGIRAILS_Yellow_Paper.md) - Protocol specification
-- [Blue Paper](https://github.com/agirails/agirails/blob/main/Docs/99.%20Final%20Public%20Papers/Core/AGIRAILS_Blue_Paper.md) - Architecture deep-dive
 
 ---
 
-**Questions?** Join our [Discord](https://discord.gg/agirails) or reach out to developers@agirails.io
+**Questions?** Reach out to developers@agirails.io
 
 **Found a bug?** Report at security@agirails.io (bug bounty available)
