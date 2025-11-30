@@ -1,170 +1,244 @@
 ---
 sidebar_position: 6
 title: Fee Model
-description: Understanding ACTP's 1% fee with $0.05 minimum - the economics, calculation, and reasoning
+description: Understanding ACTP's 1% fee with $0.05 minimum transaction
 ---
 
 # Fee Model
 
-| | |
-|---|---|
+ACTP charges a simple, predictable fee on all transactions.
+
+:::info What You'll Learn
+By the end of this page, you'll understand:
+- **How** the 1% fee is calculated
+- **Why** we chose flat pricing over tiers
+- **When** fees are charged (settlement, milestones, disputes)
+- **How** fees compare to alternatives
+
+**Reading time:** 10 minutes
+:::
+
+---
+
+## Quick Reference
+
+| Parameter | Value |
+|-----------|-------|
 | **Platform Fee** | 1% of transaction amount |
 | **Minimum Transaction** | $0.05 USDC |
-| **Fee on Minimum** | $0.0005 (not $0.05) |
+| **Maximum Fee Cap** | 5% (hardcoded limit) |
+| **Fee Change Timelock** | 2 days notice |
 
-:::info Key Point
+:::tip Key Point
 The $0.05 minimum is a **transaction floor**, not a fee floor. A $1.00 transaction pays $0.01 fee (1%).
 :::
 
+---
+
 ## Fee Examples
 
-| Amount | Fee (1%) | Provider Receives |
-|--------|----------|-------------------|
+| Transaction | Fee (1%) | Provider Receives |
+|-------------|----------|-------------------|
 | $0.05 | $0.0005 | $0.0495 |
 | $1.00 | $0.01 | $0.99 |
 | $10.00 | $0.10 | $9.90 |
 | $100.00 | $1.00 | $99.00 |
 | $1,000.00 | $10.00 | $990.00 |
 
+**Formula:** `fee = amount × 0.01`
+
+---
+
 ## Why 1% Flat?
 
-**Predictability** - Agents calculate fees deterministically: `fee = amount × 0.01`
+### Predictability
 
-**Competitiveness** - Cheaper than Stripe (2.9%+$0.30), PayPal (3.49%+$0.49), comparable to Coinbase Commerce (1%)
+Agents calculate fees deterministically:
 
-**No tiers** - Same rate for $1 and $10,000 transactions
+```typescript
+const fee = amount * 0.01n / 100n; // Always 1%
+```
 
-## Why $0.05 Minimum?
+No tiers, no hidden costs, no surprises.
 
-The minimum transaction amount prevents **dust spam attacks**:
+### Competitiveness
 
-| Without minimum | With $0.05 minimum |
-|-----------------|-------------------|
-| 100K transactions × $0.01 = $1,000 attack cost | 100K transactions × $0.05 = $5,000 attack cost |
-| Low barrier to state bloat | Economically impractical |
+| Platform | Fee on $100 |
+|----------|-------------|
+| **ACTP** | **$1.00** |
+| Stripe | $3.20 (2.9% + $0.30) |
+| PayPal | $3.98 (3.49% + $0.49) |
+| Square | $2.70 (2.6% + $0.10) |
+| Wire Transfer | $25.00 |
 
-The minimum forces attackers to commit real capital, not generate noise.
+### No Tiers
+
+Same rate for $1 and $10,000 transactions. Simple economics for agent systems.
+
+---
+
+## Why $0.05 Minimum Transaction?
+
+Prevents **dust spam attacks**:
+
+| Attack Cost | Without Minimum | With $0.05 Minimum |
+|-------------|-----------------|-------------------|
+| 100K transactions | $1,000 | $5,000 |
+| State bloat | High | Economically impractical |
+
+The minimum forces meaningful capital commitment.
+
+---
 
 ## Fee Calculation in Code
 
-### Smart Contract Implementation
+### Smart Contract
 
 ```solidity
-// In ACTPKernel.sol
+// ACTPKernel.sol
 uint16 public platformFeeBps = 100; // 1% = 100 basis points
-uint16 public constant MAX_BPS = 10_000; // 100% = 10,000 basis points
+uint16 public constant MAX_BPS = 10_000;
 
-function _calculateFee(uint256 grossAmount, uint16 lockedFeeBps) internal pure returns (uint256) {
-    return (grossAmount * lockedFeeBps) / MAX_BPS;
+function _calculateFee(uint256 amount, uint16 feeBps) internal pure returns (uint256) {
+    return (amount * feeBps) / MAX_BPS;
 }
 
 // Example: $100 transaction
-// fee = (100e6 * 100) / 10_000 = 1e6 = $1.00 USDC
+// fee = (100e6 * 100) / 10_000 = 1e6 = $1.00
 ```
 
-**Key detail**: Fee uses **locked fee percentage** from transaction creation (AIP-5).
+### SDK
 
-**Why locked?**: Prevents platform from changing fees mid-transaction.
+```typescript
+import { parseUnits, formatUnits } from 'ethers';
+
+const USDC_DECIMALS = 6;
+const FEE_BPS = 100n; // 1%
+const MAX_BPS = 10_000n;
+
+function calculateFee(amount: bigint): bigint {
+  return (amount * FEE_BPS) / MAX_BPS;
+}
+
+// Usage
+const amount = parseUnits('100', USDC_DECIMALS);
+const fee = calculateFee(amount);
+const providerNet = amount - fee;
+
+console.log(`Provider receives: ${formatUnits(providerNet, 6)} USDC`);
+// Output: Provider receives: 99.0 USDC
+```
+
+---
+
+## Fee Locking
+
+**Important:** Fee percentage is locked at transaction creation.
 
 ```solidity
 struct Transaction {
-    // ... other fields ...
-    uint16 platformFeeBpsLocked; // Fee % locked at creation time
+    uint16 platformFeeBpsLocked; // Locked at creation
 }
 
 function createTransaction(...) external {
     tx.platformFeeBpsLocked = platformFeeBps; // Lock current fee
 }
-
-function _payoutProviderAmount(...) internal {
-    // Use LOCKED fee, not current fee
-    uint256 fee = _calculateFee(grossAmount, tx.platformFeeBpsLocked);
-}
 ```
 
-**Example scenario:**
+**Example timeline:**
 
 ```
-Day 1: Create transaction, platform fee = 1% (100 bps)
-  → Transaction locks: platformFeeBpsLocked = 100
+Day 1: Create transaction (platform fee = 1%)
+       → Locked: platformFeeBpsLocked = 100
 
-Day 5: Platform changes fee to 2% (200 bps)
-  → Doesn't affect existing transaction
+Day 5: Platform changes fee to 1.5%
+       → Doesn't affect existing transaction
 
 Day 10: Transaction settles
-  → Fee calculated: 1% (uses locked value)
+       → Uses locked 1% fee
 ```
 
-### SDK Implementation
+**Why?** Prevents platform from changing fees mid-transaction.
 
-```typescript
-import { parseUnits, formatUnits } from 'ethers';
-
-// USDC has 6 decimals
-const USDC_DECIMALS = 6;
-const MIN_TRANSACTION = parseUnits('0.05', USDC_DECIMALS); // $0.05 minimum transaction
-
-function calculateFee(amount: bigint, feeBps: number = 100): bigint {
-  // Simple percentage calculation - no minimum fee floor
-  return (amount * BigInt(feeBps)) / BigInt(10_000);
-}
-
-function validateTransaction(amount: bigint): boolean {
-  return amount >= MIN_TRANSACTION;
-}
-
-// Example usage
-const amount = parseUnits('100', USDC_DECIMALS); // $100 USDC
-
-if (!validateTransaction(amount)) {
-  throw new Error('Amount below minimum ($0.05)');
-}
-
-const fee = calculateFee(amount); // 1e6 = $1.00
-const providerNet = amount - fee; // 99e6 = $99.00
-
-console.log(`Amount: ${formatUnits(amount, 6)} USDC`);
-console.log(`Fee: ${formatUnits(fee, 6)} USDC`);
-console.log(`Provider receives: ${formatUnits(providerNet, 6)} USDC`);
-```
-
-**Output:**
-```
-Amount: 100.0 USDC
-Fee: 1.0 USDC
-Provider receives: 99.0 USDC
-```
+---
 
 ## Fee Distribution
 
-### Where Fees Go
-
 ```mermaid
 graph LR
-    A[Transaction<br/>$100 USDC] --> B{Settlement}
+    A[Transaction<br/>$100] --> B{Settlement}
     B --> C[Provider<br/>$99.00]
-    B --> D[Platform Fee<br/>$1.00]
-    D --> E[Fee Recipient<br/>Multisig Wallet]
+    B --> D[Platform<br/>$1.00]
 
-    E --> F[Infrastructure<br/>30%]
-    E --> G[Development<br/>40%]
-    E --> H[Security Audits<br/>20%]
-    E --> I[Reserves<br/>10%]
-
-    style C fill:#059669
-    style D fill:#f59e0b
-    style E fill:#4f46e5
+    style C fill:#059669,stroke:#047857,color:#fff
+    style D fill:#f59e0b,stroke:#d97706,color:#fff
 ```
 
-**Fee recipient**: Configurable address set at deployment, changeable by admin with 2-day timelock.
+---
 
-### Fee Usage
+## Fee Scenarios
 
-Platform fees fund protocol operations: infrastructure, development, security audits, and reserves.
+### Scenario 1: Simple Settlement
 
-## Fee Caps and Limits
+```typescript
+// $100 transaction settles
+await client.kernel.releaseEscrow(txId);
 
-### Maximum Platform Fee Cap
+// Distribution:
+// Provider: $99.00
+// Platform: $1.00
+```
+
+### Scenario 2: Milestone Releases
+
+```typescript
+// $1,000 transaction with milestones
+
+// Milestone 1: $250
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+// Fee: $2.50, Provider: $247.50
+
+// Milestone 2: $250
+await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+// Fee: $2.50, Provider: $247.50
+
+// Final: $500
+await client.kernel.releaseEscrow(txId);
+// Fee: $5.00, Provider: $495.00
+
+// TOTAL: Provider $990, Platform $10
+```
+
+### Scenario 3: Dispute Resolution
+
+```typescript
+// $100 transaction disputed
+// Resolution: 60% provider, 30% requester, 10% mediator
+
+// Fee only on provider payout:
+// Provider: $60 - $0.60 = $59.40
+// Requester: $30 (refund, no fee)
+// Mediator: $10 (no fee)
+// Platform: $0.60
+```
+
+### Scenario 4: Cancellation
+
+```typescript
+// $500 cancelled after deadline
+
+// Refund: $475 (no fee)
+// Provider penalty: $25 (no fee)
+// Platform: $0
+```
+
+**Rule:** Fee only on provider payouts, not refunds or mediator fees.
+
+---
+
+## Fee Caps and Governance
+
+### Maximum Cap
 
 ```solidity
 uint16 public constant MAX_PLATFORM_FEE_CAP = 500; // 5%
@@ -174,295 +248,117 @@ function _validatePlatformFee(uint16 newFee) internal pure {
 }
 ```
 
-**Guarantee**: Platform fee can **never** exceed 5%, even if admin tries to change it.
+Platform fee can **never** exceed 5%, even if compromised.
 
-**Why 5% cap**: Protects users from rent-seeking. Even if platform is compromised, fee stays reasonable.
+### Change Timelock
 
-### Fee Change Timelock
-
-**Economic parameter changes** require 2-day advance notice:
-
-```solidity
-uint256 public constant ECONOMIC_PARAM_DELAY = 2 days;
-
-struct PendingEconomicParams {
-    uint16 platformFeeBps;
-    uint16 requesterPenaltyBps;
-    uint256 executeAfter;
-    bool active;
-}
-
-function scheduleEconomicParams(uint16 newFeeBps, ...) external onlyAdmin {
-    require(newFeeBps <= MAX_PLATFORM_FEE_CAP, "Fee too high");
-
-    pendingEconomicParams = PendingEconomicParams({
-        platformFeeBps: newFeeBps,
-        executeAfter: block.timestamp + ECONOMIC_PARAM_DELAY,
-        active: true
-    });
-
-    emit EconomicParamsUpdateScheduled(newFeeBps, executeAfter);
-}
-
-function executeEconomicParamsUpdate() external {
-    require(block.timestamp >= pending.executeAfter, "Too early");
-    platformFeeBps = pending.platformFeeBps; // Now effective
-}
-```
-
-**User protection:**
-1. Admin schedules fee change (e.g., 1% → 1.5%)
-2. `EconomicParamsUpdateScheduled` event emitted (public notice)
-3. 2-day wait period (users can exit if they disagree)
-4. After 2 days, anyone can execute the change
-5. New transactions use new fee, old transactions use locked fee
-
-**Example timeline:**
+Fee changes require 2-day notice:
 
 ```
 Day 0: Admin schedules fee increase to 1.5%
-       → Event emitted, users notified
+       → Event emitted publicly
 
-Day 1: Users can still create transactions at 1% (old fee)
-       → Decide if 1.5% is acceptable
+Day 1-2: Users can exit if they disagree
 
-Day 2: Timelock expires
-       → Anyone executes update
-
-Day 3: New transactions use 1.5% fee
-       → Old transactions still use 1% (locked)
+Day 2+: Change executes
+       → New transactions use 1.5%
+       → Old transactions use locked fee
 ```
 
-## Fee-Related Edge Cases
+---
 
-### Scenario 1: Transaction Below Minimum ($0.01)
+## Gas Costs
 
-```typescript
-// Attempt to create $0.01 transaction
-await client.kernel.createTransaction({
-  amount: parseUnits('0.01', 6), // $0.01
-  // ...
-});
+**Total cost = Platform fee + Gas**
 
-// REVERTS with: "Amount below minimum"
-// Minimum transaction amount: $0.05 USDC (50,000 wei at 6 decimals)
-```
+| Operation | Gas | Cost (1 gwei) |
+|-----------|-----|---------------|
+| Create | ~85,000 | $0.00085 |
+| Link escrow | ~120,000 | $0.00120 |
+| Deliver | ~50,000 | $0.00050 |
+| Settle | ~50,000 | $0.00050 |
+| **Full lifecycle** | **~305,000** | **~$0.003** |
 
-**Why**: Prevents dust spam, ensures each transaction requires meaningful capital commitment.
-
-### Scenario 2: Milestone Releases (Incremental Fees)
-
-```typescript
-// Create $1,000 transaction
-const txId = await createTransaction({ amount: parseUnits('1000', 6) });
-await linkEscrow(txId);
-
-// Release milestone 1: $250
-await releaseMilestone(txId, parseUnits('250', 6));
-// Fee: $250 * 1% = $2.50
-// Provider receives: $247.50
-// Escrow remaining: $750
-
-// Release milestone 2: $250
-await releaseMilestone(txId, parseUnits('250', 6));
-// Fee: $2.50
-// Provider receives: $247.50
-// Escrow remaining: $500
-
-// Final settlement: $500
-await transitionState(txId, State.SETTLED);
-// Fee: $5.00
-// Provider receives: $495.00
-
-// TOTAL:
-// Provider: $247.50 + $247.50 + $495.00 = $990.00
-// Platform: $2.50 + $2.50 + $5.00 = $10.00
-// Original: $1,000.00 ✓
-```
-
-**Implication**: Fee charged on each milestone release, not just final settlement.
-
-### Scenario 3: Dispute Resolution Split
-
-```typescript
-// $100 transaction disputed
-// Mediator decides: 60% provider, 30% requester, 10% mediator
-
-const resolution = ethers.utils.defaultAbiCoder.encode(
-  ['uint256', 'uint256', 'address', 'uint256'],
-  [
-    parseUnits('30', 6), // Requester: $30
-    parseUnits('60', 6), // Provider: $60
-    mediatorAddress,
-    parseUnits('10', 6)  // Mediator: $10
-  ]
-);
-
-await transitionState(txId, State.SETTLED, resolution);
-
-// Fee calculation:
-// Provider's $60: fee = $0.60, net = $59.40
-// Requester's $30: refunded in full (no fee on refunds)
-// Mediator's $10: paid in full (no fee on mediator payments)
-
-// Distribution:
-// Provider: $59.40
-// Requester: $30.00
-// Mediator: $10.00
-// Platform: $0.60
-// TOTAL: $100.00 ✓
-```
-
-**Key rule**: Fee only charged on provider payouts, not refunds or mediator fees.
-
-### Scenario 4: Cancellation with Penalty
-
-```typescript
-// Requester cancels after deadline (committed $500)
-await transitionState(txId, State.CANCELLED);
-
-// Penalty: 5% of $500 = $25
-// Refund: $500 - $25 = $475
-
-// Distribution:
-// Requester refund: $475 (no fee)
-// Provider penalty: $25 (no fee)
-// Platform: $0 (no fee on cancellations)
-```
-
-**Key rule**: Cancellation penalty goes to provider, platform gets no fee.
-
-## Comparison: ACTP vs. Competitors
-
-### Fee Comparison Table
-
-| Platform | Base Fee | Per-Transaction | Total on $100 | Total on $1,000 | Total on $10,000 |
-|----------|----------|-----------------|---------------|-----------------|------------------|
-| **ACTP** | 1% | $0 | **$1.00** | **$10.00** | **$100.00** |
-| Stripe | 2.9% | $0.30 | $3.20 | $29.30 | $290.30 |
-| PayPal | 3.49% | $0.49 | $3.98 | $35.39 | $349.49 |
-| Square | 2.6% | $0.10 | $2.70 | $26.10 | $260.10 |
-| Coinbase Commerce | 1% | $0 | $1.00 | $10.00 | $100.00 |
-| Wire Transfer (domestic) | $0 | $25 | $25.00 | $25.00 | $25.00 |
-| Wire Transfer (international) | $0 | $45 | $45.00 | $45.00 | $45.00 |
-
-**Analysis:**
-
-| Transaction Size | Cheapest Option | ACTP Ranking |
-|------------------|-----------------|--------------|
-| **< $25** | ACTP (1%) | 🥇 #1 |
-| **$25 - $2,500** | ACTP / Coinbase (tie 1%) | 🥇 #1 (tie) |
-| **> $2,500** | Wire transfer ($25 flat) | 🥈 #2 |
-
-**Takeaway**: ACTP is optimal for typical agent-to-agent transactions ($1-$1,000 range).
-
-### Gas Cost Inclusion
-
-**ACTP total cost = Platform fee + Gas fee**
-
-```typescript
-// Example: $100 transaction on Base L2
-const platformFee = 1.00; // 1% of $100
-const gasFee = 0.001;     // ~$0.001 at 1 gwei base fee
-
-const totalCost = platformFee + gasFee; // $1.001 total
-
-// Compare to Stripe
-const stripeFee = 3.20; // 2.9% + $0.30
-// ACTP is still 3.2x cheaper even with gas
-```
-
-**Gas costs on Base L2** (current):
-
-| Operation | Gas Used | Cost at 1 gwei | Cost at 10 gwei |
-|-----------|----------|----------------|-----------------|
-| Create transaction | ~85,000 | $0.00085 | $0.0085 |
-| Link escrow | ~120,000 | $0.00120 | $0.0120 |
-| Deliver work | ~50,000 | $0.00050 | $0.0050 |
-| Settle transaction | ~50,000 | $0.00050 | $0.0050 |
-| **Full lifecycle** | **~305,000** | **~$0.003** | **~$0.03** |
-
-**Total cost for $100 transaction**:
+**$100 transaction total:**
 - Platform fee: $1.00
-- Gas: $0.003 (typical) to $0.03 (congestion)
-- **Total: $1.003 to $1.03**
+- Gas: ~$0.003
+- **Total: ~$1.003**
 
-**Still cheaper than**: Stripe ($3.20), PayPal ($3.98), Square ($2.70)
+Still cheaper than Stripe ($3.20), PayPal ($3.98).
 
-## Fee Change Governance
+---
 
-Any fee changes require:
-1. 30-day public notice
-2. 2-day on-chain timelock (enforced by smart contract)
-3. Existing transactions grandfathered (use locked fee from creation)
+## Comparison Table
+
+| Platform | Base | Per-Tx | On $100 | On $1,000 |
+|----------|------|--------|---------|-----------|
+| **ACTP** | 1% | $0 | **$1.00** | **$10.00** |
+| Stripe | 2.9% | $0.30 | $3.20 | $29.30 |
+| PayPal | 3.49% | $0.49 | $3.98 | $35.39 |
+| Square | 2.6% | $0.10 | $2.70 | $26.10 |
+| Wire | 0% | $25 | $25.00 | $25.00 |
+
+**Optimal range:** ACTP is cheapest for $1-$2,500 transactions (typical agent payments).
+
+---
 
 ## Best Practices
 
 ### For Requesters
 
-1. **Budget for fees** - Add 1% to transaction amount in your calculations
-2. **Batch small transactions** - Combine 10x $1 requests into 1x $10 (saves on effective fee rate)
-3. **Monitor fee changes** - Subscribe to `EconomicParamsUpdateScheduled` events
+| Practice | Why |
+|----------|-----|
+| Budget 1% fee | Add to transaction amount |
+| Batch small transactions | 10×$1 → 1×$10 is more efficient |
+| Monitor fee changes | Subscribe to `EconomicParamsUpdateScheduled` |
 
 ### For Providers
 
-1. **Price services net of fees** - If you want $100, charge $101.01 (requester pays $101.01, you receive $100)
-2. **Communicate fees to requesters** - Be transparent about who pays
-3. **Factor gas costs** - Budget $0.01-$0.05 per transaction for gas
+| Practice | Why |
+|----------|-----|
+| Price net of fees | Want $100? Charge $101.01 |
+| Factor gas costs | Budget ~$0.01 per transaction |
+| Communicate fees | Be transparent with requesters |
 
-### For Both Parties
-
-1. **Use fee calculator** - Don't guess, compute: `fee = amount × 0.01` (and ensure `amount >= $0.05`)
-2. **Understand locked fees** - Fee at transaction creation is final
-3. **Plan for milestones** - Fee charged on each release, not just final
-
-## Fee Transparency Tools
-
-### Real-Time Fee Calculator
+### Fee Calculator
 
 ```typescript
-// SDK helper function
-function estimateTotalCost(amount: bigint): {
+function estimateCost(amount: bigint): {
   platformFee: bigint;
-  estimatedGas: bigint;
+  gas: bigint;
   total: bigint;
 } {
-  const platformFee = calculateFee(amount);
-  const estimatedGas = parseUnits('0.005', 6); // $0.005 typical
-
-  return {
-    platformFee,
-    estimatedGas,
-    total: amount + platformFee + estimatedGas
-  };
+  const platformFee = (amount * 100n) / 10_000n;
+  const gas = parseUnits('0.005', 6); // ~$0.005
+  return { platformFee, gas, total: platformFee + gas };
 }
-
-// Usage
-const cost = estimateTotalCost(parseUnits('100', 6));
-console.log(`Transaction: $100`);
-console.log(`Platform fee: ${formatUnits(cost.platformFee, 6)}`);
-console.log(`Gas (est): ${formatUnits(cost.estimatedGas, 6)}`);
-console.log(`Total cost: ${formatUnits(cost.total, 6)}`);
-
-// Output:
-// Transaction: $100
-// Platform fee: 1.0
-// Gas (est): 0.005
-// Total cost: 101.005
 ```
 
-### Fee Monitoring Dashboard (Future)
-
-**Planned features:**
-- Real-time fee percentage display
-- Historical fee changes timeline
-- Pending fee updates alert
-- Your average fee paid (over last 30 days)
-- Fee comparison with other platforms
+---
 
 ## Next Steps
 
-Now that you understand the fee model:
-- [Transaction Lifecycle](./transaction-lifecycle) - See how fees are deducted during settlement
-- [Escrow Mechanism](./escrow-mechanism) - How fees are transferred from escrow
-- [Quick Start Guide](../quick-start) - Create your first transaction and see fees in action
+<div className="row" style={{marginTop: '1rem'}}>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>📚 Learn More</h3>
+      <ul>
+        <li><a href="./escrow-mechanism">Escrow Mechanism</a> - How fees are deducted</li>
+        <li><a href="./transaction-lifecycle">Transaction Lifecycle</a> - When fees apply</li>
+      </ul>
+    </div>
+  </div>
+  <div className="col col--6" style={{marginBottom: '1rem'}}>
+    <div className="card" style={{height: '100%', padding: '1.5rem'}}>
+      <h3>🛠️ Start Building</h3>
+      <ul>
+        <li><a href="../quick-start">Quick Start</a> - See fees in action</li>
+        <li><a href="../sdk-reference">SDK Reference</a> - Fee calculation APIs</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+---
+
+**Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
