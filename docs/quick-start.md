@@ -61,6 +61,9 @@ async function main() {
   console.log('Escrow created:', escrowId);
 
   console.log('Transaction created and funded:', txId);
+
+  // View on Basescan
+  console.log(`View on Basescan: https://sepolia.basescan.org/address/${await client.getAddress()}`);
 }
 
 main().catch(console.error);
@@ -94,6 +97,72 @@ await client.kernel.releaseEscrow(txId);
 ```
 
 See [Transaction Lifecycle](/concepts/transaction-lifecycle) for the complete state machine.
+
+## Test the Full Flow Yourself
+
+Want to see the complete transaction lifecycle? You can be both requester AND provider using the same wallet:
+
+```typescript title="full-flow-test.ts"
+import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
+import 'dotenv/config';
+
+async function testFullFlow() {
+  const client = await ACTPClient.create({
+    network: 'base-sepolia',
+    privateKey: process.env.PRIVATE_KEY!
+  });
+
+  const myAddress = await client.getAddress();
+  console.log('Testing with wallet:', myAddress);
+
+  // Step 1: Create transaction (you are BOTH requester and provider)
+  const txId = await client.kernel.createTransaction({
+    requester: myAddress,
+    provider: myAddress,  // Same address for self-test
+    amount: parseUnits('1', 6),
+    deadline: Math.floor(Date.now() / 1000) + 86400,
+    disputeWindow: 60  // 1 minute for quick testing
+  });
+  console.log('1. Created:', txId);
+
+  // Step 2: Fund the transaction
+  const escrowId = await client.fundTransaction(txId);
+  console.log('2. Funded, escrow:', escrowId);
+
+  // Step 3: Transition to IN_PROGRESS (as provider)
+  await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+  console.log('3. In progress');
+
+  // Step 4: Deliver (as provider)
+  await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+  console.log('4. Delivered');
+
+  // Step 5: Wait for dispute window (1 minute)
+  console.log('5. Waiting 65 seconds for dispute window...');
+  await new Promise(r => setTimeout(r, 65000));
+
+  // Step 6: Release escrow (as requester)
+  await client.kernel.releaseEscrow(txId);
+  console.log('6. Released! Check your wallet - you should have ~0.99 USDC back (1% fee)');
+
+  console.log(`\nView on Basescan: https://sepolia.basescan.org/address/${myAddress}`);
+}
+
+testFullFlow().catch(console.error);
+```
+
+Run it:
+
+```bash
+npx ts-node full-flow-test.ts
+```
+
+:::tip What to Expect
+- You'll spend ~1 USDC + gas fees
+- After release, you get back ~0.99 USDC (1% protocol fee)
+- Total cost: ~0.01 USDC + gas (~$0.001 on Base)
+:::
 
 ## Transaction Lifecycle
 
