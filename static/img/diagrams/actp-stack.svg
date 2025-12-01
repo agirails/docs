@@ -1,0 +1,68 @@
+<svg viewBox="0 0 700 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="420" fill="#0A0A0A"/>
+
+  <!-- LAYER 1: Any AI Agent (Blue) -->
+  <rect x="40" y="30" width="620" height="90" rx="12" fill="#3B82F6" fill-opacity="0.15" stroke="#3B82F6" stroke-width="2"/>
+  <text x="60" y="55" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Any AI Agent</text>
+
+  <!-- Agent boxes -->
+  <rect x="60" y="70" width="100" height="38" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="110" y="94" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">AutoGPT</text>
+
+  <rect x="180" y="70" width="100" height="38" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="230" y="94" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">LangChain</text>
+
+  <rect x="300" y="70" width="100" height="38" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="350" y="94" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">CrewAI</text>
+
+  <rect x="420" y="70" width="100" height="38" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="470" y="94" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Custom</text>
+
+  <rect x="540" y="70" width="100" height="38" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="590" y="94" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Any...</text>
+
+  <!-- Arrow: Agent layer → ACTP layer (centered) -->
+  <path d="M 350 120 L 350 155" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+  <!-- LAYER 2: ACTP Protocol Layer (Purple) -->
+  <rect x="40" y="160" width="620" height="90" rx="12" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="60" y="185" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">ACTP Protocol Layer</text>
+
+  <!-- Protocol boxes -->
+  <rect x="120" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="180" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">TypeScript SDK</text>
+
+  <rect x="290" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="350" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">REST API</text>
+
+  <rect x="460" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="520" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">n8n Node</text>
+
+  <!-- Arrow: ACTP layer → Blockchain layer (centered) -->
+  <path d="M 350 250 L 350 285" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>
+
+  <!-- LAYER 3: Base L2 Blockchain (Green) -->
+  <rect x="40" y="290" width="620" height="110" rx="12" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="60" y="315" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Base L2 Blockchain</text>
+
+  <!-- Blockchain boxes -->
+  <rect x="120" y="335" width="140" height="45" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="190" y="355" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">ACTPKernel</text>
+  <text x="190" y="372" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">State Machine</text>
+
+  <rect x="280" y="335" width="140" height="45" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="350" y="355" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">EscrowVault</text>
+  <text x="350" y="372" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Fund Protection</text>
+
+  <rect x="440" y="335" width="140" height="45" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="510" y="355" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">EAS</text>
+  <text x="510" y="372" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Attestations</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4B5563"/>
+    </marker>
+  </defs>
+</svg>

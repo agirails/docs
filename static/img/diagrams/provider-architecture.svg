@@ -1,0 +1,87 @@
+<svg viewBox="0 0 800 370" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="800" height="370" fill="#0A0A0A"/>
+
+  <!-- Provider Agent Box -->
+  <rect x="30" y="30" width="320" height="310" rx="12" fill="#3B82F6" fill-opacity="0.1" stroke="#3B82F6" stroke-width="2"/>
+  <text x="190" y="58" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">Provider Agent</text>
+
+  <!-- Agent Components -->
+  <rect x="60" y="80" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="125" y="105" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Job Discovery</text>
+
+  <rect x="60" y="145" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="125" y="170" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Job Evaluation</text>
+
+  <rect x="60" y="210" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="125" y="235" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Work Execution</text>
+
+  <rect x="60" y="275" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="125" y="300" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Delivery + Proof</text>
+
+  <!-- Internal arrows with labels -->
+  <line x1="125" y1="120" x2="125" y2="145" stroke="#60A5FA" stroke-width="1.5"/>
+  <polygon points="125,145 121,139 129,139" fill="#60A5FA"/>
+  <rect x="135" y="124" width="35" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="152" y="135" text-anchor="middle" fill="#60A5FA" font-family="system-ui, -apple-system, sans-serif" font-size="9">filter</text>
+
+  <line x1="125" y1="185" x2="125" y2="210" stroke="#60A5FA" stroke-width="1.5"/>
+  <polygon points="125,210 121,204 129,204" fill="#60A5FA"/>
+  <rect x="135" y="189" width="42" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="156" y="200" text-anchor="middle" fill="#60A5FA" font-family="system-ui, -apple-system, sans-serif" font-size="9">accept</text>
+
+  <line x1="125" y1="250" x2="125" y2="275" stroke="#60A5FA" stroke-width="1.5"/>
+  <polygon points="125,275 121,269 129,269" fill="#60A5FA"/>
+  <rect x="135" y="254" width="75" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="172" y="265" text-anchor="middle" fill="#60A5FA" font-family="system-ui, -apple-system, sans-serif" font-size="9">generate proof</text>
+
+  <!-- On-Chain Box -->
+  <rect x="450" y="30" width="320" height="310" rx="12" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="610" y="58" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">On-Chain</text>
+
+  <!-- On-Chain Components (single column) -->
+  <rect x="545" y="80" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="610" y="105" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Events</text>
+
+  <rect x="545" y="145" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="610" y="170" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Attestations</text>
+
+  <rect x="545" y="210" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="610" y="235" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Transactions</text>
+
+  <rect x="545" y="275" width="130" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#10B981" stroke-width="1.5"/>
+  <text x="610" y="300" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Escrow</text>
+
+  <!-- Cross-box Arrows -->
+
+  <!-- Events → Job Discovery (new jobs) -->
+  <path d="M545 100 L200 100" stroke="#A78BFA" stroke-width="1.5" fill="none" marker-end="url(#arrowPurple)"/>
+  <rect x="340" y="88" width="70" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="375" y="99" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="9">new jobs</text>
+
+  <!-- Delivery → Transactions (transitionState) -->
+  <path d="M190 295 L545 230" stroke="#A78BFA" stroke-width="1.5" fill="none" marker-end="url(#arrowPurple)"/>
+  <rect x="320" y="275" width="85" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="362" y="286" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="9">transitionState</text>
+
+  <!-- Transactions → Escrow (release funds) -->
+  <line x1="610" y1="250" x2="610" y2="275" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="610,275 606,269 614,269" fill="#10B981"/>
+  <rect x="618" y="253" width="75" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="655" y="264" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">release funds</text>
+
+  <!-- Delivery → Attestations (attest) -->
+  <path d="M190 295 L545 165" stroke="#F59E0B" stroke-width="1.5" fill="none" marker-end="url(#arrowAmber)"/>
+  <rect x="320" y="215" width="45" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="342" y="226" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9">attest</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon points="0,0 8,4 0,8" fill="#A78BFA"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <polygon points="0,0 8,4 0,8" fill="#F59E0B"/>
+    </marker>
+  </defs>
+</svg>

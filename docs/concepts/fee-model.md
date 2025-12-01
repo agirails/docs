@@ -164,15 +164,7 @@ Day 10: Transaction settles
 
 ## Fee Distribution
 
-```mermaid
-graph LR
-    A[Transaction<br/>$100] --> B{Settlement}
-    B --> C[Provider<br/>$99.00]
-    B --> D[Platform<br/>$1.00]
-
-    style C fill:#059669,stroke:#047857,color:#fff
-    style D fill:#f59e0b,stroke:#d97706,color:#fff
-```
+![Fee Distribution](/img/diagrams/fee-distribution.svg)
 
 ---
 
@@ -225,7 +217,7 @@ await client.kernel.releaseEscrow(txId);
 ### Scenario 4: Cancellation
 
 ```typescript
-// $500 cancelled after deadline
+// $500 canceled after deadline
 
 // Refund: $475 (no fee)
 // Provider penalty: $25 (no fee)

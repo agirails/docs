@@ -85,49 +85,7 @@ AGIRAILS contracts are currently testnet-only. Mainnet deployment scheduled for 
 
 ## Architecture Overview
 
-```mermaid
-graph TB
-    subgraph User["Users"]
-        REQ[Requester<br/>creates & funds]
-        PROV[Provider<br/>delivers & settles]
-    end
-
-    subgraph Kernel["ACTPKernel<br/>(Coordinator)"]
-        direction TB
-        CREATE[createTransaction]
-        LINK[linkEscrow]
-        TRANS[transitionState]
-        RELEASE[releaseEscrow]
-    end
-
-    subgraph Vault["EscrowVault<br/>(Fund Manager)"]
-        direction TB
-        CREATEESC[createEscrow]
-        PAYOUT[payoutToProvider]
-        REFUND[refundToRequester]
-        REM[remaining]
-    end
-
-    subgraph Token["USDC Token"]
-        TRANSFER[transfer/approve]
-    end
-
-    REQ -->|1. createTransaction| CREATE
-    REQ -->|2. approve USDC| TRANSFER
-    REQ -->|3. linkEscrow| LINK
-    LINK -->|pulls USDC| CREATEESC
-    CREATEESC -->|safeTransferFrom| TRANSFER
-
-    PROV -->|4. transitionState<br/>DELIVERED| TRANS
-    REQ -->|5. transitionState<br/>SETTLED| TRANS
-    TRANS -->|if SETTLED| RELEASE
-    RELEASE -->|disburse funds| PAYOUT
-    PAYOUT -->|safeTransfer| TRANSFER
-
-    style Kernel fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style Vault fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Token fill:#10b981,stroke:#059669,color:#fff
-```
+![Contract Architecture](/img/diagrams/contract-architecture.svg)
 
 **Key Design Principles:**
 
@@ -152,7 +110,7 @@ enum State {
     DELIVERED,    // 4 - Provider delivered result + proof
     SETTLED,      // 5 - Payment released (terminal)
     DISPUTED,     // 6 - Consumer disputed delivery
-    CANCELLED     // 7 - Transaction cancelled (terminal)
+    CANCELED     // 7 - Transaction canceled (terminal)
 }
 ```
 
@@ -160,67 +118,20 @@ enum State {
 
 | From State | To States | Who Can Trigger | Notes |
 |------------|-----------|-----------------|-------|
-| **INITIATED** (0) | QUOTED, COMMITTED, CANCELLED | Provider (QUOTED), Requester (CANCELLED) | COMMITTED via linkEscrow() auto-transition |
-| **QUOTED** (1) | COMMITTED, CANCELLED | Requester | Optional state, can skip |
-| **COMMITTED** (2) | IN_PROGRESS, DELIVERED, CANCELLED | Provider (IN_PROGRESS/DELIVERED), Both (CANCELLED) | Escrow locked |
-| **IN_PROGRESS** (3) | DELIVERED, CANCELLED | Provider (DELIVERED), Both (CANCELLED) | Optional state, can skip |
+| **INITIATED** (0) | QUOTED, COMMITTED, CANCELED | Provider (QUOTED), Requester (CANCELED) | COMMITTED via linkEscrow() auto-transition |
+| **QUOTED** (1) | COMMITTED, CANCELED | Requester | Optional state, can skip |
+| **COMMITTED** (2) | IN_PROGRESS, DELIVERED, CANCELED | Provider (IN_PROGRESS/DELIVERED), Both (CANCELED) | Escrow locked |
+| **IN_PROGRESS** (3) | DELIVERED, CANCELED | Provider (DELIVERED), Both (CANCELED) | Optional state, can skip |
 | **DELIVERED** (4) | SETTLED, DISPUTED | Both (SETTLED/DISPUTED) | Dispute window active |
-| **DISPUTED** (6) | SETTLED, CANCELLED | Admin/Pauser | Mediation required |
+| **DISPUTED** (6) | SETTLED, CANCELED | Admin/Pauser | Mediation required |
 | **SETTLED** (5) | *none* | - | Terminal state |
-| **CANCELLED** (7) | *none* | - | Terminal state |
+| **CANCELED** (7) | *none* | - | Terminal state |
 
 ### State Transition Diagram
 
-```mermaid
-stateDiagram-v2
-    [*] --> INITIATED: createTransaction()
-
-    INITIATED --> QUOTED: transitionState(QUOTED)<br/>by Provider [OPTIONAL]
-    INITIATED --> COMMITTED: linkEscrow()<br/>AUTO-TRANSITION by Requester
-    INITIATED --> CANCELLED: transitionState(CANCELLED)<br/>by Requester
-
-    QUOTED --> COMMITTED: linkEscrow()<br/>AUTO-TRANSITION by Requester
-    QUOTED --> CANCELLED: transitionState(CANCELLED)<br/>by Requester
-
-    COMMITTED --> IN_PROGRESS: transitionState(IN_PROGRESS)<br/>by Provider [OPTIONAL]
-    COMMITTED --> DELIVERED: transitionState(DELIVERED)<br/>by Provider (can skip IN_PROGRESS)
-    COMMITTED --> CANCELLED: transitionState(CANCELLED)<br/>by Provider or Requester
-
-    IN_PROGRESS --> DELIVERED: transitionState(DELIVERED)<br/>by Provider
-    IN_PROGRESS --> CANCELLED: transitionState(CANCELLED)<br/>by Provider or Requester
-
-    DELIVERED --> SETTLED: transitionState(SETTLED)<br/>by Requester or Provider
-    DELIVERED --> DISPUTED: transitionState(DISPUTED)<br/>by Requester or Provider
-
-    DISPUTED --> SETTLED: transitionState(SETTLED)<br/>by Admin/Pauser (mediation)
-    DISPUTED --> CANCELLED: transitionState(CANCELLED)<br/>by Admin/Pauser (mediation)
-
-    SETTLED --> [*]: releaseEscrow()
-    CANCELLED --> [*]: (funds refunded)
-
-    note right of INITIATED
-        No escrow linked yet
-    end note
-
-    note right of COMMITTED
-        Escrow locked, work starts
-    end note
-
-    note right of DELIVERED
-        Dispute window active
-        (default 2 days)
-    end note
-
-    note right of SETTLED
-        Terminal state
-        Funds released to provider
-    end note
-
-    note right of CANCELLED
-        Terminal state
-        Funds refunded to requester
-    end note
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/state-transitions.svg" alt="ACTP State Transition Diagram" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 **Key Rules:**
 - ✅ All transitions are **one-way** (monotonic progression, no backwards)
@@ -702,7 +613,7 @@ function transitionState(
 | `DELIVERED (4)` | `uint256` (32 bytes) or empty | Custom dispute window (0 = use DEFAULT_DISPUTE_WINDOW) |
 | `SETTLED (5)` | empty or resolution | Empty for happy path, resolution for dispute |
 | `DISPUTED (6)` | empty | No proof needed |
-| `CANCELLED (7)` | empty or resolution | Empty for refund, resolution for dispute settlement |
+| `CANCELED (7)` | empty or resolution | Empty for refund, resolution for dispute settlement |
 | Others | empty | No proof needed |
 
 **Resolution Proof Format** (for SETTLED from DISPUTED):
@@ -742,7 +653,7 @@ abi.encode(requesterAmount, providerAmount, mediatorAddress, mediatorAmount)
 - Updates `state` and `updatedAt`
 - If DELIVERED: Sets `disputeWindow = block.timestamp + window`
 - If QUOTED with proof: Stores quote hash in `metadata`
-- If SETTLED/CANCELLED: Triggers fund distribution
+- If SETTLED/CANCELED: Triggers fund distribution
 
 **Example: Provider Delivers Work**
 
@@ -783,7 +694,7 @@ await kernel.transitionState(transactionId, 5, resolution); // SETTLED
 **Important Notes:**
 - ⚠️ State transitions are **one-way only** (cannot go backwards)
 - ⚠️ Deadlines are **strictly enforced** for forward progressions
-- ⚠️ DISPUTED → SETTLED/CANCELLED requires **admin/pauser** role
+- ⚠️ DISPUTED → SETTLED/CANCELED requires **admin/pauser** role
 - ✅ QUOTED and IN_PROGRESS states are **optional** (can skip)
 - ✅ Setting state to SETTLED **automatically releases funds**
 
@@ -1591,7 +1502,7 @@ event EconomicParamsUpdateCancelled(
 )
 ```
 
-Emitted when pending economic update is cancelled.
+Emitted when pending economic update is canceled.
 
 ---
 
@@ -2310,7 +2221,7 @@ All custom errors with explanations and solutions.
 | `"Tx missing"` | Transaction does not exist | Verify transactionId is correct |
 | `"Escrow addr"` | escrowContract is zero | Provide valid escrow address |
 | `"Escrow not approved"` | Vault not in approvedEscrowVaults | Use approved vault or contact admin |
-| `"Invalid state for linking escrow"` | Not in INITIATED/QUOTED | Transaction already committed or cancelled |
+| `"Invalid state for linking escrow"` | Not in INITIATED/QUOTED | Transaction already committed or canceled |
 | `"Only requester"` | msg.sender != transaction.requester | Call from requester address |
 | `"Only provider"` | msg.sender != transaction.provider | Call from provider address |
 | `"Party only"` | msg.sender not requester or provider | Call from transaction participant |

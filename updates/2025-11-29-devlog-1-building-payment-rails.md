@@ -69,7 +69,7 @@ The contracts implement:
 5. DELIVERED → Work complete with proof
 6. SETTLED → Payment released (terminal)
 7. DISPUTED → Conflict requires resolution
-8. CANCELLED → Transaction aborted (terminal)
+8. CANCELED → Transaction aborted (terminal)
 
 **Key Features**:
 - 1% platform fee with $0.05 minimum

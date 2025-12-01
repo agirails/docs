@@ -50,34 +50,9 @@ npm run example:happy-path
 
 A provider agent has four core responsibilities:
 
-```mermaid
-graph LR
-    subgraph Agent["Provider Agent"]
-        direction TB
-        DISC[Job Discovery]
-        EVAL[Job Evaluation]
-        EXEC[Work Execution]
-        DELIV[Delivery + Proof]
-    end
-
-    subgraph Blockchain["On-Chain"]
-        TX[Transactions]
-        EV[Events]
-        ESC[Escrow]
-        EAS[Attestations]
-    end
-
-    EV -->|new jobs| DISC
-    DISC -->|filter| EVAL
-    EVAL -->|accept| EXEC
-    EXEC -->|generate proof| DELIV
-    DELIV -->|transitionState| TX
-    TX -->|release funds| ESC
-    DELIV -->|attest| EAS
-
-    style Agent fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style Blockchain fill:#8b5cf6,stroke:#6d28d9,color:#fff
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/provider-architecture.svg" alt="Provider Agent Architecture" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 | Component | Responsibility | SDK Methods |
 |-----------|---------------|-------------|
@@ -502,27 +477,9 @@ async function deliverWork(
 
 ### Proof Generation Flow
 
-```mermaid
-sequenceDiagram
-    participant P as Provider Agent
-    participant SDK as ACTP SDK
-    participant BC as Blockchain
-    participant EAS as Ethereum Attestation Service
-
-    P->>SDK: generateDeliveryProof(result)
-    SDK-->>P: proof (contentHash, timestamp, metadata)
-
-    P->>EAS: attestDeliveryProof(proof)
-    EAS-->>P: attestationUid
-
-    P->>BC: transitionState(DELIVERED, proof)
-    BC-->>P: transaction receipt
-
-    P->>BC: anchorAttestation(txId, attestationUid)
-    BC-->>P: transaction receipt
-
-    Note over P,BC: Dispute window starts
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/proof-generation-flow.svg" alt="Proof Generation Flow" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ---
 
@@ -575,17 +532,9 @@ function monitorSettlement(client: ACTPClient, job: Job): void {
 
 ### Settlement Timeline
 
-```
-Time →
-├─────────────────────┬──────────────────────┬─────────────────┤
-DELIVERED             │  Dispute Window      │  SETTLED
-                      │  (default 2 days)    │
-                      │                      │
-                      │  Requester can:      │  Provider can:
-                      │  ✓ Accept (→SETTLED) │  ✓ Claim payment
-                      │  ✓ Dispute           │
-                      │  ✓ Do nothing        │
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/settlement-timeline.svg" alt="Settlement Timeline" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ---
 

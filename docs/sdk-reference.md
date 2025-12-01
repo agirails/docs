@@ -65,32 +65,7 @@ See [Common Patterns](#common-patterns) for complete workflows.
 
 ## Architecture
 
-```mermaid
-graph TB
-    subgraph ACTPClient["ACTPClient"]
-        direction TB
-        K[kernel]
-        E[escrow]
-        EAS[eas]
-        EV[events]
-        Q[quote]
-        PG[proofGenerator]
-        MS[messageSigner]
-    end
-
-    K -->|"createTransaction<br/>getTransaction<br/>transitionState<br/>releaseEscrow"| KC[ACTPKernel Contract]
-    E -->|"approveToken<br/>getEscrow<br/>getBalance"| EC[EscrowVault Contract]
-    EAS -->|"attestDeliveryProof<br/>verifyAttestation"| EASC[EAS Contract]
-    EV -->|"watchTransaction<br/>waitForState"| KC
-    Q -->|"build<br/>verify<br/>computeHash"| IPFS[(IPFS)]
-    PG -->|"generateDeliveryProof<br/>hashContent"| Local[Local Processing]
-    MS -->|"signMessage<br/>verifySignature"| Local
-
-    style ACTPClient fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style KC fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style EC fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style EASC fill:#10b981,stroke:#059669,color:#fff
-```
+![SDK Architecture](/img/diagrams/sdk-architecture.svg)
 
 | Module | Purpose | Key Methods |
 |--------|---------|-------------|
@@ -651,13 +626,7 @@ await client.kernel.transitionState(txId, State.DELIVERED, proofData);
 
 #### State Machine
 
-```
-INITIATED --> QUOTED --> COMMITTED --> IN_PROGRESS --> DELIVERED --> SETTLED
-     |           |           |              |              |
-     +-----------+-----------+              +---> DISPUTED -+
-     |                                              |
-     +-------------> CANCELLED <--------------------+
-```
+![State Machine](/img/diagrams/state-machine.svg)
 
 #### See Also
 
@@ -2193,7 +2162,7 @@ enum State {
   DELIVERED = 4,    // Provider delivered result
   SETTLED = 5,      // Funds released (terminal)
   DISPUTED = 6,     // Under dispute
-  CANCELLED = 7     // Cancelled (terminal)
+  CANCELED = 7     // Canceled (terminal)
 }
 ```
 
@@ -3076,7 +3045,7 @@ State.IN_PROGRESS  // 3
 State.DELIVERED    // 4
 State.SETTLED      // 5
 State.DISPUTED     // 6
-State.CANCELLED    // 7
+State.CANCELED    // 7
 ```
 
 ---
@@ -3103,44 +3072,7 @@ Object.keys(NETWORKS); // ['base-sepolia', 'base-mainnet']
 
 ### Transaction Flow Diagram
 
-```mermaid
-sequenceDiagram
-    participant R as Requester
-    participant SDK as ACTPClient
-    participant K as ACTPKernel
-    participant E as EscrowVault
-    participant EAS as EAS Contract
-    participant P as Provider
-
-    Note over R,P: 1. Transaction Creation
-    R->>SDK: createTransaction()
-    SDK->>K: createTransaction()
-    K-->>SDK: txId
-    SDK-->>R: txId
-
-    Note over R,P: 2. Funding
-    R->>SDK: fundTransaction(txId)
-    SDK->>E: approve(USDC)
-    SDK->>K: linkEscrow()
-    K->>E: lockFunds()
-    K-->>SDK: escrowId
-
-    Note over R,P: 3. Provider Delivers
-    P->>SDK: transitionState(IN_PROGRESS)
-    P->>SDK: generateDeliveryProof()
-    P->>SDK: attestDeliveryProof()
-    SDK->>EAS: attest()
-    EAS-->>SDK: attestationUID
-    P->>SDK: anchorAttestation()
-    P->>SDK: transitionState(DELIVERED)
-
-    Note over R,P: 4. Settlement
-    R->>SDK: releaseEscrowWithVerification()
-    SDK->>EAS: verify attestation
-    SDK->>K: releaseEscrow()
-    K->>E: release to Provider
-    E->>P: USDC transferred
-```
+![Transaction Flow](/img/diagrams/transaction-flow.svg)
 
 ---
 

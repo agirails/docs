@@ -1,0 +1,158 @@
+<svg viewBox="0 0 950 770" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="950" height="770" fill="#0A0A0A"/>
+
+  <!-- Participants -->
+  <!-- Requester -->
+  <rect x="40" y="20" width="90" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="85" y="45" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Requester</text>
+
+  <!-- ACTPClient -->
+  <rect x="190" y="20" width="90" height="40" rx="8" fill="#3B82F6" fill-opacity="0.15" stroke="#3B82F6" stroke-width="2"/>
+  <text x="235" y="45" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">ACTPClient</text>
+
+  <!-- ACTPKernel -->
+  <rect x="340" y="20" width="90" height="40" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="385" y="45" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">ACTPKernel</text>
+
+  <!-- EscrowVault -->
+  <rect x="490" y="20" width="90" height="40" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="535" y="45" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">EscrowVault</text>
+
+  <!-- EAS Contract -->
+  <rect x="640" y="20" width="90" height="40" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="685" y="45" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">EAS</text>
+
+  <!-- Provider -->
+  <rect x="790" y="20" width="90" height="40" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="2"/>
+  <text x="835" y="45" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Provider</text>
+
+  <!-- Lifelines -->
+  <line x1="85" y1="60" x2="85" y2="760" stroke="#0EA5E9" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="235" y1="60" x2="235" y2="760" stroke="#3B82F6" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="385" y1="60" x2="385" y2="760" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="535" y1="60" x2="535" y2="760" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="685" y1="60" x2="685" y2="760" stroke="#10B981" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="835" y1="60" x2="835" y2="760" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+
+  <!-- Phase 1: Transaction Creation -->
+  <rect x="40" y="85" width="850" height="18" rx="4" fill="#0EA5E9" fill-opacity="0.1"/>
+  <text x="465" y="97" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">1. Transaction Creation</text>
+
+  <!-- R → SDK: createTransaction() -->
+  <line x1="85" y1="130" x2="230" y2="130" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="235,130 227,125 227,135" fill="#0EA5E9"/>
+  <text x="160" y="123" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="8">createTransaction()</text>
+
+  <!-- SDK → K: createTransaction() -->
+  <line x1="235" y1="155" x2="380" y2="155" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="385,155 377,150 377,160" fill="#3B82F6"/>
+  <text x="310" y="148" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">createTransaction()</text>
+
+  <!-- K -->> SDK: txId -->
+  <line x1="385" y1="180" x2="240" y2="180" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="235,180 243,175 243,185" fill="#8B5CF6"/>
+  <text x="310" y="173" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="8">txId</text>
+
+  <!-- SDK -->> R: txId -->
+  <line x1="235" y1="205" x2="90" y2="205" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="85,205 93,200 93,210" fill="#3B82F6"/>
+  <text x="160" y="198" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">txId</text>
+
+  <!-- Phase 2: Funding -->
+  <rect x="40" y="235" width="850" height="18" rx="4" fill="#8B5CF6" fill-opacity="0.1"/>
+  <text x="465" y="247" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">2. Funding</text>
+
+  <!-- R → SDK: fundTransaction(txId) -->
+  <line x1="85" y1="280" x2="230" y2="280" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="235,280 227,275 227,285" fill="#0EA5E9"/>
+  <text x="160" y="273" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="8">fundTransaction(txId)</text>
+
+  <!-- SDK → E: approve(USDC) -->
+  <line x1="235" y1="305" x2="530" y2="305" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="535,305 527,300 527,310" fill="#3B82F6"/>
+  <text x="385" y="298" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">approve(USDC)</text>
+
+  <!-- SDK → K: linkEscrow() -->
+  <line x1="235" y1="330" x2="380" y2="330" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="385,330 377,325 377,335" fill="#3B82F6"/>
+  <text x="310" y="323" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">linkEscrow()</text>
+
+  <!-- K → E: lockFunds() -->
+  <line x1="385" y1="355" x2="530" y2="355" stroke="#8B5CF6" stroke-width="1.5"/>
+  <polygon points="535,355 527,350 527,360" fill="#8B5CF6"/>
+  <text x="460" y="348" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="8">lockFunds()</text>
+
+  <!-- K -->> SDK: escrowId -->
+  <line x1="385" y1="380" x2="240" y2="380" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="235,380 243,375 243,385" fill="#8B5CF6"/>
+  <text x="310" y="373" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="8">escrowId</text>
+
+  <!-- Phase 3: Provider Delivers -->
+  <rect x="40" y="410" width="850" height="18" rx="4" fill="#F59E0B" fill-opacity="0.1"/>
+  <text x="465" y="422" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">3. Provider Delivers</text>
+
+  <!-- P → SDK: transitionState(IN_PROGRESS) -->
+  <line x1="835" y1="455" x2="240" y2="455" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="235,455 243,450 243,460" fill="#F59E0B"/>
+  <text x="535" y="448" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="8">transitionState(IN_PROGRESS)</text>
+
+  <!-- P → SDK: generateDeliveryProof() -->
+  <line x1="835" y1="480" x2="240" y2="480" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="235,480 243,475 243,485" fill="#F59E0B"/>
+  <text x="535" y="473" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="8">generateDeliveryProof()</text>
+
+  <!-- P → SDK: attestDeliveryProof() -->
+  <line x1="835" y1="505" x2="240" y2="505" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="235,505 243,500 243,510" fill="#F59E0B"/>
+  <text x="535" y="498" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="8">attestDeliveryProof()</text>
+
+  <!-- SDK → EAS: attest() -->
+  <line x1="235" y1="530" x2="680" y2="530" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="685,530 677,525 677,535" fill="#3B82F6"/>
+  <text x="460" y="523" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">attest()</text>
+
+  <!-- EAS -->> SDK: attestationUID -->
+  <line x1="685" y1="555" x2="240" y2="555" stroke="#10B981" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="235,555 243,550 243,560" fill="#10B981"/>
+  <text x="460" y="548" text-anchor="middle" fill="#6EE7B7" font-family="monospace" font-size="8">attestationUID</text>
+
+  <!-- P → SDK: anchorAttestation() -->
+  <line x1="835" y1="580" x2="240" y2="580" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="235,580 243,575 243,585" fill="#F59E0B"/>
+  <text x="535" y="573" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="8">anchorAttestation()</text>
+
+  <!-- P → SDK: transitionState(DELIVERED) -->
+  <line x1="835" y1="605" x2="240" y2="605" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="235,605 243,600 243,610" fill="#F59E0B"/>
+  <text x="535" y="598" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="8">transitionState(DELIVERED)</text>
+
+  <!-- Phase 4: Settlement -->
+  <rect x="40" y="635" width="850" height="18" rx="4" fill="#10B981" fill-opacity="0.1"/>
+  <text x="465" y="647" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">4. Settlement</text>
+
+  <!-- R → SDK: releaseEscrowWithVerification() -->
+  <line x1="85" y1="680" x2="230" y2="680" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="235,680 227,675 227,685" fill="#0EA5E9"/>
+  <text x="160" y="673" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">releaseEscrow()</text>
+
+  <!-- SDK → EAS: verify attestation -->
+  <line x1="235" y1="700" x2="680" y2="700" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="685,700 677,695 677,705" fill="#3B82F6"/>
+  <text x="460" y="693" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">verify attestation</text>
+
+  <!-- SDK → K: releaseEscrow() -->
+  <line x1="235" y1="720" x2="380" y2="720" stroke="#3B82F6" stroke-width="1.5"/>
+  <polygon points="385,720 377,715 377,725" fill="#3B82F6"/>
+  <text x="310" y="713" text-anchor="middle" fill="#93C5FD" font-family="monospace" font-size="8">releaseEscrow()</text>
+
+  <!-- K → E: release to Provider -->
+  <line x1="385" y1="740" x2="530" y2="740" stroke="#8B5CF6" stroke-width="1.5"/>
+  <polygon points="535,740 527,735 527,745" fill="#8B5CF6"/>
+  <text x="460" y="733" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="8">release to Provider</text>
+
+  <!-- E → P: USDC transferred -->
+  <line x1="535" y1="760" x2="830" y2="760" stroke="#10B981" stroke-width="2"/>
+  <polygon points="835,760 827,755 827,765" fill="#10B981"/>
+  <text x="685" y="753" text-anchor="middle" fill="#6EE7B7" font-family="monospace" font-size="8">USDC transferred ✓</text>
+</svg>

@@ -1,0 +1,55 @@
+<svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="240" fill="#0A0A0A"/>
+
+  <!-- LEFT: Requester Protection (Blue) -->
+  <rect x="30" y="20" width="200" height="200" rx="12" fill="#3B82F6" fill-opacity="0.12" stroke="#3B82F6" stroke-width="2"/>
+  <text x="130" y="45" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Requester Protection</text>
+
+  <!-- Requester items -->
+  <rect x="50" y="65" width="160" height="35" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="130" y="88" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Dispute window</text>
+
+  <rect x="50" y="110" width="160" height="35" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="130" y="133" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Cancel before delivery</text>
+
+  <rect x="50" y="155" width="160" height="35" rx="6" fill="#1F2937" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="130" y="178" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Verify proofs</text>
+
+  <!-- RIGHT: Provider Protection (Green) -->
+  <rect x="470" y="20" width="200" height="200" rx="12" fill="#10B981" fill-opacity="0.12" stroke="#10B981" stroke-width="2"/>
+  <text x="570" y="45" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Provider Protection</text>
+
+  <!-- Provider items -->
+  <rect x="490" y="65" width="160" height="35" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="570" y="88" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Guaranteed payment</text>
+
+  <rect x="490" y="110" width="160" height="35" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="570" y="133" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Deadline enforcement</text>
+
+  <rect x="490" y="155" width="160" height="35" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
+  <text x="570" y="178" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Penalty for false disputes</text>
+
+  <!-- CENTER: Three double-headed arrows connecting the pairs -->
+
+  <!-- Arrow 1: Dispute window ↔ Guaranteed payment -->
+  <line x1="215" y1="82" x2="485" y2="82" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="215,82 225,77 225,87" fill="#8B5CF6"/>
+  <polygon points="485,82 475,77 475,87" fill="#8B5CF6"/>
+
+  <!-- Arrow 2: Cancel before delivery ↔ Deadline enforcement (split around label) -->
+  <line x1="215" y1="127" x2="295" y2="127" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="215,127 225,122 225,132" fill="#8B5CF6"/>
+  <line x1="405" y1="127" x2="485" y2="127" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="485,127 475,122 475,132" fill="#8B5CF6"/>
+
+  <!-- Arrow 3: Verify proofs ↔ Penalty for false disputes -->
+  <line x1="215" y1="172" x2="485" y2="172" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="215,172 225,167 225,177" fill="#8B5CF6"/>
+  <polygon points="485,172 475,167 475,177" fill="#8B5CF6"/>
+
+  <!-- Center "Balanced" label -->
+  <rect x="300" y="110" width="100" height="34" rx="17" fill="#0A0A0A"/>
+  <rect x="300" y="110" width="100" height="34" rx="17" fill="#8B5CF6" fill-opacity="0.25" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="350" y="132" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Balanced</text>
+</svg>

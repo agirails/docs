@@ -1,0 +1,137 @@
+<svg viewBox="0 0 900 530" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="530" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700">ACTP Transaction Flow</text>
+  <text x="450" y="50" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">Agent Commerce Transaction Protocol</text>
+
+  <!-- ═══ AI AGENTS (Left Side) ═══ -->
+
+  <!-- AI Agent Requester -->
+  <rect x="40" y="90" width="160" height="100" rx="12" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="2"/>
+  <circle cx="120" cy="125" r="20" fill="#0EA5E9" fill-opacity="0.2" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="120" y="130" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="16">🤖</text>
+  <text x="120" y="158" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Requester</text>
+  <text x="120" y="175" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">AI Agent buying services</text>
+
+  <!-- AI Agent Provider -->
+  <rect x="40" y="300" width="160" height="100" rx="12" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="2"/>
+  <circle cx="120" cy="335" r="20" fill="#F59E0B" fill-opacity="0.2" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="120" y="340" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="16">🤖</text>
+  <text x="120" y="368" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Provider</text>
+  <text x="120" y="385" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">AI Agent selling services</text>
+
+  <!-- ═══ SMART CONTRACTS (Center) ═══ -->
+
+  <!-- ACTPKernel -->
+  <rect x="320" y="100" width="200" height="130" rx="16" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="2"/>
+  <rect x="340" y="75" width="160" height="28" rx="6" fill="#8B5CF6"/>
+  <text x="420" y="94" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">ACTPKernel</text>
+
+  <text x="420" y="135" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="10">State Coordinator</text>
+  <text x="420" y="155" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="9">createTransaction()</text>
+  <text x="420" y="170" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="9">transitionState()</text>
+  <text x="420" y="185" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="9">linkEscrow()</text>
+  <text x="420" y="200" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="9">releaseEscrow()</text>
+
+  <!-- EscrowVault -->
+  <rect x="320" y="400" width="200" height="100" rx="16" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="2"/>
+  <rect x="340" y="375" width="160" height="28" rx="6" fill="#10B981"/>
+  <text x="420" y="394" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">EscrowVault</text>
+
+  <text x="420" y="430" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">Fund Manager</text>
+  <text x="420" y="450" text-anchor="middle" fill="#34D399" font-family="monospace" font-size="9">lockFunds()</text>
+  <text x="420" y="465" text-anchor="middle" fill="#34D399" font-family="monospace" font-size="9">payoutToProvider()</text>
+  <text x="420" y="480" text-anchor="middle" fill="#34D399" font-family="monospace" font-size="9">refundToRequester()</text>
+
+  <!-- ═══ USDC (Right Side) ═══ -->
+
+  <!-- USDC Token -->
+  <rect x="640" y="290" width="140" height="100" rx="16" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-width="2"/>
+  <circle cx="710" cy="325" r="25" fill="#2563EB" fill-opacity="0.3" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="710" y="332" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">$</text>
+  <text x="710" y="370" text-anchor="middle" fill="#60A5FA" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">USDC</text>
+  <text x="710" y="385" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Stablecoin</text>
+
+  <!-- ═══ FLOW ARROWS WITH STEPS ═══ -->
+
+  <!-- Step 1: Requester → ACTPKernel (Create Transaction) -->
+  <line x1="200" y1="130" x2="312" y2="130" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="320,130 310,125 310,135" fill="#0EA5E9"/>
+  <rect x="225" y="111" width="70" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="260" y="126" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">1. Create</text>
+
+  <!-- Step 2: Provider → ACTPKernel (Accept) -->
+  <line x1="200" y1="340" x2="280" y2="340" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="280" y1="340" x2="280" y2="180" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="280" y1="180" x2="312" y2="180" stroke="#F59E0B" stroke-width="2"/>
+  <polygon points="320,180 310,175 310,185" fill="#F59E0B"/>
+
+  <!-- Step 3: Requester → EscrowVault (Fund) -->
+  <line x1="200" y1="165" x2="240" y2="165" stroke="#0EA5E9" stroke-width="2"/>
+  <line x1="240" y1="165" x2="240" y2="440" stroke="#0EA5E9" stroke-width="2"/>
+  <line x1="240" y1="440" x2="312" y2="440" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="320,440 310,435 310,445" fill="#0EA5E9"/>
+
+  <!-- Step 4: Provider → ACTPKernel (Deliver) -->
+  <line x1="200" y1="370" x2="260" y2="370" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="260" y1="370" x2="260" y2="200" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="260" y1="200" x2="312" y2="200" stroke="#F59E0B" stroke-width="2"/>
+  <polygon points="320,200 310,195 310,205" fill="#F59E0B"/>
+  <rect x="245" y="353" width="65" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#F59E0B" stroke-width="1"/>
+  <text x="277" y="368" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">4. Deliver</text>
+
+  <!-- Step 5: Requester → ACTPKernel (Release) - simplified to settle -->
+  <line x1="200" y1="150" x2="220" y2="150" stroke="#10B981" stroke-width="2"/>
+  <line x1="220" y1="150" x2="220" y2="220" stroke="#10B981" stroke-width="2"/>
+  <line x1="220" y1="220" x2="220" y2="470" stroke="#10B981" stroke-width="2"/>
+  <line x1="220" y1="470" x2="312" y2="470" stroke="#10B981" stroke-width="2"/>
+  <polygon points="320,470 310,465 310,475" fill="#10B981"/>
+  <rect x="170" y="208" width="65" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#10B981" stroke-width="1"/>
+  <text x="202" y="223" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">5. Settle</text>
+
+  <!-- Internal: ACTPKernel ↔ EscrowVault -->
+  <line x1="420" y1="230" x2="420" y2="368" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="420,375 415,367 425,367" fill="#8B5CF6"/>
+
+  <!-- Step 6: EscrowVault → Provider (Payout) -->
+  <line x1="520" y1="470" x2="560" y2="470" stroke="#10B981" stroke-width="2"/>
+  <line x1="560" y1="470" x2="560" y2="525" stroke="#10B981" stroke-width="2"/>
+  <line x1="560" y1="525" x2="120" y2="525" stroke="#10B981" stroke-width="2"/>
+  <line x1="120" y1="525" x2="120" y2="408" stroke="#10B981" stroke-width="2"/>
+  <polygon points="120,400 115,408 125,408" fill="#10B981"/>
+  <rect x="540" y="480" width="70" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#10B981" stroke-width="1"/>
+  <text x="575" y="495" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">6. Payout</text>
+
+  <!-- USDC Flow: EscrowVault → USDC lock indicator -->
+  <line x1="520" y1="430" x2="632" y2="340" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="640,340 632,335 632,345" fill="#2563EB"/>
+  <text x="575" y="370" fill="#60A5FA" font-family="system-ui, -apple-system, sans-serif" font-size="8">USDC locked</text>
+
+  <!-- ═══ TOP LAYER LABELS ═══ -->
+  <!-- 3. Fund label (on top) -->
+  <rect x="230" y="150" width="60" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="260" y="165" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">3. Fund</text>
+  <!-- 2. Accept label (on top) -->
+  <rect x="265" y="238" width="70" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#F59E0B" stroke-width="1"/>
+  <text x="300" y="253" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">2. Accept</text>
+
+  <!-- ═══ FEE INDICATOR ═══ -->
+  <rect x="800" y="100" width="80" height="50" rx="8" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="840" y="122" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Platform Fee</text>
+  <text x="840" y="140" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">1%</text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <rect x="640" y="435" width="240" height="60" rx="8" fill="#1F2937" fill-opacity="0.5" stroke="#374151" stroke-width="1"/>
+  <text x="760" y="455" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Legend</text>
+
+  <rect x="655" y="467" width="10" height="10" rx="2" fill="#0EA5E9"/>
+  <text x="670" y="476" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Requester</text>
+
+  <rect x="725" y="467" width="10" height="10" rx="2" fill="#F59E0B"/>
+  <text x="740" y="476" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Provider</text>
+
+  <rect x="795" y="467" width="10" height="10" rx="2" fill="#10B981"/>
+  <text x="810" y="476" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Settlement</text>
+</svg>

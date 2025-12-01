@@ -1,0 +1,104 @@
+<svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="260" fill="#0A0A0A"/>
+
+  <!-- Main flow states -->
+  <!-- INITIATED -->
+  <rect x="30" y="40" width="100" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="80" y="65" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">INITIATED</text>
+
+  <!-- QUOTED -->
+  <rect x="170" y="40" width="100" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="220" y="65" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">QUOTED</text>
+
+  <!-- COMMITTED -->
+  <rect x="310" y="40" width="100" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="360" y="65" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">COMMITTED</text>
+
+  <!-- IN_PROGRESS -->
+  <rect x="450" y="40" width="100" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="500" y="65" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">IN_PROGRESS</text>
+
+  <!-- DELIVERED -->
+  <rect x="590" y="40" width="100" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="640" y="65" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">DELIVERED</text>
+
+  <!-- SETTLED (terminal - green) -->
+  <rect x="730" y="40" width="100" height="40" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="780" y="65" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">SETTLED</text>
+
+  <!-- DISPUTED (amber) -->
+  <rect x="590" y="130" width="100" height="40" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="2"/>
+  <text x="640" y="155" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">DISPUTED</text>
+
+  <!-- CANCELED (terminal - red) -->
+  <rect x="170" y="130" width="100" height="40" rx="8" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="2"/>
+  <text x="220" y="155" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">CANCELED</text>
+
+  <!-- Happy path arrows -->
+  <!-- INITIATED → QUOTED -->
+  <line x1="130" y1="60" x2="165" y2="60" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="170,60 162,55 162,65" fill="#0EA5E9"/>
+
+  <!-- QUOTED → COMMITTED -->
+  <line x1="270" y1="60" x2="305" y2="60" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="310,60 302,55 302,65" fill="#0EA5E9"/>
+
+  <!-- COMMITTED → IN_PROGRESS -->
+  <line x1="410" y1="60" x2="445" y2="60" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="450,60 442,55 442,65" fill="#0EA5E9"/>
+
+  <!-- IN_PROGRESS → DELIVERED -->
+  <line x1="550" y1="60" x2="585" y2="60" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="590,60 582,55 582,65" fill="#0EA5E9"/>
+
+  <!-- DELIVERED → SETTLED -->
+  <line x1="690" y1="60" x2="725" y2="60" stroke="#10B981" stroke-width="2"/>
+  <polygon points="730,60 722,55 722,65" fill="#10B981"/>
+
+  <!-- Cancel paths - clean vertical drops to horizontal line -->
+  <!-- Horizontal cancel line at y=110 -->
+  <line x1="80" y1="110" x2="270" y2="110" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- INITIATED down to line -->
+  <line x1="80" y1="80" x2="80" y2="110" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- QUOTED down to line (shorter) -->
+  <line x1="220" y1="80" x2="220" y2="110" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- COMMITTED down to line -->
+  <line x1="360" y1="80" x2="360" y2="110" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="270" y1="110" x2="360" y2="110" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+  <!-- Line down to CANCELED -->
+  <line x1="220" y1="110" x2="220" y2="125" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="220,130 215,122 225,122" fill="#EF4444"/>
+
+  <!-- Dispute paths - clean vertical drops -->
+  <!-- IN_PROGRESS → DISPUTED -->
+  <line x1="500" y1="80" x2="500" y2="150" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="500" y1="150" x2="585" y2="150" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="590,150 582,145 582,155" fill="#F59E0B"/>
+
+  <!-- DELIVERED → DISPUTED -->
+  <line x1="640" y1="80" x2="640" y2="125" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="640,130 635,122 645,122" fill="#F59E0B"/>
+
+  <!-- DISPUTED → SETTLED -->
+  <line x1="690" y1="150" x2="780" y2="150" stroke="#10B981" stroke-width="1.5"/>
+  <line x1="780" y1="150" x2="780" y2="85" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="780,80 775,88 785,88" fill="#10B981"/>
+
+  <!-- Legend -->
+  <rect x="30" y="230" width="12" height="12" rx="2" fill="#0EA5E9" fill-opacity="0.3" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="48" y="240" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10">Active</text>
+
+  <rect x="100" y="230" width="12" height="12" rx="2" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="1"/>
+  <text x="118" y="240" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10">Success</text>
+
+  <rect x="175" y="230" width="12" height="12" rx="2" fill="#F59E0B" fill-opacity="0.3" stroke="#F59E0B" stroke-width="1"/>
+  <text x="193" y="240" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10">Dispute</text>
+
+  <rect x="250" y="230" width="12" height="12" rx="2" fill="#EF4444" fill-opacity="0.3" stroke="#EF4444" stroke-width="1"/>
+  <text x="268" y="240" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10">Canceled</text>
+</svg>

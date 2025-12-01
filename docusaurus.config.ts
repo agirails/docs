@@ -34,7 +34,6 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/', // Docs at root, not /docs
-          editUrl: 'https://github.com/agirails/agirails/tree/main/docs-site/',
           showLastUpdateTime: true,
           showLastUpdateAuthor: false, // Hide individual names, show "Core Team" via footer
         },
@@ -77,6 +76,7 @@ const config: Config = {
 
     colorMode: {
       defaultMode: 'dark',
+      disableSwitch: true,
       respectPrefersColorScheme: false,
     },
 

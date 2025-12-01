@@ -26,7 +26,7 @@
   <!-- IN_PROGRESS -->
   <rect x="540" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#06B6D4" stroke-width="2"/>
   <text x="600" y="110" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">IN_PROGRESS</text>
-  <text x="550" y="145" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Working</text>
+  <text x="610" y="145" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Working</text>
 
   <!-- DELIVERED -->
   <rect x="710" y="80" width="120" height="50" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
@@ -37,16 +37,16 @@
   <!-- SETTLED -->
   <rect x="615" y="220" width="140" height="55" rx="8" fill="#059669" stroke="#10B981" stroke-width="2"/>
   <text x="685" y="252" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">SETTLED</text>
-  <text x="675" y="290" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Payment Released</text>
+  <text x="645" y="290" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Payment Released</text>
 
   <!-- DISPUTED -->
   <rect x="710" y="320" width="120" height="50" rx="8" fill="#1F2937" stroke="#EF4444" stroke-width="2"/>
   <text x="770" y="350" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">DISPUTED</text>
   <text x="770" y="385" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Mediation Required</text>
 
-  <!-- CANCELLED -->
+  <!-- CANCELED -->
   <rect x="160" y="320" width="140" height="55" rx="8" fill="#7F1D1D" stroke="#EF4444" stroke-width="2"/>
-  <text x="230" y="352" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">CANCELLED</text>
+  <text x="230" y="352" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">CANCELED</text>
   <text x="230" y="390" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">Refund Processed</text>
 
   <!-- Arrows - Happy Path -->
@@ -72,20 +72,20 @@
   <text x="785" y="225" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9">dispute()</text>
 
   <!-- DISPUTED → SETTLED -->
-  <path d="M 710 345 L 625 345 L 625 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="605" y="320" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
+  <path d="M 710 345 L 635 345 L 635 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="645" y="316" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
 
   <!-- Cancel arrows -->
-  <!-- INITIATED → CANCELLED -->
+  <!-- INITIATED → CANCELED -->
   <path d="M 90 130 L 90 347 L 155 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
-  <!-- QUOTED → CANCELLED -->
+  <!-- QUOTED → CANCELED -->
   <path d="M 260 130 L 260 315" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
-  <!-- COMMITTED → CANCELLED -->
+  <!-- COMMITTED → CANCELED -->
   <path d="M 430 130 L 430 347 L 305 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
-  <!-- IN_PROGRESS → CANCELLED -->
+  <!-- IN_PROGRESS → CANCELED -->
   <path d="M 600 130 L 600 347 L 305 347" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowRed)"/>
 
   <!-- Legend -->

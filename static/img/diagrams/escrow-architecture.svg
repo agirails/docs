@@ -1,0 +1,106 @@
+<svg viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="800" height="540" fill="#0A0A0A"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ACTP KERNEL CONTRACT (Top Center) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="250" y="30" width="300" height="170" rx="10" fill="#1F2937" stroke="#4B5563" stroke-width="1.5"/>
+  <text x="400" y="55" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">ACTPKernel Contract</text>
+
+  <!-- Transaction State (purple) -->
+  <rect x="310" y="70" width="180" height="40" rx="6" fill="#8B5CF6" fill-opacity="0.9"/>
+  <text x="400" y="95" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Transaction State</text>
+
+  <!-- Validator Interface -->
+  <rect x="310" y="145" width="180" height="40" rx="6" fill="#374151" stroke="#6B7280" stroke-width="1"/>
+  <text x="400" y="170" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Validator Interface</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ESCROW VAULT CONTRACT (Center) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="250" y="290" width="300" height="170" rx="10" fill="#1F2937" stroke="#4B5563" stroke-width="1.5"/>
+
+  <!-- Locked Funds (green) -->
+  <rect x="310" y="330" width="180" height="40" rx="6" fill="#10B981" fill-opacity="0.9"/>
+  <text x="400" y="355" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Locked Funds</text>
+
+  <!-- Escrow Mapping -->
+  <rect x="310" y="405" width="180" height="40" rx="6" fill="#374151" stroke="#6B7280" stroke-width="1"/>
+  <text x="400" y="430" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Escrow Mapping</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- REQUESTER WALLET (Left) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="30" y="335" width="160" height="80" rx="10" fill="#1F2937" stroke="#4B5563" stroke-width="1.5"/>
+  <text x="110" y="360" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Requester Wallet</text>
+  <rect x="45" y="375" width="130" height="30" rx="6" fill="#0EA5E9" fill-opacity="0.9"/>
+  <text x="110" y="395" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">USDC Balance</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- PROVIDER WALLET (Right) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="610" y="335" width="160" height="80" rx="10" fill="#1F2937" stroke="#4B5563" stroke-width="1.5"/>
+  <text x="690" y="360" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Provider Wallet</text>
+  <rect x="625" y="375" width="130" height="30" rx="6" fill="#F59E0B" fill-opacity="0.9"/>
+  <text x="690" y="395" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Receives Payment</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- FLOW ARROWS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Step 2: linkEscrow() (Transaction State → Validator Interface) -->
+  <line x1="355" y1="110" x2="355" y2="140" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="355,145 350,137 360,137" fill="#8B5CF6"/>
+  <rect x="268" y="118" width="80" height="16" rx="3" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="308" y="129" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">2. linkEscrow()</text>
+
+  <!-- Step 5: releaseEscrow() (Transaction State → Validator Interface) -->
+  <line x1="445" y1="110" x2="445" y2="140" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="445,145 440,137 450,137" fill="#8B5CF6"/>
+  <rect x="452" y="118" width="95" height="16" rx="3" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="499" y="129" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">5. releaseEscrow()</text>
+
+  <!-- Step 3: Pull USDC (Validator → Locked Funds) - LEFT side -->
+  <line x1="355" y1="190" x2="355" y2="325" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="355,330 350,322 360,322" fill="#8B5CF6"/>
+  <rect x="270" y="245" width="75" height="16" rx="3" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="307" y="256" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">3. Pull USDC</text>
+
+  <!-- Step 6: Transfer (Validator → Locked Funds) - RIGHT side -->
+  <line x1="445" y1="190" x2="445" y2="325" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="445,330 440,322 450,322" fill="#8B5CF6"/>
+  <rect x="452" y="245" width="65" height="16" rx="3" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="484" y="256" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">6. Transfer</text>
+
+  <!-- Step 4: Lock in mapping (Locked Funds → Escrow Mapping) -->
+  <line x1="400" y1="370" x2="400" y2="400" stroke="#10B981" stroke-width="2"/>
+  <polygon points="400,405 395,397 405,397" fill="#10B981"/>
+  <rect x="408" y="378" width="95" height="16" rx="3" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1"/>
+  <text x="455" y="389" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">4. Lock in mapping</text>
+
+  <!-- Step 1: Approve USDC (Requester → Locked Funds) -->
+  <line x1="195" y1="350" x2="305" y2="350" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="310,350 302,345 302,355" fill="#0EA5E9"/>
+  <rect x="200" y="328" width="90" height="16" rx="3" fill="#0EA5E9" fill-opacity="0.2" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="245" y="339" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9">1. Approve USDC</text>
+
+  <!-- Step 7: Payout (Locked Funds → Provider) -->
+  <line x1="495" y1="350" x2="605" y2="350" stroke="#F59E0B" stroke-width="2"/>
+  <polygon points="610,350 602,345 602,355" fill="#F59E0B"/>
+  <rect x="510" y="328" width="60" height="16" rx="3" fill="#F59E0B" fill-opacity="0.2" stroke="#F59E0B" stroke-width="1"/>
+  <text x="540" y="339" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9">7. Payout</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ESCROW VAULT TITLE (drawn last so it covers arrows) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="295" y="295" width="210" height="22" fill="#1F2937"/>
+  <text x="400" y="311" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">EscrowVault Contract</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LEGEND -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="400" y="510" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">
+    1. Approve → 2. Link → 3. Pull → 4. Lock → 5. Release → 6. Transfer → 7. Payout
+  </text>
+</svg>

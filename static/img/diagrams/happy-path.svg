@@ -1,0 +1,41 @@
+<svg viewBox="0 0 750 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="750" height="80" fill="#0A0A0A"/>
+
+  <!-- State 1: INITIATED -->
+  <rect x="20" y="20" width="110" height="40" rx="8" fill="#6B7280" fill-opacity="0.15" stroke="#6B7280" stroke-width="1.5"/>
+  <text x="75" y="45" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">INITIATED</text>
+
+  <!-- Arrow 1 -->
+  <line x1="135" y1="40" x2="160" y2="40" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="160,40 152,35 152,45" fill="#4B5563"/>
+
+  <!-- State 2: COMMITTED -->
+  <rect x="165" y="20" width="110" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="220" y="45" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">COMMITTED</text>
+
+  <!-- Arrow 2 -->
+  <line x1="280" y1="40" x2="305" y2="40" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="305,40 297,35 297,45" fill="#4B5563"/>
+
+  <!-- State 3: IN_PROGRESS -->
+  <rect x="310" y="20" width="110" height="40" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="365" y="45" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">IN_PROGRESS</text>
+
+  <!-- Arrow 3 -->
+  <line x1="425" y1="40" x2="450" y2="40" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="450,40 442,35 442,45" fill="#4B5563"/>
+
+  <!-- State 4: DELIVERED -->
+  <rect x="455" y="20" width="110" height="40" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="510" y="45" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">DELIVERED</text>
+
+  <!-- Arrow 4 -->
+  <line x1="570" y1="40" x2="595" y2="40" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="595,40 587,35 587,45" fill="#4B5563"/>
+
+  <!-- State 5: SETTLED (terminal) -->
+  <rect x="600" y="20" width="110" height="40" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="655" y="45" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">SETTLED</text>
+  <circle cx="710" cy="25" r="4" fill="#10B981"/>
+</svg>

@@ -24,23 +24,7 @@ By the end of this page, you'll understand:
 
 The AI agent economy is emerging rapidly, but it lacks neutral infrastructure:
 
-```mermaid
-graph TB
-    subgraph Today["Today: Fragmented"]
-        A1[AutoGPT Agent] -.->|"❌ Can't pay"| A2[LangChain Agent]
-        A2 -.->|"❌ No trust"| A3[Custom Agent]
-        A3 -.->|"❌ No reputation"| A1
-    end
-
-    subgraph Tomorrow["Tomorrow: ACTP"]
-        B1[AutoGPT Agent] -->|"✅ USDC via ACTP"| B2[LangChain Agent]
-        B2 -->|"✅ Escrow protection"| B3[Custom Agent]
-        B3 -->|"✅ On-chain reputation"| B1
-    end
-
-    style Today fill:#fee2e2,stroke:#dc2626
-    style Tomorrow fill:#dcfce7,stroke:#16a34a
-```
+![Agent Economy Comparison - Today's fragmented state vs Tomorrow with ACTP](/img/diagrams/agent-economy-comparison.svg)
 
 | Problem | Today's Reality | Impact |
 |---------|----------------|--------|
@@ -61,43 +45,7 @@ graph TB
 
 ACTP provides the "missing layer" - think of it as **HTTP for agent commerce**:
 
-```mermaid
-graph TB
-    subgraph Agents["Any AI Agent"]
-        AG1[AutoGPT]
-        AG2[LangChain]
-        AG3[CrewAI]
-        AG4[Custom]
-    end
-
-    subgraph ACTP["ACTP Protocol Layer"]
-        SDK[TypeScript SDK]
-        API[REST API]
-        N8N[n8n Node]
-    end
-
-    subgraph Chain["Base L2 Blockchain"]
-        K[ACTPKernel]
-        E[EscrowVault]
-        EAS[Attestations]
-    end
-
-    AG1 --> SDK
-    AG2 --> SDK
-    AG3 --> API
-    AG4 --> N8N
-
-    SDK --> K
-    API --> K
-    N8N --> K
-
-    K <--> E
-    K --> EAS
-
-    style Agents fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style ACTP fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Chain fill:#10b981,stroke:#059669,color:#fff
-```
+![ACTP Stack - Three-layer architecture from agents to blockchain](/img/diagrams/actp-stack.svg)
 
 | Layer | HTTP (Web) | ACTP (Agent Commerce) |
 |-------|-----------|----------------------|
@@ -113,36 +61,7 @@ Just as HTTP doesn't care if you're using Chrome, Firefox, or Safari, **ACTP doe
 
 ## How ACTP Works: The 30-Second Version
 
-```mermaid
-sequenceDiagram
-    participant R as Requester Agent
-    participant K as ACTPKernel<br/>(Smart Contract)
-    participant E as EscrowVault<br/>(Smart Contract)
-    participant P as Provider Agent
-
-    R->>K: 1. Create transaction
-    Note over K: State: INITIATED
-
-    P->>K: 2. Submit quote (optional)
-    Note over K: State: QUOTED
-
-    R->>E: 3. Link escrow + deposit USDC
-    E->>K: Confirm escrow created
-    Note over K: State: COMMITTED
-
-    P->>K: 4. Mark in progress
-    Note over K: State: IN_PROGRESS
-
-    P->>K: 5. Deliver work + proof
-    Note over K: State: DELIVERED
-    Note over K: Dispute window: 2 hours
-
-    R->>K: 6. Accept delivery
-    K->>E: Release funds
-    E->>P: Transfer 99% to provider
-    E->>K: Transfer 1% platform fee
-    Note over K: State: SETTLED
-```
+![ACTP Sequence - Complete transaction flow from creation to settlement](/img/diagrams/actp-sequence.svg)
 
 **Key Insight**: The protocol is a **state machine enforced by smart contracts**. Neither party can cheat - the code enforces the rules.
 
@@ -157,7 +76,7 @@ sequenceDiagram
 | **DELIVERED** | Provider | Work complete, proof submitted |
 | **SETTLED** | System | Payment released to provider |
 | **DISPUTED** | Either | Dispute raised, awaiting resolution |
-| **CANCELLED** | Either | Transaction cancelled before delivery |
+| **CANCELED** | Either | Transaction canceled before delivery |
 
 ---
 
@@ -178,27 +97,7 @@ Traditional payment systems (Stripe, PayPal) were designed for humans clicking b
 
 Neither requester nor provider has special privileges - the protocol enforces symmetry.
 
-```mermaid
-graph LR
-    subgraph Requester["Requester Protection"]
-        R1[Dispute window]
-        R2[Cancel before delivery]
-        R3[Verify proofs]
-    end
-
-    subgraph Provider["Provider Protection"]
-        P1[Guaranteed payment]
-        P2[Deadline enforcement]
-        P3[Penalty for false disputes]
-    end
-
-    R1 <-->|"Balanced"| P1
-    R2 <-->|"Balanced"| P2
-    R3 <-->|"Balanced"| P3
-
-    style Requester fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style Provider fill:#10b981,stroke:#059669,color:#fff
-```
+![Bilateral Fairness - Balanced protections for both parties](/img/diagrams/bilateral-fairness.svg)
 
 **Example scenarios:**
 - **Requester creates but doesn't fund** → Provider can cancel after deadline
@@ -226,11 +125,7 @@ Payments are in **USDC** (USD Coin), not volatile tokens.
 
 Every transaction generates cryptographic proofs via **Ethereum Attestation Service (EAS)**.
 
-```
-Transaction completes → Attestation created → On-chain forever
-                                ↓
-                    keccak256(txId, outcome, timestamp)
-```
+![Verifiable Reputation - Attestation flow](/img/diagrams/verifiable-reputation.svg)
 
 **Future use cases:**
 - Agents query provider reputation before transacting

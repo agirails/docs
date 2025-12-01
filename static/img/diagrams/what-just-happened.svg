@@ -1,0 +1,61 @@
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="280" fill="#0A0A0A"/>
+
+  <!-- ═══ PARTICIPANTS ═══ -->
+
+  <!-- Your Wallet -->
+  <rect x="80" y="50" width="120" height="40" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="140" y="75" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Your Wallet</text>
+
+  <!-- ACTPKernel -->
+  <rect x="290" y="50" width="120" height="40" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="350" y="75" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">ACTPKernel</text>
+
+  <!-- EscrowVault -->
+  <rect x="500" y="50" width="120" height="40" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="560" y="75" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">EscrowVault</text>
+
+  <!-- ═══ LIFELINES ═══ -->
+  <line x1="140" y1="90" x2="140" y2="270" stroke="#4B5563" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="350" y1="90" x2="350" y2="270" stroke="#4B5563" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="560" y1="90" x2="560" y2="270" stroke="#4B5563" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- ═══ STEP 1: createTransaction() ═══ -->
+
+  <!-- Arrow: Wallet → Kernel -->
+  <line x1="140" y1="130" x2="342" y2="130" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="350,130 340,125 340,135" fill="#0EA5E9"/>
+
+  <!-- Label -->
+  <rect x="185" y="112" width="130" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="250" y="127" text-anchor="middle" fill="#0EA5E9" font-family="monospace" font-size="10">createTransaction()</text>
+
+  <!-- State Note: INITIATED -->
+  <rect x="365" y="120" width="100" height="24" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="415" y="136" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">State: INITIATED</text>
+
+  <!-- ═══ STEP 2: fundTransaction() ═══ -->
+
+  <!-- Arrow: Wallet → EscrowVault -->
+  <line x1="140" y1="180" x2="552" y2="180" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="560,180 550,175 550,185" fill="#0EA5E9"/>
+
+  <!-- Label (aligned with createTransaction) -->
+  <rect x="185" y="162" width="120" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="245" y="177" text-anchor="middle" fill="#0EA5E9" font-family="monospace" font-size="10">fundTransaction()</text>
+
+  <!-- ═══ STEP 3: Lock USDC (green circle on lifeline) ═══ -->
+
+  <!-- Green circle symbolizing lock -->
+  <circle cx="560" cy="220" r="12" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="2"/>
+  <text x="560" y="224" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">🔒</text>
+
+  <!-- Lock label -->
+  <rect x="580" y="208" width="80" height="22" rx="6" fill="#0A0A0A" fill-opacity="0.75" stroke="#10B981" stroke-width="1"/>
+  <text x="620" y="223" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">Lock 1 USDC</text>
+
+  <!-- State Note: COMMITTED -->
+  <rect x="365" y="208" width="100" height="24" rx="4" fill="#F59E0B" fill-opacity="0.2" stroke="#F59E0B" stroke-width="1"/>
+  <text x="415" y="224" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">State: COMMITTED</text>
+</svg>

@@ -12,21 +12,9 @@ This section explains the fundamental concepts that power the protocol.
 
 ## Quick Overview
 
-```mermaid
-graph TB
-    A[AI Agent Requester] -->|1. Create Transaction| K[ACTPKernel]
-    P[AI Agent Provider] -->|2. Accept & Quote| K
-    A -->|3. Link Escrow| E[EscrowVault]
-    E -->|Locks USDC| E
-    P -->|4. Deliver Work| K
-    K -->|5. Release Funds| E
-    E -->|Payment - 1% Fee| P
-
-    style K fill:#4f46e5
-    style E fill:#059669
-    style A fill:#0ea5e9
-    style P fill:#f59e0b
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/actp-overview.svg" alt="ACTP Transaction Flow Overview" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ## What You'll Learn
 

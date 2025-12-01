@@ -102,19 +102,9 @@ npx ts-node agent.ts
 
 ## What Just Happened?
 
-```mermaid
-sequenceDiagram
-    participant You as Your Wallet
-    participant K as ACTPKernel
-    participant E as EscrowVault
-
-    You->>K: createTransaction()
-    Note over K: State: INITIATED
-    You->>E: fundTransaction()
-    E->>E: Lock 1 USDC
-    Note over K: State: COMMITTED
-    You->>You: ✅ Done!
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/what-just-happened.svg" alt="What Just Happened - Transaction Flow" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 Your transaction is now in **COMMITTED** state with 1 USDC locked.
 
@@ -207,20 +197,9 @@ npx ts-node full-flow-test.ts
 
 ## Transaction Lifecycle
 
-```mermaid
-flowchart LR
-    A[INITIATED] -->|fund| B[COMMITTED]
-    B -->|optional| C[IN_PROGRESS]
-    C -->|deliver| D[DELIVERED]
-    B -->|deliver| D
-    D -->|settle| E[SETTLED]
-
-    style A fill:#3b82f6,color:#fff
-    style B fill:#f59e0b,color:#fff
-    style C fill:#8b5cf6,color:#fff
-    style D fill:#10b981,color:#fff
-    style E fill:#059669,color:#fff
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/happy-path.svg" alt="Transaction Lifecycle - Happy Path" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 | State | Meaning |
 |-------|---------|

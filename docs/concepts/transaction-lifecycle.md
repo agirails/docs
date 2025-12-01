@@ -36,7 +36,7 @@ By the end of this page, you'll understand:
 | **DELIVERED** | `4` | Work complete, dispute window active | Provider |
 | **SETTLED** | `5` | Payment released *(terminal)* | Requester or auto |
 | **DISPUTED** | `6` | Contested, awaiting mediation | Either party |
-| **CANCELLED** | `7` | Cancelled before completion *(terminal)* | Either party |
+| **CANCELED** | `7` | Canceled before completion *(terminal)* | Either party |
 
 ### Path Cheat Sheet
 
@@ -44,7 +44,7 @@ By the end of this page, you'll understand:
 Happy Path:     INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 With Quote:     INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 Dispute Path:   ... → DELIVERED → DISPUTED → SETTLED (with resolution)
-Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
+Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELED
 ```
 
 ---
@@ -64,9 +64,7 @@ Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
 
 The typical successful transaction follows this path:
 
-```
-INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
-```
+![Happy Path - Transaction flow](/img/diagrams/happy-path.svg)
 
 ### Step 1: INITIATED - Create Transaction
 
@@ -290,19 +288,11 @@ False disputes are penalized. If requester loses, they forfeit their funds. This
 
 ---
 
-### Path: Cancellation (CANCELLED State)
+### Path: Cancellation (CANCELED State)
 
-Transactions can be cancelled before delivery:
+Transactions can be canceled before delivery:
 
-```mermaid
-graph LR
-    A[INITIATED] -->|"Cancel"| X[CANCELLED]
-    B[QUOTED] -->|"Cancel"| X
-    C[COMMITTED] -->|"Cancel after deadline"| X
-    D[IN_PROGRESS] -->|"Cancel after deadline"| X
-
-    style X fill:#6b7280,stroke:#4b5563,color:#fff
-```
+![Cancellation Path - Multiple states can transition to CANCELED](/img/diagrams/cancellation-path.svg)
 
 **Cancellation rules by state:**
 
@@ -318,7 +308,7 @@ graph LR
 
 ```typescript
 // Example: Provider cancels voluntarily
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
+await client.kernel.transitionState(txId, State.CANCELED, '0x');
 // Requester receives 100% refund
 ```
 
@@ -338,7 +328,7 @@ Who can trigger which transitions:
 | DELIVERED → SETTLED | ✅ | ✅** | ❌ |
 | DELIVERED → DISPUTED | ✅ | ✅ | ❌ |
 | DISPUTED → SETTLED | ❌ | ❌ | ✅ |
-| Any → CANCELLED | See table above | See table above | ❌ |
+| Any → CANCELED | See table above | See table above | ❌ |
 
 *Via `linkEscrow()` (auto-transition)
 **Only after dispute window expires
@@ -349,16 +339,7 @@ Who can trigger which transitions:
 
 ### Visual Timeline
 
-```
-Time →
-├──────────┬──────────┬──────────┬──────────┤
-0          24h        26h        28h
-│          │          │          │
-Create     Deadline   Deliver    Dispute    Auto-settle
-           expires    window     window
-                      starts     ends
-                      ↑── 2h ──↑
-```
+![Transaction Timeline - From creation to auto-settlement](/img/diagrams/timing-timeline.svg)
 
 ### Key Timing Rules
 

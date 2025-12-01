@@ -26,9 +26,7 @@ By the end of this page, you'll understand:
 
 ### Escrow Flow
 
-```
-1. Requester approves USDC → 2. linkEscrow() locks funds → 3. Work happens → 4. releaseEscrow() pays provider
-```
+![Escrow Flow](/img/diagrams/escrow-flow.svg)
 
 ### Key Guarantees
 
@@ -61,39 +59,7 @@ Traditional payment systems have asymmetric risk:
 
 ## Architecture
 
-```mermaid
-graph TB
-    subgraph "Requester Wallet"
-        R[USDC Balance]
-    end
-
-    subgraph "EscrowVault Contract"
-        E[Locked Funds]
-        M[Escrow Mapping]
-    end
-
-    subgraph "ACTPKernel Contract"
-        K[Transaction State]
-        V[Validator Interface]
-    end
-
-    subgraph "Provider Wallet"
-        P[Receives Payment]
-    end
-
-    R -->|"1. Approve USDC"| E
-    K -->|"2. linkEscrow()"| V
-    V -->|"3. Pull USDC"| E
-    E -->|"4. Lock in mapping"| M
-    K -->|"5. releaseEscrow()"| V
-    V -->|"6. Transfer"| E
-    E -->|"7. Payout"| P
-
-    style E fill:#059669,stroke:#047857,color:#fff
-    style K fill:#4f46e5,stroke:#4338ca,color:#fff
-    style R fill:#0ea5e9,stroke:#0284c7,color:#fff
-    style P fill:#f59e0b,stroke:#d97706,color:#fff
-```
+![Escrow Architecture - Fund flow between wallets and contracts](/img/diagrams/escrow-architecture.svg)
 
 ---
 
@@ -158,17 +124,7 @@ Once escrow is created:
 | ✅ Protected | Neither party can access directly |
 | ✅ Tracked | Only kernel can authorize release |
 
-**Visual:**
-```
-EscrowVault Balance: $10,000 USDC
-
-Escrow Mapping:
-├─ escrowId_1: $100 → {requester: 0xAAA, provider: 0xBBB}
-├─ escrowId_2: $250 → {requester: 0xCCC, provider: 0xDDD}
-└─ escrowId_3: $50  → {requester: 0xEEE, provider: 0xFFF}
-
-Total Locked: $400
-```
+![Escrow Mapping Visual](/img/diagrams/escrow-mapping.svg)
 
 ### Step 4: Release Escrow
 
@@ -252,30 +208,7 @@ contract EscrowVault is ReentrancyGuard {
 
 ## Escrow Lifecycle
 
-```mermaid
-stateDiagram-v2
-    [*] --> Created: createEscrow()
-    Created --> PartialRelease: releaseMilestone()
-    PartialRelease --> PartialRelease: releaseMilestone()
-    PartialRelease --> FullyReleased: final payout()
-    Created --> FullyReleased: payout()
-    FullyReleased --> [*]
-
-    note right of Created
-        amount = 1000
-        released = 0
-    end note
-
-    note right of PartialRelease
-        amount = 1000
-        released = 400
-    end note
-
-    note right of FullyReleased
-        amount = 1000
-        released = 1000
-    end note
-```
+![Escrow Lifecycle](/img/diagrams/escrow-lifecycle.svg)
 
 ---
 
@@ -320,7 +253,7 @@ await client.kernel.releaseEscrow(txId);
 
 ```typescript
 // Requester cancels after deadline
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
+await client.kernel.transitionState(txId, State.CANCELED, '0x');
 
 // Distribution:
 // Requester refund: $475 (95%)

@@ -1,0 +1,49 @@
+<svg viewBox="0 0 550 235" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="550" height="235" fill="#0A0A0A"/>
+
+  <!-- Main container -->
+  <rect x="20" y="15" width="510" height="205" rx="10" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
+
+  <!-- Header: EscrowVault Balance -->
+  <text x="40" y="45" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">EscrowVault Balance:</text>
+  <text x="220" y="45" fill="#fff" font-family="monospace" font-size="14" font-weight="600">$10,000 USDC</text>
+
+  <!-- Divider -->
+  <line x1="40" y1="60" x2="510" y2="60" stroke="#374151" stroke-width="1"/>
+
+  <!-- Escrow Mapping label -->
+  <text x="40" y="85" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500">Escrow Mapping:</text>
+
+  <!-- Entry 1 -->
+  <text x="40" y="110" fill="#6B7280" font-family="monospace" font-size="11">├─</text>
+  <rect x="65" y="97" width="85" height="18" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="107" y="110" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="10">escrowId_1</text>
+  <text x="160" y="110" fill="#10B981" font-family="monospace" font-size="11" font-weight="600">$100</text>
+  <text x="205" y="110" fill="#6B7280" font-family="monospace" font-size="11">→</text>
+  <text x="225" y="110" fill="#9CA3AF" font-family="monospace" font-size="10">{requester: 0xAAA, provider: 0xBBB}</text>
+
+  <!-- Entry 2 -->
+  <text x="40" y="140" fill="#6B7280" font-family="monospace" font-size="11">├─</text>
+  <rect x="65" y="127" width="85" height="18" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="107" y="140" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="10">escrowId_2</text>
+  <text x="160" y="140" fill="#10B981" font-family="monospace" font-size="11" font-weight="600">$250</text>
+  <text x="205" y="140" fill="#6B7280" font-family="monospace" font-size="11">→</text>
+  <text x="225" y="140" fill="#9CA3AF" font-family="monospace" font-size="10">{requester: 0xCCC, provider: 0xDDD}</text>
+
+  <!-- Entry 3 -->
+  <text x="40" y="170" fill="#6B7280" font-family="monospace" font-size="11">└─</text>
+  <rect x="65" y="157" width="85" height="18" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="107" y="170" text-anchor="middle" fill="#A78BFA" font-family="monospace" font-size="10">escrowId_3</text>
+  <text x="160" y="170" fill="#10B981" font-family="monospace" font-size="11" font-weight="600">$50</text>
+  <text x="205" y="170" fill="#6B7280" font-family="monospace" font-size="11">→</text>
+  <text x="225" y="170" fill="#9CA3AF" font-family="monospace" font-size="10">{requester: 0xEEE, provider: 0xFFF}</text>
+
+  <!-- Divider -->
+  <line x1="40" y1="185" x2="510" y2="185" stroke="#374151" stroke-width="1"/>
+
+  <!-- Total Locked -->
+  <text x="40" y="205" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500">Total Locked:</text>
+  <rect x="130" y="192" width="70" height="18" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1"/>
+  <text x="165" y="205" text-anchor="middle" fill="#10B981" font-family="monospace" font-size="12" font-weight="600">$400</text>
+</svg>

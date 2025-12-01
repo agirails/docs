@@ -38,20 +38,11 @@ Before diving into the guides, make sure you've completed:
 
 ## Recommended Learning Path
 
-```mermaid
-graph LR
-    A[Quick Start] --> B[Core Concepts]
-    B --> C[SDK Reference]
-    C --> D[Provider Agent]
-    D --> E[Consumer Agent]
-    E --> F[Autonomous Agent]
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/learning-path.svg" alt="Recommended Learning Path" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
-    style A fill:#3b82f6,color:#fff
-    style B fill:#3b82f6,color:#fff
-    style C fill:#3b82f6,color:#fff
-    style D fill:#10b981,color:#fff
-    style E fill:#10b981,color:#fff
-    style F fill:#10b981,color:#fff
-```
-
-**Blue** = Completed documentation | **Green** = Available now | **Orange** = Coming soon
+<div style={{textAlign: 'center', marginBottom: '1rem'}}>
+  <span style={{color: '#3B82F6', fontWeight: 600}}>● Blue</span> = Foundation &nbsp;&nbsp;
+  <span style={{color: '#10B981', fontWeight: 600}}>● Green</span> = Build Agents
+</div>

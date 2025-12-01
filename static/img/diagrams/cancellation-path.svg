@@ -1,0 +1,62 @@
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="280" fill="#0A0A0A"/>
+
+  <!-- Source states (left side) -->
+
+  <!-- INITIATED -->
+  <rect x="40" y="25" width="140" height="45" rx="8" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
+  <text x="110" y="53" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">INITIATED</text>
+
+  <!-- QUOTED -->
+  <rect x="40" y="85" width="140" height="45" rx="8" fill="#1F2937" stroke="#F59E0B" stroke-width="2"/>
+  <text x="110" y="113" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">QUOTED</text>
+
+  <!-- COMMITTED -->
+  <rect x="40" y="145" width="140" height="45" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="2"/>
+  <text x="110" y="173" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">COMMITTED</text>
+
+  <!-- IN_PROGRESS -->
+  <rect x="40" y="205" width="140" height="45" rx="8" fill="#1F2937" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="110" y="233" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">IN_PROGRESS</text>
+
+  <!-- Arrows converging to CANCELED -->
+
+  <!-- From INITIATED (curve down) -->
+  <path d="M 180 47 Q 300 47 420 125" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-cancel)"/>
+
+  <!-- From QUOTED (slight curve) -->
+  <path d="M 180 107 Q 280 107 420 130" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-cancel)"/>
+
+  <!-- From COMMITTED (slight curve) -->
+  <path d="M 180 167 Q 280 167 420 145" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-cancel)"/>
+
+  <!-- From IN_PROGRESS (curve up) -->
+  <path d="M 180 227 Q 300 227 420 150" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-cancel)"/>
+
+  <!-- Labels on arrows -->
+  <text x="285" y="35" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Anytime</text>
+  <text x="295" y="95" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Anytime</text>
+  <text x="295" y="185" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">After deadline*</text>
+  <text x="285" y="245" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">After deadline*</text>
+
+  <!-- CANCELED (terminal state) -->
+  <rect x="430" y="105" width="160" height="55" rx="8" fill="#1F2937" stroke="#6B7280" stroke-width="2"/>
+  <text x="510" y="138" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600">CANCELED</text>
+
+  <!-- Terminal indicator -->
+  <circle cx="620" cy="132" r="10" fill="none" stroke="#6B7280" stroke-width="2"/>
+  <circle cx="620" cy="132" r="5" fill="#6B7280"/>
+
+  <!-- Footnote -->
+  <text x="350" y="268" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="10">
+    *Requester can cancel after deadline passes. Provider can cancel anytime before DELIVERED.
+  </text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow-cancel" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4B5563"/>
+    </marker>
+  </defs>
+</svg>

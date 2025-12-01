@@ -1,0 +1,48 @@
+<svg viewBox="0 0 900 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="100" fill="#0A0A0A"/>
+
+  <!-- Step 1: Quick Start -->
+  <rect x="20" y="30" width="120" height="40" rx="8" fill="#3B82F6" fill-opacity="0.2" stroke="#3B82F6" stroke-width="2"/>
+  <text x="80" y="55" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Quick Start</text>
+
+  <!-- Arrow 1 -->
+  <line x1="145" y1="50" x2="165" y2="50" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="170,50 162,45 162,55" fill="#4B5563"/>
+
+  <!-- Step 2: Core Concepts -->
+  <rect x="175" y="30" width="120" height="40" rx="8" fill="#3B82F6" fill-opacity="0.2" stroke="#3B82F6" stroke-width="2"/>
+  <text x="235" y="55" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Core Concepts</text>
+
+  <!-- Arrow 2 -->
+  <line x1="300" y1="50" x2="320" y2="50" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="325,50 317,45 317,55" fill="#4B5563"/>
+
+  <!-- Step 3: SDK Reference -->
+  <rect x="330" y="30" width="120" height="40" rx="8" fill="#3B82F6" fill-opacity="0.2" stroke="#3B82F6" stroke-width="2"/>
+  <text x="390" y="55" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">SDK Reference</text>
+
+  <!-- Arrow 3 -->
+  <line x1="455" y1="50" x2="475" y2="50" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="480,50 472,45 472,55" fill="#4B5563"/>
+
+  <!-- Step 4: Provider Agent -->
+  <rect x="485" y="30" width="120" height="40" rx="8" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="2"/>
+  <text x="545" y="55" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Provider Agent</text>
+
+  <!-- Arrow 4 -->
+  <line x1="610" y1="50" x2="630" y2="50" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="635,50 627,45 627,55" fill="#4B5563"/>
+
+  <!-- Step 5: Consumer Agent -->
+  <rect x="640" y="30" width="120" height="40" rx="8" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="2"/>
+  <text x="700" y="55" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Consumer Agent</text>
+
+  <!-- Arrow 5 -->
+  <line x1="765" y1="50" x2="785" y2="50" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="790,50 782,45 782,55" fill="#4B5563"/>
+
+  <!-- Step 6: Autonomous Agent -->
+  <rect x="795" y="30" width="85" height="40" rx="8" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="2"/>
+  <text x="837" y="55" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Autonomous</text>
+</svg>

@@ -383,8 +383,8 @@ function monitorDelivery(client: ACTPClient, txId: string): void {
         console.log('Dispute raised. Awaiting resolution.');
         break;
 
-      case State.CANCELLED:
-        console.log('Transaction cancelled.');
+      case State.CANCELED:
+        console.log('Transaction canceled.');
         activeJobs.delete(txId);
         unsubscribe();
         break;

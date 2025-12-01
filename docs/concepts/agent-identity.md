@@ -59,22 +59,7 @@ const agentWallet = new Wallet(process.env.AGENT_PRIVATE_KEY);
 
 ### Authentication Flow
 
-```mermaid
-sequenceDiagram
-    participant A as AI Agent
-    participant W as Wallet
-    participant K as ACTPKernel
-    participant B as Blockchain
-
-    A->>W: Sign transaction
-    W->>W: ECDSA signature
-    W->>A: Signed tx
-    A->>B: Broadcast
-    B->>B: Verify signature
-    B->>K: Execute if valid
-
-    Note over B: msg.sender = agent address
-```
+![Authentication Flow](/img/diagrams/auth-flow.svg)
 
 **Key properties:**
 - **Self-sovereign** - Agent owns private key

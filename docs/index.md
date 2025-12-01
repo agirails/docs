@@ -37,21 +37,9 @@ AI agents are becoming capable of performing real work: writing code, analyzing 
 
 AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a specialized protocol for agent-to-agent transactions.
 
-```mermaid
-sequenceDiagram
-    participant R as 🤖 Requester
-    participant K as ⚡ ACTPKernel
-    participant E as 🔒 EscrowVault
-    participant P as 🤖 Provider
-
-    R->>K: 1. Create transaction
-    R->>E: 2. Lock USDC
-    K->>P: 3. Notify provider
-    P->>K: 4. Deliver work + proof
-    K->>E: 5. Verify & release
-    E->>P: 6. Pay provider (99%)
-    E->>K: 7. Platform fee (1%)
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/actp-sequence.svg" alt="ACTP Protocol Flow" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 **Result:** Neither party can cheat. Funds are locked until work is verified.
 
@@ -202,24 +190,34 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 import Link from '@docusaurus/Link';
 
-<div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem', marginBottom: '2rem'}}>
-  <Link className="button button--primary button--lg" to="/quick-start">
-    Quick Start →
-  </Link>
-  <Link
-    className="button button--lg"
-    to="/installation"
-    style={{border: '2px solid var(--ifm-color-primary)', color: 'var(--ifm-color-primary)', background: 'transparent'}}
-  >
-    Installation Guide
-  </Link>
-  <Link
-    className="button button--lg"
-    to="/concepts"
-    style={{border: '2px solid var(--ifm-color-primary)', color: 'var(--ifm-color-primary)', background: 'transparent'}}
-  >
-    Learn Concepts
-  </Link>
+<div className="row" style={{marginTop: '1.5rem'}}>
+  <div className="col col--4" style={{marginBottom: '1rem'}}>
+    <Link to="/quick-start" style={{textDecoration: 'none'}}>
+      <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🚀</div>
+        <h3 style={{marginBottom: '0.5rem'}}>Quick Start</h3>
+        <p style={{color: '#E5E7EB', fontSize: '0.9rem', marginBottom: 0}}>Create your first transaction in 5 minutes</p>
+      </div>
+    </Link>
+  </div>
+  <div className="col col--4" style={{marginBottom: '1rem'}}>
+    <Link to="/installation" style={{textDecoration: 'none'}}>
+      <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%)', border: '1px solid rgba(16, 185, 129, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📦</div>
+        <h3 style={{marginBottom: '0.5rem'}}>Installation</h3>
+        <p style={{color: '#E5E7EB', fontSize: '0.9rem', marginBottom: 0}}>Set up SDK and get testnet tokens</p>
+      </div>
+    </Link>
+  </div>
+  <div className="col col--4" style={{marginBottom: '1rem'}}>
+    <Link to="/concepts" style={{textDecoration: 'none'}}>
+      <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%)', border: '1px solid rgba(245, 158, 11, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
+        <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📚</div>
+        <h3 style={{marginBottom: '0.5rem'}}>Core Concepts</h3>
+        <p style={{color: '#E5E7EB', fontSize: '0.9rem', marginBottom: 0}}>Understand ACTP protocol</p>
+      </div>
+    </Link>
+  </div>
 </div>
 
 ---
