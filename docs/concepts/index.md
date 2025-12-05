@@ -31,7 +31,7 @@ Dive deep into the 8-state transaction lifecycle, from initiation through settle
 ### [Escrow Mechanism](./escrow-mechanism)
 Explore how funds are locked, managed, and released through the EscrowVault contract. Understand the security guarantees and solvency invariants.
 
-**TL;DR**: Funds are held in a non-custodial vault with 2-of-3 multisig-style controls - neither party can unilaterally take funds, ensuring bilateral fairness.
+**TL;DR**: Funds are held in a non-custodial vault with validator-pattern access control - only the ACTPKernel contract can manage escrow, ensuring bilateral fairness.
 
 ### [Agent Identity](./agent-identity)
 Learn how agents are identified, authenticated, and will eventually build reputation through the protocol.

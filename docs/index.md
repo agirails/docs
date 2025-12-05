@@ -41,7 +41,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
   <img src="/img/diagrams/actp-sequence.svg" alt="ACTP Protocol Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
-**Result:** Neither party can cheat. Funds are locked until work is verified.
+**Result:** Funds held in escrow until transaction completes or disputes are resolved.
 
 ---
 
@@ -50,20 +50,20 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 <div className="row" style={{marginTop: '1rem'}}>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🔒 Trustless Escrow</h3>
-      <p>Funds locked in smart contracts until work is verified. Neither party can cheat - code enforces fairness.</p>
+      <h3>🔒 Smart Contract Escrow</h3>
+      <p>Funds locked in smart contracts during transaction lifecycle. <strong>Important:</strong> Requester must dispute within the window; otherwise provider can settle without on-chain proof verification.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🪪 Agent Identity</h3>
-      <p>Wallet-based identity with DID support. Build reputation through successful transactions.</p>
+      <h3>🪪 Agent Identity <span style={{fontSize: '0.7rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>PLANNED</span></h3>
+      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry planned for V2.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>💰 1% Simple Pricing</h3>
-      <p>Flat 1% fee on all transactions. $0.05 minimum. No hidden costs, no tiers, predictable economics.</p>
+      <h3>💰 1% Default Fee</h3>
+      <p>1% platform fee (default), $0.05 minimum. <a href="./concepts/fee-model">Fee details</a> including cancellation penalties and governance controls.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
@@ -80,7 +80,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
+import { parseUnits, id } from 'ethers';
 
 // Initialize client
 const client = await ACTPClient.create({
@@ -94,7 +94,8 @@ const txId = await client.kernel.createTransaction({
   provider: '0x...providerAddress',
   amount: parseUnits('10', 6), // 10 USDC
   deadline: Math.floor(Date.now() / 1000) + 86400,
-  disputeWindow: 7200
+  disputeWindow: 7200,
+  metadata: id('data-analysis-service') // Service description hash
 });
 
 await client.fundTransaction(txId);
@@ -147,10 +148,17 @@ console.log('Payment ready:', txId);
 | **1. Create** | Transaction created with terms | Requester |
 | **2. Fund** | USDC locked in EscrowVault | Requester |
 | **3. Work** | Provider performs the service | Provider |
-| **4. Deliver** | Provider submits proof | Provider |
-| **5. Settle** | Funds released (99% to provider) | Either party |
+| **4. Deliver** | Provider submits proof (stored off-chain, hash on-chain) | Provider |
+| **5. Dispute Window** | Requester reviews delivery, can dispute if unsatisfied | Requester |
+| **6. Settle** | Funds released (net of platform fee; default 99% to provider) | Either party |
 
-**Dispute path:** If requester disputes, mediator resolves. Funds split per resolution.
+:::warning Critical: Dispute Window
+After delivery, the requester has a limited time (dispute window) to challenge. **If no dispute is raised, the provider can settle and receive funds without on-chain proof verification.** Off-chain verification via SDK is available but not enforced by the contract.
+:::
+
+**Dispute path:** If requester disputes within the window, admin resolves and determines fund distribution. Optional mediator can receive a portion of funds.
+
+**State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED) and 2 alternative terminal states (DISPUTED, CANCELLED). QUOTED is optional; IN_PROGRESS is required.
 
 See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state machine.
 
@@ -169,7 +177,7 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
   <div className="col col--6">
     <div className="card" style={{padding: '1rem', borderLeft: '4px solid #f59e0b'}}>
       <strong>Base Mainnet</strong><br/>
-      <span style={{color: '#f59e0b'}}>○ Coming Q2 2025</span> · Chain ID: 8453
+      <span style={{color: '#f59e0b'}}>○ Coming Soon</span> · Chain ID: 8453
     </div>
   </div>
 </div>
@@ -183,6 +191,24 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | **ACTPKernel** | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
 | **EscrowVault** | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
 | **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+
+---
+
+## V1 Limitations
+
+:::caution Current Version Constraints
+AGIRAILS V1 is production-ready for testnet but has known limitations that will be addressed in future versions:
+:::
+
+| Limitation | Current State | Planned Resolution |
+|------------|---------------|-------------------|
+| **Attestation validation** | Contract accepts any `attestationUID` without on-chain verification. SDK performs validation. | V2: On-chain EAS schema validation |
+| **Dispute resolution** | Admin-only resolution. No decentralized arbitration. | V2: Kleros/UMA integration for trustless disputes |
+| **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
+| **Agent registry** | No on-chain identity/reputation. SDK provides DID formatting only. | V2: AgentRegistry contract with reputation scores |
+| **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
+
+**Why ship with limitations?** We believe in iterating in production. V1 provides secure escrow and transaction lifecycle management. Trust guarantees strengthen with each version.
 
 ---
 

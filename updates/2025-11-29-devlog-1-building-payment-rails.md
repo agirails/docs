@@ -59,23 +59,25 @@ client.proofs   // Content hashing and delivery proofs
 - **EscrowVault**: [0x921edE340770db5DB6059B5B866be987d1b7311F](https://sepolia.basescan.org/address/0x921edE340770db5DB6059B5B866be987d1b7311F)
 - **MockUSDC**: [0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb)
 
+> **Note**: These are Base Sepolia testnet deployments. Mainnet launch planned after security audits.
+
 The contracts implement:
 
 **8-State Transaction Lifecycle**:
 1. INITIATED → Transaction created
 2. QUOTED → Provider submits price (optional)
 3. COMMITTED → Escrow linked, work begins
-4. IN_PROGRESS → Provider signals active work (optional)
+4. IN_PROGRESS → Provider signals active work (required)
 5. DELIVERED → Work complete with proof
 6. SETTLED → Payment released (terminal)
 7. DISPUTED → Conflict requires resolution
-8. CANCELED → Transaction aborted (terminal)
+8. CANCELLED → Transaction aborted (terminal)
 
 **Key Features**:
-- 1% platform fee with $0.05 minimum
-- Non-custodial escrow with 2-of-3 multisig pattern
+- 1% default platform fee (adjustable up to 5% max), $0.05 minimum transaction amount (fee minimum enforced off-chain)
+- Non-custodial escrow with `onlyKernel` validator pattern (only ACTPKernel can release funds)
 - Pausable for emergency controls
-- Time-delayed economic parameter changes
+- Time-delayed economic parameter changes (2-day timelock)
 
 ### Documentation Automation
 
@@ -89,9 +91,9 @@ This dev log was written by an agent from a template. Meta.
 
 ## What We Learned
 
-**Gas optimization is harder than expected**. Our initial `createTransaction` implementation cost 95k gas. After struct packing and storage optimization, we're down to 85k. Target is 70k.
+**Gas optimization is harder than expected**. Gas costs are still being optimized and may vary based on transaction parameters and network conditions.
 
-The lesson: Every storage slot matters on L2. Even with cheap gas, 15k gas savings × 1M transactions = meaningful cost reduction.
+The lesson: Every storage slot matters on L2. Even with cheap gas, optimizations across millions of transactions create meaningful cost reduction.
 
 **Testing surface area is massive**. With 8 states and multiple transition paths, the edge cases multiply fast:
 - Time-based edge cases (deadline exactly at block.timestamp)
@@ -105,9 +107,9 @@ Fuzz testing is not optional - it's the only way to catch these.
 
 **Current blockers**:
 
-1. **Gas optimization**: 85k → 70k requires deeper struct packing or removing redundant state variables
-2. **Test coverage**: At 87%, need 90%+ before audit-ready
-3. **EAS integration**: Proof anchoring to Ethereum Attestation Service still in design phase
+1. **Gas optimization**: Ongoing work to optimize transaction gas costs through struct packing and removing redundant state variables
+2. **Test coverage**: At 72%, need 90%+ before audit-ready
+3. **EAS on-chain validation**: `anchorAttestation()` exists and SDK supports EAS helpers, but V1 contracts don't validate UIDs on-chain (accepts any bytes32). On-chain EAS validation planned for V2
 
 **Technical debt**:
 - Need comprehensive error message standardization
@@ -130,8 +132,8 @@ Next week's roadmap:
 |--------|-------|
 | Smart contract tests | 176 passing |
 | Test suites | 10 |
-| Gas per transaction | ~85,000 |
-| Docs pages | 2 (more coming!) |
+| Gas per transaction | Being optimized |
+| Docs pages | 5+ core pages |
 | SDK protocol modules | 7 |
 
 ## Why This Matters

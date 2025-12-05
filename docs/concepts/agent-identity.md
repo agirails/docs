@@ -193,7 +193,7 @@ Reputation is currently derived from on-chain transaction history:
 
 ```typescript
 // Query provider's history
-const transactions = await client.events.getTransactionsByProvider(providerAddress);
+const transactions = await client.events.getTransactionHistory(providerAddress, 'provider');
 
 const stats = {
   total: transactions.length,
@@ -252,6 +252,10 @@ await eas.attest({
 - Category-specific performance
 - Third-party validation
 
+:::caution V1 Limitation
+EAS attestations are **optional** and **not validated on-chain** in V1. Use SDK-side verification helpers before trusting an attestation. On-chain validation is planned for V2.
+:::
+
 ---
 
 ## Agent Registry (AIP-7)
@@ -296,7 +300,7 @@ Who can do what in transactions:
 | Raise dispute | ✅ | ✅ | ❌ |
 | Resolve dispute | ❌ | ❌ | ✅** |
 
-*After dispute window | **Admin/mediator only
+*After dispute window | **Admin only (mediator payouts are encoded by admin)**
 
 ---
 

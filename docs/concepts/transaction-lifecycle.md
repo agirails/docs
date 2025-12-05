@@ -36,7 +36,7 @@ By the end of this page, you'll understand:
 | **DELIVERED** | `4` | Work complete, dispute window active | Provider |
 | **SETTLED** | `5` | Payment released *(terminal)* | Requester or auto |
 | **DISPUTED** | `6` | Contested, awaiting mediation | Either party |
-| **CANCELED** | `7` | Canceled before completion *(terminal)* | Either party |
+| **CANCELLED** | `7` | Cancelled before completion *(terminal)* | Either party |
 
 ### Path Cheat Sheet
 
@@ -44,7 +44,7 @@ By the end of this page, you'll understand:
 Happy Path:     INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 With Quote:     INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
 Dispute Path:   ... → DELIVERED → DISPUTED → SETTLED (with resolution)
-Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELED
+Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
 ```
 
 ---
@@ -182,34 +182,41 @@ console.log('Work delivered, dispute window started');
 - State transitions to DELIVERED
 - Dispute window timestamp set: `block.timestamp + disputeWindow`
 - `StateTransitioned` event emitted
-- Delivery proof stored (if provided)
+
+:::info Proof Handling in V1
+The `proof` argument in `transitionState(DELIVERED)` is **not stored as delivery proof**. It is decoded to update the dispute window if provided. For actual delivery proofs, use `anchorAttestation()` to link an EAS attestation UID (optional, not validated on-chain in V1).
+:::
 
 ---
 
 ### Step 5: SETTLED - Payment Released
 
-**Who:** Requester (immediate) or Provider (after dispute window)
-**What:** Releases escrow to provider (99%) and platform (1%)
+**Who:** Requester (anytime after DELIVERED) or Provider (after dispute window expires)
+**What:** Transitions to SETTLED state, which triggers automatic escrow release
 
 ```typescript
-// Option A: Requester accepts immediately
-await client.kernel.releaseEscrow(txId);
-console.log('Funds released');
-// State: SETTLED
+// Option A: Requester settles immediately (skips dispute window)
+await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+console.log('Settled! Payout triggered automatically.');
+// State: SETTLED (payout happens inside transitionState)
 
-// Option B: Provider waits for dispute window to expire
-// (After 2 hours with no dispute)
-await client.kernel.releaseEscrow(txId);
-console.log('Dispute window expired, funds released');
+// Option B: Provider settles after dispute window expires
+// (After dispute window, e.g., 1 hour minimum)
+await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+console.log('Dispute window expired, settled and paid');
 // State: SETTLED
 ```
 
-**Fund distribution for $100 transaction:**
+:::warning Settlement is a State Transition
+In V1, you must call `transitionState(txId, State.SETTLED, proof)` - **not** `releaseEscrow()` directly. The payout happens automatically inside the SETTLED transition. `releaseEscrow()` is only for retrying if funds remain due to a failed transfer.
+:::
+
+**Fund distribution for $100 transaction (at default 1% fee):**
 
 | Recipient | Calculation | Amount |
 |-----------|-------------|--------|
 | Provider | $100 × 99% | **$99.00** |
-| Platform | $100 × 1% | **$1.00** |
+| Platform | $100 × 1% (default) | **$1.00** |
 
 ---
 
@@ -258,58 +265,72 @@ If requester contests delivery:
 
 ```typescript
 // Requester raises dispute (within dispute window)
-await client.kernel.transitionState(txId, State.DISPUTED, '0x');
+await requesterClient.kernel.transitionState(txId, State.DISPUTED, '0x');
 // State: DISPUTED
 
-// Off-chain: Mediator reviews evidence
+// Off-chain: Admin reviews evidence from both parties
 
-// Admin resolves dispute
-await client.kernel.resolveDispute(
-  txId,
-  parseUnits('30', 6),  // Requester refund
-  parseUnits('70', 6)   // Provider payment
+// Admin resolves via transitionState with resolution proof
+// (Admin-only - regular users cannot call this)
+const resolutionProof = ethers.AbiCoder.defaultAbiCoder().encode(
+  ['uint256', 'uint256', 'uint256', 'address'],
+  [
+    parseUnits('30', 6),  // requesterAmount
+    parseUnits('70', 6),  // providerAmount
+    0,                     // mediatorAmount
+    ethers.ZeroAddress     // mediator
+  ]
 );
+await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 // State: SETTLED
 // Distribution: 30% requester, 70% provider
 ```
+
+:::danger Admin-Only Resolution
+In V1, only the admin/pauser role can transition from DISPUTED → SETTLED. There is no `resolveDispute()` function - resolution happens via `transitionState(DISPUTED → SETTLED, resolutionProof)` where the proof encodes the fund distribution.
+:::
 
 **Dispute rules:**
 
 | Rule | Details |
 |------|---------|
-| Who can dispute | Either party |
+| Who can raise dispute | Requester (within dispute window) |
 | Timing | Within dispute window only |
-| Resolution | Admin/mediator only |
-| Distribution | Must allocate 100% of funds |
-
-:::warning Dispute Economics
-False disputes are penalized. If requester loses, they forfeit their funds. This discourages frivolous disputes.
-:::
+| Resolution authority | Admin/pauser only (V1) |
+| Distribution | Admin decides allocation via resolution proof |
 
 ---
 
-### Path: Cancellation (CANCELED State)
+### Path: Cancellation (CANCELLED State)
 
-Transactions can be canceled before delivery:
+Transactions can be cancelled before delivery:
 
-![Cancellation Path - Multiple states can transition to CANCELED](/img/diagrams/cancellation-path.svg)
+![Cancellation Path - Multiple states can transition to CANCELLED](/img/diagrams/cancellation-path.svg)
 
 **Cancellation rules by state:**
 
-| State | Who Can Cancel | Conditions | Refund |
-|-------|----------------|------------|--------|
+| State | Who Can Cancel | Conditions | Requester Refund |
+|-------|----------------|------------|------------------|
 | INITIATED | Requester | Anytime | N/A (no escrow) |
 | QUOTED | Requester | Anytime | N/A (no escrow) |
-| COMMITTED | Requester | After deadline | 100% |
+| COMMITTED | Requester | After deadline | **95%** (5% penalty) |
 | COMMITTED | Provider | Anytime | 100% |
-| IN_PROGRESS | Requester | After deadline | 100% |
+| IN_PROGRESS | Requester | After deadline | **95%** (5% penalty) |
 | IN_PROGRESS | Provider | Anytime | 100% |
 | DELIVERED | ❌ | Cannot cancel | Must dispute or settle |
 
+:::warning Requester Cancellation Penalty
+When the **requester** cancels after escrow is linked (COMMITTED or IN_PROGRESS), a **5% penalty** (`requesterPenaltyBps = 500`) is deducted. This compensates the provider for wasted effort. Only **provider-initiated** cancellations refund 100%.
+:::
+
 ```typescript
 // Example: Provider cancels voluntarily
-await client.kernel.transitionState(txId, State.CANCELED, '0x');
+await providerClient.kernel.transitionState(txId, State.CANCELLED, '0x');
 // Requester receives 100% refund
+
+// Example: Requester cancels after deadline
+await requesterClient.kernel.transitionState(txId, State.CANCELLED, '0x');
+// Requester receives 95% refund (5% to provider as penalty)
 ```
 
 ---
@@ -326,12 +347,13 @@ Who can trigger which transitions:
 | COMMITTED → IN_PROGRESS | ❌ | ✅ | ❌ |
 | IN_PROGRESS → DELIVERED | ❌ | ✅ | ❌ |
 | DELIVERED → SETTLED | ✅ | ✅** | ❌ |
-| DELIVERED → DISPUTED | ✅ | ✅ | ❌ |
-| DISPUTED → SETTLED | ❌ | ❌ | ✅ |
-| Any → CANCELED | See table above | See table above | ❌ |
+| DELIVERED → DISPUTED | ✅ | ❌ | ❌ |
+| DISPUTED → SETTLED | ❌ | ❌ | ✅*** |
+| Any → CANCELLED | See table above | See table above | ❌ |
 
 *Via `linkEscrow()` (auto-transition)
 **Only after dispute window expires
+***Admin resolves with distribution proof
 
 ---
 
@@ -394,8 +416,9 @@ await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
 // Escrow remaining: $500
 
 // 4. Final delivery and settlement
-await client.kernel.transitionState(txId, State.DELIVERED, '0x');
-await client.kernel.releaseEscrow(txId);
+await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+// Wait for dispute window...
+await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $495 ($500 - 1% fee)
 ```
 
@@ -490,11 +513,11 @@ Prevents instant delivery without acknowledgment. Even for fast tasks, the provi
 
 ### "What if provider never delivers?"
 
-Requester can cancel after deadline passes and receive 100% refund.
+Requester can cancel after deadline passes. Refund is **95%** (5% cancellation penalty applies to requester-initiated cancels after escrow is linked).
 
 ### "What if requester never releases payment?"
 
-Provider can call `releaseEscrow()` after dispute window expires - no requester action needed.
+Provider can call `transitionState(SETTLED)` after dispute window expires - no requester action needed. Payout happens automatically.
 
 ### "Can I cancel after delivery?"
 

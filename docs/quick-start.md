@@ -24,9 +24,13 @@ By the end of this guide, you'll have:
 | Requirement | How to Get It |
 |-------------|---------------|
 | **Node.js 16+** | [nodejs.org](https://nodejs.org) |
-| **Testnet wallet** | Any Ethereum wallet with private key |
-| **Base Sepolia ETH** | [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) |
-| **Mock USDC** | See [Installation Guide](./installation#step-4-get-testnet-tokens) |
+| **Two testnet wallets** | Requester and Provider must be different addresses |
+| **Base Sepolia ETH** | [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) (both wallets) |
+| **Mock USDC** | See [Installation Guide](./installation#step-4-get-testnet-tokens) (requester wallet) |
+
+:::warning Two Wallets Required
+The contract requires `requester != provider`. You need two separate wallets to test the full flow. Generate a second wallet for testing, or use a friend's address as provider.
+:::
 
 ---
 
@@ -40,10 +44,11 @@ npm install @agirails/sdk ethers dotenv
 
 ## Step 2: Configure Environment
 
-Create `.env`:
+Create `.env` with both wallets:
 
 ```bash title=".env"
-PRIVATE_KEY=0x...your_testnet_private_key
+REQUESTER_PRIVATE_KEY=0x...your_requester_private_key
+PROVIDER_PRIVATE_KEY=0x...your_provider_private_key
 ```
 
 :::danger Security
@@ -54,39 +59,45 @@ Never commit private keys. Add `.env` to `.gitignore`.
 
 ## Step 3: Create Your First Transaction
 
-Create `agent.ts`:
+Create `agent.ts` (run as **requester**):
 
 ```typescript title="agent.ts"
 import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
+import { parseUnits, ethers, Wallet } from 'ethers';
 import 'dotenv/config';
 
 async function main() {
-  // Initialize client
-  const client = await ACTPClient.create({
+  // Initialize requester client
+  const requesterClient = await ACTPClient.create({
     network: 'base-sepolia',
-    privateKey: process.env.PRIVATE_KEY!
+    privateKey: process.env.REQUESTER_PRIVATE_KEY!
   });
 
-  console.log('Wallet:', await client.getAddress());
+  // Get provider address from their private key
+  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
+  const providerAddress = providerWallet.address;
 
-  // Create transaction
-  const txId = await client.kernel.createTransaction({
-    requester: await client.getAddress(),
-    provider: '0x...YOUR_PROVIDER_ADDRESS', // Replace with actual provider
+  console.log('Requester:', await requesterClient.getAddress());
+  console.log('Provider:', providerAddress);
+
+  // Create transaction (requester != provider required by contract)
+  const txId = await requesterClient.kernel.createTransaction({
+    requester: await requesterClient.getAddress(),
+    provider: providerAddress,
     amount: parseUnits('1', 6), // 1 USDC
     deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours
-    disputeWindow: 7200 // 2 hours
+    disputeWindow: 3600, // 1 hour (contract minimum)
+    metadata: ethers.id('my-service-request') // Hash of service description
   });
 
   console.log('Transaction created:', txId);
 
   // Fund the transaction (locks USDC in escrow)
-  const escrowId = await client.fundTransaction(txId);
+  const escrowId = await requesterClient.fundTransaction(txId);
   console.log('Escrow created:', escrowId);
 
   console.log('✅ Transaction created and funded!');
-  console.log(`View: https://sepolia.basescan.org/address/${await client.getAddress()}`);
+  console.log('Transaction ID (save this):', txId);
 }
 
 main().catch(console.error);
@@ -110,72 +121,122 @@ Your transaction is now in **COMMITTED** state with 1 USDC locked.
 
 ---
 
-## Step 4: Complete the Lifecycle
+## Step 4: Complete the Lifecycle (Provider Side)
 
-The provider needs to deliver, then you settle:
+The **provider** must perform these transitions using their own wallet:
 
-```typescript
-// Provider delivers
-await client.kernel.transitionState(txId, State.DELIVERED, '0x');
-console.log('Delivered!');
+```typescript title="provider-deliver.ts"
+import { ACTPClient, State } from '@agirails/sdk';
+import 'dotenv/config';
 
-// Wait for dispute window (2 hours in production, 1 minute for testing)
-// After window passes:
-await client.kernel.releaseEscrow(txId);
-console.log('Settled! Provider received 0.99 USDC');
+async function deliver() {
+  // Initialize PROVIDER client (not requester!)
+  const providerClient = await ACTPClient.create({
+    network: 'base-sepolia',
+    privateKey: process.env.PROVIDER_PRIVATE_KEY!
+  });
+
+  const txId = 'YOUR_TX_ID_FROM_STEP_3'; // Paste from Step 3
+
+  // Provider transitions to IN_PROGRESS (required before DELIVERED)
+  await providerClient.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+  console.log('In progress...');
+
+  // Provider delivers
+  await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+  console.log('Delivered!');
+
+  // Wait for dispute window (1 hour as set in Step 3)
+  console.log('Waiting for 1 hour dispute window to expire...');
+  console.log('(In production, use event listeners instead of sleeping)');
+  await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
+
+  // Provider transitions to SETTLED (required before releaseEscrow)
+  await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+  console.log('Settled state reached!');
+
+  // Release escrow (either party can call after SETTLED)
+  await providerClient.kernel.releaseEscrow(txId);
+  console.log('✅ Funds released! Provider received ~0.99 USDC');
+}
+
+deliver().catch(console.error);
 ```
+
+:::warning Provider-Only Transitions
+Only the **provider** can call `transitionState` for IN_PROGRESS, DELIVERED, and SETTLED. Using the requester's wallet will revert.
+:::
+
+:::warning State Transition Rules
+You **cannot** skip states. Required path:
+`COMMITTED → IN_PROGRESS → DELIVERED → (wait) → SETTLED → releaseEscrow()`
+:::
 
 ---
 
-## Test the Full Flow Yourself
+## Test the Full Flow (Two Wallets)
 
-Want to test everything? Use your wallet as **both** requester and provider:
+Complete end-to-end test with both requester and provider:
 
 ```typescript title="full-flow-test.ts"
 import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
+import { parseUnits, ethers } from 'ethers';
 import 'dotenv/config';
 
 async function testFullFlow() {
-  const client = await ACTPClient.create({
+  // Initialize BOTH clients
+  const requesterClient = await ACTPClient.create({
     network: 'base-sepolia',
-    privateKey: process.env.PRIVATE_KEY!
+    privateKey: process.env.REQUESTER_PRIVATE_KEY!
   });
 
-  const myAddress = await client.getAddress();
-  console.log('Testing with:', myAddress);
+  const providerClient = await ACTPClient.create({
+    network: 'base-sepolia',
+    privateKey: process.env.PROVIDER_PRIVATE_KEY!
+  });
 
-  // 1. Create (you = requester AND provider)
-  const txId = await client.kernel.createTransaction({
-    requester: myAddress,
-    provider: myAddress,
+  const requesterAddress = await requesterClient.getAddress();
+  const providerAddress = await providerClient.getAddress();
+
+  console.log('Requester:', requesterAddress);
+  console.log('Provider:', providerAddress);
+
+  // 1. REQUESTER creates transaction
+  const txId = await requesterClient.kernel.createTransaction({
+    requester: requesterAddress,
+    provider: providerAddress,
     amount: parseUnits('1', 6),
     deadline: Math.floor(Date.now() / 1000) + 86400,
-    disputeWindow: 60 // 1 minute for quick testing
+    disputeWindow: 3600, // 1 hour (contract minimum)
+    metadata: ethers.id('test-service')
   });
   console.log('1. Created:', txId);
 
-  // 2. Fund
-  const escrowId = await client.fundTransaction(txId);
+  // 2. REQUESTER funds
+  const escrowId = await requesterClient.fundTransaction(txId);
   console.log('2. Funded:', escrowId);
 
-  // 3. Start work (optional)
-  await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
-  console.log('3. In progress');
+  // 3. PROVIDER starts work
+  await providerClient.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+  console.log('3. In progress (provider)');
 
-  // 4. Deliver
-  await client.kernel.transitionState(txId, State.DELIVERED, '0x');
-  console.log('4. Delivered');
+  // 4. PROVIDER delivers
+  await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+  console.log('4. Delivered (provider)');
 
-  // 5. Wait for dispute window
-  console.log('5. Waiting 65 seconds...');
-  await new Promise(r => setTimeout(r, 65000));
+  // 5. Wait for dispute window (1 hour minimum)
+  console.log('5. Waiting for 1 hour dispute window...');
+  await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
 
-  // 6. Settle
-  await client.kernel.releaseEscrow(txId);
-  console.log('6. Settled! ✅');
+  // 6. PROVIDER transitions to SETTLED
+  await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+  console.log('6. Settled state (provider)');
 
-  console.log(`\nView: https://sepolia.basescan.org/address/${myAddress}`);
+  // 7. Release escrow (either party can call)
+  await providerClient.kernel.releaseEscrow(txId);
+  console.log('7. Funds released! ✅');
+
+  console.log(`\nProvider received ~0.99 USDC`);
 }
 
 testFullFlow().catch(console.error);
@@ -188,9 +249,13 @@ npx ts-node full-flow-test.ts
 ```
 
 :::tip Expected Result
-- Spend: ~1 USDC + gas (~$0.001)
-- Receive back: ~0.99 USDC (1% protocol fee)
-- Net cost: ~$0.01 + gas
+- Requester spends: 1 USDC + gas (~$0.002)
+- Provider receives: ~0.99 USDC (after 1% protocol fee)
+- Total time: ~65 minutes (1 hour dispute window + execution)
+:::
+
+:::info Dispute Window Minimum
+The contract enforces a **minimum 1-hour dispute window** (`MIN_DISPUTE_WINDOW = 3600`). For faster testing during development, you would need to deploy a modified contract with a lower minimum.
 :::
 
 ---
@@ -204,12 +269,15 @@ npx ts-node full-flow-test.ts
 | State | Meaning |
 |-------|---------|
 | **INITIATED** | Transaction created, awaiting escrow |
+| **QUOTED** | Provider submitted price quote (optional) |
 | **COMMITTED** | USDC locked, provider can start work |
-| **IN_PROGRESS** | Provider working (optional state) |
+| **IN_PROGRESS** | Provider working (required before DELIVERED) |
 | **DELIVERED** | Provider submitted proof |
 | **SETTLED** | Payment released ✅ |
+| **DISPUTED** | Requester disputed delivery, needs mediation |
+| **CANCELLED** | Transaction cancelled before completion |
 
-See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state machine with disputes.
+See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state machine details.
 
 ---
 
@@ -233,6 +301,7 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | `amount` | `uint256` | USDC amount (6 decimals) |
 | `deadline` | `uint256` | Unix timestamp |
 | `disputeWindow` | `uint256` | Seconds to dispute after delivery |
+| `metadata` | `bytes32` | Hash of service description (optional) |
 
 ---
 
@@ -242,8 +311,11 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 |---------|----------|
 | **"Insufficient funds"** | Get ETH from [faucet](https://portal.cdp.coinbase.com/products/faucet), mint USDC |
 | **"Invalid private key"** | Ensure key starts with `0x` and is 66 characters |
-| **"Network error"** | Check internet, try alternative RPC |
-| **"Transaction reverted"** | Check state - can't skip states |
+| **"requester == provider"** | Contract requires different addresses. Use two wallets. |
+| **"Only provider can call"** | IN_PROGRESS, DELIVERED, SETTLED require provider's wallet |
+| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → SETTLED |
+| **"releaseEscrow failed"** | Must be in SETTLED state first. Call `transitionState(SETTLED)` before release. |
+| **"Dispute window active"** | Wait for dispute window to expire before transitioning to SETTLED |
 
 ---
 

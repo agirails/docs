@@ -75,11 +75,6 @@
   <polygon points="220,130 215,122 225,122" fill="#EF4444"/>
 
   <!-- Dispute paths - clean vertical drops -->
-  <!-- IN_PROGRESS → DISPUTED -->
-  <line x1="500" y1="80" x2="500" y2="150" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
-  <line x1="500" y1="150" x2="585" y2="150" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
-  <polygon points="590,150 582,145 582,155" fill="#F59E0B"/>
-
   <!-- DELIVERED → DISPUTED -->
   <line x1="640" y1="80" x2="640" y2="125" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4,2"/>
   <polygon points="640,130 635,122 645,122" fill="#F59E0B"/>
@@ -88,6 +83,8 @@
   <line x1="690" y1="150" x2="780" y2="150" stroke="#10B981" stroke-width="1.5"/>
   <line x1="780" y1="150" x2="780" y2="85" stroke="#10B981" stroke-width="1.5"/>
   <polygon points="780,80 775,88 785,88" fill="#10B981"/>
+  <rect x="625" y="135" width="140" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="695" y="146" text-anchor="middle" fill="#A0AEC0" font-family="system-ui, -apple-system, sans-serif" font-size="9">Admin: transitionState(SETTLED)</text>
 
   <!-- Legend -->
   <rect x="30" y="230" width="12" height="12" rx="2" fill="#0EA5E9" fill-opacity="0.3" stroke="#0EA5E9" stroke-width="1"/>

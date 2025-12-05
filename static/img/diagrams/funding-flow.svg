@@ -1,0 +1,102 @@
+<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="480" fill="#0A0A0A"/>
+
+  <!-- Participant boxes -->
+  <!-- Consumer Agent -->
+  <rect x="40" y="20" width="120" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#10B981" stroke-width="2"/>
+  <text x="100" y="45" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Consumer Agent</text>
+
+  <!-- ACTP SDK -->
+  <rect x="210" y="20" width="100" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="260" y="45" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">ACTP SDK</text>
+
+  <!-- USDC Contract -->
+  <rect x="370" y="20" width="120" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="430" y="45" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">USDC Contract</text>
+
+  <!-- EscrowVault -->
+  <rect x="550" y="20" width="110" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#F59E0B" stroke-width="2"/>
+  <text x="605" y="45" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">EscrowVault</text>
+
+  <!-- ACTPKernel -->
+  <rect x="720" y="20" width="110" height="40" rx="6" fill="#0A0A0A" fill-opacity="0.8" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="775" y="45" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">ACTPKernel</text>
+
+  <!-- Lifelines -->
+  <line x1="100" y1="60" x2="100" y2="440" stroke="#10B981" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.5"/>
+  <line x1="260" y1="60" x2="260" y2="440" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.5"/>
+  <line x1="430" y1="60" x2="430" y2="440" stroke="#0EA5E9" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.5"/>
+  <line x1="605" y1="60" x2="605" y2="440" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.5"/>
+  <line x1="775" y1="60" x2="775" y2="440" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.5"/>
+
+  <!-- Message 1: C -> SDK: fundTransaction(txId) -->
+  <rect x="115" y="74" width="120" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="175" y="85" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">fundTransaction(txId)</text>
+  <line x1="100" y1="95" x2="250" y2="95" stroke="#8B5CF6" stroke-width="1.5"/>
+  <polygon points="250,95 244,91 244,99" fill="#8B5CF6"/>
+
+  <!-- Message 2: SDK -> K: getTransaction(txId) -->
+  <rect x="430" y="104" width="115" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="487" y="115" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">getTransaction(txId)</text>
+  <line x1="260" y1="125" x2="765" y2="125" stroke="#8B5CF6" stroke-width="1.5"/>
+  <polygon points="765,125 759,121 759,129" fill="#8B5CF6"/>
+
+  <!-- Message 3: K -> SDK: {amount, state: INITIATED} (dashed return) -->
+  <rect x="420" y="134" width="140" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="490" y="145" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">{amount, state: INITIATED}</text>
+  <line x1="775" y1="155" x2="270" y2="155" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="270,155 276,151 276,159" fill="#8B5CF6"/>
+
+  <!-- Message 4: SDK -> USDC: approve(escrowVault, amount) -->
+  <rect x="280" y="164" width="140" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="350" y="175" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">approve(escrowVault, amount)</text>
+  <line x1="260" y1="185" x2="420" y2="185" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="420,185 414,181 414,189" fill="#0EA5E9"/>
+
+  <!-- Message 5: USDC -> SDK: approval tx (dashed return) -->
+  <rect x="305" y="194" width="70" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="340" y="205" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">approval tx</text>
+  <line x1="430" y1="215" x2="270" y2="215" stroke="#0EA5E9" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="270,215 276,211 276,219" fill="#0EA5E9"/>
+
+  <!-- Message 6: SDK -> K: linkEscrow(txId, escrowVault, escrowId) -->
+  <rect x="390" y="224" width="185" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="482" y="235" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">linkEscrow(txId, escrowVault, escrowId)</text>
+  <line x1="260" y1="245" x2="765" y2="245" stroke="#8B5CF6" stroke-width="1.5"/>
+  <polygon points="765,245 759,241 759,249" fill="#8B5CF6"/>
+
+  <!-- Message 7: K -> ESC: createEscrow(...) -->
+  <rect x="620" y="254" width="190" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="715" y="265" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">createEscrow(id, requester, provider, amt)</text>
+  <line x1="775" y1="275" x2="615" y2="275" stroke="#F59E0B" stroke-width="1.5"/>
+  <polygon points="615,275 621,271 621,279" fill="#F59E0B"/>
+
+  <!-- Message 8: ESC -> USDC: transferFrom(requester, vault, amount) -->
+  <rect x="450" y="284" width="185" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="542" y="295" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">transferFrom(requester, vault, amount)</text>
+  <line x1="605" y1="305" x2="440" y2="305" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="440,305 446,301 446,309" fill="#0EA5E9"/>
+
+  <!-- Message 9: USDC -> ESC: transfer success (dashed return) -->
+  <rect x="475" y="314" width="90" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="520" y="325" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">transfer success</text>
+  <line x1="430" y1="335" x2="595" y2="335" stroke="#0EA5E9" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="595,335 589,331 589,339" fill="#0EA5E9"/>
+
+  <!-- Message 10: K -> SDK: state: COMMITTED (dashed return) -->
+  <rect x="425" y="344" width="110" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="480" y="355" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">state: COMMITTED</text>
+  <line x1="775" y1="365" x2="270" y2="365" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="270,365 276,361 276,369" fill="#8B5CF6"/>
+
+  <!-- Message 11: SDK -> C: escrowId (dashed return) -->
+  <rect x="140" y="374" width="60" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="170" y="385" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">escrowId</text>
+  <line x1="260" y1="395" x2="110" y2="395" stroke="#10B981" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <polygon points="110,395 116,391 116,399" fill="#10B981"/>
+
+  <!-- Note: Funds locked, provider can start work -->
+  <rect x="100" y="420" width="430" height="30" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="315" y="440" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Funds locked, provider can start work</text>
+</svg>

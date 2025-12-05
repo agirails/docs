@@ -65,15 +65,17 @@
 
   <!-- DELIVERED → SETTLED -->
   <path d="M 770 130 L 770 170 L 715 170 L 715 215" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="705" y="185" text-anchor="end" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">releaseEscrow()</text>
+  <rect x="515" y="168" width="180" height="18" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="605" y="181" text-anchor="middle" fill="#A0AEC0" font-family="system-ui, -apple-system, sans-serif" font-size="9">transitionState(SETTLED)</text>
 
   <!-- DELIVERED → DISPUTED -->
   <line x1="770" y1="130" x2="770" y2="315" stroke="#EF4444" stroke-width="2" marker-end="url(#arrowRed)"/>
-  <text x="785" y="225" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9">dispute()</text>
+  <text x="780" y="225" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9">transitionState(DISPUTED)</text>
 
   <!-- DISPUTED → SETTLED -->
   <path d="M 710 345 L 635 345 L 635 280" fill="none" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)"/>
-  <text x="645" y="316" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">resolveDispute()</text>
+  <rect x="530" y="300" width="210" height="18" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
+  <text x="635" y="313" text-anchor="middle" fill="#A0AEC0" font-family="system-ui, -apple-system, sans-serif" font-size="9">Admin: transitionState(SETTLED, resolution)</text>
 
   <!-- Cancel arrows -->
   <!-- INITIATED → CANCELED -->

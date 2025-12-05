@@ -50,33 +50,9 @@ npm run example:happy-path
 
 A consumer agent has five core responsibilities:
 
-```mermaid
-graph LR
-    subgraph Agent["Consumer Agent"]
-        direction TB
-        REQ[Service Request]
-        FUND[Escrow Funding]
-        MON[Delivery Monitoring]
-        VER[Proof Verification]
-        SET[Settlement/Dispute]
-    end
-
-    subgraph Blockchain["On-Chain"]
-        TX[Transactions]
-        ESC[Escrow]
-        EV[Events]
-        EAS[Attestations]
-    end
-
-    REQ -->|createTransaction| TX
-    FUND -->|fundTransaction| ESC
-    EV -->|state changes| MON
-    EAS -->|verify| VER
-    VER -->|releaseEscrow or raiseDispute| SET
-
-    style Agent fill:#10b981,stroke:#059669,color:#fff
-    style Blockchain fill:#8b5cf6,stroke:#6d28d9,color:#fff
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/consumer-architecture.svg" alt="Consumer Agent Architecture" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 | Component | Responsibility | SDK Methods |
 |-----------|---------------|-------------|
@@ -84,7 +60,7 @@ graph LR
 | **Escrow Funding** | Lock USDC as payment guarantee | `fundTransaction()` |
 | **Delivery Monitoring** | Watch for provider state changes | `events.watchTransaction()` |
 | **Proof Verification** | Verify delivery attestations | `eas.verifyDeliveryAttestation()` |
-| **Settlement/Dispute** | Release payment or raise dispute | `releaseEscrowWithVerification()`, `kernel.raiseDispute()` |
+| **Settlement/Dispute** | Release payment or raise dispute | `kernel.transitionState(SETTLED)`, `kernel.transitionState(DISPUTED)` |
 
 ---
 
@@ -273,7 +249,11 @@ async function requestService(
 |-----------|-------------|----------------|
 | **amount** | Payment in USDC (6 decimals) | Min $0.05, use `parseUnits('10', 6)` for $10 |
 | **deadline** | When transaction expires | 24-48 hours for typical jobs |
-| **disputeWindow** | Time to review delivery | 2-24 hours depending on complexity |
+| **disputeWindow** | Time to review delivery | Min 1 hour (3600s), typically 2-24 hours |
+
+:::info Contract Minimum
+The contract enforces a minimum `disputeWindow` of 3600 seconds (1 hour). Transactions with shorter dispute windows will revert.
+:::
 
 ---
 
@@ -316,30 +296,9 @@ async function fundJob(client: ACTPClient, txId: string): Promise<void> {
 
 ### What Happens During Funding
 
-```mermaid
-sequenceDiagram
-    participant C as Consumer Agent
-    participant SDK as ACTP SDK
-    participant USDC as USDC Contract
-    participant ESC as EscrowVault
-    participant K as ACTPKernel
-
-    C->>SDK: fundTransaction(txId)
-    SDK->>K: getTransaction(txId)
-    K-->>SDK: {amount, state: INITIATED}
-
-    SDK->>USDC: approve(escrowVault, amount)
-    USDC-->>SDK: approval tx
-
-    SDK->>K: linkEscrow(txId, escrowVault, escrowId)
-    K->>ESC: createEscrow(escrowId, requester, provider, amount)
-    ESC->>USDC: transferFrom(requester, vault, amount)
-    USDC-->>ESC: transfer success
-    K-->>SDK: state: COMMITTED
-
-    SDK-->>C: escrowId
-    Note over C,K: Funds locked, provider can start work
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/funding-flow.svg" alt="Funding Flow" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ---
 
@@ -380,11 +339,11 @@ function monitorDelivery(client: ACTPClient, txId: string): void {
 
       case State.DISPUTED:
         job.status = 'disputed';
-        console.log('Dispute raised. Awaiting resolution.');
+        console.log('Dispute raised. Awaiting admin resolution.');
         break;
 
-      case State.CANCELED:
-        console.log('Transaction canceled.');
+      case State.CANCELLED:
+        console.log('Transaction cancelled.');
         activeJobs.delete(txId);
         unsubscribe();
         break;
@@ -407,31 +366,9 @@ function monitorDelivery(client: ACTPClient, txId: string): void {
 
 ### State Progression (Consumer View)
 
-```
-Consumer Actions:              Provider Actions:
-─────────────────              ─────────────────
-createTransaction()
-        │
-        ▼
-    INITIATED
-        │
-fundTransaction()
-        │
-        ▼
-    COMMITTED ────────────────► (Provider sees job)
-        │
-        │                      transitionState(IN_PROGRESS)
-        ▼                              │
-   IN_PROGRESS ◄───────────────────────┘
-        │
-        │                      transitionState(DELIVERED)
-        ▼                              │
-    DELIVERED ◄────────────────────────┘
-        │
-        ├── releaseEscrow() ─────► SETTLED
-        │
-        └── raiseDispute() ──────► DISPUTED
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img src="/img/diagrams/consumer-state-progression.svg" alt="Consumer State Progression" style={{maxWidth: '700px', height: 'auto'}} />
+</div>
 
 ---
 
@@ -497,6 +434,79 @@ async function handleDelivery(client: ACTPClient, txId: string): Promise<void> {
   }
 }
 
+### Retrieving Attestation UID
+
+Before you can verify delivery, you need to retrieve the attestation UID that the provider anchored on-chain.
+
+:::info Provider Attestation Workflow
+Before transitioning to DELIVERED, the provider:
+1. Creates EAS attestation with delivery proof
+2. Calls `anchorAttestation(txId, attestationUID)` on ACTPKernel
+3. Transitions to DELIVERED state
+
+The consumer can then retrieve this UID from the transaction metadata or by querying the contract directly.
+:::
+
+**Option 1: Get Attestation from Transaction (Recommended)**
+
+```typescript
+async function getAttestationUid(
+  client: ACTPClient,
+  txId: string
+): Promise<string | null> {
+  // Get the transaction - attestation UID is stored in metadata field
+  // after anchorAttestation() is called
+  const tx = await client.kernel.getTransaction(txId);
+
+  // The attestation UID is stored in the metadata field
+  if (tx.metadata && tx.metadata !== '0x' + '0'.repeat(64)) {
+    console.log('Attestation UID found:', tx.metadata);
+    return tx.metadata;
+  }
+
+  console.log('No attestation found for transaction');
+  return null;
+}
+```
+
+**Option 2: Watch for State Changes (For Live Monitoring)**
+
+```typescript
+// Set up listener before provider delivers
+client.events.onStateChanged(async (eventTxId, from, to) => {
+  if (eventTxId === yourTransactionId && to === State.DELIVERED) {
+    // Provider has delivered - fetch attestation UID from metadata field
+    const tx = await client.kernel.getTransaction(eventTxId);
+    if (tx.metadata && tx.metadata !== '0x' + '0'.repeat(64)) {
+      console.log('Attestation anchored:', tx.metadata);
+      // Now you can verify the delivery
+      verifyAndAccept(client, eventTxId, tx.metadata);
+    }
+  }
+});
+```
+
+**Option 3: Check Transaction Metadata (Fallback)**
+
+```typescript
+async function getAttestationFromTransaction(
+  client: ACTPClient,
+  txId: string
+): Promise<string | null> {
+  const tx = await client.kernel.getTransaction(txId);
+
+  // Some implementations may store attestation UID in metadata
+  if (tx.metadata && tx.metadata !== '0x' + '0'.repeat(64)) {
+    return tx.metadata;
+  }
+
+  return null;
+}
+```
+
+Now let's use this in the verification flow:
+
+```typescript
 async function verifyDelivery(
   client: ACTPClient,
   tx: any
@@ -510,19 +520,18 @@ async function verifyDelivery(
     return { valid: false, issues };
   }
 
-  // Get attestation UID from transaction metadata
-  // The provider anchors this via anchorAttestation(txId, uid) after creating the EAS attestation
-  // It gets stored in tx.metadata when the provider transitions to DELIVERED
+  // STEP 1: Retrieve attestation UID from transaction metadata field
+  // The attestation UID is stored in metadata after provider calls anchorAttestation()
   attestationUid = tx.metadata;
 
   if (!attestationUid || attestationUid === '0x' + '0'.repeat(64)) {
-    issues.push('No attestation UID found - provider may not have anchored attestation');
-    console.log('Tip: Provider should call anchorAttestation(txId, uid) before DELIVERED transition');
+    issues.push('No attestation UID found - provider did not anchor attestation');
+    console.log('Tip: Check if provider called anchorAttestation() before DELIVERED');
     return { valid: false, issues };
   }
 
   try {
-    // Verify the attestation
+    // STEP 2: Verify the attestation on-chain
     const isValid = await client.eas.verifyDeliveryAttestation(tx.txId, attestationUid);
 
     if (!isValid) {
@@ -568,6 +577,10 @@ async function verifyDelivery(
 | **Schema match** | Uses canonical delivery proof schema | Raise dispute |
 | **TxId match** | Attestation references correct transaction | Raise dispute |
 
+:::caution V1 Limitation: SDK-Side Verification Only
+In V1, `anchorAttestation()` accepts any `bytes32` value - the **contract does not validate** attestation UIDs against EAS. The verification checklist above is performed entirely by the SDK off-chain. The contract stores whatever attestation UID the provider submits without checking if it exists or is valid. On-chain EAS validation is planned for V2.
+:::
+
 ---
 
 ## Step 7: Accept or Dispute
@@ -575,6 +588,10 @@ async function verifyDelivery(
 Based on verification, either release payment or raise a dispute:
 
 ### Accept Delivery
+
+:::info Settlement Flow
+Settlement occurs by transitioning to `State.SETTLED`. The payout to the provider happens **inside** the SETTLED transition - there is no separate `releaseEscrow()` call needed. The SDK's `releaseEscrowWithVerification()` helper performs SDK-side attestation verification and then calls `transitionState(SETTLED)` under the hood.
+:::
 
 ```typescript title="src/consumer.ts (continued)"
 async function acceptDelivery(
@@ -585,8 +602,11 @@ async function acceptDelivery(
   console.log(`\nAccepting delivery for ${txId.substring(0, 16)}...`);
 
   try {
-    // Release escrow with attestation verification
+    // Option 1: Use SDK helper (performs attestation verification + SETTLED transition)
     await client.releaseEscrowWithVerification(txId, attestationUid);
+
+    // Option 2: Direct transition (if you've already verified the attestation)
+    // await client.kernel.transitionState(txId, State.SETTLED, '0x');
 
     console.log('Payment released successfully!');
     console.log('Transaction settled.');
@@ -606,6 +626,10 @@ async function acceptDelivery(
 ```
 
 ### Raise Dispute
+
+:::caution V1: Admin-Only Dispute Resolution
+In V1, disputes are raised by calling `transitionState(txId, State.DISPUTED, proof)` within the dispute window. Once in DISPUTED state, **only the platform admin** can resolve the dispute by calling `transitionState(txId, State.SETTLED, resolutionProof)` with the fund distribution encoded in the proof. There is no `raiseDispute()` or `resolveDispute()` method. Decentralized arbitration (Kleros/UMA) is planned for V2.
+:::
 
 ```typescript title="src/consumer.ts (continued)"
 interface DisputeData {
@@ -627,12 +651,21 @@ async function raiseDispute(
     throw new Error('Dispute reason must be at least 10 characters');
   }
 
-  // Raise the dispute on-chain
-  await client.kernel.raiseDispute(
-    txId,
-    dispute.reason,
-    dispute.evidenceUrl
-  );
+  // Verify we're within the dispute window
+  const tx = await client.kernel.getTransaction(txId);
+  if (tx.state !== State.DELIVERED) {
+    throw new Error(`Cannot dispute: transaction is in ${State[tx.state]} state, must be DELIVERED`);
+  }
+
+  // Encode dispute evidence as proof (off-chain reference)
+  const disputeProof = client.proofGenerator.encodeProof({
+    reason: dispute.reason,
+    evidenceUrl: dispute.evidenceUrl,
+    issues: dispute.actualIssues
+  });
+
+  // Raise the dispute on-chain via state transition
+  await client.kernel.transitionState(txId, State.DISPUTED, disputeProof);
 
   console.log('Dispute raised successfully!');
   console.log(`Reason: ${dispute.reason}`);
@@ -645,9 +678,9 @@ async function raiseDispute(
   }
 
   console.log('\nNext steps:');
-  console.log('1. Mediator will review the dispute');
-  console.log('2. Both parties may submit additional evidence');
-  console.log('3. Resolution will distribute funds accordingly');
+  console.log('1. Platform admin will review the dispute');
+  console.log('2. Both parties may submit additional evidence off-chain');
+  console.log('3. Admin will resolve via transitionState(SETTLED) with fund distribution');
 }
 ```
 

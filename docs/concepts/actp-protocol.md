@@ -63,20 +63,36 @@ Just as HTTP doesn't care if you're using Chrome, Firefox, or Safari, **ACTP doe
 
 ![ACTP Sequence - Complete transaction flow from creation to settlement](/img/diagrams/actp-sequence.svg)
 
-**Key Insight**: The protocol is a **state machine enforced by smart contracts**. Neither party can cheat - the code enforces the rules.
+**Key Insight**: The protocol is a **state machine enforced by smart contracts**. Funds are held in escrow until the transaction completes or disputes are resolved.
+
+:::caution V1 Trust Model
+In V1, the requester must dispute within the dispute window; otherwise the provider can settle without on-chain proof verification. Disputes are resolved by admin, not autonomous smart contract arbitration. See [V1 Limitations](../#v1-limitations).
+:::
 
 ### Quick Reference: Transaction States
 
-| State | Who Acts | What Happens |
-|-------|----------|--------------|
-| **INITIATED** | Requester | Transaction created, awaiting escrow |
-| **QUOTED** | Provider | Price quote submitted (optional) |
-| **COMMITTED** | Requester | USDC locked in escrow |
-| **IN_PROGRESS** | Provider | Work has started |
-| **DELIVERED** | Provider | Work complete, proof submitted |
-| **SETTLED** | System | Payment released to provider |
-| **DISPUTED** | Either | Dispute raised, awaiting resolution |
-| **CANCELED** | Either | Transaction canceled before delivery |
+| State | Value | Who Acts | What Happens | Required? |
+|-------|-------|----------|--------------|-----------|
+| **INITIATED** | 0 | Requester | Transaction created, awaiting escrow | Yes |
+| **QUOTED** | 1 | Provider | Price quote submitted | **Optional** |
+| **COMMITTED** | 2 | Requester | USDC locked in escrow | Yes |
+| **IN_PROGRESS** | 3 | Provider | Work has started | Yes |
+| **DELIVERED** | 4 | Provider | Work complete, proof submitted | Yes |
+| **SETTLED** | 5 | System | Payment released to provider | Terminal |
+| **DISPUTED** | 6 | Either | Dispute raised, awaiting resolution | Alternative |
+| **CANCELLED** | 7 | Either | Transaction cancelled before delivery | Alternative |
+
+:::info State Requirements
+**Happy Path Flow:**
+- **Minimal Path:** `INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`
+- **Full Path:** `INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`
+
+**Key Points:**
+- **QUOTED is optional** - Transactions can skip directly to COMMITTED via `linkEscrow()`
+- **IN_PROGRESS is required** - Cannot transition from COMMITTED directly to DELIVERED
+- **DISPUTED and CANCELLED** are alternative terminal states (not part of happy path)
+- All state transitions are **one-way** (no backwards movement)
+:::
 
 ---
 
@@ -121,13 +137,17 @@ Payments are in **USDC** (USD Coin), not volatile tokens.
 - **Available on Base L2** - Low fees ($0.001)
 :::
 
-### 4. Verifiable Reputation
+### 4. Verifiable Reputation <span style={{fontSize: '0.7rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>PLANNED</span>
 
-Every transaction generates cryptographic proofs via **Ethereum Attestation Service (EAS)**.
+ACTP supports optional attestations via **Ethereum Attestation Service (EAS)**.
 
 ![Verifiable Reputation - Attestation flow](/img/diagrams/verifiable-reputation.svg)
 
-**Future use cases:**
+:::caution V1 Limitations
+In V1, `anchorAttestation()` is **optional** and accepts any bytes32 without on-chain validation. There is no deployed reputation registry. The SDK provides off-chain verification helpers, but on-chain proof validation is planned for V2.
+:::
+
+**Planned use cases (V2+):**
 - Agents query provider reputation before transacting
 - Insurance protocols price premiums based on attestation history
 - Mediators specialize in specific dispute types
@@ -136,12 +156,14 @@ Every transaction generates cryptographic proofs via **Ethereum Attestation Serv
 
 | Platform | Fee | On $100 Transaction |
 |----------|-----|---------------------|
-| **ACTP** | 1% ($0.05 min) | **$1.00** |
+| **ACTP** | 1% default ($0.05 min) | **$1.00** |
 | Stripe | 2.9% + $0.30 | $3.20 |
 | PayPal | 3.49% + $0.49 | $3.98 |
 | Wire Transfer | $25-$50 flat | $25.00 |
 
-No hidden fees. No tiered pricing. No rent-seeking.
+:::info Fee Governance
+The 1% fee is the **default**. Platform fee is admin-adjustable up to 5% maximum with a 2-day timelock. The fee is locked per transaction at creation time. See [Fee Model](./fee-model) for details.
+:::
 
 ---
 
@@ -153,10 +175,10 @@ No hidden fees. No tiered pricing. No rent-seeking.
 |-----------|------|--------|
 | **Target User** | Autonomous AI agents | Human businesses |
 | **Settlement Time** | 2 seconds | 2-7 days |
-| **Fees** | 1% flat | 2.9% + $0.30 |
-| **Disputes** | Smart contract arbitration | Manual review |
-| **Reputation** | On-chain attestations | Internal (Radar) |
-| **Trust Model** | Cryptographic proofs | Trust Stripe |
+| **Fees** | 1% default (5% max) | 2.9% + $0.30 |
+| **Disputes** | Admin-resolved (V1), smart contract planned (V2) | Manual review |
+| **Reputation** | Optional attestations (V1), on-chain registry planned (V2) | Internal (Radar) |
+| **Trust Model** | Escrow + dispute window | Trust Stripe |
 | **Access** | Permissionless | KYC/KYB required |
 
 **Use ACTP when**: Agent-to-agent, instant settlement, programmable escrow
@@ -168,9 +190,9 @@ No hidden fees. No tiered pricing. No rent-seeking.
 |-----------|------|----------------|
 | **Price Stability** | ✅ USDC ($1.00) | ❌ Volatile |
 | **Escrow** | ✅ Built-in | ❌ Manual |
-| **Disputes** | ✅ Protocol-enforced | ❌ Off-chain |
-| **Reputation** | ✅ On-chain | ❌ None |
-| **Refunds** | ✅ Programmatic | ❌ Irreversible |
+| **Disputes** | ✅ Admin-resolved with timelock | ❌ Off-chain |
+| **Reputation** | 🟡 Optional attestations (V1) | ❌ None |
+| **Refunds** | ✅ Programmatic (before delivery) | ❌ Irreversible |
 
 **Use ACTP when**: Multi-step transactions, need escrow, want stable pricing
 **Use direct crypto when**: Simple one-time payments, both parties trust each other
@@ -357,8 +379,8 @@ Stripe requires:
 ACTP provides:
 - Wallet-based authentication (no KYC)
 - 2-second settlement
-- Programmable dispute resolution
-- 1% flat fee
+- Admin-resolved disputes (V1), programmable resolution planned (V2)
+- 1% default fee (adjustable up to 5%)
 
 ### "Why not use native ETH?"
 

@@ -61,6 +61,15 @@ A provider agent has four core responsibilities:
 | **Work Execution** | Perform actual service (API calls, AI inference, etc.) | Your business logic |
 | **Delivery + Proof** | Submit result with cryptographic proof | `kernel.transitionState()`, `eas.attestDeliveryProof()` |
 
+:::warning Important: Job Discovery vs Job Execution States
+**Provider Workflow States:**
+- **Job Discovery Phase**: Look for transactions in **INITIATED** or **QUOTED** state (consumer created but not yet funded)
+- **Job Execution Phase**: Work on **COMMITTED** transactions (consumer has funded via `linkEscrow()`)
+- **Delivery Phase**: Transition COMMITTED → IN_PROGRESS → DELIVERED
+
+**Auto-Transition Behavior**: Per AIP-3, `linkEscrow()` automatically transitions from INITIATED/QUOTED → COMMITTED. This is the **only** function that auto-transitions state. Always verify the transaction state after detecting an `EscrowLinked` event to confirm the transition occurred.
+:::
+
 ---
 
 ## Step 1: Initialize the Provider Client
@@ -205,18 +214,68 @@ async function pollForJobs(client: ACTPClient): Promise<Job[]> {
 
   return pendingJobs;
 }
+
+// Option 3: Watch for state changes to COMMITTED (recommended for detecting funded jobs)
+async function watchForFundedJobs(client: ACTPClient): Promise<void> {
+  // Monitor StateTransitioned events to catch when jobs become COMMITTED
+  client.events.onStateChanged(async (txId, _from, to) => {
+    // Only interested in transitions TO COMMITTED state
+    if (to !== State.COMMITTED) {
+      return;
+    }
+
+    // Fetch full transaction to check if we're the provider
+    const tx = await client.kernel.getTransaction(txId);
+
+    if (tx.provider.toLowerCase() !== CONFIG.providerAddress.toLowerCase()) {
+      return;
+    }
+
+    console.log(`Job funded: ${txId.substring(0, 10)}...`);
+
+    // Transaction is in COMMITTED state, proceed with evaluation
+    const job: Job = {
+      txId: txId,
+      requester: tx.requester,
+      amount: tx.amount,
+      deadline: tx.deadline,
+      disputeWindow: tx.disputeWindow,
+      serviceHash: tx.metadata || '',
+      createdAt: Date.now()
+    };
+
+    await evaluateJob(client, job);
+  });
+}
 ```
 
 ### Event Subscription Patterns
 
 | Pattern | Use Case | Latency | Resource Usage |
 |---------|----------|---------|----------------|
-| **Event-based** | Real-time notifications | ~2s (block time) | Low (WebSocket) |
+| **Event-based (TransactionCreated)** | Early job discovery | ~2s (block time) | Low (WebSocket) |
+| **Event-based (StateChanged to COMMITTED)** | Funded job detection | ~2s (block time) | Low (WebSocket) |
 | **Polling** | Catching missed events | ~30s intervals | Medium (RPC calls) |
 | **Hybrid** | Production systems | ~2s + recovery | Low + occasional |
 
-:::note Production Tip
-Use event-based discovery for real-time response, but implement polling as a fallback to catch any missed events after restarts or network issues.
+:::note Production Tip - Recommended Pattern
+For production provider agents, use **StateChanged event monitoring (Option 3)** as your primary discovery mechanism. Watch for transitions to `State.COMMITTED` which signals when a consumer has funded a transaction. Use polling as a fallback to catch any missed events after restarts or network issues.
+:::
+
+:::tip Auto-Transition Behavior
+Per AIP-3, `linkEscrow()` automatically transitions from INITIATED/QUOTED → COMMITTED. This is the **only** auto-transition in the protocol.
+
+**Best Practice**: Verify state after detecting `EscrowLinked` events:
+```typescript
+// After consumer calls linkEscrow()
+const tx = await client.kernel.getTransaction(txId);
+
+// Confirm auto-transition occurred
+if (tx.state === State.COMMITTED) {
+  console.log('Job is funded and ready for work');
+  // Proceed with evaluation
+}
+```
 :::
 
 ---
@@ -268,9 +327,10 @@ async function evaluateJob(client: ACTPClient, job: Job): Promise<EvaluationResu
   // }
 
   // Check 6: Profitability calculation
-  const economicParams = await client.kernel.getEconomicParams();
-  const platformFee = (job.amount * BigInt(economicParams.baseFeeNumerator))
-                      / BigInt(economicParams.baseFeeDenominator);
+  // Platform fee is 1% default (100 basis points), adjustable up to 5% max
+  // Note: Fee is locked per transaction at creation time
+  const PLATFORM_FEE_BPS = 100n; // 1% = 100 basis points
+  const platformFee = (job.amount * PLATFORM_FEE_BPS) / 10_000n;
   const estimatedGasCost = parseUnits('0.005', 6); // ~$0.005 in USDC equivalent
   const netProfit = job.amount - platformFee - estimatedGasCost;
 
@@ -305,9 +365,13 @@ async function evaluateJob(client: ACTPClient, job: Job): Promise<EvaluationResu
 | **Maximum amount** | Risk management | < $1,000 per job |
 | **Time to deadline** | Ensure deliverability | > 5 minutes |
 | **Concurrent jobs** | Resource management | < 5-10 jobs |
-| **Transaction state** | Prevent wasted work | Must be COMMITTED |
+| **Transaction state** | Prevent wasted work | Must be COMMITTED (see warning below) |
 | **Requester reputation** | Dispute risk | > 50% score |
 | **Profit margin** | Business viability | > $0.10 net |
+
+:::tip State Check Best Practice
+The "Must be COMMITTED" check is critical. After `linkEscrow()` is called, the transaction auto-transitions to COMMITTED. If you're watching for `EscrowLinked` events, the transaction should already be in COMMITTED state when you query it. Always verify the state with `getTransaction()` before starting work.
+:::
 
 ---
 
@@ -438,6 +502,8 @@ async function deliverWork(
   console.log(`Content hash: ${proof.contentHash.substring(0, 16)}...`);
 
   // Step 2: Create EAS attestation (optional but recommended)
+  // Note: In V1, anchorAttestation() accepts any bytes32 without on-chain validation.
+  // Attestations serve as off-chain evidence during disputes but are not verified by the contract.
   let attestationUid: string | undefined;
 
   if (client.eas) {
@@ -520,7 +586,8 @@ function monitorSettlement(client: ACTPClient, job: Job): void {
       if (tx.state === State.DELIVERED) {
         // Dispute window passed, we can claim settlement
         console.log('Dispute window passed, claiming settlement...');
-        await client.kernel.releaseEscrow(job.txId);
+        // Transition to SETTLED - payout happens inside SETTLED transition
+        await client.kernel.transitionState(job.txId, State.SETTLED, '0x');
         console.log(`Settlement claimed for ${job.txId.substring(0, 10)}!`);
       }
     } catch (error: any) {
@@ -539,6 +606,10 @@ function monitorSettlement(client: ACTPClient, job: Job): void {
 ---
 
 ## Step 7: Handle Disputes
+
+:::caution V1: Admin-Only Dispute Resolution
+In V1, dispute resolution is performed by the **platform admin**, not an autonomous mediator or smart contract arbitration. When a dispute is raised, the admin reviews evidence and calls `transitionState(DISPUTED → SETTLED, resolutionProof)` with the fund distribution encoded in the proof. Decentralized arbitration (Kleros/UMA integration) is planned for V2.
+:::
 
 When a requester disputes your delivery:
 
@@ -612,6 +683,10 @@ async function logDisputeEvent(job: Job, evidence: DisputeEvidence): Promise<voi
 | **Screenshot Evidence** | Capture work completion | Medium |
 | **Communication Logs** | Document all interactions | Medium |
 | **Automatic Retries** | Retry failed deliveries | High |
+
+:::info V1 Note on Attestations
+In V1, `anchorAttestation()` stores any `bytes32` you provide - the contract does **not** validate it against EAS. Attestations are useful as evidence during admin-led dispute resolution but are not verified on-chain. On-chain proof validation is planned for V2.
+:::
 
 ---
 
@@ -755,10 +830,10 @@ async function evaluateJob(client: ACTPClient, job: Job): Promise<void> {
     return;
   }
 
-  // Verify state
+  // Verify state before proceeding
   const tx = await client.kernel.getTransaction(job.txId);
   if (tx.state !== State.COMMITTED) {
-    console.log(`  Rejected: Invalid state (${tx.state})`);
+    console.log(`  Rejected: Invalid state (${tx.state}), expected COMMITTED`);
     return;
   }
 
@@ -840,7 +915,8 @@ function monitorSettlement(client: ACTPClient, job: Job): void {
     try {
       const tx = await client.kernel.getTransaction(job.txId);
       if (tx.state === State.DELIVERED) {
-        await client.kernel.releaseEscrow(job.txId);
+        // Transition to SETTLED - payout happens inside SETTLED transition
+        await client.kernel.transitionState(job.txId, State.SETTLED, '0x');
         console.log(`\nSettlement claimed: ${job.txId.substring(0, 10)}...`);
       }
     } catch (e) {
@@ -1051,6 +1127,35 @@ Before deploying your provider agent to production:
 | "Insufficient gas" | Gas price spike | Increase `maxFeePerGas` |
 | "Deadline passed" | Took too long | Evaluate deadline before accepting |
 | Events not received | WebSocket disconnection | Implement reconnection logic |
+| "Not authorized" | Only provider can transition to SETTLED | Ensure you're signing with provider wallet |
+
+### Handling State Verification
+
+When watching for funded jobs, always verify the transaction state after receiving events:
+
+```typescript
+// Recommended pattern: Watch for StateChanged to COMMITTED
+client.events.onStateChanged(async (txId, _from, to) => {
+  if (to === State.COMMITTED) {
+    // Verify state before proceeding
+    const tx = await client.kernel.getTransaction(txId);
+
+    if (tx.state === State.COMMITTED) {
+      // Fetch full transaction and proceed with job evaluation
+      const job: Job = {
+        txId,
+        requester: tx.requester,
+        amount: tx.amount,
+        deadline: tx.deadline,
+        disputeWindow: tx.disputeWindow,
+        serviceHash: tx.metadata || '',
+        createdAt: Date.now()
+      };
+      await evaluateJob(client, job);
+    }
+  }
+});
+```
 
 ### Debug Mode
 

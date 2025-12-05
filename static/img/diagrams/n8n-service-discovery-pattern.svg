@@ -1,0 +1,22 @@
+<svg viewBox="0 0 650 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="650" height="90" fill="#0A0A0A"/>
+
+  <!-- Node: HTTP: Get Provider List -->
+  <rect x="25" y="25" width="180" height="40" rx="6" fill="#0A0A0A" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="115" y="51" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">HTTP: Get Provider List</text>
+
+  <line x1="205" y1="45" x2="238" y2="45" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="238,45 230,40 230,50" fill="#FF6D5A"/>
+
+  <!-- Node: Filter by Service Type -->
+  <rect x="245" y="25" width="170" height="40" rx="6" fill="#0A0A0A" stroke="#F59E0B" stroke-width="2"/>
+  <text x="330" y="51" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Filter by Service Type</text>
+
+  <line x1="415" y1="45" x2="448" y2="45" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="448,45 440,40 440,50" fill="#FF6D5A"/>
+
+  <!-- Node: Create Transaction -->
+  <rect x="455" y="25" width="170" height="40" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="540" y="51" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Create Transaction</text>
+</svg>

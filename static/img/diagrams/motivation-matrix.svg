@@ -1,0 +1,52 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="500" height="500" fill="#0A0A0A"/>
+
+  <!-- Vertical axis -->
+  <line x1="250" y1="40" x2="250" y2="460" stroke="#4B5563" stroke-width="2"/>
+  <!-- Arrow up -->
+  <polygon points="250,40 244,52 256,52" fill="#4B5563"/>
+  <!-- Arrow down -->
+  <polygon points="250,460 244,448 256,448" fill="#4B5563"/>
+
+  <!-- Horizontal axis -->
+  <line x1="40" y1="250" x2="460" y2="250" stroke="#4B5563" stroke-width="2"/>
+  <!-- Arrow left -->
+  <polygon points="40,250 52,244 52,256" fill="#4B5563"/>
+  <!-- Arrow right -->
+  <polygon points="460,250 448,244 448,256" fill="#4B5563"/>
+
+  <!-- Axis labels -->
+  <text x="250" y="25" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">PREMA NEČEMU</text>
+  <text x="250" y="485" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">OD NEČEGA</text>
+  <text x="25" y="255" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" transform="rotate(-90,25,255)">OD NEČEGA</text>
+  <text x="475" y="255" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" transform="rotate(90,475,255)">PREMA NEČEMU</text>
+
+  <!-- TOP: KREACIJA -->
+  <rect x="175" y="60" width="150" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="250" y="95" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">KREACIJA</text>
+  <text x="250" y="115" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="9">Vizija, gradnja,</text>
+  <text x="250" y="125" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="9">budući identitet</text>
+
+  <!-- LEFT: IZBJEGAVANJE -->
+  <rect x="45" y="190" width="130" height="70" rx="8" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="2"/>
+  <text x="110" y="225" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">IZBJEGAVANJE</text>
+  <text x="110" y="245" text-anchor="middle" fill="#F87171" font-family="system-ui, -apple-system, sans-serif" font-size="9">Strah, nelagoda</text>
+
+  <!-- RIGHT: IDENTITET -->
+  <rect x="325" y="190" width="130" height="70" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="390" y="225" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">IDENTITET</text>
+  <text x="390" y="245" text-anchor="middle" fill="#34D399" font-family="system-ui, -apple-system, sans-serif" font-size="9">Potvrda tko jesam</text>
+
+  <!-- BOTTOM: REGULACIJA -->
+  <rect x="175" y="370" width="150" height="70" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="2"/>
+  <text x="250" y="405" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">REGULACIJA</text>
+  <text x="250" y="425" text-anchor="middle" fill="#FBBF24" font-family="system-ui, -apple-system, sans-serif" font-size="9">Smirivanje,</text>
+  <text x="250" y="435" text-anchor="middle" fill="#FBBF24" font-family="system-ui, -apple-system, sans-serif" font-size="9">kratkoročno olakšanje</text>
+
+  <!-- Quadrant indicators (subtle) -->
+  <text x="170" y="155" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">↑</text>
+  <text x="330" y="155" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">↑</text>
+  <text x="170" y="355" text-anchor="end" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">↓</text>
+  <text x="330" y="355" text-anchor="start" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">↓</text>
+</svg>

@@ -22,30 +22,50 @@ By the end of this page, you'll understand:
 
 ## Quick Reference
 
-| Parameter | Value |
-|-----------|-------|
-| **Platform Fee** | 1% of transaction amount |
-| **Minimum Transaction** | $0.05 USDC |
-| **Maximum Fee Cap** | 5% (hardcoded limit) |
-| **Fee Change Timelock** | 2 days notice |
+| Parameter | Value | Enforced Where |
+|-----------|-------|----------------|
+| **Platform Fee** | 1% default (adjustable) | On-chain |
+| **Maximum Fee Cap** | 5% (hardcoded limit) | On-chain |
+| **Minimum Transaction** | $0.05 USDC | On-chain (ACTPKernel) |
+| **Minimum Fee** | $0.05 USDC | Off-chain (SDK/frontend) |
+| **Cancellation Penalty** | 5% default | On-chain |
+| **Max Mediator Payout** | 10% of disputed amount | On-chain |
+| **Fee Change Timelock** | 2 days notice | On-chain |
 
-:::tip Key Point
-The $0.05 minimum is a **transaction floor**, not a fee floor. A $1.00 transaction pays $0.01 fee (1%).
+:::warning SDK Implementation Required
+**Important distinction:** The smart contract enforces minimum transaction ($0.05) and calculates exactly 1% fee with NO minimum. The $0.05 minimum fee must be enforced by SDK/frontend logic.
 :::
+
+---
+
+## Important: Minimum Transaction vs Minimum Fee
+
+| Term | Value | Enforced Where | Purpose |
+|------|-------|----------------|---------|
+| **Minimum Transaction** | $0.05 USDC | On-chain (ACTPKernel) | Prevents state bloat from dust transactions |
+| **Minimum Fee** | $0.05 USDC | Off-chain (SDK/frontend) | Ensures viable platform economics |
+
+**Key Distinction:**
+- The smart contract enforces `MIN_TRANSACTION_AMOUNT = 50000` (0.05 USDC with 6 decimals)
+- The contract calculates fee as exactly 1% with NO minimum
+- The $0.05 minimum fee must be enforced by SDK/frontend before contract interaction
 
 ---
 
 ## Fee Examples
 
-| Transaction | Fee (1%) | Provider Receives |
-|-------------|----------|-------------------|
-| $0.05 | $0.0005 | $0.0495 |
-| $1.00 | $0.01 | $0.99 |
-| $10.00 | $0.10 | $9.90 |
-| $100.00 | $1.00 | $99.00 |
-| $1,000.00 | $10.00 | $990.00 |
+| Transaction | 1% Fee | Min Fee | Actual Fee | Provider Receives |
+|-------------|--------|---------|------------|-------------------|
+| $0.50 | $0.005 | $0.05 | **$0.05** | $0.45 |
+| $1.00 | $0.01 | $0.05 | **$0.05** | $0.95 |
+| $5.00 | $0.05 | $0.05 | **$0.05** | $4.95 |
+| $10.00 | $0.10 | $0.05 | **$0.10** | $9.90 |
+| $100.00 | $1.00 | $0.05 | **$1.00** | $99.00 |
+| $1,000.00 | $10.00 | $0.05 | **$10.00** | $990.00 |
 
-**Formula:** `fee = amount × 0.01`
+**On-chain formula:** `fee = (amount × platformFeeBps) / 10000` (exactly 1%, no minimum)
+
+**Off-chain formula:** `fee = max(amount × 0.01, $0.05)` (enforced by SDK/frontend)
 
 ---
 
@@ -56,7 +76,11 @@ The $0.05 minimum is a **transaction floor**, not a fee floor. A $1.00 transacti
 Agents calculate fees deterministically:
 
 ```typescript
-const fee = amount * 0.01n / 100n; // Always 1%
+// Off-chain (SDK/frontend) - with minimum fee
+const fee = max(amount * 0.01n, parseUnits('0.05', 6)); // 1% or $0.05 min
+
+// On-chain (smart contract) - exact 1%
+const fee = (amount * 100n) / 10_000n; // Exactly 1%, no minimum
 ```
 
 No tiers, no hidden costs, no surprises.
@@ -88,6 +112,16 @@ Prevents **dust spam attacks**:
 
 The minimum forces meaningful capital commitment.
 
+### Why Separate Minimum Fee?
+
+While the contract prevents dust transactions ($0.05 minimum), it doesn't enforce minimum fees. This separation allows:
+
+1. **Contract Simplicity**: Smart contract logic stays simple and auditable
+2. **Flexibility**: Future fee models can be implemented off-chain without contract upgrades
+3. **Economic Viability**: Platform can ensure $0.05 minimum fee for sustainability without hardcoding in contract
+
+**Implementation Responsibility**: SDKs, frontends, and integrations MUST enforce the $0.05 minimum fee to ensure platform economics remain viable.
+
 ---
 
 ## Fee Calculation in Code
@@ -107,7 +141,7 @@ function _calculateFee(uint256 amount, uint16 feeBps) internal pure returns (uin
 // fee = (100e6 * 100) / 10_000 = 1e6 = $1.00
 ```
 
-### SDK
+### SDK (with minimum fee enforcement)
 
 ```typescript
 import { parseUnits, formatUnits } from 'ethers';
@@ -115,9 +149,11 @@ import { parseUnits, formatUnits } from 'ethers';
 const USDC_DECIMALS = 6;
 const FEE_BPS = 100n; // 1%
 const MAX_BPS = 10_000n;
+const MIN_FEE = parseUnits('0.05', USDC_DECIMALS); // $0.05 minimum
 
 function calculateFee(amount: bigint): bigint {
-  return (amount * FEE_BPS) / MAX_BPS;
+  const calculatedFee = (amount * FEE_BPS) / MAX_BPS;
+  return calculatedFee > MIN_FEE ? calculatedFee : MIN_FEE;
 }
 
 // Usage
@@ -127,7 +163,17 @@ const providerNet = amount - fee;
 
 console.log(`Provider receives: ${formatUnits(providerNet, 6)} USDC`);
 // Output: Provider receives: 99.0 USDC
+
+// Example with small amount
+const smallAmount = parseUnits('1', USDC_DECIMALS);
+const smallFee = calculateFee(smallAmount);
+console.log(`Fee on $1: ${formatUnits(smallFee, 6)} USDC`);
+// Output: Fee on $1: 0.05 USDC (minimum applied)
 ```
+
+:::warning Important
+If you integrate directly with the smart contract (not via SDK), you MUST implement the $0.05 minimum fee logic yourself. The contract only calculates exactly 1%.
+:::
 
 ---
 
@@ -174,7 +220,7 @@ Day 10: Transaction settles
 
 ```typescript
 // $100 transaction settles
-await client.kernel.releaseEscrow(txId);
+await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
 
 // Distribution:
 // Provider: $99.00
@@ -195,7 +241,7 @@ await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
 // Fee: $2.50, Provider: $247.50
 
 // Final: $500
-await client.kernel.releaseEscrow(txId);
+await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
 // Fee: $5.00, Provider: $495.00
 
 // TOTAL: Provider $990, Platform $10
@@ -256,6 +302,63 @@ Day 2+: Change executes
        → New transactions use 1.5%
        → Old transactions use locked fee
 ```
+
+---
+
+## Cancellation Penalty
+
+When a transaction is cancelled after the provider has committed, a penalty applies:
+
+```solidity
+uint16 public requesterPenaltyBps = 500; // 5% by default, adjustable (max 50%) with 2-day timelock
+```
+
+| Scenario | Penalty | Who Pays | Who Receives |
+|----------|---------|----------|--------------|
+| Cancel before COMMITTED | 0% | - | Full refund to requester |
+| Cancel after COMMITTED | 5% (default) | Requester | Provider compensation |
+
+**Example:**
+```
+$100 transaction cancelled after provider committed:
+- Requester receives: $95 (refund minus penalty)
+- Provider receives: $5 (compensation for wasted effort)
+- Platform receives: $0 (no fee on cancellations)
+```
+
+**Why?** Protects providers who've allocated resources. Discourages frivolous cancellations.
+
+---
+
+## Mediator Payout
+
+When disputes are resolved, an optional mediator can receive compensation:
+
+```solidity
+uint16 public constant MAX_MEDIATOR_BPS = 1000; // 10% max
+```
+
+| Parameter | Value | Purpose |
+|-----------|-------|---------|
+| Max mediator share | 10% | Caps arbitration costs |
+| Typical mediator share | 2-5% | Incentivizes fair resolution |
+| Mediator = zero address | 0% | No mediator payout |
+
+**Example dispute resolution:**
+```
+$100 transaction disputed
+Resolution: 60% provider, 30% requester, 10% mediator
+
+Distribution:
+- Provider: $60 - $0.60 fee = $59.40
+- Requester: $30 (refund, no fee)
+- Mediator: $10 (arbitration compensation)
+- Platform: $0.60
+```
+
+:::info V1 Note
+In V1, dispute resolution is admin-controlled. The mediator is an optional payout recipient, not a decision-maker. Decentralized arbitration (Kleros/UMA) is planned for V2.
+:::
 
 ---
 
@@ -320,10 +423,21 @@ function estimateCost(amount: bigint): {
   gas: bigint;
   total: bigint;
 } {
-  const platformFee = (amount * 100n) / 10_000n;
+  // Apply minimum fee logic (off-chain)
+  const calculatedFee = (amount * 100n) / 10_000n;
+  const MIN_FEE = parseUnits('0.05', 6);
+  const platformFee = calculatedFee > MIN_FEE ? calculatedFee : MIN_FEE;
+
   const gas = parseUnits('0.005', 6); // ~$0.005
   return { platformFee, gas, total: platformFee + gas };
 }
+
+// Example
+const cost = estimateCost(parseUnits('1', 6)); // $1 transaction
+console.log(`Fee: $${formatUnits(cost.platformFee, 6)}`); // $0.05 (minimum)
+
+const cost2 = estimateCost(parseUnits('100', 6)); // $100 transaction
+console.log(`Fee: $${formatUnits(cost2.platformFee, 6)}`); // $1.00 (1%)
 ```
 
 ---

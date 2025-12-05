@@ -51,13 +51,13 @@
   <polygon points="610,240 600,233 607,227" fill="#10B981"/>
   <!-- Label to the right of arrow -->
   <rect x="580" y="170" width="80" height="20" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1"/>
-  <text x="620" y="184" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">final payout()</text>
+  <text x="620" y="184" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">settle (SETTLED)</text>
 
   <!-- Arrow: Created → FullyReleased (direct) -->
   <line x1="295" y1="275" x2="605" y2="275" stroke="#10B981" stroke-width="2"/>
   <polygon points="610,275 602,270 602,280" fill="#10B981"/>
-  <rect x="405" y="285" width="70" height="20" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1"/>
-  <text x="440" y="299" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">payout()</text>
+  <rect x="395" y="285" width="90" height="20" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1"/>
+  <text x="440" y="299" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">settle (SETTLED)</text>
 
   <!-- State: FullyReleased (x=610) -->
   <rect x="610" y="225" width="160" height="70" rx="12" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>

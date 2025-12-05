@@ -106,11 +106,11 @@ enum State {
     INITIATED,    // 0 - Transaction created, no escrow
     QUOTED,       // 1 - Provider submitted quote (optional)
     COMMITTED,    // 2 - Escrow linked, provider committed
-    IN_PROGRESS,  // 3 - Provider actively working (optional)
+    IN_PROGRESS,  // 3 - Provider actively working (required)
     DELIVERED,    // 4 - Provider delivered result + proof
     SETTLED,      // 5 - Payment released (terminal)
     DISPUTED,     // 6 - Consumer disputed delivery
-    CANCELED     // 7 - Transaction canceled (terminal)
+    CANCELLED     // 7 - Transaction cancelled (terminal)
 }
 ```
 
@@ -118,14 +118,14 @@ enum State {
 
 | From State | To States | Who Can Trigger | Notes |
 |------------|-----------|-----------------|-------|
-| **INITIATED** (0) | QUOTED, COMMITTED, CANCELED | Provider (QUOTED), Requester (CANCELED) | COMMITTED via linkEscrow() auto-transition |
-| **QUOTED** (1) | COMMITTED, CANCELED | Requester | Optional state, can skip |
-| **COMMITTED** (2) | IN_PROGRESS, DELIVERED, CANCELED | Provider (IN_PROGRESS/DELIVERED), Both (CANCELED) | Escrow locked |
-| **IN_PROGRESS** (3) | DELIVERED, CANCELED | Provider (DELIVERED), Both (CANCELED) | Optional state, can skip |
+| **INITIATED** (0) | QUOTED, COMMITTED, CANCELLED | Provider (QUOTED), Requester (CANCELLED) | COMMITTED via linkEscrow() auto-transition |
+| **QUOTED** (1) | COMMITTED, CANCELLED | Requester | Optional state, can skip |
+| **COMMITTED** (2) | IN_PROGRESS, CANCELLED | Provider (IN_PROGRESS), Both (CANCELLED) | Escrow locked, must transition to IN_PROGRESS |
+| **IN_PROGRESS** (3) | DELIVERED, CANCELLED | Provider (DELIVERED), Both (CANCELLED) | Required before DELIVERED |
 | **DELIVERED** (4) | SETTLED, DISPUTED | Both (SETTLED/DISPUTED) | Dispute window active |
-| **DISPUTED** (6) | SETTLED, CANCELED | Admin/Pauser | Mediation required |
+| **DISPUTED** (6) | SETTLED, CANCELLED | Admin/Pauser | Mediation required |
 | **SETTLED** (5) | *none* | - | Terminal state |
-| **CANCELED** (7) | *none* | - | Terminal state |
+| **CANCELLED** (7) | *none* | - | Terminal state |
 
 ### State Transition Diagram
 
@@ -136,7 +136,8 @@ enum State {
 **Key Rules:**
 - ✅ All transitions are **one-way** (monotonic progression, no backwards)
 - ✅ `linkEscrow()` **auto-transitions** INITIATED/QUOTED → COMMITTED
-- ✅ QUOTED and IN_PROGRESS are **optional** (can skip)
+- ✅ QUOTED is **optional** (can skip INITIATED → COMMITTED)
+- ✅ IN_PROGRESS is **required** (cannot skip COMMITTED → DELIVERED)
 - ✅ Deadline enforced for forward progressions (not cancellation/dispute)
 - ✅ Pause blocks all state transitions except view functions
 
@@ -613,7 +614,7 @@ function transitionState(
 | `DELIVERED (4)` | `uint256` (32 bytes) or empty | Custom dispute window (0 = use DEFAULT_DISPUTE_WINDOW) |
 | `SETTLED (5)` | empty or resolution | Empty for happy path, resolution for dispute |
 | `DISPUTED (6)` | empty | No proof needed |
-| `CANCELED (7)` | empty or resolution | Empty for refund, resolution for dispute settlement |
+| `CANCELLED (7)` | empty or resolution | Empty for refund, resolution for dispute settlement |
 | Others | empty | No proof needed |
 
 **Resolution Proof Format** (for SETTLED from DISPUTED):
@@ -653,7 +654,7 @@ abi.encode(requesterAmount, providerAmount, mediatorAddress, mediatorAmount)
 - Updates `state` and `updatedAt`
 - If DELIVERED: Sets `disputeWindow = block.timestamp + window`
 - If QUOTED with proof: Stores quote hash in `metadata`
-- If SETTLED/CANCELED: Triggers fund distribution
+- If SETTLED/CANCELLED: Triggers fund distribution
 
 **Example: Provider Delivers Work**
 
@@ -694,8 +695,9 @@ await kernel.transitionState(transactionId, 5, resolution); // SETTLED
 **Important Notes:**
 - ⚠️ State transitions are **one-way only** (cannot go backwards)
 - ⚠️ Deadlines are **strictly enforced** for forward progressions
-- ⚠️ DISPUTED → SETTLED/CANCELED requires **admin/pauser** role
-- ✅ QUOTED and IN_PROGRESS states are **optional** (can skip)
+- ⚠️ DISPUTED → SETTLED/CANCELLED requires **admin/pauser** role
+- ✅ QUOTED state is **optional** (can skip INITIATED → COMMITTED)
+- ⚠️ IN_PROGRESS state is **required** (cannot skip COMMITTED → DELIVERED)
 - ✅ Setting state to SETTLED **automatically releases funds**
 
 **See Also:**

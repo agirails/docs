@@ -43,37 +43,13 @@ Before starting, ensure you have:
 
 The ACTP n8n node enables visual workflow automation for AI agent payments:
 
-```mermaid
-graph TB
-    subgraph n8n["n8n Workflow"]
-        TRIG[Webhook Trigger]
-        CREATE[Create Transaction]
-        FUND[Link Escrow]
-        MONITOR[Get Transaction]
-        RELEASE[Release Payment]
-    end
+<img
+  src="/img/diagrams/n8n-architecture.svg"
+  alt="n8n Architecture Overview"
+  style={{maxWidth: '880px', width: '100%'}}
+/>
 
-    subgraph Chain["Base L2"]
-        KERNEL[ACTPKernel]
-        ESCROW[EscrowVault]
-        USDC[USDC Token]
-    end
-
-    TRIG --> CREATE
-    CREATE --> FUND
-    FUND --> MONITOR
-    MONITOR --> RELEASE
-
-    CREATE -->|createTransaction| KERNEL
-    FUND -->|linkEscrow| KERNEL
-    FUND -->|transfer| USDC
-    USDC -->|lock| ESCROW
-    RELEASE -->|releaseEscrow| KERNEL
-    ESCROW -->|payout| USDC
-
-    style n8n fill:#ff6d5a,stroke:#e05a4a,color:#fff
-    style Chain fill:#3b82f6,stroke:#1d4ed8,color:#fff
-```
+---
 
 ### What You Can Build
 
@@ -149,9 +125,11 @@ Let's create a simple workflow that locks funds in escrow.
 
 ### Create the Workflow
 
-```
-[Manual Trigger] → [ACTP: Create Transaction] → [ACTP: Link Escrow]
-```
+<img
+  src="/img/diagrams/n8n-quickstart-workflow.svg"
+  alt="Quick Start Workflow"
+  style={{maxWidth: '780px', width: '100%'}}
+/>
 
 **Node 1: Manual Trigger**
 - Drag in the **Manual Trigger** node
@@ -162,7 +140,7 @@ Let's create a simple workflow that locks funds in escrow.
 - **Provider Address**: `0x742d35Cc6634C0532925a3b844Bc9e7595f12345` (any valid address)
 - **Amount (USDC)**: `1`
 - **Deadline**: `{{ $now.plus(1, 'day').toUnixInteger() }}`
-- **Dispute Window**: `7200` (2 hours in seconds)
+- **Dispute Window**: `172800` (2 days in seconds)
 
 **Node 3: ACTP - Link Escrow**
 - **Credential**: Select your ACTP credential
@@ -192,8 +170,12 @@ Congratulations! You just locked funds in escrow for an AI agent payment.
 | **Get Transaction** | Check current state and details | Monitoring, verification |
 | **Release With Verification** | Pay provider after verified delivery | After DELIVERED state |
 | **Verify Attestation** | Validate delivery proof | Before releasing payment |
-| **Raise Dispute** | Challenge unsatisfactory delivery | Within dispute window |
+| **Raise Dispute** | Transition to DISPUTED state | Within dispute window |
 | **Cancel Transaction** | Cancel before work delivered | Timeout, provider unresponsive |
+
+:::caution V1: Admin-Only Dispute Resolution
+In V1, "Raise Dispute" transitions the transaction to DISPUTED state by calling `transitionState(DISPUTED)`. Either requester or provider can raise a dispute within the dispute window. However, **only the platform admin** can resolve the dispute by calling `transitionState(SETTLED)` with a resolution proof specifying fund distribution. Decentralized arbitration is planned for V2.
+:::
 
 ### Provider Operations (Delivering Services)
 
@@ -215,7 +197,17 @@ Creates a new ACTP transaction.
 | **Provider Address** | string | Yes | Ethereum address of service provider |
 | **Amount (USDC)** | number | Yes | Payment amount (min $0.05) |
 | **Deadline** | number | Yes | Unix timestamp when offer expires |
-| **Dispute Window** | number | Yes | Seconds for dispute period (min 3600) |
+| **Dispute Window** | number | Yes | Seconds for dispute period (default 172800) |
+
+:::tip Dispute Window Guidelines
+| Trust Level | Recommended Window | Seconds |
+|-------------|-------------------|---------|
+| High-trust agents | 1 hour | 3600 |
+| Standard (default) | 2 days | 172800 |
+| High-value transactions | 7-30 days | 604800-2592000 |
+
+**Minimum**: 1 hour (3600s) | **Maximum**: 30 days (2592000s)
+:::
 
 **Output:**
 ```json
@@ -257,13 +249,23 @@ Updates transaction state (provider only for most transitions).
 
 Securely releases payment after verifying delivery proof.
 
+:::caution V1: SDK-Side Verification Only
+In V1, the "Release With Verification" operation performs attestation verification **off-chain via the SDK**. The smart contract does not validate the attestation UID - it simply transitions to SETTLED and releases funds. The SDK checks that the attestation exists on EAS and was created by the provider before calling `transitionState(SETTLED)`.
+:::
+
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | **Transaction ID** | string | Yes | The delivered transaction |
-| **Attestation UID** | string | Yes | Proof ID from provider |
+| **Attestation UID** | string | Yes | Proof ID from provider (read from `attestationUID` field) |
 
 :::info What's an Attestation UID?
-When the provider marks work as DELIVERED, they create an on-chain attestation (proof). The UID is a bytes32 identifier for that proof. In V1 testnet, this equals the transaction ID.
+An Attestation UID is a bytes32 identifier for an EAS (Ethereum Attestation Service) attestation. The provider **optionally** creates this attestation when delivering work, then anchors it to the transaction by calling `anchorAttestation()`.
+
+**V1 Limitations:**
+- Anchoring an attestation is **optional** - providers may deliver without one
+- The contract **does not validate** the UID against EAS
+- Verification is performed by the SDK off-chain only
+- If no attestation was anchored, use the fallback flow without verification
 :::
 
 ---
@@ -274,29 +276,13 @@ This section walks through building **two connected workflows** - a Requester pa
 
 ### Overview
 
-```mermaid
-sequenceDiagram
-    participant R as Requester Workflow
-    participant K as ACTP Kernel
-    participant P as Provider Workflow
-    participant AI as OpenAI
+<img
+  src="/img/diagrams/n8n-translation-flow.svg"
+  alt="AI Translation Service Flow"
+  style={{maxWidth: '880px', width: '100%'}}
+/>
 
-    R->>K: 1. Create Transaction
-    R->>K: 2. Link Escrow (lock USDC)
-    K-->>K: State: COMMITTED
-    R->>P: 3. HTTP: Notify Provider
-
-    P->>K: 4. Get Transaction (verify)
-    P->>K: 5. Transition to IN_PROGRESS
-    P->>AI: 6. Perform translation
-    AI-->>P: Translation result
-    P->>K: 7. Transition to DELIVERED
-    P->>R: 8. HTTP: Notify Requester
-
-    R->>K: 9. Release With Verification
-    K-->>K: State: SETTLED
-    K-->>P: Payment released (99%)
-```
+---
 
 ### Communication Protocol
 
@@ -338,11 +324,11 @@ Both workflows communicate via HTTP webhooks with standardized payloads.
 
 This workflow pays for AI translation services.
 
-```
-[Webhook Trigger] → [Create Transaction] → [Link Escrow] → [Notify Provider]
-        ↓
-[Webhook Wait] → [Release Payment] → [Respond]
-```
+<img
+  src="/img/diagrams/n8n-requester-workflow.svg"
+  alt="Requester Workflow"
+  style={{maxWidth: '820px', width: '100%'}}
+/>
 
 #### Node Configuration
 
@@ -360,7 +346,7 @@ This workflow pays for AI translation services.
 | Provider Address | `{{ $json.body.providerAddress }}` |
 | Amount (USDC) | `10` |
 | Deadline | `{{ $now.plus(1, 'day').toUnixInteger() }}` |
-| Dispute Window | `7200` |
+| Dispute Window | `172800` |
 
 **Node 3: ACTP - Link Escrow**
 | Setting | Value |
@@ -407,15 +393,11 @@ curl -X POST https://your-n8n.com/webhook/translation-request \
 
 This workflow delivers AI translation and gets paid.
 
-```
-[Webhook: New Job] → [Get Transaction] → [IF: Verify] → [Transition: IN_PROGRESS]
-                                                ↓
-                                        [OpenAI: Translate]
-                                                ↓
-                                        [Transition: DELIVERED]
-                                                ↓
-                                        [Notify Requester]
-```
+<img
+  src="/img/diagrams/n8n-provider-workflow.svg"
+  alt="Provider Workflow"
+  style={{maxWidth: '780px', width: '100%'}}
+/>
 
 #### Node Configuration
 
@@ -511,43 +493,41 @@ Update the HTTP request nodes with your ngrok URLs.
 
 Chain multiple AI services with sequential payments:
 
-```
-[Start] → [Create TX: Agent 1] → [Link Escrow] → [Wait for Delivery]
-                                                        ↓
-                                                [Release Payment]
-                                                        ↓
-        [Create TX: Agent 2] ← [Pass Output] ←──────────┘
-                ↓
-        [Link Escrow] → [Wait for Delivery] → [Release] → [Final Result]
-```
+<img
+  src="/img/diagrams/n8n-multi-agent-pipeline.svg"
+  alt="Multi-Agent Pipeline"
+  style={{maxWidth: '820px', width: '100%'}}
+/>
 
 ### Pattern 2: Polling for Delivery
 
 If you can't receive webhooks, poll for state changes:
 
-```
-[Create & Fund] → [Wait 5 min] → [Get Transaction] → [IF: state == DELIVERED]
-                       ↑                                      ↓ (yes)
-                       └──────────── (no) ←──────────  [Release Payment]
-```
+<img
+  src="/img/diagrams/n8n-polling-pattern.svg"
+  alt="Polling Pattern"
+  style={{maxWidth: '780px', width: '100%'}}
+/>
 
 ### Pattern 3: Timeout Handling
 
 Cancel transactions that exceed deadline:
 
-```
-[Get Transaction] → [IF: deadline < now] → [Cancel Transaction]
-                           ↓ (no)
-                    [Continue normal flow]
-```
+<img
+  src="/img/diagrams/n8n-timeout-pattern.svg"
+  alt="Timeout Pattern"
+  style={{maxWidth: '680px', width: '100%'}}
+/>
 
 ### Pattern 4: Service Discovery
 
 Look up providers from a registry:
 
-```
-[HTTP: Get Provider List] → [Filter by Service Type] → [Create Transaction]
-```
+<img
+  src="/img/diagrams/n8n-service-discovery-pattern.svg"
+  alt="Service Discovery Pattern"
+  style={{maxWidth: '650px', width: '100%'}}
+/>
 
 ---
 

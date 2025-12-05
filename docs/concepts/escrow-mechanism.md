@@ -87,9 +87,10 @@ await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
 ### Step 2: Link Escrow
 
 ```typescript
-// Use SDK convenience method
-const escrowId = await client.fundTransaction(txId);
-// OR manual flow
+// Generate escrow ID
+const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
+
+// Link escrow (auto-transitions to COMMITTED)
 await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 ```
 
@@ -128,10 +129,13 @@ Once escrow is created:
 
 ### Step 4: Release Escrow
 
-When transaction settles:
+When transaction settles, funds are released by transitioning to SETTLED state:
 
 ```typescript
-await client.kernel.releaseEscrow(txId);
+// releaseEscrow() is called INTERNALLY when transitioning to SETTLED state
+// Users should call transitionState() instead:
+await client.kernel.transitionState(txId, State.SETTLED, '0x');
+// This internally triggers releaseEscrow() if all conditions are met
 ```
 
 **Fund distribution for $100 transaction:**
@@ -161,7 +165,7 @@ assert(vaultBalance >= sumOfAllLockedEscrows);
 
 ### 2. Access Control
 
-**Guarantee:** Only ACTPKernel can create/release escrow.
+**Guarantee:** Only ACTPKernel can create/release escrow. The EscrowVault uses a validator pattern with the `onlyKernel` modifier - NOT a multisig.
 
 ```solidity
 modifier onlyKernel() {
@@ -172,6 +176,8 @@ modifier onlyKernel() {
 function createEscrow(...) external onlyKernel { }
 function payout(...) external onlyKernel { }
 ```
+
+**Important:** Users interact with ACTPKernel, which then calls EscrowVault. Direct calls to EscrowVault functions will revert.
 
 ### 3. Non-Custodial
 
@@ -217,35 +223,49 @@ contract EscrowVault is ReentrancyGuard {
 ### Scenario 1: Happy Path Settlement
 
 ```typescript
-// 1. Create and fund
+// 1. Create transaction
 const txId = await client.kernel.createTransaction({...});
-await client.fundTransaction(txId); // Escrow: $100
 
-// 2. Provider delivers
+// 2. Fund escrow
+const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
+await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
+
+const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
+await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+// Escrow: $100, State: COMMITTED
+
+// 3. Provider delivers
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 await client.kernel.transitionState(txId, State.DELIVERED, '0x');
 
-// 3. Release payment
-await client.kernel.releaseEscrow(txId);
+// 4. Settle transaction (internally releases escrow)
+await client.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $99, Platform: $1
 ```
 
 ### Scenario 2: Milestone Releases
 
 ```typescript
-// Fund $1,000 transaction
-await client.fundTransaction(txId); // Escrow: $1,000
+// 1. Create and fund $1,000 transaction
+const txId = await client.kernel.createTransaction({...});
 
-// Release milestone 1
+const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
+await usdcContract.approve(ESCROW_VAULT_ADDRESS, parseUnits('1000', 6));
+
+const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
+await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+// Escrow: $1,000
+
+// 2. Release milestone 1
 await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $750
 
-// Release milestone 2
+// 3. Release milestone 2
 await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $500
 
-// Final settlement
-await client.kernel.releaseEscrow(txId);
+// 4. Final settlement
+await client.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider: $495, Total received: $990
 ```
 
@@ -253,7 +273,7 @@ await client.kernel.releaseEscrow(txId);
 
 ```typescript
 // Requester cancels after deadline
-await client.kernel.transitionState(txId, State.CANCELED, '0x');
+await client.kernel.transitionState(txId, State.CANCELLED, '0x');
 
 // Distribution:
 // Requester refund: $475 (95%)
@@ -263,13 +283,25 @@ await client.kernel.transitionState(txId, State.CANCELED, '0x');
 
 ### Scenario 4: Dispute Resolution
 
+:::danger Admin-Only
+Dispute resolution can only be performed by admin/pauser role via `transitionState`.
+:::
+
 ```typescript
-// Mediator resolves: 60% provider, 30% requester, 10% mediator
-await client.kernel.resolveDispute(txId, {
-  requesterAmount: parseUnits('30', 6),
-  providerAmount: parseUnits('60', 6),
-  mediatorFee: parseUnits('10', 6)
-});
+// Admin resolves: 60% provider, 30% requester, 10% mediator
+// Encode resolution proof with fund distribution
+const resolutionProof = ethers.AbiCoder.defaultAbiCoder().encode(
+  ['uint256', 'uint256', 'uint256', 'address'],
+  [
+    parseUnits('30', 6),  // requesterAmount
+    parseUnits('60', 6),  // providerAmount
+    parseUnits('10', 6),  // mediatorAmount
+    '0xMediatorAddress'   // mediator address
+  ]
+);
+
+// Admin transitions DISPUTED → SETTLED with resolution
+await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 
 // Distribution:
 // Provider: $59.40 ($60 - 1% fee)
@@ -283,18 +315,18 @@ await client.kernel.resolveDispute(txId, {
 ## Tracking Escrow Balance
 
 ```typescript
-// Get remaining balance
+// Get remaining balance using public getter
 const remaining = await escrowVault.remaining(escrowId);
 console.log(`Escrow balance: ${formatUnits(remaining, 6)} USDC`);
 
-// Get escrow details
-const escrow = await escrowVault.escrows(escrowId);
-console.log({
-  totalAmount: formatUnits(escrow.amount, 6),
-  released: formatUnits(escrow.releasedAmount, 6),
-  remaining: formatUnits(escrow.amount - escrow.releasedAmount, 6)
-});
+// Verify escrow exists and get validation
+const isValid = await escrowVault.verifyEscrow(escrowId, expectedAmount);
+console.log(`Escrow valid: ${isValid}`);
 ```
+
+:::info Private Mapping
+The `escrows` mapping in EscrowVault is **private** and cannot be read directly. Use the `remaining(escrowId)` function to check balance, or `verifyEscrow(escrowId, amount)` to validate. For full escrow details, listen to `EscrowCreated` events.
+:::
 
 ---
 

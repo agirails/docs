@@ -51,32 +51,11 @@ npm run example:happy-path
 
 Traditional agents are either **providers** (earn money) or **consumers** (spend money). Autonomous agents do **both**, enabling powerful patterns:
 
-```mermaid
-graph TB
-    subgraph Ecosystem["Agent Ecosystem"]
-        AA[Autonomous Agent]
-        P1[Provider A]
-        P2[Provider B]
-        C1[Consumer X]
-        C2[Consumer Y]
-    end
-
-    C1 -->|"pays $10"| AA
-    C2 -->|"pays $15"| AA
-    AA -->|"pays $3"| P1
-    AA -->|"pays $2"| P2
-
-    style AA fill:#10b981,stroke:#059669,color:#fff
-    style P1 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style P2 fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style C1 fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style C2 fill:#8b5cf6,stroke:#6d28d9,color:#fff
-```
-
-**Revenue Model:**
-- Income: $25 (from consumers)
-- Expenses: $5 (to other providers)
-- **Net Profit: $20**
+<img
+  src="/img/diagrams/autonomous-agent-flow.svg"
+  alt="Autonomous Agent Flow"
+  style={{maxWidth: '700px', width: '100%'}}
+/>
 
 ### Use Cases
 
@@ -94,45 +73,11 @@ graph TB
 
 An autonomous agent combines provider and consumer modules:
 
-```mermaid
-graph TB
-    subgraph AutonomousAgent["Autonomous Agent"]
-        direction TB
-        subgraph Provider["Provider Module"]
-            DISC[Job Discovery]
-            EVAL[Evaluation]
-            EXEC[Execution]
-            DELIV[Delivery]
-        end
-
-        subgraph Consumer["Consumer Module"]
-            REQ[Service Request]
-            FUND[Escrow Funding]
-            MON[Monitoring]
-            SETTLE[Settlement]
-        end
-
-        subgraph Core["Core"]
-            WALLET[Wallet Manager]
-            ORCH[Orchestrator]
-            BUDGET[Budget Controller]
-        end
-    end
-
-    DISC --> ORCH
-    ORCH --> REQ
-    EXEC --> REQ
-    MON --> EXEC
-
-    WALLET --> FUND
-    WALLET --> BUDGET
-    DELIV --> WALLET
-    SETTLE --> WALLET
-
-    style Provider fill:#3b82f6,stroke:#1d4ed8,color:#fff
-    style Consumer fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Core fill:#10b981,stroke:#059669,color:#fff
-```
+<img
+  src="/img/diagrams/autonomous-architecture.svg"
+  alt="Autonomous Agent Architecture"
+  style={{maxWidth: '800px', width: '100%'}}
+/>
 
 | Module | Role | Key Responsibility |
 |--------|------|-------------------|
@@ -150,7 +95,7 @@ Create a single client that handles both roles:
 
 ```typescript title="src/autonomous.ts"
 import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits, formatUnits } from 'ethers';
+import { ethers, parseUnits, formatUnits } from 'ethers';
 import 'dotenv/config';
 
 // ============================================
@@ -737,7 +682,8 @@ function monitorProviderSettlement(job: ActiveJob): void {
     try {
       const tx = await client.kernel.getTransaction(job.txId);
       if (tx.state === State.DELIVERED) {
-        await client.kernel.releaseEscrow(job.txId);
+        // Transition to SETTLED - payout happens inside SETTLED transition
+        await client.kernel.transitionState(job.txId, State.SETTLED, '0x');
         console.log(`\n[PROVIDER] Settlement claimed: ${job.txId.substring(0, 8)}...`);
       }
     } catch {
@@ -752,6 +698,17 @@ function monitorProviderSettlement(job: ActiveJob): void {
 ## Step 5: Implement Consumer Module
 
 Request sub-services from other agents:
+
+:::info Escrow Funding Workflow
+Funding a transaction requires three steps:
+1. **Approve**: Grant EscrowVault permission to pull USDC tokens
+2. **Generate ID**: Create a unique identifier for the escrow
+3. **Link**: Connect the escrow to the transaction (auto-transitions to COMMITTED)
+:::
+
+:::caution V1 Limitation: Attestation Verification
+In V1, `anchorAttestation()` stores any `bytes32` value - the **contract does not validate** it against EAS. The `attestationUID` field on the transaction stores the anchored value (if any), while `metadata` may contain other data like a quote hash. Verification is performed by the SDK off-chain only. On-chain EAS validation is planned for V2.
+:::
 
 ```typescript title="src/autonomous.ts (continued)"
 // ============================================
@@ -784,8 +741,18 @@ async function requestSubService(
 
   console.log(`[CONSUMER] Sub-service tx: ${txId.substring(0, 12)}...`);
 
-  // Fund the transaction
-  await client.fundTransaction(txId);
+  // Fund the transaction (3-step escrow workflow)
+  const config = client.getNetworkConfig();
+
+  // Step 1: Approve USDC to EscrowVault
+  await client.escrow.approveToken(config.contracts.usdc, amount);
+
+  // Step 2: Generate unique escrow ID
+  const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
+
+  // Step 3: Link escrow (creates escrow + auto-transitions to COMMITTED)
+  await client.kernel.linkEscrow(txId, config.contracts.escrowVault, escrowId);
+
   budgetController.recordSpend(amount);
 
   // Track the sub-service
@@ -827,11 +794,17 @@ async function acceptSubServiceDelivery(subService: SubServiceRequest): Promise<
   try {
     const tx = await client.kernel.getTransaction(subService.txId);
 
-    // Verify attestation if present
-    if (tx.metadata && tx.metadata !== '0x' + '0'.repeat(64) && client.eas) {
-      const isValid = await client.eas.verifyDeliveryAttestation(subService.txId, tx.metadata);
+    // Get attestation UID from the correct field
+    // Note: In V1, attestationUID field stores the anchored attestation;
+    // metadata may contain a quote hash or other data
+    const attestationUid = tx.attestationUID;
+
+    // Verify attestation if present (SDK-side verification only in V1)
+    if (attestationUid && attestationUid !== '0x' + '0'.repeat(64) && client.eas) {
+      const isValid = await client.eas.verifyDeliveryAttestation(subService.txId, attestationUid);
       if (isValid) {
-        await client.releaseEscrowWithVerification(subService.txId, tx.metadata);
+        // Use SDK helper which calls transitionState(SETTLED) under the hood
+        await client.releaseEscrowWithVerification(subService.txId, attestationUid);
         console.log(`[CONSUMER] Sub-service accepted: ${subService.txId.substring(0, 8)}...`);
         subService.status = 'settled';
         wallet.pendingExpenses -= subService.amount;
@@ -839,8 +812,9 @@ async function acceptSubServiceDelivery(subService: SubServiceRequest): Promise<
       }
     }
 
-    // Fallback: release without verification (for testing)
-    await client.kernel.releaseEscrow(subService.txId);
+    // Fallback: transition to SETTLED without attestation verification (for testing)
+    // Note: In V1, contract does not validate attestations on-chain
+    await client.kernel.transitionState(subService.txId, State.SETTLED, '0x');
     console.log(`[CONSUMER] Sub-service accepted (no attestation): ${subService.txId.substring(0, 8)}...`);
     subService.status = 'settled';
     wallet.pendingExpenses -= subService.amount;

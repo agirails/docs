@@ -1,0 +1,24 @@
+<svg viewBox="0 0 780 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="780" height="100" fill="#0A0A0A"/>
+
+  <!-- Node 1: Manual Trigger -->
+  <rect x="25" y="28" width="175" height="44" rx="6" fill="#0A0A0A" stroke="#6B7280" stroke-width="2"/>
+  <text x="112" y="56" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Manual Trigger</text>
+
+  <!-- Arrow 1 -->
+  <line x1="200" y1="50" x2="253" y2="50" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="253,50 244,45 244,55" fill="#FF6D5A"/>
+
+  <!-- Node 2: ACTP: Create Transaction -->
+  <rect x="260" y="28" width="210" height="44" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="365" y="56" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">ACTP: Create Transaction</text>
+
+  <!-- Arrow 2 -->
+  <line x1="470" y1="50" x2="523" y2="50" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="523,50 514,45 514,55" fill="#FF6D5A"/>
+
+  <!-- Node 3: ACTP: Link Escrow -->
+  <rect x="530" y="28" width="200" height="44" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="630" y="56" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">ACTP: Link Escrow</text>
+</svg>

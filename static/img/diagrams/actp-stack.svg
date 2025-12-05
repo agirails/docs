@@ -30,14 +30,20 @@
   <text x="60" y="185" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">ACTP Protocol Layer</text>
 
   <!-- Protocol boxes -->
-  <rect x="120" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
-  <text x="180" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">TypeScript SDK</text>
+  <!-- Protocol boxes aligned evenly -->
+  <rect x="75" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="135" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">TypeScript SDK</text>
 
-  <rect x="290" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
-  <text x="350" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">REST API</text>
+  <rect x="215" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="275" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">REST API</text>
 
-  <rect x="460" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
-  <text x="520" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">n8n Node</text>
+  <rect x="355" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="415" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">n8n Node</text>
+
+  <!-- MCP (planned) -->
+  <rect x="495" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="555" y="219" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">MCP</text>
+  <text x="555" y="233" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">planned</text>
 
   <!-- Arrow: ACTP layer → Blockchain layer (centered) -->
   <path d="M 350 250 L 350 285" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>

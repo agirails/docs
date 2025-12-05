@@ -1,0 +1,101 @@
+<svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="520" height="340" fill="#0A0A0A"/>
+
+  <!-- Swim lane dividers -->
+  <line x1="170" y1="35" x2="170" y2="330" stroke="#374151" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+  <line x1="350" y1="35" x2="350" y2="330" stroke="#374151" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.4"/>
+
+  <!-- Lane headers -->
+  <text x="85" y="22" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">CONSUMER</text>
+  <text x="260" y="22" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">STATE</text>
+  <text x="435" y="22" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">PROVIDER</text>
+
+  <!-- Row 1: createTransaction → INITIATED -->
+  <rect x="15" y="32" width="125" height="22" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="77" y="47" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="500">createTransaction()</text>
+
+  <line x1="140" y1="43" x2="180" y2="43" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="180,43 175,40 175,46" fill="#10B981"/>
+
+  <rect x="185" y="32" width="100" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="235" y="47" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">INITIATED</text>
+
+  <!-- Arrow down -->
+  <line x1="235" y1="54" x2="235" y2="72" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="235,72 232,67 238,67" fill="#6B7280"/>
+
+  <!-- Row 2: fundTransaction → COMMITTED -->
+  <rect x="15" y="77" width="125" height="22" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="77" y="92" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="500">fundTransaction()</text>
+
+  <line x1="140" y1="88" x2="180" y2="88" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="180,88 175,85 175,91" fill="#10B981"/>
+
+  <rect x="185" y="77" width="100" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="235" y="92" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">COMMITTED</text>
+
+  <text x="435" y="92" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7" font-style="italic">(provider sees job)</text>
+
+  <!-- Arrow down -->
+  <line x1="235" y1="99" x2="235" y2="117" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="235,117 232,112 238,112" fill="#6B7280"/>
+
+  <!-- Row 3: IN_PROGRESS ← transitionState -->
+  <rect x="185" y="122" width="100" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="235" y="137" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">IN_PROGRESS</text>
+
+  <line x1="290" y1="133" x2="355" y2="133" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="290,133 295,130 295,136" fill="#0EA5E9"/>
+
+  <rect x="360" y="122" width="145" height="22" rx="4" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="432" y="137" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="7" font-weight="500">transitionState(IN_PROGRESS)</text>
+
+  <!-- Arrow down -->
+  <line x1="235" y1="144" x2="235" y2="162" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="235,162 232,157 238,157" fill="#6B7280"/>
+
+  <!-- Row 4: DELIVERED ← transitionState -->
+  <rect x="185" y="167" width="100" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="235" y="182" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">DELIVERED</text>
+
+  <line x1="290" y1="178" x2="355" y2="178" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="290,178 295,175 295,181" fill="#0EA5E9"/>
+
+  <rect x="360" y="167" width="145" height="22" rx="4" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="432" y="182" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="7" font-weight="500">transitionState(DELIVERED)</text>
+
+  <!-- Decision point -->
+  <line x1="235" y1="189" x2="235" y2="208" stroke="#6B7280" stroke-width="1.5"/>
+
+  <!-- Decision diamond -->
+  <polygon points="235,208 225,220 235,232 245,220" fill="#0A0A0A" stroke="#6B7280" stroke-width="1.5"/>
+  <text x="255" y="215" text-anchor="start" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="7">decide</text>
+
+  <!-- Happy path: releaseEscrow → SETTLED -->
+  <line x1="225" y1="220" x2="145" y2="220" stroke="#10B981" stroke-width="1.5"/>
+  <line x1="145" y1="220" x2="145" y2="260" stroke="#10B981" stroke-width="1.5"/>
+  <line x1="145" y1="260" x2="180" y2="260" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="180,260 175,257 175,263" fill="#10B981"/>
+
+  <rect x="15" y="249" width="110" height="22" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="70" y="264" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="500">releaseEscrow()</text>
+
+  <rect x="185" y="249" width="100" height="22" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1.5"/>
+  <text x="235" y="264" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">SETTLED</text>
+
+  <!-- Dispute path: raiseDispute → DISPUTED -->
+  <line x1="245" y1="220" x2="355" y2="220" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="355" y1="220" x2="355" y2="305" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="355" y1="305" x2="290" y2="305" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="290,305 295,302 295,308" fill="#EF4444"/>
+
+  <rect x="15" y="294" width="110" height="22" rx="4" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="70" y="309" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="500">raiseDispute()</text>
+
+  <line x1="125" y1="305" x2="180" y2="305" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="180,305 175,302 175,308" fill="#EF4444"/>
+
+  <rect x="185" y="294" width="100" height="22" rx="4" fill="#EF4444" fill-opacity="0.2" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="235" y="309" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">DISPUTED</text>
+</svg>

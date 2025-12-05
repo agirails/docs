@@ -41,6 +41,14 @@ The AGIRAILS SDK is currently in beta (v2.0.x-beta). APIs may change before stab
 npm install @agirails/sdk
 ```
 
+:::tip ethers.js v6
+AGIRAILS SDK uses **ethers.js v6**. If migrating from v5:
+- `ethers.utils.parseUnits()` → `ethers.parseUnits()` or `parseUnits()`
+- `ethers.utils.formatUnits()` → `ethers.formatUnits()` or `formatUnits()`
+- `new ethers.providers.JsonRpcProvider()` → `new ethers.JsonRpcProvider()`
+- See [ethers v6 migration guide](https://docs.ethers.org/v6/migrating/)
+:::
+
 ### From Source (Optional)
 
 For development or latest features:
@@ -125,7 +133,7 @@ ETH is required for gas fees:
 Mint mock USDC tokens:
 
 ```typescript title="mint-usdc.ts"
-import { ethers } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import 'dotenv/config';
 
 const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
@@ -137,8 +145,8 @@ const usdc = new ethers.Contract(
   wallet
 );
 
-// Mint 1000 USDC
-const tx = await usdc.mint(wallet.address, ethers.parseUnits('1000', 6));
+// Mint 1000 USDC (6 decimals for USDC)
+const tx = await usdc.mint(wallet.address, parseUnits('1000', 6));
 await tx.wait();
 console.log('Minted 1000 USDC');
 ```
@@ -155,7 +163,7 @@ Test your setup:
 
 ```typescript title="verify-setup.ts"
 import { ACTPClient } from '@agirails/sdk';
-import { ethers } from 'ethers';
+import { ethers, formatEther, formatUnits } from 'ethers';
 import 'dotenv/config';
 
 async function verify() {
@@ -181,8 +189,8 @@ async function verify() {
   console.log('✓ Network: Base Sepolia');
   console.log('✓ ACTPKernel:', config.contracts.actpKernel);
   console.log('✓ EscrowVault:', config.contracts.escrowVault);
-  console.log('✓ ETH balance:', ethers.formatEther(ethBalance), 'ETH');
-  console.log('✓ USDC balance:', ethers.formatUnits(usdcBalance, 6), 'USDC');
+  console.log('✓ ETH balance:', formatEther(ethBalance), 'ETH');
+  console.log('✓ USDC balance:', formatUnits(usdcBalance, 6), 'USDC');
   console.log('\n✅ Setup verified!');
 }
 
@@ -299,12 +307,16 @@ const client = await ACTPClient.create({
   rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/YOUR_KEY'
 });
 
-// Read-only (no private key)
+// With external signer (e.g., from wallet connection)
 const client = await ACTPClient.create({
   network: 'base-sepolia',
-  rpcUrl: 'https://sepolia.base.org'
+  signer: externalSigner // ethers.Signer from wallet
 });
 ```
+
+:::info Read-Only Mode Not Supported in V1
+The SDK currently requires a signer for initialization. True read-only access (for querying transaction state without a private key) is planned for a future release. For now, use a throwaway private key if you only need to read data.
+:::
 
 ---
 

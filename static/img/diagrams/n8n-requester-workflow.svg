@@ -1,0 +1,60 @@
+<svg viewBox="0 0 820 170" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="820" height="170" fill="#0A0A0A"/>
+
+  <!-- Row 1: Webhook Trigger → Create Transaction → Link Escrow → Notify Provider -->
+
+  <!-- Node 1: Webhook Trigger -->
+  <rect x="25" y="25" width="150" height="42" rx="6" fill="#0A0A0A" stroke="#6B7280" stroke-width="2"/>
+  <text x="100" y="52" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Webhook Trigger</text>
+
+  <!-- Arrow -->
+  <line x1="175" y1="46" x2="208" y2="46" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="208,46 200,41 200,51" fill="#FF6D5A"/>
+
+  <!-- Node 2: Create Transaction -->
+  <rect x="215" y="25" width="150" height="42" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="290" y="52" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Create Transaction</text>
+
+  <!-- Arrow -->
+  <line x1="365" y1="46" x2="398" y2="46" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="398,46 390,41 390,51" fill="#FF6D5A"/>
+
+  <!-- Node 3: Link Escrow -->
+  <rect x="405" y="25" width="130" height="42" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="470" y="52" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Link Escrow</text>
+
+  <!-- Arrow -->
+  <line x1="535" y1="46" x2="568" y2="46" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="568,46 560,41 560,51" fill="#FF6D5A"/>
+
+  <!-- Node 4: Notify Provider -->
+  <rect x="575" y="25" width="140" height="42" rx="6" fill="#0A0A0A" stroke="#10B981" stroke-width="2"/>
+  <text x="645" y="52" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Notify Provider</text>
+
+  <!-- Vertical connector from row 1 to row 2 -->
+  <line x1="100" y1="67" x2="100" y2="100" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="100,100 95,92 105,92" fill="#FF6D5A"/>
+
+  <!-- Row 2: Webhook Wait → Release Payment → Respond -->
+
+  <!-- Node 5: Webhook Wait -->
+  <rect x="25" y="107" width="150" height="42" rx="6" fill="#0A0A0A" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="100" y="134" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Webhook Wait</text>
+
+  <!-- Arrow -->
+  <line x1="175" y1="128" x2="208" y2="128" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="208,128 200,123 200,133" fill="#FF6D5A"/>
+
+  <!-- Node 6: Release Payment -->
+  <rect x="215" y="107" width="150" height="42" rx="6" fill="#0A0A0A" stroke="#FF6D5A" stroke-width="2"/>
+  <text x="290" y="134" text-anchor="middle" fill="#FECACA" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Release Payment</text>
+
+  <!-- Arrow -->
+  <line x1="365" y1="128" x2="398" y2="128" stroke="#FF6D5A" stroke-width="2"/>
+  <polygon points="398,128 390,123 390,133" fill="#FF6D5A"/>
+
+  <!-- Node 7: Respond -->
+  <rect x="405" y="107" width="110" height="42" rx="6" fill="#0A0A0A" stroke="#10B981" stroke-width="2"/>
+  <text x="460" y="134" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Respond</text>
+</svg>

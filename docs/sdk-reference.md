@@ -638,47 +638,18 @@ await client.kernel.transitionState(txId, State.DELIVERED, proofData);
 
 ### submitQuote()
 
-<span className="badge badge--warning">🟡 Intermediate</span>
+:::danger Not Available in V1
+This method is **not implemented** in the current V1 contract. The QUOTED state exists but quotes are submitted via `transitionState(txId, State.QUOTED, quoteProof)` by the provider. A dedicated `submitQuote()` helper is planned for V2.
+:::
 
-Submits a price quote for a transaction (AIP-2 workflow).
+<span className="badge badge--secondary">🔮 Planned</span>
 
-```typescript
-async submitQuote(txId: string, quoteHash: string): Promise<void>
-```
-
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `txId` | `string` | Yes | Transaction ID |
-| `quoteHash` | `string` | Yes | Keccak256 hash of canonical JSON quote |
-
-#### Throws
-
-- `ValidationError` - If quoteHash format is invalid
-- `InvalidStateTransitionError` - If transaction not in INITIATED state
-- `TransactionRevertedError` - If on-chain transaction fails
-
-#### Example
+To transition to QUOTED state in V1, use:
 
 ```typescript
-// Build quote using QuoteBuilder
-const quote = await client.quote.build({
-  txId,
-  provider: 'did:ethr:84532:0x...',
-  consumer: 'did:ethr:84532:0x...',
-  quotedAmount: '7500000', // $7.50
-  originalAmount: '5000000', // $5.00
-  maxPrice: '10000000', // $10.00
-  chainId: 84532,
-  kernelAddress: config.contracts.actpKernel
-});
-
-// Compute hash
-const quoteHash = client.quote.computeHash(quote);
-
-// Submit to chain
-await client.kernel.submitQuote(txId, quoteHash);
+// V1: Use transitionState to move to QUOTED
+const quoteProof = ethers.id('quote-details-hash');
+await providerClient.kernel.transitionState(txId, State.QUOTED, quoteProof);
 ```
 
 ---
@@ -738,11 +709,7 @@ await client.kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 Releases a partial milestone payment.
 
 ```typescript
-async releaseMilestone(
-  txId: string,
-  milestoneId: number,
-  amount: bigint
-): Promise<void>
+async releaseMilestone(txId: string, amount: bigint): Promise<void>
 ```
 
 #### Parameters
@@ -750,19 +717,25 @@ async releaseMilestone(
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `txId` | `string` | Yes | Transaction ID |
-| `milestoneId` | `number` | Yes | Milestone identifier (0-indexed) |
 | `amount` | `bigint` | Yes | Amount to release in USDC |
+
+:::info V1 Contract Signature
+The contract takes only `(transactionId, amount)` - there is no milestone ID parameter. Multiple partial releases are tracked by cumulative amount released, not by milestone index.
+:::
 
 #### Throws
 
-- `ValidationError` - If milestoneId negative or amount invalid
+- `ValidationError` - If amount invalid or exceeds remaining escrow
 - `TransactionRevertedError` - If contract reverts
 
 #### Example
 
 ```typescript
-// Release first milestone of 25 USDC
-await client.kernel.releaseMilestone(txId, 0, parseUnits('25', 6));
+// Release partial payment of 25 USDC
+await client.kernel.releaseMilestone(txId, parseUnits('25', 6));
+
+// Release another 25 USDC later
+await client.kernel.releaseMilestone(txId, parseUnits('25', 6));
 ```
 
 ---
@@ -800,99 +773,49 @@ await client.kernel.releaseEscrow(txId);
 
 ### raiseDispute()
 
-<span className="badge badge--warning">🟡 Intermediate</span>
+:::danger Not Available in V1
+The contract does **not** have a dedicated `raiseDispute()` function. Disputes are raised via `transitionState()` to the DISPUTED state.
+:::
 
-Raises a dispute on a delivered transaction.
+<span className="badge badge--secondary">🔮 Planned</span>
 
-```typescript
-async raiseDispute(
-  txId: string,
-  reason: string,
-  evidence: string
-): Promise<void>
-```
-
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `txId` | `string` | Yes | Transaction ID |
-| `reason` | `string` | Yes | Reason for dispute |
-| `evidence` | `string` | Yes | IPFS CID or URL to evidence |
-
-#### Throws
-
-- `ValidationError` - If txId is invalid
-- `TransactionRevertedError` - If contract reverts
-
-#### Example
+**V1 Implementation:** Use `transitionState` to move to DISPUTED:
 
 ```typescript
-await client.kernel.raiseDispute(
-  txId,
-  'Work delivered did not match specifications',
-  'ipfs://QmXxx...'
-);
+// Requester raises dispute (must be in DELIVERED state, within dispute window)
+await requesterClient.kernel.transitionState(txId, State.DISPUTED, '0x');
 ```
+
+:::info Dispute Flow in V1
+1. Transaction must be in DELIVERED state
+2. Requester calls `transitionState(txId, DISPUTED, proof)` within dispute window
+3. Admin resolves via `resolveDispute()` (admin-only function)
+4. Funds distributed per admin decision
+:::
 
 ---
 
 ### resolveDispute()
 
-<span className="badge badge--danger">🔴 Advanced</span>
+:::danger Admin-Only in V1
+This function exists in the contract but can **only be called by admin/pauser**, not by SDK users. It is used to resolve disputed transactions.
+:::
 
-Resolves a disputed transaction with payment distribution.
+<span className="badge badge--danger">🔴 Admin Only</span>
 
-```typescript
-async resolveDispute(
-  txId: string,
-  resolution: DisputeResolution
-): Promise<void>
+**V1 Contract Signature:**
+
+```solidity
+function resolveDispute(
+    bytes32 transactionId,
+    uint256 requesterAmount,
+    uint256 providerAmount,
+    uint256 mediatorAmount,
+    address mediator
+) external onlyRole(PAUSER_ROLE)
 ```
 
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `txId` | `string` | Yes | Transaction ID |
-| `resolution.requesterAmount` | `bigint` | Yes | Amount to refund to requester |
-| `resolution.providerAmount` | `bigint` | Yes | Amount to pay to provider |
-| `resolution.mediatorAmount` | `bigint` | Yes | Amount for mediator fee |
-| `resolution.mediator` | `string` | No* | Mediator address (*required if mediatorAmount > 0) |
-
-#### Throws
-
-- `ValidationError` - If amounts are negative or mediator missing
-- `TransactionRevertedError` - If contract reverts
-
-#### Example
-
-```typescript
-// Split 70/30 in provider's favor
-await client.kernel.resolveDispute(txId, {
-  requesterAmount: parseUnits('30', 6),
-  providerAmount: parseUnits('70', 6),
-  mediatorAmount: 0n
-});
-
-// With mediator fee
-await client.kernel.resolveDispute(txId, {
-  requesterAmount: parseUnits('25', 6),
-  providerAmount: parseUnits('65', 6),
-  mediatorAmount: parseUnits('10', 6),
-  mediator: '0xMediator...'
-});
-```
-
-#### Alias
-
-`settleDispute()` is an alias for this method with identical signature and behavior.
-
-```typescript
-// These are equivalent
-await client.kernel.resolveDispute(txId, resolution);
-await client.kernel.settleDispute(txId, resolution);
-```
+Regular users cannot call this method. Contact protocol admin to resolve disputes in V1.
 
 ---
 
@@ -931,31 +854,32 @@ await client.kernel.anchorAttestation(txId, attestation.uid);
 
 ### getEconomicParams()
 
-Retrieves current platform economic parameters.
+:::danger Not Available in V1
+The contract does **not** have a `getEconomicParams()` function. Economic parameters are exposed as individual public variables.
+:::
+
+<span className="badge badge--secondary">🔮 Planned</span>
+
+**V1 Alternative:** Query individual contract variables directly:
 
 ```typescript
-async getEconomicParams(): Promise<EconomicParams>
-```
+// V1: Read individual public variables from contract
+const kernel = client.kernel.getContract(); // Get ethers Contract instance
 
-#### Returns
+const platformFeeBps = await kernel.platformFeeBps();        // 100 = 1%
+const feeRecipient = await kernel.feeRecipient();
+const requesterPenaltyBps = await kernel.requesterPenaltyBps(); // 500 = 5%
 
-```typescript
-interface EconomicParams {
-  baseFeeNumerator: number;      // Platform fee (100 = 1%)
-  baseFeeDenominator: number;    // Always 10000 (basis points)
-  feeRecipient: string;          // Platform fee recipient address
-  requesterPenaltyBps: number;   // Penalty for false disputes
-  providerPenaltyBps: number;    // Reserved for future use
-}
-```
-
-#### Example
-
-```typescript
-const params = await client.kernel.getEconomicParams();
-const feePercent = (params.baseFeeNumerator / params.baseFeeDenominator) * 100;
+// Calculate fee percentage
+const feePercent = Number(platformFeeBps) / 100;
 console.log('Platform fee:', feePercent + '%'); // "Platform fee: 1%"
 ```
+
+**Available public variables in V1:**
+- `platformFeeBps` - Platform fee in basis points (100 = 1%)
+- `feeRecipient` - Address receiving platform fees
+- `requesterPenaltyBps` - Cancellation penalty (500 = 5%)
+- `getPendingEconomicParams()` - View scheduled parameter changes
 
 ---
 
@@ -1875,149 +1799,6 @@ console.log('Typed data:', typedData);
 
 ---
 
-## client.deliveryProofBuilder
-
-The delivery proof builder provides advanced AIP-4 delivery proof construction with IPFS upload and EAS attestation creation. This is an optional module that requires IPFS and EAS dependencies.
-
-### Constructor
-
-```typescript
-new DeliveryProofBuilder(
-  ipfs: IPFSClient,
-  signer: Signer,
-  nonceManager: NonceManager,
-  eas: EAS
-)
-```
-
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `ipfs` | `IPFSClient` | Yes | IPFS client for uploading results |
-| `signer` | `Signer` | Yes | ethers.js Signer for signing proofs |
-| `nonceManager` | `NonceManager` | Yes | Nonce manager for replay protection |
-| `eas` | `EAS` | Yes | EAS SDK instance for attestations |
-
----
-
-### build()
-
-Builds a complete delivery proof with IPFS upload, EAS attestation, and EIP-712 signature.
-
-```typescript
-async build(params: DeliveryProofParams): Promise<{
-  deliveryProof: DeliveryProofMessage;
-  deliveryProofCID: string;
-  attestationUID: string;
-}>
-```
-
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `params.txId` | `string` | Yes | Transaction ID (bytes32, 0x-prefixed) |
-| `params.provider` | `string` | Yes | Provider DID (e.g., "did:ethr:84532:0x...") |
-| `params.consumer` | `string` | Yes | Consumer DID |
-| `params.resultData` | `any` | Yes | Service result data (uploaded to IPFS) |
-| `params.metadata` | `object` | No | Optional metadata |
-| `params.metadata.executionTime` | `number` | No | Execution time in seconds |
-| `params.metadata.outputFormat` | `string` | No | Output MIME type |
-| `params.metadata.outputSize` | `number` | No | Output size in bytes |
-| `params.metadata.notes` | `string` | No | Additional notes (max 500 chars) |
-| `params.chainId` | `number` | Yes | Chain ID (84532 or 8453) |
-| `params.kernelAddress` | `string` | Yes | ACTPKernel contract address |
-
-#### Returns
-
-```typescript
-{
-  deliveryProof: DeliveryProofMessage;  // Complete signed proof
-  deliveryProofCID: string;              // IPFS CID of the proof
-  attestationUID: string;                // EAS attestation UID
-}
-```
-
-#### Example
-
-```typescript
-import { DeliveryProofBuilder } from '@agirails/sdk';
-import { EAS } from '@ethereum-attestation-service/eas-sdk';
-
-// Initialize dependencies
-const ipfs = new IPFSClient({ url: 'https://ipfs.infura.io:5001' });
-const eas = new EAS('0x4200000000000000000000000000000000000021');
-eas.connect(signer);
-
-const builder = new DeliveryProofBuilder(ipfs, signer, nonceManager, eas);
-
-const { deliveryProof, deliveryProofCID, attestationUID } = await builder.build({
-  txId: '0x1234...abcd',
-  provider: 'did:ethr:84532:0xProvider...',
-  consumer: 'did:ethr:84532:0xConsumer...',
-  resultData: { analysis: 'Complete', score: 95 },
-  metadata: { executionTime: 120, outputFormat: 'application/json' },
-  chainId: 84532,
-  kernelAddress: config.contracts.actpKernel
-});
-
-console.log('Attestation UID:', attestationUID);
-console.log('Proof CID:', deliveryProofCID);
-```
-
----
-
-### verify()
-
-<span className="badge badge--danger">🔴 Advanced</span>
-
-Verifies a delivery proof's signature, result hash, and EAS attestation.
-
-```typescript
-async verify(
-  deliveryProof: DeliveryProofMessage,
-  resultData: any,
-  kernelAddress: string
-): Promise<boolean>
-```
-
-#### Parameters
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `deliveryProof` | `DeliveryProofMessage` | Yes | Delivery proof to verify |
-| `resultData` | `any` | Yes | Actual result data from IPFS |
-| `kernelAddress` | `string` | Yes | ACTPKernel contract address |
-
-#### Returns
-
-`Promise<boolean>` - true if valid
-
-#### Throws
-
-- `Error` - "Invalid signature: recovered address does not match provider"
-- `Error` - "Result hash mismatch - data may be tampered"
-- `Error` - "Attestation not found on EAS"
-- `Error` - "Attestation was revoked"
-
-#### Example
-
-```typescript
-// Fetch result data from IPFS
-const resultData = await ipfs.get(deliveryProof.resultCID);
-
-// Verify the proof
-try {
-  await builder.verify(deliveryProof, resultData, kernelAddress);
-  console.log('Proof verified successfully!');
-} catch (error) {
-  console.error('Verification failed:', error.message);
-}
-```
-
----
-
 ## client.messageSigner
 
 The message signer module handles EIP-712 message signing for ACTP.
@@ -2156,13 +1937,13 @@ Enum representing transaction states.
 ```typescript
 enum State {
   INITIATED = 0,    // Transaction created, awaiting escrow
-  QUOTED = 1,       // Provider submitted quote
+  QUOTED = 1,       // Provider submitted quote (optional)
   COMMITTED = 2,    // Escrow linked, work can begin
-  IN_PROGRESS = 3,  // Provider working (optional)
+  IN_PROGRESS = 3,  // Provider working (required)
   DELIVERED = 4,    // Provider delivered result
   SETTLED = 5,      // Funds released (terminal)
   DISPUTED = 6,     // Under dispute
-  CANCELED = 7     // Canceled (terminal)
+  CANCELLED = 7    // Cancelled (terminal)
 }
 ```
 
@@ -3045,7 +2826,7 @@ State.IN_PROGRESS  // 3
 State.DELIVERED    // 4
 State.SETTLED      // 5
 State.DISPUTED     // 6
-State.CANCELED    // 7
+State.CANCELLED   // 7
 ```
 
 ---
