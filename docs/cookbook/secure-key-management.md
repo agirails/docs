@@ -4,6 +4,9 @@ title: Secure Key Management
 description: Production-grade private key handling for AI agents
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Secure Key Management
 
 Protect your private keys in production. Because one leaked key = total loss.
@@ -69,6 +72,9 @@ PRIVATE_KEY=0x...your_private_key...
 
 ### Code
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript title="src/env-key-loader.ts"
 import { ACTPClient } from '@agirails/sdk';
 import 'dotenv/config';
@@ -98,6 +104,45 @@ async function main() {
   // Note: JavaScript doesn't have secure memory clearing
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="env_key_loader.py"
+import os
+from agirails import ACTPClient, Network
+from dotenv import load_dotenv
+
+def main():
+    # Load from .env file
+    load_dotenv()
+
+    # ✅ Load from environment
+    private_key = os.getenv("PRIVATE_KEY")
+
+    if not private_key:
+        raise Exception("PRIVATE_KEY environment variable not set")
+
+    # Validate format
+    if not private_key.startswith("0x") or len(private_key) != 66:
+        raise Exception("Invalid private key format")
+
+    client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=private_key
+    )
+
+    # Use client...
+
+    # Clear from memory when done (limited in Python, but good practice)
+    private_key = None
+
+if __name__ == "__main__":
+    main()
+```
+
+</TabItem>
+</Tabs>
 
 ### Gotchas
 
@@ -143,6 +188,9 @@ Use your cloud provider's secret management service.
 
 ### AWS Secrets Manager
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript title="src/aws-key-loader.ts"
 import {
   SecretsManagerClient,
@@ -178,6 +226,42 @@ async function main() {
   // Use client...
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="aws_key_loader.py"
+import os, json
+import boto3
+from agirails import ACTPClient, Network
+
+def get_private_key() -> str:
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+
+    response = client.get_secret_value(SecretId='agirails/production/private-key')
+
+    if 'SecretString' not in response:
+        raise Exception("Secret not found")
+
+    secret = json.loads(response['SecretString'])
+    return secret['privateKey']
+
+def main():
+    private_key = get_private_key()
+
+    client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=private_key
+    )
+
+    # Use client...
+
+if __name__ == "__main__":
+    main()
+```
+
+</TabItem>
+</Tabs>
 
 **Setup:**
 ```bash

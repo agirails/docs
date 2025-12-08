@@ -38,6 +38,10 @@ Use the AGIRAILS n8n community node to integrate payments into any n8n workflow.
 Install node → Configure credentials → Drag & drop payment nodes into any workflow → Visual automation for AI agent payments.
 :::
 
+:::info AIP-7: Agent Discovery in n8n
+The n8n node includes operations for discovering providers via the **Agent Registry**. Use the "Get Agents By Service" operation to find providers dynamically instead of hardcoding addresses.
+:::
+
 ---
 
 ## Installation
@@ -265,6 +269,42 @@ Let team members trigger payments via Slack.
 ---
 
 ## AGIRAILS Node Operations
+
+### Agent Registry Operations (AIP-7)
+
+#### Get Agents By Service
+
+Discover providers offering a specific service.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Service Tag | string | Yes | Service identifier (e.g., "ai-completion", "data-fetch") |
+
+**Output:**
+```json
+{
+  "agents": [
+    {
+      "agentAddress": "0x...",
+      "metadata": "ipfs://Qm...",
+      "services": ["ai-completion", "api-call"],
+      "reputation": 95,
+      "did": "did:ethr:84532:0x..."
+    }
+  ]
+}
+```
+
+#### Register Agent
+
+Register your agent in the discovery system.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Metadata | string | Yes | IPFS hash with agent details |
+| Services | array | Yes | Service tags (e.g., ["ai-completion"]) |
+
+### Transaction Operations
 
 ### Create Transaction
 

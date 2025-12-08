@@ -4,6 +4,9 @@ title: Multi-Agent Budget Coordination
 description: Coordinate multiple AI agents sharing a common budget
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Multi-Agent Budget Coordination
 
 Coordinate multiple AI agents that share a common budget pool with spending limits and approval workflows.
@@ -46,6 +49,9 @@ Central treasury wallet → Agents request spending → Coordinator checks limit
 ## Complete Code
 
 ### Budget Coordinator
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/budget-coordinator.ts"
 import { ACTPClient, State } from '@agirails/sdk';
@@ -279,6 +285,185 @@ interface BudgetReport {
   pendingApprovals: string[];
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="budget_coordinator.py"
+import os, time
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+from agirails import ACTPClient, Network, State
+
+@dataclass
+class AgentConfig:
+    id: str
+    name: str
+    address: str
+    spending_limit: int  # Per-transaction limit
+    daily_limit: int     # Daily spending cap
+    requires_approval: int  # Threshold for manual approval
+
+@dataclass
+class SpendingRecord:
+    agent_id: str
+    amount: int
+    tx_id: str
+    timestamp: int
+    provider: str
+    purpose: str
+
+@dataclass
+class SpendingRequest:
+    agent_id: str
+    amount: int
+    provider: str
+    purpose: str
+
+@dataclass
+class SpendingResponse:
+    approved: bool
+    tx_id: Optional[str] = None
+    reason: Optional[str] = None
+    requires_approval: bool = False
+    approval_id: Optional[str] = None
+    remaining_daily: Optional[int] = None
+    remaining_total: Optional[int] = None
+
+class BudgetCoordinator:
+    def __init__(self, client: ACTPClient, total_budget: int):
+        self.client = client
+        self.total_budget = total_budget
+        self.agents: Dict[str, AgentConfig] = {}
+        self.spending: List[SpendingRecord] = []
+        self.pending_approvals: Dict[str, SpendingRequest] = {}
+
+    def register_agent(self, config: AgentConfig):
+        self.agents[config.id] = config
+        print(f"✅ Registered agent: {config.name}")
+        print(f"   Per-tx limit: {config.spending_limit / 1e6} USDC")
+        print(f"   Daily limit: {config.daily_limit / 1e6} USDC")
+
+    def request_spending(self, request: SpendingRequest) -> SpendingResponse:
+        agent = self.agents.get(request.agent_id)
+        if not agent:
+            return SpendingResponse(approved=False, reason="Agent not registered")
+
+        # Check per-transaction limit
+        if request.amount > agent.spending_limit:
+            return SpendingResponse(
+                approved=False,
+                reason=f"Amount {request.amount / 1e6} exceeds per-tx limit {agent.spending_limit / 1e6}"
+            )
+
+        # Check daily limit
+        daily_spent = self._get_daily_spending(request.agent_id)
+        if daily_spent + request.amount > agent.daily_limit:
+            return SpendingResponse(
+                approved=False,
+                reason=f"Would exceed daily limit. Spent: {daily_spent / 1e6}, Limit: {agent.daily_limit / 1e6}"
+            )
+
+        # Check total budget
+        total_spent = self._get_total_spending()
+        if total_spent + request.amount > self.total_budget:
+            return SpendingResponse(
+                approved=False,
+                reason=f"Would exceed total budget. Spent: {total_spent / 1e6}, Budget: {self.total_budget / 1e6}"
+            )
+
+        # Check if requires approval
+        if request.amount > agent.requires_approval:
+            approval_id = self._create_approval_request(request)
+            return SpendingResponse(
+                approved=False,
+                requires_approval=True,
+                approval_id=approval_id,
+                reason=f"Amount exceeds auto-approval threshold. Approval ID: {approval_id}"
+            )
+
+        # Execute spending
+        return self._execute_spending(request, agent)
+
+    def _execute_spending(self, request: SpendingRequest, agent: AgentConfig) -> SpendingResponse:
+        try:
+            # Create transaction
+            tx_id = self.client.kernel.create_transaction(
+                requester=self.client.address,
+                provider=request.provider,
+                amount=request.amount,
+                deadline=int(time.time()) + 3600,
+                dispute_window=3600,
+                metadata="0x"
+            )
+
+            # Fund escrow
+            self.client.fund_transaction(tx_id)
+
+            # Record spending
+            self.spending.append(SpendingRecord(
+                agent_id=request.agent_id,
+                amount=request.amount,
+                tx_id=tx_id,
+                timestamp=int(time.time()),
+                provider=request.provider,
+                purpose=request.purpose
+            ))
+
+            print(f"💸 Spending approved for {agent.name}")
+            print(f"   Amount: {request.amount / 1e6} USDC")
+            print(f"   Transaction: {tx_id}")
+
+            return SpendingResponse(
+                approved=True,
+                tx_id=tx_id,
+                remaining_daily=agent.daily_limit - self._get_daily_spending(agent.id),
+                remaining_total=self.total_budget - self._get_total_spending()
+            )
+
+        except Exception as e:
+            return SpendingResponse(approved=False, reason=f"Execution failed: {str(e)}")
+
+    def _get_daily_spending(self, agent_id: str) -> int:
+        today_start = time.time() - (time.time() % 86400)  # Start of today
+        return sum(
+            s.amount for s in self.spending
+            if s.agent_id == agent_id and s.timestamp >= today_start
+        )
+
+    def _get_total_spending(self) -> int:
+        return sum(s.amount for s in self.spending)
+
+    def _create_approval_request(self, request: SpendingRequest) -> str:
+        approval_id = f"approval-{int(time.time())}"
+        self.pending_approvals[approval_id] = request
+        return approval_id
+
+    def approve_spending(self, approval_id: str) -> SpendingResponse:
+        request = self.pending_approvals.get(approval_id)
+        if not request:
+            return SpendingResponse(approved=False, reason="Approval not found")
+
+        agent = self.agents[request.agent_id]
+        del self.pending_approvals[approval_id]
+        return self._execute_spending(request, agent)
+
+    def get_report(self) -> dict:
+        by_agent = {}
+        for record in self.spending:
+            by_agent[record.agent_id] = by_agent.get(record.agent_id, 0) + record.amount
+
+        return {
+            "total_budget": self.total_budget,
+            "total_spent": self._get_total_spending(),
+            "remaining": self.total_budget - self._get_total_spending(),
+            "by_agent": {k: v / 1e6 for k, v in by_agent.items()},
+            "pending_approvals": list(self.pending_approvals.keys())
+        }
+```
+
+</TabItem>
+</Tabs>
 
 ### Agent Implementation
 

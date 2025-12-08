@@ -4,6 +4,9 @@ title: API Pay-Per-Call
 description: Monetize your API with per-call payments using AGIRAILS
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # API Pay-Per-Call
 
 Monetize your API by charging per call. No subscriptions, no invoices - just instant micropayments.
@@ -46,11 +49,18 @@ Wrap your API with AGIRAILS payment verification. Each call requires a valid, fu
 Consumer pre-funds → Middleware verifies → API serves → Mark DELIVERED → Admin/bot settles.
 :::
 
+:::info AIP-7: Agent Discovery
+Providers can register their APIs in the **Agent Registry** (AIP-7) with service tags, making them discoverable to consumers. Use `client.agentRegistry.registerAgent()` to advertise your API service.
+:::
+
 ---
 
 ## Complete Code
 
-### Provider Side (Your API) — TypeScript
+### Provider Side (Your API)
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/api-server.ts"
 import express from 'express';
@@ -228,11 +238,170 @@ app.listen(3000, () => {
 });
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="api_server.py"
+import os, json, time
+from flask import Flask, request, jsonify
+from agirails import ACTPClient, Network, ProofGenerator, State
+
+app = Flask(__name__)
+
+# Initialize AGIRAILS client
+client = ACTPClient.create(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.environ["PROVIDER_PRIVATE_KEY"]
+)
+
+PROVIDER_ADDRESS = client.address
+proof_gen = ProofGenerator()
+PRICE_PER_CALL = 100_000  # $0.10 in USDC (6 decimals)
+
+# ===========================================
+# PAYMENT VERIFICATION MIDDLEWARE
+# ===========================================
+
+def verify_payment():
+    tx_id = request.headers.get("X-AGIRAILS-TX-ID")
+
+    if not tx_id:
+        return jsonify({
+            "error": "Payment Required",
+            "message": "Include X-AGIRAILS-TX-ID header with funded transaction"
+        }), 402
+
+    try:
+        tx = client.kernel.get_transaction(tx_id)
+
+        # Verify we're the provider
+        if tx.provider.lower() != PROVIDER_ADDRESS.lower():
+            return jsonify({
+                "error": "Invalid Transaction",
+                "message": "Transaction provider does not match this API"
+            }), 403
+
+        # Verify transaction state
+        if tx.state not in [State.COMMITTED, State.IN_PROGRESS]:
+            return jsonify({
+                "error": "Invalid Transaction State",
+                "message": f"Transaction is {tx.state.name}, expected COMMITTED or IN_PROGRESS"
+            }), 402
+
+        # Verify amount
+        if tx.amount < PRICE_PER_CALL:
+            return jsonify({
+                "error": "Insufficient Payment",
+                "message": f"Minimum payment is {PRICE_PER_CALL / 1e6} USDC"
+            }), 402
+
+        # Verify deadline
+        if tx.deadline < int(time.time()):
+            return jsonify({"error": "Transaction Expired"}), 402
+
+        return None, tx_id, tx
+
+    except Exception as e:
+        return jsonify({
+            "error": "Payment Verification Failed",
+            "message": str(e)
+        }), 500
+
+# ===========================================
+# API ENDPOINT
+# ===========================================
+
+@app.route("/api/generate", methods=["POST"])
+def generate():
+    error, tx_id, tx = verify_payment()
+    if error:
+        return error
+
+    data = request.get_json()
+    prompt = data.get("prompt")
+
+    try:
+        # Mark as IN_PROGRESS
+        if tx.state == State.COMMITTED:
+            client.kernel.transition_state(tx_id, State.IN_PROGRESS)
+
+        # YOUR SERVICE LOGIC HERE
+        result = generate_content(prompt)
+
+        # Create delivery proof
+        proof = proof_gen.generate_delivery_proof(
+            tx_id=tx_id,
+            deliverable=json.dumps({"prompt": prompt, "result": result, "timestamp": time.time()})
+        )
+
+        # Deliver with proof
+        client.kernel.transition_state(tx_id, State.DELIVERED, proof=proof_gen.encode_proof(proof))
+
+        return jsonify({
+            "success": True,
+            "result": result,
+            "payment": {
+                "txId": tx_id,
+                "amount": f"{tx.amount / 1e6} USDC",
+                "status": "DELIVERED",
+                "proofHash": proof["contentHash"]
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": "Service Failed",
+            "message": str(e),
+            "txId": tx_id
+        }), 500
+
+@app.route("/api/pricing", methods=["GET"])
+def pricing():
+    return jsonify({
+        "provider": PROVIDER_ADDRESS,
+        "network": "base-sepolia",
+        "pricing": {
+            "perCall": f"{PRICE_PER_CALL / 1e6} USDC",
+            "currency": "USDC",
+            "decimals": 6
+        },
+        "payment": {
+            "protocol": "AGIRAILS/ACTP",
+            "header": "X-AGIRAILS-TX-ID"
+        }
+    })
+
+def generate_content(prompt: str) -> str:
+    # Replace with your actual service
+    time.sleep(1)
+    return f"Generated response for: {prompt}"
+
+if __name__ == "__main__":
+    print(f"🚀 Pay-per-call API running on port 3000")
+    print(f"💰 Price: {PRICE_PER_CALL / 1e6} USDC per call")
+    print(f"📍 Provider: {PROVIDER_ADDRESS}")
+    app.run(port=3000)
+```
+
+</TabItem>
+</Tabs>
+
 ### Consumer Side (Calling the API)
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
   <img src="/img/diagrams/api-consumer-flow.svg" alt="Consumer Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
+
+:::tip Agent Discovery (AIP-7)
+Instead of hardcoding provider addresses, use the Agent Registry to discover services:
+```typescript
+const providers = await client.agentRegistry.getAgentsByService("ai-completion");
+const apiProvider = providers[0].agentAddress;
+```
+:::
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/api-consumer.ts"
 import { ACTPClient, State } from '@agirails/sdk';
@@ -296,6 +465,71 @@ async function callPaidAPI(prompt: string): Promise<string> {
 const result = await callPaidAPI('Write a haiku about AI agents');
 console.log('Result:', result);
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="api_consumer.py"
+import os, time
+from agirails import ACTPClient, Network, State
+
+async def call_paid_api(prompt: str) -> str:
+    # Initialize client
+    client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.environ["CONSUMER_PRIVATE_KEY"]
+    )
+
+    my_address = client.address
+    API_PROVIDER = "0x..."  # Get from /api/pricing
+    API_URL = "https://api.example.com"
+
+    # Step 1: Create transaction
+    print("Creating payment transaction...")
+    tx_id = client.kernel.create_transaction(
+        requester=my_address,
+        provider=API_PROVIDER,
+        amount=100_000,  # $0.10 USDC
+        deadline=int(time.time()) + 3600,  # 1 hour
+        dispute_window=3600,  # 1 hour
+        metadata="0x"
+    )
+    print(f"Transaction created: {tx_id}")
+
+    # Step 2: Fund escrow (approve + link in one call)
+    print("Funding transaction via fund_transaction...")
+    escrow_id = client.fund_transaction(tx_id)
+    print(f"Transaction funded - USDC locked in escrow (escrowId {escrow_id})")
+
+    # Step 3: Call the API with transaction ID
+    print("Calling API...")
+    import requests
+    response = requests.post(
+        f"{API_URL}/api/generate",
+        json={"prompt": prompt},
+        headers={"X-AGIRAILS-TX-ID": tx_id}
+    )
+
+    if not response.ok:
+        error = response.json()
+        raise Exception(f"API call failed: {error['message']}")
+
+    data = response.json()
+    print(f"API call successful! Payment: {data['payment']['amount']}")
+
+    # Settlement executed by admin/bot via SETTLED
+    # (requester anytime; provider after dispute window)
+
+    return data["result"]
+
+# Usage
+if __name__ == "__main__":
+    result = call_paid_api("Write a haiku about AI agents")
+    print("Result:", result)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

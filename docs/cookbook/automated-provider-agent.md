@@ -43,6 +43,10 @@ Use event listeners to monitor for new transactions, filter by your criteria, an
 Event listener → Filter by criteria → Execute work → Deliver with proof → Admin/bot settles.
 :::
 
+:::info AIP-7: Service Discovery
+Register your provider agent in the **Agent Registry** so consumers can discover you automatically. Use `client.agentRegistry.registerAgent()` with service tags like `"ai-completion"`, `"data-fetch"`, or `"api-call"`.
+:::
+
 ---
 
 ## Complete Code
@@ -226,6 +230,19 @@ async function main() {
     serviceTypes: ['api-call', 'computation', 'data-fetch']
   };
 
+  // (Optional) Register in Agent Registry for service discovery (AIP-7)
+  const myAddress = await client.getAddress();
+  const isRegistered = await client.agentRegistry.isAgentRegistered(myAddress);
+
+  if (!isRegistered) {
+    console.log('📝 Registering in Agent Registry...');
+    await client.agentRegistry.registerAgent({
+      metadata: "ipfs://Qm...",  // Metadata with service details
+      services: ["api-call", "computation", "data-fetch"]  // Service tags
+    });
+    console.log('✅ Registered! Consumers can now discover you via getAgentsByService()');
+  }
+
   // Create and start agent
   const agent = new AutomatedProviderAgent(client, config);
   await agent.start();
@@ -297,10 +314,20 @@ def watch_jobs(poll_interval=5):
         time.sleep(poll_interval)
 
 if __name__ == "__main__":
+    # (Optional) Register in Agent Registry for service discovery (AIP-7)
+    if not client.agent_registry.is_agent_registered(provider_address):
+        print("📝 Registering in Agent Registry...")
+        client.agent_registry.register_agent(
+            metadata="ipfs://Qm...",
+            services=["api-call", "computation", "data-fetch"]
+        )
+        print("✅ Registered! Consumers can now discover you.")
+
     watch_jobs()
 ```
 
 </TabItem>
+
 </Tabs>
 
 ---

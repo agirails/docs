@@ -16,6 +16,10 @@ Production-ready recipes for common patterns. Copy, paste, customize, ship.
 These aren't toy examples. Every recipe here is extracted from **production systems** handling real transactions. Copy the code, understand it later, ship today.
 :::
 
+:::info What's New: AIP-7 Agent Discovery
+All recipes now include **Agent Registry** integration (AIP-7). Providers can register their services with tags like `"ai-completion"` or `"data-fetch"`, and consumers can discover them dynamically instead of hardcoding addresses. Both TypeScript and Python SDK examples are provided.
+:::
+
 ---
 
 ## What You'll Find Here
@@ -102,9 +106,10 @@ Connect AGIRAILS with popular platforms.
 
 :::info Prerequisites
 All recipes assume you've completed the [Quick Start](/quick-start) and have:
-- Node.js 18+ or Python 3.9+
+- **Node.js 18+ or Python 3.9+** (all recipes now include both TypeScript and Python examples)
 - A funded testnet wallet (ETH + USDC)
 - Basic understanding of the [Transaction Lifecycle](/concepts/transaction-lifecycle)
+- (Optional) Familiarity with [Agent Registry (AIP-7)](/concepts/agent-registry) for service discovery
 :::
 
 ---
