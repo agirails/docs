@@ -467,6 +467,9 @@ class BudgetCoordinator:
 
 ### Agent Implementation
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript title="src/budgeted-agent.ts"
 class BudgetedAgent {
   private agentId: string;
@@ -517,7 +520,55 @@ class BudgetedAgent {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="budgeted_agent.py"
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class PurchaseResult:
+    success: bool
+    tx_id: Optional[str] = None
+    error: Optional[str] = None
+
+class BudgetedAgent:
+    def __init__(self, agent_id: str, coordinator: BudgetCoordinator, client: ACTPClient):
+        self.agent_id = agent_id
+        self.coordinator = coordinator
+        self.client = client
+
+    def purchase_service(self, provider: str, amount: int, purpose: str) -> PurchaseResult:
+        """Request to spend from shared budget"""
+        print(f"🤖 Agent {self.agent_id} requesting spend...")
+
+        response = self.coordinator.request_spending(SpendingRequest(
+            agent_id=self.agent_id,
+            amount=amount,
+            provider=provider,
+            purpose=purpose
+        ))
+
+        if response.approved:
+            print(f"✅ Approved! Transaction: {response.tx_id}")
+            return PurchaseResult(success=True, tx_id=response.tx_id)
+
+        if response.requires_approval:
+            print(f"⏳ Requires approval: {response.approval_id}")
+            return PurchaseResult(success=False, error=f"Pending approval: {response.approval_id}")
+
+        print(f"❌ Denied: {response.reason}")
+        return PurchaseResult(success=False, error=response.reason)
+```
+
+</TabItem>
+</Tabs>
+
 ### Main Setup
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/main.ts"
 async function main() {
@@ -601,6 +652,89 @@ async function main() {
 
 main().catch(console.error);
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="main.py"
+import os
+from agirails import ACTPClient, Network
+
+def main():
+    # Initialize coordinator with treasury wallet
+    coordinator_client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.environ["TREASURY_PRIVATE_KEY"]
+    )
+
+    # Create coordinator with $1000 budget
+    coordinator = BudgetCoordinator(
+        client=coordinator_client,
+        total_budget=1_000_000_000  # $1000 in USDC (6 decimals)
+    )
+
+    # Register agents with their limits
+    coordinator.register_agent(AgentConfig(
+        id="research-agent",
+        name="Research Agent",
+        address="0x1111...",
+        spending_limit=100_000_000,    # $100 per transaction
+        daily_limit=300_000_000,       # $300 per day
+        requires_approval=50_000_000   # Auto-approve under $50
+    ))
+
+    coordinator.register_agent(AgentConfig(
+        id="data-agent",
+        name="Data Acquisition Agent",
+        address="0x2222...",
+        spending_limit=200_000_000,
+        daily_limit=500_000_000,
+        requires_approval=100_000_000
+    ))
+
+    coordinator.register_agent(AgentConfig(
+        id="compute-agent",
+        name="Compute Agent",
+        address="0x3333...",
+        spending_limit=500_000_000,
+        daily_limit=1_000_000_000,
+        requires_approval=200_000_000
+    ))
+
+    # Create budgeted agents
+    research_agent = BudgetedAgent("research-agent", coordinator, coordinator_client)
+    data_agent = BudgetedAgent("data-agent", coordinator, coordinator_client)
+
+    # Simulate agent activities
+    print("\n--- Research Agent purchasing API access ---")
+    research_agent.purchase_service(
+        provider="0xAPIProvider...",
+        amount=25_000_000,  # $25 - auto-approved
+        purpose="Academic paper API access"
+    )
+
+    print("\n--- Data Agent purchasing dataset ---")
+    data_agent.purchase_service(
+        provider="0xDataProvider...",
+        amount=150_000_000,  # $150 - requires approval
+        purpose="Training dataset purchase"
+    )
+
+    # Print spending report
+    print("\n--- Budget Report ---")
+    report = coordinator.get_report()
+    print(f"Total Budget: {report['total_budget'] / 1e6} USDC")
+    print(f"Total Spent: {report['total_spent'] / 1e6} USDC")
+    print(f"Remaining: {report['remaining'] / 1e6} USDC")
+    print(f"By Agent: {report['by_agent']}")
+    print(f"Pending Approvals: {report['pending_approvals']}")
+
+if __name__ == "__main__":
+    main()
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

@@ -283,6 +283,9 @@ aws secretsmanager create-secret \
 
 ### Google Cloud Secret Manager
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript title="src/gcp-key-loader.ts"
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import { ACTPClient } from '@agirails/sdk';
@@ -303,7 +306,43 @@ async function getPrivateKey(): Promise<string> {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="gcp_key_loader.py"
+from google.cloud import secretmanager
+from agirails import ACTPClient, Network
+
+def get_private_key() -> str:
+    client = secretmanager.SecretManagerServiceClient()
+
+    name = "projects/my-project/secrets/agirails-private-key/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+
+    payload = response.payload.data.decode("UTF-8")
+    if not payload:
+        raise Exception("Secret not found")
+
+    return payload
+
+def main():
+    private_key = get_private_key()
+
+    client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=private_key
+    )
+
+    # Use client...
+```
+
+</TabItem>
+</Tabs>
+
 ### HashiCorp Vault
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/vault-key-loader.ts"
 import Vault from 'node-vault';
@@ -320,6 +359,39 @@ async function getPrivateKey(): Promise<string> {
   return result.data.data.privateKey;
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="vault_key_loader.py"
+import os
+import hvac
+from agirails import ACTPClient, Network
+
+def get_private_key() -> str:
+    client = hvac.Client(
+        url=os.environ["VAULT_ADDR"],
+        token=os.environ["VAULT_TOKEN"]
+    )
+
+    result = client.secrets.kv.v2.read_secret_version(
+        path="agirails/private-key"
+    )
+    return result["data"]["data"]["privateKey"]
+
+def main():
+    private_key = get_private_key()
+
+    client = ACTPClient.create(
+        network=Network.BASE_SEPOLIA,
+        private_key=private_key
+    )
+
+    # Use client...
+```
+
+</TabItem>
+</Tabs>
 
 ### Benefits
 
@@ -439,6 +511,9 @@ async function main() {
 
 ### Rotation Process
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 interface KeyRotationConfig {
   currentKeyId: string;
@@ -472,6 +547,49 @@ class RotatingKeyManager {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import time
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class KeyRotationConfig:
+    current_key_id: str
+    new_key_id: Optional[str] = None
+    rotation_timestamp: Optional[int] = None
+
+class RotatingKeyManager:
+    def __init__(self, config: KeyRotationConfig):
+        self.config = config
+
+    def get_active_key(self) -> str:
+        now = int(time.time() * 1000)  # milliseconds
+
+        # Use new key after rotation timestamp
+        if self.config.rotation_timestamp and now >= self.config.rotation_timestamp:
+            return self._fetch_key(self.config.new_key_id)
+
+        return self._fetch_key(self.config.current_key_id)
+
+    def rotate_key(self, new_key_id: str, effective_in_ms: int) -> None:
+        self.config.new_key_id = new_key_id
+        self.config.rotation_timestamp = int(time.time() * 1000) + effective_in_ms
+
+        from datetime import datetime
+        rotation_time = datetime.fromtimestamp(self.config.rotation_timestamp / 1000)
+        print(f"Key rotation scheduled for {rotation_time}")
+
+    def _fetch_key(self, key_id: str) -> str:
+        # Implement based on your secret manager
+        pass
+```
+
+</TabItem>
+</Tabs>
+
 ### Rotation Checklist
 
 1. [ ] Generate new key in secure environment
@@ -492,6 +610,9 @@ class RotatingKeyManager {
 </div>
 
 For high-value operations, require multiple keys.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 import { ethers } from 'ethers';
@@ -545,6 +666,64 @@ class MultiSigCoordinator {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import json
+from dataclasses import dataclass
+from typing import List, Dict
+from eth_account.messages import encode_defunct
+from web3 import Web3
+
+@dataclass
+class MultiSigConfig:
+    threshold: int      # Required signatures (e.g., 2)
+    signers: List[str]  # All possible signers (e.g., 3)
+
+class MultiSigCoordinator:
+    def __init__(self, config: MultiSigConfig):
+        self.config = config
+        self.pending_signatures: Dict[str, List[str]] = {}
+        self.w3 = Web3()
+
+    def propose_transaction(self, tx: dict) -> str:
+        tx_hash = self.w3.keccak(text=json.dumps(tx, sort_keys=True)).hex()
+        self.pending_signatures[tx_hash] = []
+        return tx_hash
+
+    def add_signature(self, tx_hash: str, signature: str, signer: str) -> bool:
+        # Verify signer is authorized
+        if signer not in self.config.signers:
+            raise Exception("Unauthorized signer")
+
+        # Verify signature
+        message = encode_defunct(hexstr=tx_hash)
+        recovered_signer = self.w3.eth.account.recover_message(message, signature=signature)
+        if recovered_signer.lower() != signer.lower():
+            raise Exception("Invalid signature")
+
+        # Add signature
+        signatures = self.pending_signatures.get(tx_hash, [])
+        signatures.append(signature)
+        self.pending_signatures[tx_hash] = signatures
+
+        # Check if threshold reached
+        return len(signatures) >= self.config.threshold
+
+    def execute_if_ready(self, tx_hash: str) -> bool:
+        signatures = self.pending_signatures.get(tx_hash)
+        if not signatures or len(signatures) < self.config.threshold:
+            return False
+
+        # Execute with collected signatures
+        # Implementation depends on your multi-sig contract
+        return True
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Security Checklist
@@ -581,6 +760,9 @@ class MultiSigCoordinator {
 
 ### 1. Logging Sensitive Data
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 // ❌ Leaks in log aggregators
 logger.info('Transaction params:', { privateKey, amount });
@@ -589,7 +771,24 @@ logger.info('Transaction params:', { privateKey, amount });
 logger.info('Transaction params:', { privateKey: '[REDACTED]', amount });
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# ❌ Leaks in log aggregators
+logger.info(f"Transaction params: {private_key=}, {amount=}")
+
+# ✅ Explicit redaction
+logger.info(f"Transaction params: private_key=[REDACTED], amount={amount}")
+```
+
+</TabItem>
+</Tabs>
+
 ### 2. Keys in Error Stack Traces
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 // ❌ Error might include sensitive vars in scope
@@ -609,7 +808,32 @@ async function sign(privateKey: string) {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# ❌ Error might include sensitive vars in scope
+def sign(private_key: str):
+    raise Exception("Failed")  # Stack trace might expose private_key
+
+# ✅ Clear sensitive vars before throwing
+def sign(private_key: str):
+    key = private_key
+    private_key = None  # Clear original
+    try:
+        # Use key...
+        pass
+    finally:
+        key = None  # Clear copy
+```
+
+</TabItem>
+</Tabs>
+
 ### 3. Keys in URLs
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 // ❌ Keys in URL params (logged by proxies, browsers)
@@ -621,6 +845,21 @@ const response = await fetch(url, {
 });
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# ❌ Keys in URL params (logged by proxies, browsers)
+url = f"https://api.example.com?key={private_key}"
+
+# ✅ Keys in headers or body
+import requests
+response = requests.get(url, headers={"X-Private-Key": private_key})
+```
+
+</TabItem>
+</Tabs>
+
 ### 4. Keys in Browser localStorage
 
 ```typescript
@@ -630,6 +869,10 @@ localStorage.setItem('privateKey', key);
 // ✅ Use secure storage or don't store at all
 // For browser wallets: use MetaMask/WalletConnect
 ```
+
+:::info Browser-Only
+This applies to frontend JavaScript only. Python backend code doesn't use localStorage.
+:::
 
 ---
 
