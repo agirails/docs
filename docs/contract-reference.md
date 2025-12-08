@@ -4,6 +4,9 @@ title: Smart Contract Reference
 description: Complete API reference for AGIRAILS smart contracts - ACTPKernel and EscrowVault
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Smart Contract Reference
 
 Complete API documentation for AGIRAILS smart contracts on Base L2. This reference covers the ACTPKernel coordinator and EscrowVault escrow manager.
@@ -278,7 +281,10 @@ function getTransaction(bytes32 transactionId)
 
 **Gas Cost:** ~3,000 gas (view function)
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ethers } from 'ethers';
@@ -298,6 +304,30 @@ console.log('Amount:', ethers.formatUnits(tx.amount, 6)); // USDC has 6 decimals
 console.log('Requester:', tx.requester);
 console.log('Provider:', tx.provider);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+provider = Web3(Web3.HTTPProvider('https://sepolia.base.org'))
+kernel = provider.eth.contract(
+    address='0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba',
+    abi=KERNEL_ABI
+)
+
+tx_id = '0x1234...5678'
+tx = kernel.functions.getTransaction(tx_id).call()
+
+print(f"State: {tx.state}")  # 0-7
+print(f"Amount: {tx.amount / 1e6} USDC")  # USDC has 6 decimals
+print(f"Requester: {tx.requester}")
+print(f"Provider: {tx.provider}")
+```
+
+</TabItem>
+</Tabs>
 
 **Example (Foundry cast):**
 
@@ -343,6 +373,9 @@ function getPendingEconomicParams()
 
 **Example:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const [feeBps, penaltyBps, executeAfter, active] =
   await kernel.getPendingEconomicParams();
@@ -353,6 +386,24 @@ if (active) {
   console.log(`Can execute at: ${canExecuteAt}`);
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from datetime import datetime
+
+result = kernel.functions.getPendingEconomicParams().call()
+fee_bps, penalty_bps, execute_after, active = result
+
+if active:
+    can_execute_at = datetime.fromtimestamp(execute_after)
+    print(f"Pending fee change: {fee_bps/100}%")
+    print(f"Can execute at: {can_execute_at}")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -440,7 +491,10 @@ contract MyAgent {
 }
 ```
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ethers } from 'ethers';
@@ -462,6 +516,46 @@ const event = receipt.logs.find(log => log.eventName === 'TransactionCreated');
 const transactionId = event.args.transactionId;
 console.log('Transaction created:', transactionId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+import time
+
+w3 = Web3(Web3.HTTPProvider('https://sepolia.base.org'))
+account = w3.eth.account.from_key(private_key)
+
+kernel = w3.eth.contract(address=KERNEL_ADDR, abi=KERNEL_ABI)
+
+service_hash = Web3.keccak(text='AI service')
+deadline = int(time.time()) + 86400  # 1 day
+dispute_window = 172800  # 2 days
+
+tx = kernel.functions.createTransaction(
+    provider_address,
+    account.address,
+    10 * 10**6,  # $10 USDC
+    deadline,
+    dispute_window,
+    service_hash
+).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed_tx = account.sign_transaction(tx)
+tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+# Parse TransactionCreated event
+transaction_id = receipt.logs[0]['topics'][1]
+print(f"Transaction created: {transaction_id.hex()}")
+```
+
+</TabItem>
+</Tabs>
 
 **Example (Foundry):**
 
@@ -560,7 +654,10 @@ contract MyAgent {
 }
 ```
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Step 1: Approve USDC
@@ -574,6 +671,43 @@ await kernel.linkEscrow(transactionId, ESCROW_VAULT_ADDR, escrowId);
 
 // Transaction is now in COMMITTED state, funds locked
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+# Step 1: Approve USDC
+usdc = w3.eth.contract(address=USDC_ADDR, abi=ERC20_ABI)
+tx = kernel.functions.getTransaction(transaction_id).call()
+
+approve_tx = usdc.functions.approve(ESCROW_VAULT_ADDR, tx.amount).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+signed = account.sign_transaction(approve_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Step 2: Link escrow
+escrow_id = Web3.keccak(text=f'escrow-{transaction_id}')
+
+link_tx = kernel.functions.linkEscrow(
+    transaction_id,
+    ESCROW_VAULT_ADDR,
+    escrow_id
+).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+signed = account.sign_transaction(link_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Transaction is now in COMMITTED state, funds locked
+```
+
+</TabItem>
+</Tabs>
 
 **Important Notes:**
 - ⚠️ **Auto-transitions to COMMITTED** - This is NOT a manual state transition
@@ -670,6 +804,9 @@ kernel.transitionState(txId, IACTPKernel.State.DELIVERED, proof);
 
 **Example: Requester Accepts Delivery**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Requester settles (releases funds to provider)
 await kernel.transitionState(
@@ -681,7 +818,33 @@ await kernel.transitionState(
 // Funds are released, transaction complete
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Requester settles (releases funds to provider)
+tx = kernel.functions.transitionState(
+    transaction_id,
+    5,  # State.SETTLED
+    b''  # No proof needed
+).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed = account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Funds are released, transaction complete
+```
+
+</TabItem>
+</Tabs>
+
 **Example: Dispute Resolution**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Admin resolves dispute: 60% to provider, 40% to requester
@@ -695,6 +858,34 @@ const resolution = ethers.AbiCoder.defaultAbiCoder().encode(
 
 await kernel.transitionState(transactionId, 5, resolution); // SETTLED
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_abi import encode
+
+# Admin resolves dispute: 60% to provider, 40% to requester
+resolution = encode(
+    ['uint256', 'uint256'],
+    [4 * 10**6, 6 * 10**6]  # 40% to requester, 60% to provider
+)
+
+tx = kernel.functions.transitionState(
+    transaction_id,
+    5,  # State.SETTLED
+    resolution
+).build_transaction({
+    'from': admin_account.address,
+    'nonce': w3.eth.get_transaction_count(admin_account.address)
+})
+
+signed = admin_account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+```
+
+</TabItem>
+</Tabs>
 
 **Important Notes:**
 - ⚠️ State transitions are **one-way only** (cannot go backwards)
@@ -748,7 +939,10 @@ function releaseEscrow(bytes32 transactionId) external
 - Calls `escrowVault.payout()` for platform fee
 - Escrow is marked as complete if fully disbursed
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // After transaction is settled, release funds
@@ -757,6 +951,26 @@ await kernel.releaseEscrow(transactionId);
 // Provider receives: amount * (1 - platformFeeBps/10000)
 // Platform receives: amount * platformFeeBps/10000
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# After transaction is settled, release funds
+tx = kernel.functions.releaseEscrow(transaction_id).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed = account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Provider receives: amount * (1 - platformFeeBps/10000)
+# Platform receives: amount * platformFeeBps/10000
+```
+
+</TabItem>
+</Tabs>
 
 **Example (Foundry):**
 
@@ -830,7 +1044,10 @@ function releaseMilestone(
 kernel.releaseMilestone(txId, 2_500_000); // $2.50 USDC (6 decimals)
 ```
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Transaction total: $100 USDC
@@ -843,6 +1060,34 @@ await kernel.releaseMilestone(transactionId, milestoneAmount);
 // Platform fee: $25 * 0.01 = $0.25
 // Remaining escrow: $75
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Transaction total: $100 USDC
+# Release first milestone: $25 USDC
+
+milestone_amount = 25 * 10**6
+
+tx = kernel.functions.releaseMilestone(
+    transaction_id,
+    milestone_amount
+).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed = account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Provider receives: $25 * 0.99 = $24.75
+# Platform fee: $25 * 0.01 = $0.25
+# Remaining escrow: $75
+```
+
+</TabItem>
+</Tabs>
 
 **Important Notes:**
 - ⚠️ **Only works in IN_PROGRESS state** (use `transitionState(IN_PROGRESS)` first)
@@ -897,7 +1142,10 @@ function anchorAttestation(
 **State Changes:**
 - Updates `attestationUID` field in transaction
 
-**Example (ethers.js v6):**
+**Example:**
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { EAS } from '@ethereum-attestation-service/eas-sdk';
@@ -923,6 +1171,56 @@ const attestationUID = await attestationTx.wait();
 // 2. Anchor attestation to ACTP transaction
 await kernel.anchorAttestation(transactionId, attestationUID);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_abi import encode
+
+# 1. Create EAS attestation for delivery proof
+eas_contract = w3.eth.contract(
+    address='0x4200000000000000000000000000000000000021',
+    abi=EAS_ABI
+)
+
+schema_uid = '0x1b0ebdf0bd20c28ec9d5362571ce8715a55f46e81c3de2f9b0d8e1b95fb5ffce'
+attestation_data = encode(
+    ['bytes32', 'string', 'uint256'],
+    [transaction_id, delivery_url, rating]
+)
+
+attest_tx = eas_contract.functions.attest({
+    'schema': schema_uid,
+    'data': {
+        'recipient': provider_address,
+        'data': attestation_data
+    }
+}).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed = account.sign_transaction(attest_tx)
+tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+attestation_uid = receipt.logs[0]['topics'][1]  # Extract UID from event
+
+# 2. Anchor attestation to ACTP transaction
+anchor_tx = kernel.functions.anchorAttestation(
+    transaction_id,
+    attestation_uid
+).build_transaction({
+    'from': account.address,
+    'nonce': w3.eth.get_transaction_count(account.address)
+})
+
+signed = account.sign_transaction(anchor_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+```
+
+</TabItem>
+</Tabs>
 
 **Important Notes:**
 - ✅ Links **on-chain proof** to transaction (immutable record)
@@ -967,12 +1265,34 @@ function pause() external
 
 **Example:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Emergency pause (only pauser/admin)
 await kernel.pause();
 
 // All state transitions blocked until unpause()
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Emergency pause (only pauser/admin)
+tx = kernel.functions.pause().build_transaction({
+    'from': pauser_account.address,
+    'nonce': w3.eth.get_transaction_count(pauser_account.address)
+})
+
+signed = pauser_account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# All state transitions blocked until unpause()
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1099,6 +1419,9 @@ function scheduleEconomicParams(
 
 **Example:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Schedule fee change from 1% to 1.5%
 await kernel.scheduleEconomicParams(
@@ -1108,6 +1431,28 @@ await kernel.scheduleEconomicParams(
 
 // Wait 2 days, then call executeEconomicParamsUpdate()
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Schedule fee change from 1% to 1.5%
+tx = kernel.functions.scheduleEconomicParams(
+    150,  # 1.5% platform fee
+    500   # 5% requester penalty (unchanged)
+).build_transaction({
+    'from': admin_account.address,
+    'nonce': w3.eth.get_transaction_count(admin_account.address)
+})
+
+signed = admin_account.sign_transaction(tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Wait 2 days, then call executeEconomicParamsUpdate()
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1598,6 +1943,9 @@ function verifyEscrow(
 
 **Example:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const [isActive, escrowAmount] = await escrowVault.verifyEscrow(
   escrowId,
@@ -1610,6 +1958,24 @@ if (isActive) {
   console.log('Escrow verified:', ethers.formatUnits(escrowAmount, 6), 'USDC');
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+is_active, escrow_amount = escrow_vault.functions.verifyEscrow(
+    escrow_id,
+    requester_address,
+    provider_address,
+    10 * 10**6  # Minimum $10
+).call()
+
+if is_active:
+    print(f"Escrow verified: {escrow_amount / 1e6} USDC")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1637,10 +2003,24 @@ function remaining(bytes32 escrowId) external view returns (uint256)
 
 **Example:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const remaining = await escrowVault.remaining(escrowId);
 console.log('Remaining:', ethers.formatUnits(remaining, 6), 'USDC');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+remaining = escrow_vault.functions.remaining(escrow_id).call()
+print(f"Remaining: {remaining / 1e6} USDC")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -2054,6 +2434,9 @@ Base is an Ethereum L2 (Optimistic Rollup) with gas costs **100x cheaper than ma
 
 Complete transaction flow from creation to settlement.
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ethers } from 'ethers';
 
@@ -2106,6 +2489,96 @@ console.log('Funds released to provider');
 // Platform receives: $10 * 0.01 = $0.10
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+from eth_abi import encode
+import time
+
+w3 = Web3(Web3.HTTPProvider('https://sepolia.base.org'))
+requester_account = w3.eth.account.from_key(private_key)
+provider_account = w3.eth.account.from_key(provider_key)
+
+kernel = w3.eth.contract(address=KERNEL_ADDR, abi=KERNEL_ABI)
+usdc = w3.eth.contract(address=USDC_ADDR, abi=ERC20_ABI)
+
+# Step 1: Requester creates transaction
+service_hash = Web3.keccak(text='AI service')
+deadline = int(time.time()) + 86400  # 1 day
+dispute_window = 172800  # 2 days
+
+create_tx = kernel.functions.createTransaction(
+    provider_address,
+    requester_account.address,
+    10 * 10**6,  # $10 USDC
+    deadline,
+    dispute_window,
+    service_hash
+).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(create_tx)
+tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+tx_id = receipt.logs[0]['topics'][1]
+print(f"Transaction created: {tx_id.hex()}")
+
+# Step 2: Requester approves USDC and links escrow
+tx = kernel.functions.getTransaction(tx_id).call()
+approve_tx = usdc.functions.approve(VAULT_ADDR, tx.amount).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(approve_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+escrow_id = Web3.keccak(text=f'escrow-{tx_id.hex()}')
+link_tx = kernel.functions.linkEscrow(tx_id, VAULT_ADDR, escrow_id).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(link_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Escrow linked, state: COMMITTED")
+
+# Step 3: Provider delivers work
+proof = encode(['uint256'], [3600])  # 1 hour dispute
+deliver_tx = kernel.functions.transitionState(tx_id, 4, proof).build_transaction({
+    'from': provider_account.address,
+    'nonce': w3.eth.get_transaction_count(provider_account.address)
+})
+signed = provider_account.sign_transaction(deliver_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Work delivered, dispute window active")
+
+# Step 4: Requester accepts and settles
+settle_tx = kernel.functions.transitionState(tx_id, 5, b'').build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(settle_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Transaction settled")
+
+# Step 5: Release funds to provider
+release_tx = kernel.functions.releaseEscrow(tx_id).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(release_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Funds released to provider")
+
+# Provider receives: $10 * 0.99 = $9.90
+# Platform receives: $10 * 0.01 = $0.10
+```
+
+</TabItem>
+</Tabs>
+
 **Total Gas:** ~365,000 gas (~$0.0037 USD)
 
 ---
@@ -2116,7 +2589,10 @@ console.log('Funds released to provider');
 
 Long-running work with incremental payments.
 
-```solidity
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
+```typescript
 // Step 1-3: Same as Happy Path (create, fund, commit)
 
 // Step 4: Provider transitions to IN_PROGRESS
@@ -2141,6 +2617,74 @@ console.log('Final payment released: $2.50');
 // Total provider received: $2.50 + $5.00 + $2.50 = $10 (minus fees)
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Step 1-3: Same as Happy Path (create, fund, commit)
+
+# Step 4: Provider transitions to IN_PROGRESS
+progress_tx = kernel.functions.transitionState(tx_id, 3, b'').build_transaction({
+    'from': provider_account.address,
+    'nonce': w3.eth.get_transaction_count(provider_account.address)
+})
+signed = provider_account.sign_transaction(progress_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Step 5: Requester releases 25% milestone
+milestone1_tx = kernel.functions.releaseMilestone(
+    tx_id,
+    int(2.5 * 10**6)  # $2.50
+).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(milestone1_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Milestone 1 released: $2.50")
+
+# Step 6: Requester releases 50% milestone
+milestone2_tx = kernel.functions.releaseMilestone(
+    tx_id,
+    5 * 10**6  # $5.00
+).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(milestone2_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Milestone 2 released: $5.00")
+
+# Step 7: Provider delivers final work
+deliver_tx = kernel.functions.transitionState(tx_id, 4, b'').build_transaction({
+    'from': provider_account.address,
+    'nonce': w3.eth.get_transaction_count(provider_account.address)
+})
+signed = provider_account.sign_transaction(deliver_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+# Step 8: Settle and release remaining $2.50
+settle_tx = kernel.functions.transitionState(tx_id, 5, b'').build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(settle_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+release_tx = kernel.functions.releaseEscrow(tx_id).build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(release_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Final payment released: $2.50")
+
+# Total provider received: $2.50 + $5.00 + $2.50 = $10 (minus fees)
+```
+
+</TabItem>
+</Tabs>
+
 **Total Gas:** ~475,000 gas (~$0.0048 USD)
 
 ---
@@ -2150,6 +2694,9 @@ console.log('Final payment released: $2.50');
 <span className="badge badge--danger">🔴 Advanced</span>
 
 Handling disputes with mediator involvement.
+
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Steps 1-4: Create → Fund → Deliver (same as Happy Path)
@@ -2182,6 +2729,59 @@ console.log('  Provider: $6.00');
 console.log('  Requester: $3.00');
 console.log('  Mediator: $1.00');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_abi import encode
+
+# Steps 1-4: Create → Fund → Deliver (same as Happy Path)
+
+# Step 5: Requester disputes delivery
+dispute_tx = kernel.functions.transitionState(tx_id, 6, b'').build_transaction({
+    'from': requester_account.address,
+    'nonce': w3.eth.get_transaction_count(requester_account.address)
+})
+signed = requester_account.sign_transaction(dispute_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+print("Dispute raised")
+
+# Step 6: Off-chain mediation (not shown)
+# Mediator reviews evidence, decides split
+
+# Step 7: Admin resolves dispute (60% provider, 30% requester, 10% mediator)
+admin_account = w3.eth.account.from_key(admin_key)
+
+resolution = encode(
+    ['uint256', 'uint256', 'address', 'uint256'],
+    [
+        3 * 10**6,          # $3 to requester (30%)
+        6 * 10**6,          # $6 to provider (60%)
+        mediator_address,   # Mediator address
+        1 * 10**6           # $1 to mediator (10%)
+    ]
+)
+
+resolve_tx = kernel.functions.transitionState(
+    tx_id,
+    5,  # SETTLED
+    resolution
+).build_transaction({
+    'from': admin_account.address,
+    'nonce': w3.eth.get_transaction_count(admin_account.address)
+})
+signed = admin_account.sign_transaction(resolve_tx)
+w3.eth.send_raw_transaction(signed.rawTransaction)
+
+print("Dispute resolved:")
+print("  Provider: $6.00")
+print("  Requester: $3.00")
+print("  Mediator: $1.00")
+```
+
+</TabItem>
+</Tabs>
 
 **Total Gas:** ~410,000 gas (~$0.0041 USD)
 
@@ -2371,6 +2971,9 @@ AGIRAILS contracts are **immutable** (no proxy patterns). If V2 is deployed, you
 
 **Example Migration Check:**
 
+<Tabs groupId="sdk-language">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Check if you have active V1 transactions
 const tx = await kernelV1.getTransaction(txId);
@@ -2381,6 +2984,22 @@ if (tx.state !== 5 && tx.state !== 7) {
   console.log('Please settle before V1 sunset');
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Check if you have active V1 transactions
+tx = kernel_v1.functions.getTransaction(tx_id).call()
+
+if tx.state not in [5, 7]:  # Not SETTLED or CANCELLED
+    print(f"⚠️  Active transaction on V1: {tx_id.hex()}")
+    print(f"State: {tx.state}")
+    print("Please settle before V1 sunset")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

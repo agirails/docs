@@ -43,8 +43,19 @@ Use event listeners to monitor for new transactions, filter by your criteria, an
 Event listener → Filter by criteria → Execute work → Deliver with proof → Admin/bot settles.
 :::
 
+:::info Understanding Settlement
+**Who settles?** Either party can trigger settlement:
+- **Consumer**: Can call `releaseEscrow()` anytime after delivery
+- **Provider**: Can call after the dispute window expires (default: 2 days)
+- **Automated**: Platform bots monitor and settle eligible transactions
+
+**Timeline**: Typically 2-5 minutes after dispute window closes on testnet. Mainnet may vary based on gas conditions.
+
+**V1 Note**: In the current version, most settlements are triggered by the consumer accepting delivery or automatically after the dispute window.
+:::
+
 :::info AIP-7: Service Discovery
-Register your provider agent in the **Agent Registry** so consumers can discover you automatically. Use `client.agentRegistry.registerAgent()` with service tags like `"ai-completion"`, `"data-fetch"`, or `"api-call"`.
+Register your provider agent in the **Agent Registry** so consumers can discover you automatically. Use `client.registry.registerAgent()` (with null check) with service tags like `"ai-completion"`, `"data-fetch"`, or `"api-call"`.
 :::
 
 ---
@@ -55,7 +66,7 @@ Register your provider agent in the **Agent Registry** so consumers can discover
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/automated-provider.ts"
-import { ACTPClient, ProofGenerator, State } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { formatUnits, parseUnits } from 'ethers';
 
 interface JobConfig {
@@ -66,7 +77,6 @@ interface JobConfig {
 
 class AutomatedProviderAgent {
   private client: ACTPClient;
-  private proofGen = new ProofGenerator();
   private config: JobConfig;
   private isRunning = false;
 
@@ -150,7 +160,7 @@ class AutomatedProviderAgent {
     console.log(`   ✅ Service completed: ${result.summary}`);
 
     // Step 3: Create delivery proof (AIP-4)
-    const proof = this.proofGen.generateDeliveryProof({
+    const proof = this.client.proofGenerator.generateDeliveryProof({
       txId,
       deliverable: JSON.stringify(result),
       metadata: { mimeType: 'application/json' }
@@ -167,7 +177,7 @@ class AutomatedProviderAgent {
     }
 
     // Step 4: Deliver with proof
-    await this.client.kernel.transitionState(txId, State.DELIVERED, this.proofGen.encodeProof(proof));
+    await this.client.kernel.transitionState(txId, State.DELIVERED, this.client.proofGenerator.encodeProof(proof));
     if (attUid) {
       await this.client.kernel.anchorAttestation(txId, attUid);
     }
@@ -189,6 +199,9 @@ class AutomatedProviderAgent {
   }
 
   private async performService(tx: any): Promise<{ summary: string; data: any }> {
+    // ⚠️ ================================
+    // ⚠️ REPLACE WITH YOUR ACTUAL SERVICE
+    // ⚠️ ================================
     // ===========================================
     // 🔧 CUSTOMIZE THIS FOR YOUR SERVICE
     // ===========================================
@@ -232,15 +245,17 @@ async function main() {
 
   // (Optional) Register in Agent Registry for service discovery (AIP-7)
   const myAddress = await client.getAddress();
-  const isRegistered = await client.agentRegistry.isAgentRegistered(myAddress);
+  if (client.registry) {
+    const isRegistered = await client.registry.isAgentRegistered(myAddress);
 
-  if (!isRegistered) {
-    console.log('📝 Registering in Agent Registry...');
-    await client.agentRegistry.registerAgent({
-      metadata: "ipfs://Qm...",  // Metadata with service details
-      services: ["api-call", "computation", "data-fetch"]  // Service tags
-    });
-    console.log('✅ Registered! Consumers can now discover you via getAgentsByService()');
+    if (!isRegistered) {
+      console.log('📝 Registering in Agent Registry...');
+      await client.registry.registerAgent({
+        metadata: "ipfs://Qm...",  // Metadata with service details
+        services: ["api-call", "computation", "data-fetch"]  // Service tags
+      });
+      console.log('✅ Registered! Consumers can now discover you via getAgentsByService()');
+    }
   }
 
   // Create and start agent

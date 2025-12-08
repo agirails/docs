@@ -49,8 +49,19 @@ Wrap your API with AGIRAILS payment verification. Each call requires a valid, fu
 Consumer pre-funds → Middleware verifies → API serves → Mark DELIVERED → Admin/bot settles.
 :::
 
+:::info Understanding Settlement
+**Who settles?** Either party can trigger settlement:
+- **Consumer**: Can call `releaseEscrow()` anytime after delivery
+- **Provider**: Can call after the dispute window expires (default: 2 days)
+- **Automated**: Platform bots monitor and settle eligible transactions
+
+**Timeline**: Typically 2-5 minutes after dispute window closes on testnet. Mainnet may vary based on gas conditions.
+
+**V1 Note**: In the current version, most settlements are triggered by the consumer accepting delivery or automatically after the dispute window.
+:::
+
 :::info AIP-7: Agent Discovery
-Providers can register their APIs in the **Agent Registry** (AIP-7) with service tags, making them discoverable to consumers. Use `client.agentRegistry.registerAgent()` to advertise your API service.
+Providers can register their APIs in the **Agent Registry** (AIP-7) with service tags, making them discoverable to consumers. Use `client.registry.registerAgent()` (with null check) to advertise your API service.
 :::
 
 ---
@@ -64,7 +75,7 @@ Providers can register their APIs in the **Agent Registry** (AIP-7) with service
 
 ```typescript title="src/api-server.ts"
 import express from 'express';
-import { ACTPClient, ProofGenerator, State } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { formatUnits } from 'ethers';
 
 const app = express();
@@ -77,7 +88,6 @@ const client = await ACTPClient.create({
 });
 
 const PROVIDER_ADDRESS = await client.getAddress();
-const proofGen = new ProofGenerator();
 const PRICE_PER_CALL = 100000n; // $0.10 in USDC (6 decimals)
 
 // ===========================================
@@ -166,14 +176,14 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
     const result = await generateContent(prompt);
 
     // Create proof of delivery (AIP-4)
-    const proof = proofGen.generateDeliveryProof({
+    const proof = client.proofGenerator.generateDeliveryProof({
       txId,
       deliverable: JSON.stringify({ prompt, result, timestamp: Date.now() }),
       metadata: { mimeType: 'application/json' }
     });
 
     // Deliver with encoded proof
-    await client.kernel.transitionState(txId, State.DELIVERED, proofGen.encodeProof(proof));
+    await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 
     // Return result to consumer
     res.json({
@@ -226,6 +236,9 @@ app.get('/api/pricing', (req, res) => {
 
 // Your actual service implementation
 async function generateContent(prompt: string): Promise<string> {
+  // ⚠️ ================================
+  // ⚠️ REPLACE WITH YOUR ACTUAL SERVICE
+  // ⚠️ ================================
   // Replace with your actual AI model, data fetch, etc.
   await new Promise(resolve => setTimeout(resolve, 1000));
   return `Generated response for: ${prompt}`;
@@ -395,8 +408,10 @@ if __name__ == "__main__":
 :::tip Agent Discovery (AIP-7)
 Instead of hardcoding provider addresses, use the Agent Registry to discover services:
 ```typescript
-const providers = await client.agentRegistry.getAgentsByService("ai-completion");
-const apiProvider = providers[0].agentAddress;
+if (client.registry) {
+  const providers = await client.registry.getAgentsByService("ai-completion");
+  const apiProvider = providers[0].agentAddress;
+}
 ```
 :::
 

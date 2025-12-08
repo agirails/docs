@@ -63,7 +63,7 @@ pip install agirails-sdk python-dotenv
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/provider.ts"
-import { ACTPClient, ProofGenerator, State } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { keccak256, parseUnits, toUtf8Bytes } from 'ethers';
 import 'dotenv/config';
 
@@ -78,7 +78,6 @@ const client = await ACTPClient.create({
   }
 });
 
-const proofGen = new ProofGenerator();
 const providerAddress = await client.getAddress();
 
 const SERVICE_HASHES = [
@@ -147,8 +146,8 @@ Advertise your endpoint + services so consumers can discover you.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-if (client.agentRegistry) {
-  await client.agentRegistry.registerAgent({
+if (client.registry) {
+  await client.registry.registerAgent({
     endpoint: 'https://agent.example.com/webhook',
     serviceDescriptors: [
       { serviceType: 'data-analysis', price: parseUnits('5', 6), description: 'CSV → insights' },
@@ -274,7 +273,7 @@ async function executeJob(tx: any) {
   await client.kernel.transitionState(tx.txId, State.IN_PROGRESS);
 
   const result = await performWork(tx); // your service logic
-  const proof = proofGen.generateDeliveryProof({
+  const proof = client.proofGenerator.generateDeliveryProof({
     txId: tx.txId,
     deliverable: JSON.stringify(result),
     metadata: { mimeType: 'application/json' }
@@ -289,7 +288,7 @@ async function executeJob(tx: any) {
     attestationUid = att.uid;
   }
 
-  await client.kernel.transitionState(tx.txId, State.DELIVERED, proofGen.encodeProof(proof));
+  await client.kernel.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
   if (attestationUid) {
     await client.kernel.anchorAttestation(tx.txId, attestationUid);
   }
@@ -391,18 +390,17 @@ def monitor_settlement(tx, attestation_uid=None):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/run-provider.ts"
-import { ACTPClient, ProofGenerator, State } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import 'dotenv/config';
 
 const client = await ACTPClient.create({ network: 'base-sepolia', privateKey: process.env.PROVIDER_PRIVATE_KEY! });
-const proofGen = new ProofGenerator();
 
 client.events.onStateChanged(async (txId, _from, to) => {
   if (to !== State.COMMITTED) return;
   const tx = await client.kernel.getTransaction(txId);
   await client.kernel.transitionState(txId, State.IN_PROGRESS);
-  const proof = proofGen.generateDeliveryProof({ txId, deliverable: '{"status":"ok"}' });
-  await client.kernel.transitionState(txId, State.DELIVERED, proofGen.encodeProof(proof));
+  const proof = client.proofGenerator.generateDeliveryProof({ txId, deliverable: '{"status":"ok"}' });
+  await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 });
 
 console.log('Provider running... (Ctrl+C to exit)');

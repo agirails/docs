@@ -44,6 +44,17 @@ Create a Budget Coordinator that manages funds and authorizes spending for sub-a
 Central treasury wallet → Agents request spending → Coordinator checks limits → Auto-approve small, flag large → Track everything.
 :::
 
+:::info Understanding Settlement
+**Who settles?** Either party can trigger settlement:
+- **Consumer**: Can call `releaseEscrow()` anytime after delivery
+- **Provider**: Can call after the dispute window expires (default: 2 days)
+- **Automated**: Platform bots monitor and settle eligible transactions
+
+**Timeline**: Typically 2-5 minutes after dispute window closes on testnet. Mainnet may vary based on gas conditions.
+
+**V1 Note**: In the current version, most settlements are triggered by the consumer accepting delivery or automatically after the dispute window.
+:::
+
 ---
 
 ## Complete Code

@@ -263,6 +263,17 @@ Let team members trigger payments via Slack.
 - Create, link escrow, and mark delivered
 - Settlement is executed by admin/bot via `SETTLED` (requester anytime; provider after dispute window)
 
+:::info Understanding Settlement
+**Who settles?** Either party can trigger settlement:
+- **Consumer**: Can call `releaseEscrow()` anytime after delivery
+- **Provider**: Can call after the dispute window expires (default: 2 days)
+- **Automated**: Platform bots monitor and settle eligible transactions
+
+**Timeline**: Typically 2-5 minutes after dispute window closes on testnet. Mainnet may vary based on gas conditions.
+
+**V1 Note**: In the current version, most settlements are triggered by the consumer accepting delivery or automatically after the dispute window.
+:::
+
 **5. Slack - Confirm**
 - Post to channel: "Payment of $10 sent to 0x123... by @user"
 

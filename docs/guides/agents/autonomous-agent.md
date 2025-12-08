@@ -44,7 +44,7 @@ pip install agirails-sdk python-dotenv
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/autonomous.ts"
-import { ACTPClient, ProofGenerator, State } from '@agirails/sdk';
+import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 import 'dotenv/config';
 
@@ -56,8 +56,6 @@ export const client = await ACTPClient.create({
     deliveryProofSchemaId: '0x1b0ebdf0bd20c28ec9d5362571ce8715a55f46e81c3de2f9b0d8e1b95fb5ffce'
   }
 });
-
-export const proofGen = new ProofGenerator();
 
 export const CONFIG = {
   providerMin: parseUnits('5', 6),
@@ -104,7 +102,7 @@ CONFIG = {
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/provider-loop.ts"
-import { client, proofGen, CONFIG } from './autonomous';
+import { client, CONFIG } from './autonomous';
 
 export function watchProviderJobs() {
   return client.events.onStateChanged(async (txId, _from, to) => {
@@ -115,7 +113,7 @@ export function watchProviderJobs() {
     await client.kernel.transitionState(txId, State.IN_PROGRESS);
 
     const result = await performWork(tx); // your business logic
-    const proof = proofGen.generateDeliveryProof({
+    const proof = client.proofGenerator.generateDeliveryProof({
       txId,
       deliverable: JSON.stringify(result),
       metadata: { mimeType: 'application/json' }
@@ -130,7 +128,7 @@ export function watchProviderJobs() {
       attUid = att.uid;
     }
 
-    await client.kernel.transitionState(txId, State.DELIVERED, proofGen.encodeProof(proof));
+    await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
     if (attUid) await client.kernel.anchorAttestation(txId, attUid);
   });
 }
@@ -275,7 +273,7 @@ Use sub-services to enhance your delivery, then deliver upstream.
 
 ```typescript title="src/orchestrator.ts"
 import { requestSubservice } from './consumer-loop';
-import { client, proofGen } from './autonomous';
+import { client } from './autonomous';
 
 export async function handleProviderJob(tx: any) {
   // Example: call a sub-service before delivering
@@ -284,11 +282,11 @@ export async function handleProviderJob(tx: any) {
 
   // ...wait for subTxId to settle in watchDelivery callback...
   // After sub-service result, deliver upstream
-  const proof = proofGen.generateDeliveryProof({
+  const proof = client.proofGenerator.generateDeliveryProof({
     txId: tx.txId,
     deliverable: JSON.stringify({ upstream: 'done', subservice: subTxId })
   });
-  await client.kernel.transitionState(tx.txId, State.DELIVERED, proofGen.encodeProof(proof));
+  await client.kernel.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 }
 ```
 
