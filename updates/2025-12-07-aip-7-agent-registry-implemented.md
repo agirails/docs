@@ -152,7 +152,7 @@ AIP-7 establishes the substrate for:
 
 ## Full Specification
 
-Read the complete AIP: [AIP-7: Agent Identity, Registry & Storage](/aips/aip-7)
+The complete AIP-7 specification is available in the [AGIRAILS Protocol repository](https://github.com/agirails/protocol).
 
 ## What's Next
 
