@@ -767,6 +767,9 @@ All funds live in the coordinator's wallet:
 
 Every transaction is recorded for auditing:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 {
   agentId: 'research-agent',
@@ -778,6 +781,23 @@ Every transaction is recorded for auditing:
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+{
+    "agent_id": "research-agent",
+    "amount": 25_000_000,  # $25 USDC
+    "tx_id": "0xabc...",
+    "timestamp": 1699876543,
+    "provider": "0xAPIProvider...",
+    "purpose": "Academic paper API access"
+}
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Customization Points
@@ -787,6 +807,9 @@ Every transaction is recorded for auditing:
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
   <img src="/img/diagrams/role-based-limits.svg" alt="Role-Based Spending Limits" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 type AgentRole = 'junior' | 'senior' | 'admin';
@@ -815,7 +838,49 @@ function getLimitsForRole(role: AgentRole): AgentLimits {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+from typing import Literal
+from dataclasses import dataclass
+
+AgentRole = Literal["junior", "senior", "admin"]
+
+@dataclass
+class AgentLimits:
+    spending_limit: int
+    daily_limit: int
+    requires_approval: int
+
+def get_limits_for_role(role: AgentRole) -> AgentLimits:
+    limits = {
+        "junior": AgentLimits(
+            spending_limit=50_000_000,      # $50
+            daily_limit=100_000_000,        # $100
+            requires_approval=25_000_000    # $25
+        ),
+        "senior": AgentLimits(
+            spending_limit=500_000_000,     # $500
+            daily_limit=1_000_000_000,      # $1000
+            requires_approval=200_000_000   # $200
+        ),
+        "admin": AgentLimits(
+            spending_limit=10_000_000_000,  # $10000
+            daily_limit=50_000_000_000,     # $50000
+            requires_approval=5_000_000_000 # $5000
+        ),
+    }
+    return limits[role]
+```
+
+</TabItem>
+</Tabs>
+
 ### Provider Whitelist
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 private providerWhitelist: Set<string> = new Set([
@@ -835,11 +900,38 @@ async requestSpending(request: SpendingRequest): Promise<SpendingResponse> {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+class BudgetCoordinator:
+    def __init__(self):
+        self.provider_whitelist = {
+            "0xTrustedProvider1...".lower(),
+            "0xTrustedProvider2...".lower()
+        }
+
+    def request_spending(self, request: SpendingRequest) -> SpendingResponse:
+        # Check provider is whitelisted
+        if request.provider.lower() not in self.provider_whitelist:
+            return SpendingResponse(
+                approved=False,
+                reason="Provider not whitelisted"
+            )
+        # ... rest of checks
+```
+
+</TabItem>
+</Tabs>
+
 ### Spending Categories
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
   <img src="/img/diagrams/spending-categories.svg" alt="Spending Categories" style={{maxWidth: '550px', height: 'auto'}} />
 </div>
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 interface SpendingRequest {
@@ -865,6 +957,43 @@ private getCategorySpending(category: string): bigint {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+from typing import Literal
+from dataclasses import dataclass
+
+Category = Literal["data", "compute", "api", "other"]
+
+@dataclass
+class SpendingRequest:
+    agent_id: str
+    amount: int
+    provider: str
+    purpose: str
+    category: Category
+
+class BudgetCoordinator:
+    def __init__(self):
+        # Category-specific budgets
+        self.category_budgets = {
+            "data": 300_000_000,     # $300
+            "compute": 500_000_000,  # $500
+            "api": 200_000_000,      # $200
+            "other": 100_000_000,    # $100
+        }
+
+    def get_category_spending(self, category: str) -> int:
+        return sum(
+            s.amount for s in self.spending
+            if s.category == category
+        )
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Gotchas
@@ -883,6 +1012,9 @@ These are mistakes we made so you don't have to.
 
 ### Race Conditions
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 // Use a mutex/lock for spending decisions
 import { Mutex } from 'async-mutex';
@@ -896,7 +1028,29 @@ async requestSpending(request: SpendingRequest): Promise<SpendingResponse> {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import asyncio
+
+class BudgetCoordinator:
+    def __init__(self):
+        self._spending_lock = asyncio.Lock()
+
+    async def request_spending(self, request: SpendingRequest) -> SpendingResponse:
+        async with self._spending_lock:
+            # All spending checks and execution here
+            pass
+```
+
+</TabItem>
+</Tabs>
+
 ### Failed Transactions
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 try {
@@ -919,7 +1073,36 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+try:
+    tx_id = self.client.kernel.create_transaction(...)
+
+    try:
+        self.client.escrow.fund(tx_id)
+    except Exception as fund_error:
+        # Transaction created but not funded - CANCEL IT
+        print("Funding failed, cancelling transaction")
+        self.client.kernel.transition_state(tx_id, State.CANCELLED, "0x")
+        raise fund_error
+
+    # Only record if fully successful
+    self.spending.append(...)
+
+except Exception as error:
+    # Handle appropriately
+    pass
+```
+
+</TabItem>
+</Tabs>
+
 ### Budget Refresh
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 private lastReset: number = Date.now();
@@ -934,6 +1117,30 @@ private checkBudgetReset(): void {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import time
+
+class BudgetCoordinator:
+    def __init__(self):
+        self.last_reset = time.time() * 1000  # milliseconds
+        self.reset_interval = 24 * 60 * 60 * 1000  # Daily
+        self.archived_spending = []
+
+    def check_budget_reset(self):
+        now = time.time() * 1000
+        if now - self.last_reset > self.reset_interval:
+            self.archived_spending.extend(self.spending)
+            self.spending = []
+            self.last_reset = now
+            print("Budget reset for new period")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

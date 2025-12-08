@@ -152,6 +152,10 @@ if __name__ == "__main__":
    ```
 
 2. **Logs**: Never log the key
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
    ```typescript
    // ❌ This will leak your key
    console.log('Starting with config:', process.env);
@@ -163,7 +167,28 @@ if __name__ == "__main__":
    });
    ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+   ```python
+   import os
+
+   # ❌ This will leak your key
+   print(f"Starting with config: {os.environ}")
+
+   # ✅ Redact sensitive values
+   safe_env = {k: ('[REDACTED]' if 'KEY' in k else v) for k, v in os.environ.items()}
+   print(f"Starting with config: {safe_env}")
+   ```
+
+</TabItem>
+</Tabs>
+
 3. **Error messages**: Don't include key in errors
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
    ```typescript
    // ❌ Bad
    throw new Error(`Failed with key ${privateKey}`);
@@ -171,6 +196,20 @@ if __name__ == "__main__":
    // ✅ Good
    throw new Error('Transaction signing failed');
    ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+   ```python
+   # ❌ Bad
+   raise Exception(f"Failed with key {private_key}")
+
+   # ✅ Good
+   raise Exception("Transaction signing failed")
+   ```
+
+</TabItem>
+</Tabs>
 
 ---
 

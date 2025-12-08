@@ -585,11 +585,29 @@ On successful API response:
 </div>
 
 ### Flat Rate
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 const PRICE_PER_CALL = parseUnits('0.10', 6); // $0.10 per call
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+PRICE_PER_CALL = 100_000  # $0.10 per call (6 decimals)
+```
+
+</TabItem>
+</Tabs>
+
 ### Tiered by Input Size
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 function calculatePrice(inputTokens: number): bigint {
   const basePrice = parseUnits('0.01', 6);
@@ -598,7 +616,24 @@ function calculatePrice(inputTokens: number): bigint {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+def calculate_price(input_tokens: int) -> int:
+    base_price = 10_000      # $0.01 (6 decimals)
+    per_token = 100          # $0.0001 (6 decimals)
+    return base_price + (input_tokens * per_token)
+```
+
+</TabItem>
+</Tabs>
+
 ### Dynamic (Market-Based)
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 async function calculatePrice(): Promise<bigint> {
   const demand = await getCurrentDemand();
@@ -611,6 +646,23 @@ async function calculatePrice(): Promise<bigint> {
   return basePrice;
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+async def calculate_price() -> int:
+    demand = await get_current_demand()
+    base_price = 100_000  # $0.10 (6 decimals)
+
+    # Surge pricing during high demand
+    if demand > 0.8:
+        return base_price * 2
+    return base_price
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -630,6 +682,9 @@ These are mistakes we made so you don't have to.
 
 ### Transaction Reuse
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 // ❌ Bad - reusing transaction
 await callAPI(txId);
@@ -642,7 +697,28 @@ const txId2 = await createTransaction();
 await callAPI(txId2);
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# ❌ Bad - reusing transaction
+await call_api(tx_id)
+await call_api(tx_id)  # Will fail - already DELIVERED
+
+# ✅ Good - new transaction per call
+tx_id1 = await create_transaction()
+await call_api(tx_id1)
+tx_id2 = await create_transaction()
+await call_api(tx_id2)
+```
+
+</TabItem>
+</Tabs>
+
 ### Handle Partial Failures
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 try {
@@ -655,7 +731,26 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+try:
+    result = await your_service(input)
+    await client.kernel.transition_state(tx_id, State.DELIVERED, proof)
+    return result
+except Exception as error:
+    # DON'T deliver - let consumer cancel or retry
+    raise error
+```
+
+</TabItem>
+</Tabs>
+
 ### Timeout Handling
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 const controller = new AbortController();
@@ -673,6 +768,28 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import requests
+from requests.exceptions import Timeout
+
+try:
+    response = requests.post(
+        url,
+        headers={"X-AGIRAILS-TX-ID": tx_id},
+        timeout=30  # 30 second timeout
+    )
+except Timeout:
+    # Timeout - transaction still in escrow
+    # Can retry with same tx_id if still COMMITTED/IN_PROGRESS
+    pass
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -703,6 +820,9 @@ Don't build the billing dashboard before you have paying customers. HTTPS + rate
 
 For high-frequency, low-value calls, use a credit system:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 // Consumer: Prepay for 100 calls
 const txId = await client.kernel.createTransaction({
@@ -727,6 +847,39 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# Consumer: Prepay for 100 calls
+tx_id = client.kernel.create_transaction(
+    amount=10_000_000,  # $10 for 100 calls at $0.10
+    # ...
+)
+
+# Provider: Track calls against balance (Flask example)
+remaining_calls = 100
+
+@app.route('/api/generate', methods=['POST'])
+def generate():
+    global remaining_calls
+
+    if remaining_calls <= 0:
+        return jsonify({"error": "Credit exhausted"}), 402
+
+    remaining_calls -= 1
+    # Process request...
+
+    if remaining_calls == 0:
+        # Final call - settle the transaction
+        client.kernel.transition_state(tx_id, State.DELIVERED, proof)
+
+    return jsonify({"result": result})
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

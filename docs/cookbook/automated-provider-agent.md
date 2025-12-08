@@ -353,11 +353,28 @@ if __name__ == "__main__":
 
 Instead of polling, we use event listeners:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 this.client.events.onTransactionCreated(async (event) => {
   // React to new transactions instantly
 });
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# Using Web3.py event filters
+filter = client.kernel.events.TransactionCreated.create_filter(fromBlock="latest")
+for event in filter.get_new_entries():
+    # React to new transactions instantly
+    pass
+```
+
+</TabItem>
+</Tabs>
 
 :::info Why Events Over Polling?
 - **Latency**: ~2 seconds (block time) vs 30+ seconds polling
@@ -381,11 +398,25 @@ Your provider agent controls `IN_PROGRESS` and `DELIVERED`. Settlement (`SETTLED
 
 Always create a proof of your work:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 const proofHash = await this.client.proofs.hashContent(
   JSON.stringify(result)
 );
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import json
+proof_hash = client.proofs.hash_content(json.dumps(result))
+```
+
+</TabItem>
+</Tabs>
 
 This protects you in disputes - you can prove what you delivered.
 
@@ -394,6 +425,9 @@ This protects you in disputes - you can prove what you delivered.
 ## Customization Points
 
 ### Different Service Types
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 private async performService(tx: any): Promise<Result> {
@@ -412,7 +446,33 @@ private async performService(tx: any): Promise<Result> {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+async def perform_service(self, tx) -> dict:
+    service_type = tx.metadata  # Decode from metadata
+
+    handlers = {
+        "api-call": self.call_external_api,
+        "computation": self.run_computation,
+        "data-fetch": self.fetch_data,
+    }
+
+    handler = handlers.get(service_type)
+    if not handler:
+        raise Exception(f"Unknown service: {service_type}")
+
+    return await handler(tx)
+```
+
+</TabItem>
+</Tabs>
+
 ### Dynamic Pricing Acceptance
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 private shouldAcceptJob(tx: any): boolean {
@@ -425,7 +485,26 @@ private shouldAcceptJob(tx: any): boolean {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+async def should_accept_job(self, tx) -> bool:
+    # Check current market rate
+    market_rate = await self.get_market_rate(tx.service_type)
+    offered_rate = tx.amount
+
+    # Accept if offer is at least 90% of market rate
+    return offered_rate >= market_rate * 0.9
+```
+
+</TabItem>
+</Tabs>
+
 ### Concurrent Job Limits
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 private activeJobs = 0;
@@ -439,6 +518,25 @@ private shouldAcceptJob(tx: any): boolean {
   return true;
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+class ProviderAgent:
+    def __init__(self):
+        self.active_jobs = 0
+        self.max_concurrent_jobs = 5
+
+    def should_accept_job(self, tx) -> bool:
+        if self.active_jobs >= self.max_concurrent_jobs:
+            print("At capacity, rejecting job")
+            return False
+        return True
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -458,6 +556,9 @@ These are mistakes we made so you don't have to.
 
 ### Don't Block the Event Loop
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript
 // ❌ Bad - blocks other jobs
 private performService(tx: any) {
@@ -470,6 +571,23 @@ private async performService(tx: any) {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# ❌ Bad - blocks other jobs (sync)
+def perform_service(self, tx):
+    while computing:
+        pass  # Blocks everything
+
+# ✅ Good - async, non-blocking
+async def perform_service(self, tx):
+    return await compute_async(tx)
+```
+
+</TabItem>
+</Tabs>
+
 ### Handle Errors Gracefully
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
@@ -477,6 +595,9 @@ private async performService(tx: any) {
 </div>
 
 If your service fails mid-job, you're stuck in `IN_PROGRESS`:
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 try {
@@ -489,7 +610,26 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+try:
+    await self.perform_service(tx)
+    await self.client.kernel.transition_state(tx_id, State.DELIVERED, proof)
+except Exception as error:
+    # Log error, maybe notify yourself
+    # Consider: Should you cancel? Retry? Alert?
+    print(f"Job {tx_id} failed: {error}")
+```
+
+</TabItem>
+</Tabs>
+
 ### Deadline Awareness
+
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript
 const timeRemaining = tx.deadline - Math.floor(Date.now() / 1000);
@@ -497,6 +637,20 @@ if (timeRemaining < estimatedJobDuration) {
   return false; // Don't accept jobs you can't complete
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import time
+
+time_remaining = tx.deadline - int(time.time())
+if time_remaining < estimated_job_duration:
+    return False  # Don't accept jobs you can't complete
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
