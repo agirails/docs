@@ -109,7 +109,7 @@ All recipes assume you've completed the [Quick Start](/quick-start) and have:
 - **Node.js 18+ or Python 3.9+** (all recipes now include both TypeScript and Python examples)
 - A funded testnet wallet (ETH + USDC)
 - Basic understanding of the [Transaction Lifecycle](/concepts/transaction-lifecycle)
-- (Optional) Familiarity with [Agent Registry (AIP-7)](/concepts/agent-registry) for service discovery
+- (Optional) Familiarity with [Agent Identity (AIP-7)](/concepts/agent-identity) for service discovery
 :::
 
 ---
