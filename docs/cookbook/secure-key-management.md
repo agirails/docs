@@ -454,6 +454,9 @@ HSMs are expensive (~$1-5/hour) and complex. Only use if you're handling signifi
 
 The private key never leaves the HSM. You send data to sign, get signature back.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript" default>
+
 ```typescript title="src/kms-signer.ts"
 import { KMSClient, SignCommand } from '@aws-sdk/client-kms';
 import { ethers } from 'ethers';
@@ -519,6 +522,84 @@ async function main() {
   // This requires SDK modification or direct contract interaction
 }
 ```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="kms_signer.py"
+import boto3
+from eth_account.messages import encode_defunct
+from web3 import Web3
+from web3.auto import w3
+
+class KMSSigner:
+    """
+    Custom signer that uses AWS KMS for signing.
+    The private key never leaves the HSM.
+    """
+
+    def __init__(self, key_id: str, region: str = "us-east-1"):
+        self.kms_client = boto3.client("kms", region_name=region)
+        self.key_id = key_id
+        self._address = None
+
+    @property
+    def address(self) -> str:
+        if not self._address:
+            # Derive address from KMS public key
+            self._address = self._derive_address()
+        return self._address
+
+    def _derive_address(self) -> str:
+        # Get public key from KMS and derive Ethereum address
+        response = self.kms_client.get_public_key(KeyId=self.key_id)
+        # Parse the public key and derive address
+        # Implementation details omitted for brevity
+        pass
+
+    def sign_message(self, message: str) -> str:
+        message_hash = encode_defunct(text=message)
+        return self._sign_digest(message_hash.body)
+
+    def sign_transaction(self, transaction: dict) -> str:
+        # Serialize and hash the transaction
+        tx_hash = w3.keccak(text=str(transaction))  # Simplified
+        signature = self._sign_digest(tx_hash)
+        return signature
+
+    def _sign_digest(self, digest: bytes) -> str:
+        response = self.kms_client.sign(
+            KeyId=self.key_id,
+            Message=digest,
+            MessageType="DIGEST",
+            SigningAlgorithm="ECDSA_SHA_256"
+        )
+
+        # Convert KMS signature (DER-encoded) to Ethereum format (r, s, v)
+        return self._kms_signature_to_eth(response["Signature"])
+
+    def _kms_signature_to_eth(self, signature: bytes) -> str:
+        # KMS returns DER-encoded signature, convert to r,s,v format
+        # Implementation details omitted for brevity
+        # See: https://github.com/aws-samples/aws-kms-ethereum-accounts
+        pass
+
+
+# Usage with AGIRAILS
+def main():
+    signer = KMSSigner(key_id="alias/agirails-signing-key")
+
+    # For AGIRAILS, you would need to use the signer with web3.py
+    # to interact with contracts directly, as the SDK expects a private key
+    w3 = Web3(Web3.HTTPProvider("https://sepolia.base.org"))
+
+    # Sign a message
+    signature = signer.sign_message("Hello AGIRAILS")
+    print(f"Signed by: {signer.address}")
+```
+
+</TabItem>
+</Tabs>
 
 ### Benefits
 
