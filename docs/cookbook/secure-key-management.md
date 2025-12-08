@@ -982,6 +982,9 @@ response = requests.get(url, headers={"X-Private-Key": private_key})
 
 ### 4. Keys in Browser localStorage
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // ❌ Accessible to any JavaScript on the page
 localStorage.setItem('privateKey', key);
@@ -990,9 +993,29 @@ localStorage.setItem('privateKey', key);
 // For browser wallets: use MetaMask/WalletConnect
 ```
 
-:::info Browser-Only
-This applies to frontend JavaScript only. Python backend code doesn't use localStorage.
-:::
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# ℹ️ localStorage is a browser-only concept
+# Python backends should use secure alternatives:
+
+# ❌ Don't store keys in plain files
+with open("key.txt", "w") as f:
+    f.write(private_key)
+
+# ✅ Use environment variables or secret managers
+import os
+private_key = os.environ.get("PRIVATE_KEY")
+
+# ✅ Or use keyring for system credential storage
+import keyring
+keyring.set_password("agirails", "wallet", private_key)
+private_key = keyring.get_password("agirails", "wallet")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
