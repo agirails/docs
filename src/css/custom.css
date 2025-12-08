@@ -18,6 +18,8 @@
 /* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* NO TAILWIND - using vanilla CSS for playground */
+
 /* Light mode (default) */
 :root {
   /* Base blue - primary brand color */
@@ -320,6 +322,12 @@ button[class*='copyButton'] {
 
 article {
   max-width: 900px;
+}
+
+/* Playground page styling */
+.playground-page-container {
+  width: 100%;
+  background: #0A0A0A;
 }
 
 /* Enhanced navbar */
@@ -626,4 +634,177 @@ html {
 .navbar__items--right > div[class*='searchBox'] {
   order: -1;
   margin-right: 0.5rem;
+}
+
+/* ============================================
+   SDK PLAYGROUND - Tailwind CSS Variables
+   ============================================ */
+
+/* Playground specific CSS custom properties for Tailwind */
+.playground-container {
+  --background: 0 0% 4%;
+  --foreground: 220 13% 91%;
+  --card: 0 0% 6%;
+  --card-foreground: 220 13% 91%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 220 13% 91%;
+  --primary: 180 100% 45%;
+  --primary-foreground: 0 0% 4%;
+  --primary-hover: 180 100% 40%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 220 13% 91%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 53%;
+  --accent: 221 100% 50%;
+  --accent-foreground: 220 13% 91%;
+  --destructive: 14 100% 50%;
+  --destructive-foreground: 220 13% 91%;
+  --success: 145 100% 39%;
+  --success-foreground: 0 0% 4%;
+  --warning: 34 100% 50%;
+  --warning-foreground: 0 0% 4%;
+  --border: 0 0% 12%;
+  --input: 0 0% 12%;
+  --ring: 180 100% 45%;
+  --radius: 0.5rem;
+  --surface: 0 0% 6%;
+  --sidebar-background: 0 0% 6%;
+  --sidebar-foreground: 220 13% 91%;
+  --sidebar-primary: 180 100% 45%;
+  --sidebar-primary-foreground: 0 0% 4%;
+  --sidebar-accent: 0 0% 12%;
+  --sidebar-accent-foreground: 220 13% 91%;
+  --sidebar-border: 0 0% 12%;
+  --sidebar-ring: 180 100% 45%;
+  --gradient-primary: linear-gradient(135deg, #00D4FF 0%, #0094B3 100%);
+  --gradient-glow: 0 4px 14px rgba(0, 212, 255, 0.35);
+}
+
+/* Playground component styles */
+.playground-btn-primary {
+  background: var(--gradient-primary);
+  box-shadow: var(--gradient-glow);
+}
+
+.playground-btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.45);
+}
+
+.playground-input-field {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--secondary));
+  transition: border-color 0.2s;
+}
+
+.playground-input-field:focus {
+  border-color: hsl(var(--primary));
+}
+
+.playground-code-block {
+  background-color: hsl(var(--card));
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--secondary));
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.playground-method-item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.playground-method-item:hover {
+  background-color: hsl(var(--secondary) / 0.5);
+}
+
+.playground-method-item.active {
+  background-color: hsl(var(--primary) / 0.1);
+  border-left: 2px solid hsl(var(--primary));
+}
+
+.playground-card-surface {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--secondary));
+  border-radius: 0.5rem;
+}
+
+/* Playground syntax highlighting */
+.playground-container .syntax-keyword {
+  color: hsl(var(--accent));
+}
+
+.playground-container .syntax-string {
+  color: hsl(var(--success));
+}
+
+.playground-container .syntax-number {
+  color: hsl(var(--warning));
+}
+
+.playground-container .syntax-comment {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.playground-container .syntax-function {
+  color: hsl(280 100% 70%);
+}
+
+.playground-container .syntax-property {
+  color: hsl(var(--primary));
+}
+
+.playground-container .syntax-operator {
+  color: hsl(var(--foreground));
+}
+
+.playground-container .syntax-punctuation {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Playground animations */
+@keyframes playground-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes playground-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes playground-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(0, 228, 228, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(0, 228, 228, 0.6);
+  }
+}
+
+.playground-animate-fade-in {
+  animation: playground-fade-in 0.3s ease-out;
+}
+
+.playground-animate-slide-in {
+  animation: playground-slide-in 0.2s ease-out;
+}
+
+.playground-animate-pulse-glow {
+  animation: playground-pulse-glow 2s ease-in-out infinite;
 }

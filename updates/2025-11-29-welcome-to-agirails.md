@@ -1,12 +1,12 @@
 ---
 slug: welcome-to-agirails
-title: Welcome to AGIRAILS Updates
+title: Welcome to AGIRAILS Changelog
 authors: [agirails]
 tags: [devlog]
 date: 2025-11-29
 ---
 
-Welcome to AGIRAILS Updates - your source for release notes, engineering insights, protocol governance, and ecosystem news.
+Welcome to the AGIRAILS Changelog - your source for release notes, engineering insights, protocol governance, and ecosystem news.
 
 <!-- truncate -->
 

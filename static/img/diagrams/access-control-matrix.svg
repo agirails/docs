@@ -1,0 +1,63 @@
+<svg viewBox="0 0 550 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="550" height="280" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="275" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Transaction Access Control</text>
+
+  <!-- Column headers -->
+  <rect x="150" y="40" width="110" height="35" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="205" y="62" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Requester</text>
+
+  <rect x="270" y="40" width="110" height="35" rx="6" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="325" y="62" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Provider</text>
+
+  <rect x="390" y="40" width="110" height="35" rx="6" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="445" y="62" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Admin</text>
+
+  <!-- Row labels and data -->
+  <!-- Row 1: Create Transaction -->
+  <rect x="20" y="85" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="102" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Create Transaction</text>
+  <text x="205" y="102" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="325" y="102" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+  <text x="445" y="102" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Row 2: Link Escrow -->
+  <rect x="20" y="115" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="132" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Link Escrow</text>
+  <text x="205" y="132" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="325" y="132" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+  <text x="445" y="132" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Row 3: Submit Quote -->
+  <rect x="20" y="145" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="162" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Submit Quote</text>
+  <text x="205" y="162" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+  <text x="325" y="162" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="445" y="162" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Row 4: Deliver Work -->
+  <rect x="20" y="175" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="192" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Deliver Work</text>
+  <text x="205" y="192" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+  <text x="325" y="192" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="445" y="192" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Row 5: Release Escrow -->
+  <rect x="20" y="205" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="222" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Release Escrow</text>
+  <text x="205" y="222" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="325" y="222" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">✓*</text>
+  <text x="445" y="222" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Row 6: Raise Dispute -->
+  <rect x="20" y="235" width="120" height="25" rx="4" fill="#1F2937"/>
+  <text x="80" y="252" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9">Raise Dispute</text>
+  <text x="205" y="252" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="325" y="252" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✓</text>
+  <text x="445" y="252" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">✗</text>
+
+  <!-- Footnote -->
+  <text x="275" y="272" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">* Provider can release escrow only after dispute window expires</text>
+</svg>

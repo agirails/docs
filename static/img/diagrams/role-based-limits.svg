@@ -1,0 +1,52 @@
+<svg viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="600" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="300" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Role-Based Spending Limits</text>
+
+  <!-- Junior -->
+  <rect x="30" y="45" width="160" height="120" rx="10" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="1.5"/>
+  <rect x="40" y="30" width="80" height="22" rx="5" fill="#0EA5E9"/>
+  <text x="80" y="45" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">JUNIOR</text>
+
+  <text x="110" y="80" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="16">👤</text>
+
+  <text x="110" y="105" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Per-tx: $50</text>
+  <text x="110" y="120" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $100</text>
+  <text x="110" y="135" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Auto: &lt; $25</text>
+
+  <rect x="50" y="147" width="120" height="14" rx="3" fill="#1F2937"/>
+  <rect x="50" y="147" width="30" height="14" rx="3" fill="#0EA5E9" fill-opacity="0.5"/>
+  <text x="110" y="157" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="7">Limited autonomy</text>
+
+  <!-- Senior -->
+  <rect x="220" y="45" width="160" height="120" rx="10" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="1.5"/>
+  <rect x="230" y="30" width="80" height="22" rx="5" fill="#8B5CF6"/>
+  <text x="270" y="45" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">SENIOR</text>
+
+  <text x="300" y="80" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="16">👨‍💼</text>
+
+  <text x="300" y="105" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Per-tx: $500</text>
+  <text x="300" y="120" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $1,000</text>
+  <text x="300" y="135" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Auto: &lt; $200</text>
+
+  <rect x="240" y="147" width="120" height="14" rx="3" fill="#1F2937"/>
+  <rect x="240" y="147" width="72" height="14" rx="3" fill="#8B5CF6" fill-opacity="0.5"/>
+  <text x="300" y="157" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="7">Moderate autonomy</text>
+
+  <!-- Admin -->
+  <rect x="410" y="45" width="160" height="120" rx="10" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="1.5"/>
+  <rect x="420" y="30" width="80" height="22" rx="5" fill="#10B981"/>
+  <text x="460" y="45" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">ADMIN</text>
+
+  <text x="490" y="80" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="16">👑</text>
+
+  <text x="490" y="105" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Per-tx: $10,000</text>
+  <text x="490" y="120" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $50,000</text>
+  <text x="490" y="135" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Auto: &lt; $5,000</text>
+
+  <rect x="430" y="147" width="120" height="14" rx="3" fill="#1F2937"/>
+  <rect x="430" y="147" width="114" height="14" rx="3" fill="#10B981" fill-opacity="0.5"/>
+  <text x="490" y="157" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="7">Full autonomy</text>
+</svg>

@@ -63,7 +63,7 @@ AGIRAILS is deployed on **Base L2** (Ethereum Layer 2):
 
 | Network | Chain ID | Status | Contracts |
 |---------|----------|--------|-----------|
-| **Base Sepolia** (Testnet) | 84532 | ✅ Live | ACTPKernel: `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba`<br/>EscrowVault: `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| **Base Sepolia** (Testnet) | 84532 | ✅ Live | ACTPKernel: `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba`<br/>EscrowVault: `0x921edE340770db5DB6059B5B866be987d1b7311F`<br/>AgentRegistry (AIP-7): not deployed (planned Q1 2025)<br/>ArchiveTreasury (AIP-7): not deployed (planned Q1 2025) |
 | **Base Mainnet** | 8453 | 🚧 Coming Soon | TBA |
 
 :::tip Why Base?

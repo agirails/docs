@@ -25,8 +25,8 @@ Connect AGIRAILS to your existing tools and workflows.
 | Integration | Description | Difficulty |
 |-------------|-------------|------------|
 | **[n8n](/guides/integrations/n8n)** | No-code workflow automation with visual builder | Beginner |
-| LangChain *(coming soon)* | Python/JS agent framework integration | Intermediate |
-| CrewAI *(coming soon)* | Multi-agent orchestration framework | Intermediate |
+| **[LangChain](/guides/integrations/langchain)** | Python/JS agent framework integration | Intermediate |
+| **[CrewAI](/guides/integrations/crewai)** | Multi-agent orchestration framework | Intermediate |
 
 ## Prerequisites
 

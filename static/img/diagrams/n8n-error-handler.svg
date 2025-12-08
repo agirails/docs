@@ -1,0 +1,18 @@
+<svg viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="240" height="60" fill="#0A0A0A"/>
+
+  <!-- Node 1: Error Trigger -->
+  <rect x="15" y="12" width="90" height="36" rx="5" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="60" y="28" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Error</text>
+  <text x="60" y="40" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="7">Trigger</text>
+
+  <!-- Arrow -->
+  <line x1="105" y1="30" x2="125" y2="30" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="130,30 124,27 124,33" fill="#6B7280"/>
+
+  <!-- Node 2: Slack Alert -->
+  <rect x="135" y="12" width="90" height="36" rx="5" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="180" y="28" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Slack</text>
+  <text x="180" y="40" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">Alert</text>
+</svg>

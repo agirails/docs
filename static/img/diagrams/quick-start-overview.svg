@@ -1,0 +1,55 @@
+<svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="160" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Quick Start: 5 Minutes to First Transaction</text>
+
+  <!-- Step 1: Install -->
+  <rect x="30" y="45" width="120" height="95" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="90" y="70" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="20">📦</text>
+  <text x="90" y="92" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">1. Install</text>
+  <text x="90" y="106" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">npm install @agirails/sdk</text>
+  <text x="90" y="120" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">pip install agirails-sdk</text>
+  <text x="90" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">~30 sec</text>
+
+  <!-- Arrow -->
+  <line x1="155" y1="92" x2="175" y2="92" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="180,92 172,88 172,96" fill="#4B5563"/>
+
+  <!-- Step 2: Configure -->
+  <rect x="185" y="45" width="120" height="95" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="245" y="70" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="20">⚙️</text>
+  <text x="245" y="92" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">2. Configure</text>
+  <text x="245" y="108" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">.env with keys</text>
+  <text x="245" y="120" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">2 wallets</text>
+  <text x="245" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">~1 min</text>
+
+  <!-- Arrow -->
+  <line x1="310" y1="92" x2="330" y2="92" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="335,92 327,88 327,96" fill="#4B5563"/>
+
+  <!-- Step 3: Create -->
+  <rect x="340" y="45" width="120" height="95" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="400" y="70" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="20">📝</text>
+  <text x="400" y="92" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">3. Create Tx</text>
+  <text x="400" y="108" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">createTransaction()</text>
+  <text x="400" y="120" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">linkEscrow()</text>
+  <text x="400" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">~2 min</text>
+
+  <!-- Arrow -->
+  <line x1="465" y1="92" x2="485" y2="92" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="490,92 482,88 482,96" fill="#4B5563"/>
+
+  <!-- Step 4: Complete -->
+  <rect x="495" y="45" width="120" height="95" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="555" y="70" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="20">✅</text>
+  <text x="555" y="92" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">4. Complete</text>
+  <text x="555" y="108" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">Deliver + Settle</text>
+  <text x="555" y="120" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">Get paid!</text>
+  <text x="555" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">~1.5 min</text>
+
+  <!-- Total time badge -->
+  <rect x="625" y="55" width="60" height="30" rx="6" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="1"/>
+  <text x="655" y="73" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">5 min</text>
+</svg>

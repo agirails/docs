@@ -4,6 +4,9 @@ title: Transaction Lifecycle
 description: Understanding the 8-state transaction lifecycle in ACTP
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Transaction Lifecycle
 
 Every ACTP transaction flows through an **8-state lifecycle**, enforced by the `ACTPKernel` smart contract. This state machine ensures bilateral fairness - neither party can cheat or skip steps.
@@ -71,6 +74,9 @@ The typical successful transaction follows this path:
 **Who:** Requester agent
 **What:** Creates transaction with provider, amount, deadline, dispute window
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
@@ -91,6 +97,35 @@ const txId = await client.kernel.createTransaction({
 console.log('Transaction created:', txId);
 // State: INITIATED
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+
+from agirails_sdk import ACTPClient, Network, State
+
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
+)
+
+tx_id = client.create_transaction(
+    provider="0xProviderWalletAddress",
+    requester=client.address,
+    amount=100_000_000,  # $100 USDC (6 decimals)
+    deadline=client.now() + 86400,  # 24 hours
+    dispute_window=7200,  # 2 hours (in seconds)
+    service_hash="0x" + "00" * 32,
+)
+
+print("Transaction created:", tx_id)
+# State: INITIATED
+```
+
+</TabItem>
+</Tabs>
 
 **On-chain effects:**
 - Transaction ID generated: `keccak256(requester, provider, amount, timestamp, blockNumber)`
@@ -114,6 +149,9 @@ console.log('Transaction created:', txId);
 **Who:** Requester agent
 **What:** Links escrow vault and deposits USDC (auto-transitions state)
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Option A: Use convenience method (handles approval + linking)
 const escrowId = await client.fundTransaction(txId);
@@ -126,6 +164,35 @@ await usdc.approve(ESCROW_VAULT_ADDRESS, parseUnits('100', 6));
 await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 // State: COMMITTED
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import secrets
+
+# Option A: Use convenience method (handles approval + linking)
+escrow_id = client.fund_transaction(tx_id)
+print("Funded with escrow:", escrow_id)
+# State: COMMITTED (automatic transition)
+
+# Option B: Manual flow
+client.usdc.functions.approve(
+    client.config.escrow_vault,
+    100_000_000,  # $100 USDC
+).transact({"from": client.address})
+
+manual_escrow_id = secrets.token_hex(32)
+client.link_escrow(
+    tx_id,
+    escrow_contract=client.config.escrow_vault,
+    escrow_id=manual_escrow_id,
+)
+# State: COMMITTED
+```
+
+</TabItem>
+</Tabs>
 
 **On-chain effects:**
 1. `linkEscrow()` calls `EscrowVault.createEscrow()`
@@ -145,11 +212,26 @@ await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 **Who:** Provider agent
 **What:** Signals that work has begun
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
 console.log('Work started');
 // State: IN_PROGRESS
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.transition_state(tx_id, State.IN_PROGRESS, "0x")
+print("Work started")
+# State: IN_PROGRESS
+```
+
+</TabItem>
+</Tabs>
 
 **Why this step is required:**
 - Explicit acknowledgment from provider
@@ -168,6 +250,9 @@ Even for sub-second API calls, the provider must call `transitionState(IN_PROGRE
 **Who:** Provider agent
 **What:** Marks work as delivered, provides cryptographic proof
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Provider computes proof of delivery
 const deliveryProof = '0x'; // Or keccak256 hash of delivery data
@@ -177,6 +262,22 @@ console.log('Work delivered, dispute window started');
 // State: DELIVERED
 // Dispute window: now + 2 hours
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Provider computes proof of delivery
+delivery_proof = "0x"  # Or keccak256 hash of delivery data
+
+client.transition_state(tx_id, State.DELIVERED, delivery_proof)
+print("Work delivered, dispute window started")
+# State: DELIVERED
+# Dispute window: now + 2 hours
+```
+
+</TabItem>
+</Tabs>
 
 **On-chain effects:**
 - State transitions to DELIVERED
@@ -194,9 +295,12 @@ The `proof` argument in `transitionState(DELIVERED)` is **not stored as delivery
 **Who:** Requester (anytime after DELIVERED) or Provider (after dispute window expires)
 **What:** Transitions to SETTLED state, which triggers automatic escrow release
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Option A: Requester settles immediately (skips dispute window)
-await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+await requesterClient.kernel.transitionState(txId, State.SETTLED, '0x');
 console.log('Settled! Payout triggered automatically.');
 // State: SETTLED (payout happens inside transitionState)
 
@@ -206,6 +310,25 @@ await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
 console.log('Dispute window expired, settled and paid');
 // State: SETTLED
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Option A: Requester settles immediately (skips dispute window)
+requester_client.transition_state(tx_id, State.SETTLED, "0x")
+print("Settled! Payout triggered automatically.")
+# State: SETTLED (payout happens inside transition_state)
+
+# Option B: Provider settles after dispute window expires
+# (After dispute window, e.g., 1 hour minimum)
+provider_client.transition_state(tx_id, State.SETTLED, "0x")
+print("Dispute window expired, settled and paid")
+# State: SETTLED
+```
+
+</TabItem>
+</Tabs>
 
 :::warning Settlement is a State Transition
 In V1, you must call `transitionState(txId, State.SETTLED, proof)` - **not** `releaseEscrow()` directly. The payout happens automatically inside the SETTLED transition. `releaseEscrow()` is only for retrying if funds remain due to a failed transfer.
@@ -228,6 +351,9 @@ For variable pricing, use the QUOTED state:
 
 ![QUOTED path - Provider submits quote before escrow](/img/diagrams/quoted-path.svg)
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Step 1: Requester creates transaction (estimated amount)
 const txId = await client.kernel.createTransaction({
@@ -244,6 +370,33 @@ await client.kernel.transitionState(txId, State.QUOTED, '0x');
 await client.fundTransaction(txId);
 // State: COMMITTED
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Step 1: Requester creates transaction (estimated amount)
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xProvider",
+    amount=100_000_000,  # Estimated
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+# State: INITIATED
+
+# Step 2: Provider reviews and submits quote
+client.transition_state(tx_id, State.QUOTED, "0x")
+# State: QUOTED
+
+# Step 3: Requester reviews quote and funds
+client.fund_transaction(tx_id)
+# State: COMMITTED
+```
+
+</TabItem>
+</Tabs>
 
 **When to use QUOTED:**
 - Variable pricing (compute time, data volume)
@@ -262,6 +415,9 @@ await client.fundTransaction(txId);
 If requester contests delivery:
 
 ![Dispute Path](/img/diagrams/dispute-path.svg)
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Requester raises dispute (within dispute window)
@@ -285,6 +441,36 @@ await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 // State: SETTLED
 // Distribution: 30% requester, 70% provider
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+# Requester raises dispute (within dispute window)
+requester_client.transition_state(tx_id, State.DISPUTED, "0x")
+# State: DISPUTED
+
+# Off-chain: Admin reviews evidence from both parties
+
+# Admin resolves via transition_state with resolution proof
+resolution_proof = Web3().codec.encode(
+    ["uint256", "uint256", "uint256", "address"],
+    [
+        30_000_000,   # requesterAmount
+        70_000_000,   # providerAmount
+        0,            # mediatorAmount
+        Web3.to_checksum_address("0x0000000000000000000000000000000000000000"),
+    ],
+)
+admin_client.transition_state(tx_id, State.SETTLED, resolution_proof.hex())
+# State: SETTLED
+# Distribution: 30% requester, 70% provider
+```
+
+</TabItem>
+</Tabs>
 
 :::danger Admin-Only Resolution
 In V1, only the admin/pauser role can transition from DISPUTED → SETTLED. There is no `resolveDispute()` function - resolution happens via `transitionState(DISPUTED → SETTLED, resolutionProof)` where the proof encodes the fund distribution.
@@ -323,6 +509,9 @@ Transactions can be cancelled before delivery:
 When the **requester** cancels after escrow is linked (COMMITTED or IN_PROGRESS), a **5% penalty** (`requesterPenaltyBps = 500`) is deducted. This compensates the provider for wasted effort. Only **provider-initiated** cancellations refund 100%.
 :::
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Example: Provider cancels voluntarily
 await providerClient.kernel.transitionState(txId, State.CANCELLED, '0x');
@@ -332,6 +521,22 @@ await providerClient.kernel.transitionState(txId, State.CANCELLED, '0x');
 await requesterClient.kernel.transitionState(txId, State.CANCELLED, '0x');
 // Requester receives 95% refund (5% to provider as penalty)
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Example: Provider cancels voluntarily
+provider_client.transition_state(tx_id, State.CANCELLED, "0x")
+# Requester receives 100% refund
+
+# Example: Requester cancels after deadline
+requester_client.transition_state(tx_id, State.CANCELLED, "0x")
+# Requester receives 95% refund (5% to provider as penalty)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -395,6 +600,9 @@ require(
 
 For long-running work, release escrow incrementally:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // 1. Create and fund full amount
 const txId = await client.kernel.createTransaction({
@@ -421,6 +629,43 @@ await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
 await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $495 ($500 - 1% fee)
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# 1. Create and fund full amount
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xProvider",
+    amount=1_000_000_000,  # $1,000 total
+    deadline=client.now() + 7 * 86400,
+    dispute_window=172800,
+    service_hash="0x" + "00" * 32,
+)
+client.fund_transaction(tx_id)
+# Escrow: $1,000
+
+# 2. Provider starts work
+client.transition_state(tx_id, State.IN_PROGRESS, "0x")
+
+# 3. Release milestones as work progresses
+client.release_milestone(tx_id, 250_000_000)
+# Provider receives: $247.50 ($250 - 1% fee)
+# Escrow remaining: $750
+
+client.release_milestone(tx_id, 250_000_000)
+# Escrow remaining: $500
+
+# 4. Final delivery and settlement
+provider_client.transition_state(tx_id, State.DELIVERED, "0x")
+# Wait for dispute window...
+provider_client.transition_state(tx_id, State.SETTLED, "0x")
+# Provider receives: $495 ($500 - 1% fee)
+```
+
+</TabItem>
+</Tabs>
 
 **Milestone rules:**
 - Only in IN_PROGRESS state
@@ -463,11 +708,32 @@ event EscrowReleased(
 ```
 
 **Subscribe to events:**
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 client.events.on('StateTransitioned', (txId, from, to, by) => {
   console.log(`Transaction ${txId}: ${from} → ${to}`);
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+event_filter = client.kernel.events.StateTransitioned.create_filter(fromBlock="latest")
+for evt in event_filter.get_new_entries():
+    tx_id = Web3.to_hex(evt["args"]["transactionId"])
+    from_state = evt["args"]["fromState"]
+    to_state = evt["args"]["toState"]
+    triggered_by = evt["args"]["triggeredBy"]
+    print(f"Transaction {tx_id}: {from_state} → {to_state} (by {triggered_by})")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

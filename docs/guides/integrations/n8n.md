@@ -19,7 +19,7 @@ By the end of this guide, you'll have:
 
 **Difficulty:** Beginner (no coding required)
 
-**Current Version:** v1.1.1
+**Current Version:** v1.2.0 (AIP-7 ready)
 :::
 
 ---
@@ -142,10 +142,12 @@ Let's create a simple workflow that locks funds in escrow.
 - **Deadline**: `{{ $now.plus(1, 'day').toUnixInteger() }}`
 - **Dispute Window**: `172800` (2 days in seconds)
 
-**Node 3: ACTP - Link Escrow**
+**Node 3: ACTP - Fund Transaction** (auto-approves USDC + links escrow)
 - **Credential**: Select your ACTP credential
-- **Operation**: `Link Escrow`
+- **Operation**: `Fund Transaction`
 - **Transaction ID**: `{{ $json.transactionId }}`
+
+This step approves USDC to the vault and links escrow in one call. State auto-transitions to **COMMITTED**.
 
 ### Run It
 
@@ -166,7 +168,7 @@ Congratulations! You just locked funds in escrow for an AI agent payment.
 | Operation | Description | When to Use |
 |-----------|-------------|-------------|
 | **Create Transaction** | Start a new payment request | Beginning of workflow |
-| **Link Escrow** | Lock USDC funds in escrow | After creating transaction |
+| **Fund Transaction** | Approve USDC + link escrow (auto COMMITTED) | After creating transaction |
 | **Get Transaction** | Check current state and details | Monitoring, verification |
 | **Release With Verification** | Pay provider after verified delivery | After DELIVERED state |
 | **Verify Attestation** | Validate delivery proof | Before releasing payment |
@@ -183,6 +185,8 @@ In V1, "Raise Dispute" transitions the transaction to DISPUTED state by calling 
 |-----------|-------------|-------------|
 | **Get Transaction** | Verify transaction details | Before starting work |
 | **Transition State** | Update to IN_PROGRESS or DELIVERED | During work lifecycle |
+| **Query Agents By Service** | Discover providers by service type + reputation (AIP-7) | Discovery flows |
+| **Register/Update Agent** | Register endpoint + service descriptors (AIP-7) | When publishing provider profile |
 
 ---
 
@@ -220,19 +224,17 @@ Creates a new ACTP transaction.
 }
 ```
 
-### Link Escrow
+### Fund Transaction
 
-Locks USDC in the escrow vault. Automatically:
-1. Approves USDC spending to escrow contract
-2. Transfers exact transaction amount
-3. Transitions state to `COMMITTED`
+Approves USDC and locks funds in the escrow vault, then auto-transitions to `COMMITTED`.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | **Transaction ID** | string | Yes | From Create Transaction output |
+| **Amount (USDC)** | number | No | Defaults to transaction amount |
 
 :::note Fee Timing
-The 1% platform fee is deducted when funds are **released**, not when linking escrow. So if you lock $100, the full $100 is held until settlement.
+The 1% platform fee is deducted when funds are **released**, not when funding. So if you lock $100, the full $100 is held until settlement.
 :::
 
 ### Transition State
@@ -244,6 +246,20 @@ Updates transaction state (provider only for most transitions).
 | `QUOTED` | Provider | After reviewing request (optional) |
 | `IN_PROGRESS` | Provider | When starting work |
 | `DELIVERED` | Provider | When work is complete |
+
+### Agent Registry (AIP-7)
+
+Register and discover agents on-chain.
+
+| Operation | Description | Key Fields |
+|-----------|-------------|------------|
+| **Register Agent** | Register endpoint + service descriptors | `endpoint`, descriptors (serviceType/serviceTypeHash/minPrice/maxPrice/avgCompletionTime/schemaURI/metadataCID) |
+| **Update Endpoint** | Update provider endpoint URL | `endpoint` |
+| **Add Service Type** | Add supported service type | `serviceType` (lowercase) |
+| **Remove Service Type** | Remove supported service type | `serviceTypeHash` |
+| **Set Active Status** | Pause/resume accepting requests | `isActive` |
+| **Query Agents By Service** | Discover agents by service type + min reputation with pagination | `serviceTypeHash`, `minReputation`, `offset`, `limit` |
+| **Get Agent By DID** | Lookup profile by DID | `did:ethr:<chainId>:<address>` (must match network) |
 
 ### Release With Verification
 
@@ -348,10 +364,10 @@ This workflow pays for AI translation services.
 | Deadline | `{{ $now.plus(1, 'day').toUnixInteger() }}` |
 | Dispute Window | `172800` |
 
-**Node 3: ACTP - Link Escrow**
+**Node 3: ACTP - Fund Transaction**
 | Setting | Value |
 |---------|-------|
-| Operation | Link Escrow |
+| Operation | Fund Transaction |
 | Transaction ID | `{{ $('Create Transaction').item.json.transactionId }}` |
 
 **Node 4: HTTP Request - Notify Provider**

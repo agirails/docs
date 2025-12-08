@@ -1,0 +1,58 @@
+<svg viewBox="0 0 740 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="740" height="140" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="370" y="20" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Installation: 5 Steps to Ready</text>
+
+  <!-- Step 1: Install SDK -->
+  <rect x="20" y="40" width="120" height="85" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="80" y="62" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="16">📦</text>
+  <text x="80" y="82" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">1. Install SDK</text>
+  <text x="80" y="93" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">npm install @agirails/sdk</text>
+  <text x="80" y="105" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">pip install agirails-sdk</text>
+
+  <!-- Arrow 1 -->
+  <line x1="145" y1="82" x2="155" y2="82" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="160,82 153,78 153,86" fill="#4B5563"/>
+
+  <!-- Step 2: Configure -->
+  <rect x="165" y="40" width="120" height="85" rx="6" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="225" y="62" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="16">⚙️</text>
+  <text x="225" y="82" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">2. Configure TS</text>
+  <text x="225" y="97" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">tsconfig.json</text>
+  <text x="225" y="109" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">ES2020 target</text>
+
+  <!-- Arrow 2 -->
+  <line x1="290" y1="82" x2="300" y2="82" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="305,82 298,78 298,86" fill="#4B5563"/>
+
+  <!-- Step 3: Environment -->
+  <rect x="310" y="40" width="120" height="85" rx="6" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="370" y="62" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="16">🔐</text>
+  <text x="370" y="82" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">3. Setup .env</text>
+  <text x="370" y="97" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">PRIVATE_KEY</text>
+  <text x="370" y="109" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">RPC_URL</text>
+
+  <!-- Arrow 3 -->
+  <line x1="435" y1="82" x2="445" y2="82" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="450,82 443,78 443,86" fill="#4B5563"/>
+
+  <!-- Step 4: Get Tokens -->
+  <rect x="455" y="40" width="120" height="85" rx="6" fill="#EC4899" fill-opacity="0.15" stroke="#EC4899" stroke-width="1.5"/>
+  <text x="515" y="62" text-anchor="middle" fill="#EC4899" font-family="system-ui, -apple-system, sans-serif" font-size="16">💰</text>
+  <text x="515" y="82" text-anchor="middle" fill="#EC4899" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">4. Get Tokens</text>
+  <text x="515" y="97" text-anchor="middle" fill="#F9A8D4" font-family="system-ui, -apple-system, sans-serif" font-size="7">ETH for gas</text>
+  <text x="515" y="109" text-anchor="middle" fill="#F9A8D4" font-family="system-ui, -apple-system, sans-serif" font-size="7">USDC to test</text>
+
+  <!-- Arrow 4 -->
+  <line x1="580" y1="82" x2="590" y2="82" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="595,82 588,78 588,86" fill="#4B5563"/>
+
+  <!-- Step 5: Verify -->
+  <rect x="600" y="40" width="120" height="85" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="660" y="62" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="16">✅</text>
+  <text x="660" y="82" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">5. Verify</text>
+  <text x="660" y="97" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Run test</text>
+  <text x="660" y="109" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Ready!</text>
+</svg>

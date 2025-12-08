@@ -1,0 +1,66 @@
+<svg viewBox="0 0 650 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="650" height="200" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="325" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Job Filtering Decision Tree</text>
+
+  <!-- Incoming Job -->
+  <rect x="25" y="60" width="100" height="50" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="75" y="82" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">New Job</text>
+  <text x="75" y="98" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">Event received</text>
+
+  <!-- Arrow -->
+  <line x1="125" y1="85" x2="155" y2="85" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="160,85 152,81 152,89" fill="#6B7280"/>
+
+  <!-- Check: Amount -->
+  <rect x="165" y="50" width="100" height="70" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="215" y="72" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Amount OK?</text>
+  <text x="215" y="90" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">min ≤ amt ≤ max</text>
+  <text x="215" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">$0.10 - $100</text>
+
+  <!-- Reject path from Amount -->
+  <line x1="215" y1="120" x2="215" y2="150" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="165" y="155" width="100" height="30" rx="4" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="215" y="174" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8">Reject: Bad amount</text>
+
+  <!-- Arrow -->
+  <line x1="265" y1="85" x2="295" y2="85" stroke="#22C55E" stroke-width="1.5"/>
+  <polygon points="300,85 292,81 292,89" fill="#22C55E"/>
+
+  <!-- Check: Deadline -->
+  <rect x="305" y="50" width="100" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="355" y="72" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Deadline OK?</text>
+  <text x="355" y="90" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">time left &gt; 1hr</text>
+  <text x="355" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Can complete?</text>
+
+  <!-- Reject path from Deadline -->
+  <line x1="355" y1="120" x2="355" y2="150" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="305" y="155" width="100" height="30" rx="4" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="355" y="174" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8">Reject: Too tight</text>
+
+  <!-- Arrow -->
+  <line x1="405" y1="85" x2="435" y2="85" stroke="#22C55E" stroke-width="1.5"/>
+  <polygon points="440,85 432,81 432,89" fill="#22C55E"/>
+
+  <!-- Check: Capacity -->
+  <rect x="445" y="50" width="100" height="70" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="495" y="72" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Capacity?</text>
+  <text x="495" y="90" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">active &lt; max</text>
+  <text x="495" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">5 concurrent</text>
+
+  <!-- Reject path from Capacity -->
+  <line x1="495" y1="120" x2="495" y2="150" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="445" y="155" width="100" height="30" rx="4" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="495" y="174" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8">Reject: At capacity</text>
+
+  <!-- Arrow to Accept -->
+  <line x1="545" y1="85" x2="575" y2="85" stroke="#22C55E" stroke-width="1.5"/>
+  <polygon points="580,85 572,81 572,89" fill="#22C55E"/>
+
+  <!-- Accept -->
+  <rect x="585" y="55" width="50" height="60" rx="8" fill="#22C55E" fill-opacity="0.2" stroke="#22C55E" stroke-width="2"/>
+  <text x="610" y="82" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="16">✓</text>
+  <text x="610" y="102" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">ACCEPT</text>
+</svg>

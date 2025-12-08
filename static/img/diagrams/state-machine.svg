@@ -83,8 +83,6 @@
   <line x1="690" y1="150" x2="780" y2="150" stroke="#10B981" stroke-width="1.5"/>
   <line x1="780" y1="150" x2="780" y2="85" stroke="#10B981" stroke-width="1.5"/>
   <polygon points="780,80 775,88 785,88" fill="#10B981"/>
-  <rect x="625" y="135" width="140" height="16" rx="3" fill="#0A0A0A" fill-opacity="0.9"/>
-  <text x="695" y="146" text-anchor="middle" fill="#A0AEC0" font-family="system-ui, -apple-system, sans-serif" font-size="9">Admin: transitionState(SETTLED)</text>
 
   <!-- Legend -->
   <rect x="30" y="230" width="12" height="12" rx="2" fill="#0EA5E9" fill-opacity="0.3" stroke="#0EA5E9" stroke-width="1"/>

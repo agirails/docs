@@ -1,0 +1,52 @@
+<svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">When Are Fees Charged?</text>
+
+  <!-- Scenario 1: Settlement -->
+  <rect x="25" y="45" width="150" height="120" rx="8" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="1.5"/>
+  <text x="100" y="68" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Settlement</text>
+
+  <text x="100" y="90" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">$100 transaction</text>
+  <line x1="45" y1="100" x2="155" y2="100" stroke="#374151" stroke-width="1"/>
+  <text x="100" y="118" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Provider: $99</text>
+  <text x="100" y="133" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">Fee: $1</text>
+  <rect x="45" y="145" width="110" height="14" rx="3" fill="#10B981" fill-opacity="0.2"/>
+  <text x="100" y="155" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">1% charged</text>
+
+  <!-- Scenario 2: Milestones -->
+  <rect x="195" y="45" width="150" height="120" rx="8" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="270" y="68" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Milestones</text>
+
+  <text x="270" y="90" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">3 x $100 releases</text>
+  <line x1="215" y1="100" x2="325" y2="100" stroke="#374151" stroke-width="1"/>
+  <text x="270" y="118" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Each: $99</text>
+  <text x="270" y="133" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">Each fee: $1</text>
+  <rect x="215" y="145" width="110" height="14" rx="3" fill="#8B5CF6" fill-opacity="0.2"/>
+  <text x="270" y="155" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">1% per release</text>
+
+  <!-- Scenario 3: Dispute -->
+  <rect x="365" y="45" width="150" height="120" rx="8" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="440" y="68" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Dispute (60/30/10)</text>
+
+  <text x="440" y="90" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">$100 disputed</text>
+  <line x1="385" y1="100" x2="495" y2="100" stroke="#374151" stroke-width="1"/>
+  <text x="440" y="115" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Provider: $59.40</text>
+  <text x="440" y="128" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Requester: $30</text>
+  <text x="440" y="141" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="8">Fee: $0.60</text>
+  <rect x="385" y="150" width="110" height="14" rx="3" fill="#F59E0B" fill-opacity="0.2"/>
+  <text x="440" y="160" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">Only on provider $</text>
+
+  <!-- Scenario 4: Cancellation -->
+  <rect x="535" y="45" width="140" height="120" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="605" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Cancellation</text>
+
+  <text x="605" y="90" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="8">$100 cancelled</text>
+  <line x1="555" y1="100" x2="655" y2="100" stroke="#374151" stroke-width="1"/>
+  <text x="605" y="118" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Refund: $95</text>
+  <text x="605" y="133" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Penalty: $5</text>
+  <rect x="555" y="145" width="100" height="14" rx="3" fill="#EF4444" fill-opacity="0.2"/>
+  <text x="605" y="155" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="7">NO fee charged</text>
+</svg>

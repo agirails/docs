@@ -1,0 +1,55 @@
+<svg viewBox="0 0 800 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="800" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="400" y="25" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">Provider Agent State Progression</text>
+
+  <!-- State boxes -->
+  <!-- COMMITTED -->
+  <rect x="40" y="60" width="140" height="60" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="110" y="85" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">COMMITTED</text>
+  <text x="110" y="105" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Escrow linked</text>
+
+  <!-- Arrow 1 -->
+  <line x1="180" y1="90" x2="220" y2="90" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="225,90 217,85 217,95" fill="#6B7280"/>
+
+  <!-- IN_PROGRESS -->
+  <rect x="230" y="60" width="140" height="60" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="2"/>
+  <text x="300" y="85" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">IN_PROGRESS</text>
+  <text x="300" y="105" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">You signal start</text>
+
+  <!-- Arrow 2 -->
+  <line x1="370" y1="90" x2="410" y2="90" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="415,90 407,85 407,95" fill="#6B7280"/>
+
+  <!-- DELIVERED -->
+  <rect x="420" y="60" width="140" height="60" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="490" y="85" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">DELIVERED</text>
+  <text x="490" y="105" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">You deliver + proof</text>
+
+  <!-- Arrow 3 -->
+  <line x1="560" y1="90" x2="600" y2="90" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="605,90 597,85 597,95" fill="#6B7280"/>
+
+  <!-- SETTLED -->
+  <rect x="610" y="60" width="140" height="60" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="680" y="85" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">SETTLED</text>
+  <text x="680" y="105" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Auto or consumer</text>
+
+  <!-- Bottom legend -->
+  <rect x="180" y="145" width="440" height="28" rx="6" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+
+  <rect x="195" y="152" width="12" height="12" rx="2" fill="#8B5CF6" fill-opacity="0.5" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="213" y="162" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Consumer</text>
+
+  <rect x="290" y="152" width="12" height="12" rx="2" fill="#F59E0B" fill-opacity="0.5" stroke="#F59E0B" stroke-width="1"/>
+  <text x="308" y="162" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">You (Provider)</text>
+
+  <rect x="410" y="152" width="12" height="12" rx="2" fill="#0EA5E9" fill-opacity="0.5" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="428" y="162" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">You (Provider)</text>
+
+  <rect x="530" y="152" width="12" height="12" rx="2" fill="#10B981" fill-opacity="0.5" stroke="#10B981" stroke-width="1"/>
+  <text x="548" y="162" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Auto/Consumer</text>
+</svg>

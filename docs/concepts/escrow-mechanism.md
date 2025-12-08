@@ -4,6 +4,9 @@ title: Escrow Mechanism
 description: How ACTP's EscrowVault secures funds during transactions
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Escrow Mechanism
 
 The **EscrowVault** is a smart contract that holds USDC funds during ACTP transactions. It implements a **non-custodial, bilateral escrow** pattern - neither requester nor provider can unilaterally access funds.
@@ -69,6 +72,9 @@ Traditional payment systems have asymmetric risk:
 
 Before creating escrow, requester must approve the vault:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ethers, parseUnits } from 'ethers';
 
@@ -79,12 +85,38 @@ const amount = parseUnits('100', 6); // $100 USDC
 await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+
+from agirails_sdk import ACTPClient, Network
+
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
+
+# Approve exact amount (security best practice)
+amount = 100_000_000  # $100 USDC (6 decimals)
+tx_hash = client.usdc.functions.approve(
+    client.config.escrow_vault,
+    amount,
+).transact({"from": client.address})
+
+client.w3.eth.wait_for_transaction_receipt(tx_hash)
+```
+
+</TabItem>
+</Tabs>
+
 **What happens:**
 - Requester signs approval transaction
 - USDC contract records: `allowance[requester][vault] = amount`
 - Vault can now pull USDC (but hasn't yet)
 
 ### Step 2: Link Escrow
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Generate escrow ID
@@ -93,6 +125,26 @@ const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
 // Link escrow (auto-transitions to COMMITTED)
 await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import secrets
+
+# Generate escrow ID
+escrow_id = secrets.token_hex(32)
+
+# Link escrow (auto-transitions to COMMITTED)
+client.link_escrow(
+    tx_id,
+    escrow_contract=client.config.escrow_vault,
+    escrow_id=escrow_id,
+)
+```
+
+</TabItem>
+</Tabs>
 
 **On-chain flow:**
 
@@ -131,12 +183,27 @@ Once escrow is created:
 
 When transaction settles, funds are released by transitioning to SETTLED state:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // releaseEscrow() is called INTERNALLY when transitioning to SETTLED state
 // Users should call transitionState() instead:
 await client.kernel.transitionState(txId, State.SETTLED, '0x');
 // This internally triggers releaseEscrow() if all conditions are met
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# release_escrow() is called internally when transitioning to SETTLED
+client.transition_state(tx_id, State.SETTLED, "0x")
+# This internally triggers release_escrow() if all conditions are met
+```
+
+</TabItem>
+</Tabs>
 
 **Fund distribution for $100 transaction:**
 
@@ -222,6 +289,9 @@ contract EscrowVault is ReentrancyGuard {
 
 ### Scenario 1: Happy Path Settlement
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // 1. Create transaction
 const txId = await client.kernel.createTransaction({...});
@@ -243,7 +313,48 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $99, Platform: $1
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import secrets
+
+# 1. Create transaction
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xProvider",
+    amount=100_000_000,  # $100 USDC
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+
+# 2. Fund escrow
+client.usdc.functions.approve(
+    client.config.escrow_vault,
+    100_000_000,
+).transact({"from": client.address})
+
+escrow_id = secrets.token_hex(32)
+client.link_escrow(tx_id, escrow_contract=client.config.escrow_vault, escrow_id=escrow_id)
+# Escrow: $100, State: COMMITTED
+
+# 3. Provider delivers
+client.transition_state(tx_id, State.IN_PROGRESS, "0x")
+client.transition_state(tx_id, State.DELIVERED, "0x")
+
+# 4. Settle transaction (internally releases escrow)
+client.transition_state(tx_id, State.SETTLED, "0x")
+# Provider receives: $99, Platform: $1
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 2: Milestone Releases
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // 1. Create and fund $1,000 transaction
@@ -269,7 +380,51 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x');
 // Provider: $495, Total received: $990
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import secrets
+
+# 1. Create and fund $1,000 transaction
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xProvider",
+    amount=1_000_000_000,  # $1,000 USDC
+    deadline=client.now() + 7 * 86400,
+    dispute_window=172800,
+    service_hash="0x" + "00" * 32,
+)
+
+client.usdc.functions.approve(
+    client.config.escrow_vault,
+    1_000_000_000,
+).transact({"from": client.address})
+
+escrow_id = secrets.token_hex(32)
+client.link_escrow(tx_id, escrow_contract=client.config.escrow_vault, escrow_id=escrow_id)
+# Escrow: $1,000
+
+# 2. Release milestone 1
+client.release_milestone(tx_id, 250_000_000)
+# Provider: $247.50, Escrow remaining: $750
+
+# 3. Release milestone 2
+client.release_milestone(tx_id, 250_000_000)
+# Provider: $247.50, Escrow remaining: $500
+
+# 4. Final settlement
+client.transition_state(tx_id, State.SETTLED, "0x")
+# Provider: $495, Total received: $990
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 3: Cancellation Refund
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Requester cancels after deadline
@@ -281,11 +436,30 @@ await client.kernel.transitionState(txId, State.CANCELLED, '0x');
 // Platform: $0
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Requester cancels after deadline
+client.transition_state(tx_id, State.CANCELLED, "0x")
+
+# Distribution:
+# Requester refund: $475 (95%)
+# Provider penalty: $25 (5%)
+# Platform: $0
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 4: Dispute Resolution
 
 :::danger Admin-Only
 Dispute resolution can only be performed by admin/pauser role via `transitionState`.
 :::
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Admin resolves: 60% provider, 30% requester, 10% mediator
@@ -310,9 +484,42 @@ await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 // Platform: $0.60
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+# Admin resolves: 60% provider, 30% requester, 10% mediator
+resolution_proof = Web3().codec.encode(
+    ["uint256", "uint256", "uint256", "address"],
+    [
+        30_000_000,   # requesterAmount
+        60_000_000,   # providerAmount
+        10_000_000,   # mediatorAmount
+        "0xMediatorAddress",
+    ],
+)
+
+# Admin transitions DISPUTED → SETTLED with resolution
+admin_client.transition_state(tx_id, State.SETTLED, resolution_proof.hex())
+
+# Distribution:
+# Provider: $59.40 ($60 - 1% fee)
+# Requester: $30.00 (refund, no fee)
+# Mediator: $10.00
+# Platform: $0.60
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Tracking Escrow Balance
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Get remaining balance using public getter
@@ -323,6 +530,24 @@ console.log(`Escrow balance: ${formatUnits(remaining, 6)} USDC`);
 const isValid = await escrowVault.verifyEscrow(escrowId, expectedAmount);
 console.log(`Escrow valid: ${isValid}`);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Verify escrow exists and get validation + balance
+is_active, escrow_amount = client.get_escrow_status(
+    None,
+    escrow_id,
+    expected_requester=client.address,
+    expected_provider="0xProvider",
+    expected_amount=100_000_000,
+)
+print(f"Escrow valid: {is_active}, balance: {escrow_amount / 1_000_000} USDC")
+```
+
+</TabItem>
+</Tabs>
 
 :::info Private Mapping
 The `escrows` mapping in EscrowVault is **private** and cannot be read directly. Use the `remaining(escrowId)` function to check balance, or `verifyEscrow(escrowId, amount)` to validate. For full escrow details, listen to `EscrowCreated` events.
@@ -339,11 +564,30 @@ event EscrowCompleted(bytes32 indexed escrowId, uint256 totalReleased);
 ```
 
 **Subscribe in SDK:**
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 client.events.on('EscrowCreated', (escrowId, requester, provider, amount) => {
   console.log(`New escrow: ${escrowId} for ${formatUnits(amount, 6)} USDC`);
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+event_filter = client.kernel.events.EscrowCreated.create_filter(fromBlock="latest")
+for evt in event_filter.get_new_entries():
+    escrow_id = Web3.to_hex(evt["args"]["escrowId"])
+    amount = evt["args"]["amount"]
+    print(f"New escrow: {escrow_id} for {amount / 1_000_000} USDC")
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

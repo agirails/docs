@@ -26,7 +26,7 @@ Built with Docusaurus, fully branded with AGIRAILS styling (cyan #00E4E4 on dark
 - **Quick Start**: Get from zero to first transaction in 15 minutes
 - **Core Concepts**: Understanding ACTP protocol and the 8-state lifecycle
 - **SDK Reference**: TypeScript SDK documentation (in progress)
-- **Updates Section**: Where you're reading this!
+- **Changelog**: Where you're reading this!
 
 Live at [docs.agirails.io](https://docs.agirails.io)
 

@@ -1,0 +1,25 @@
+<svg viewBox="0 0 360 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="360" height="60" fill="#0A0A0A"/>
+
+  <!-- Node 1: Trigger -->
+  <rect x="15" y="12" width="90" height="36" rx="5" fill="#EC4899" fill-opacity="0.15" stroke="#EC4899" stroke-width="1.5"/>
+  <text x="60" y="35" text-anchor="middle" fill="#EC4899" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Trigger</text>
+
+  <!-- Arrow 1 -->
+  <line x1="105" y1="30" x2="125" y2="30" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="130,30 124,27 124,33" fill="#6B7280"/>
+
+  <!-- Node 2: Wait -->
+  <rect x="135" y="12" width="90" height="36" rx="5" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="180" y="28" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Wait</text>
+  <text x="180" y="40" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="7">1 sec</text>
+
+  <!-- Arrow 2 -->
+  <line x1="225" y1="30" x2="245" y2="30" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="250,30 244,27 244,33" fill="#6B7280"/>
+
+  <!-- Node 3: AGIRAILS -->
+  <rect x="255" y="12" width="90" height="36" rx="5" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="300" y="35" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">AGIRAILS</text>
+</svg>

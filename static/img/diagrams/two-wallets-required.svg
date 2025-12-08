@@ -1,0 +1,33 @@
+<svg viewBox="0 0 420 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="420" height="100" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="210" y="16" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Two Wallets Required: Requester ≠ Provider</text>
+
+  <!-- Requester Wallet -->
+  <rect x="30" y="30" width="105" height="58" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="82" y="48" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="14">👤</text>
+  <text x="82" y="62" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">REQUESTER</text>
+  <text x="82" y="74" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="6">Pays USDC</text>
+  <text x="82" y="84" text-anchor="middle" fill="#6B7280" font-family="monospace" font-size="5">0xA1B2...C3D4</text>
+
+  <!-- Arrow with "≠" -->
+  <line x1="140" y1="59" x2="175" y2="59" stroke="#EF4444" stroke-width="1.5"/>
+  <rect x="150" y="50" width="17" height="18" rx="3" fill="#0A0A0A"/>
+  <text x="158" y="63" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">≠</text>
+
+  <!-- Provider Wallet -->
+  <rect x="180" y="30" width="105" height="58" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="232" y="48" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="14">🤖</text>
+  <text x="232" y="62" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">PROVIDER</text>
+  <text x="232" y="74" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="6">Receives USDC</text>
+  <text x="232" y="84" text-anchor="middle" fill="#6B7280" font-family="monospace" font-size="5">0xE5F6...G7H8</text>
+
+  <!-- Why Box -->
+  <rect x="295" y="30" width="98" height="58" rx="6" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1"/>
+  <text x="344" y="46" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="7" font-weight="600">Why?</text>
+  <text x="344" y="58" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="5">Contract enforces</text>
+  <text x="344" y="68" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="5">separation of concerns</text>
+  <text x="344" y="80" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="5">Prevents self-dealing</text>
+</svg>

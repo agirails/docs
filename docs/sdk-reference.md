@@ -1,20 +1,25 @@
 ---
 sidebar_position: 10
 title: SDK Reference
-description: Complete API reference for @agirails/sdk - the official TypeScript SDK for ACTP
+description: Complete API reference for @agirails/sdk (TypeScript) and agirails-sdk (Python) for ACTP
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # SDK Reference
 
-Complete API documentation for `@agirails/sdk`, the official TypeScript SDK for the Agent Commerce Transaction Protocol (ACTP).
+Complete API documentation for:
+- `@agirails/sdk` (TypeScript/Node)
+- `agirails-sdk` (Python)
 
 :::info Before You Begin
 Make sure you have:
-- [ ] **Node.js 16+** installed ([download](https://nodejs.org))
+- [ ] **Node.js 16+** (TS) or **Python 3.9+** (PY)
 - [ ] **Private key** for Base Sepolia testnet wallet
 - [ ] **~0.01 ETH** for gas fees ([get from faucet](https://portal.cdp.coinbase.com/products/faucet))
 - [ ] **Mock USDC** tokens ([see Installation Guide](/installation#step-4-get-testnet-tokens))
-- [ ] Basic understanding of **async/await** and **TypeScript**
+- [ ] Basic understanding of **async/await** (TS) or Python coroutines if needed
 
 **Estimated time to first transaction:** ~5 minutes
 
@@ -30,6 +35,9 @@ npm run example:happy-path
 
 ## Installation
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```bash
 npm install @agirails/sdk
 # or
@@ -42,6 +50,20 @@ pnpm add @agirails/sdk
 - Node.js >= 16.0.0
 - TypeScript 5.2+ (for TypeScript users)
 - ethers.js v6 (included as dependency)
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```bash
+pip install agirails-sdk
+```
+
+**Requirements:**
+- Python 3.9+
+- web3.py v6 (installed as dependency)
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -122,6 +144,9 @@ The main entry point for all SDK operations. Use the async factory method `ACTPC
 
 Creates and initializes an ACTPClient instance. This is the recommended way to create a client.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 static async create(config: ACTPClientConfig): Promise<ACTPClient>
 ```
@@ -188,6 +213,59 @@ const client = await ACTPClient.create({
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import ACTPClient, Network
+
+# Basic setup with private key
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+)
+
+# With custom RPC and gas settings (tx_overrides)
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+    rpc_url="https://base-sepolia.g.alchemy.com/v2/YOUR_KEY",
+    tx_overrides={
+        "maxFeePerGas": 2_000_000_000,      # 2 gwei
+        "maxPriorityFeePerGas": 1_000_000_000,  # 1 gwei
+    },
+)
+
+# With EAS attestation support (delivery proofs)
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+)
+# EAS contract/schema are preconfigured for Base Sepolia; pass rpc_url if overriding network config.
+```
+
+#### Parameters (Python)
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `network` | `Network` | Yes | Network to connect to (`BASE_SEPOLIA`, `BASE`) |
+| `private_key` | `str` | Yes | Private key for signing transactions |
+| `rpc_url` | `str` | No | Custom RPC URL |
+| `tx_overrides` | `dict` | No | Gas/nonce overrides (`maxFeePerGas`, `maxPriorityFeePerGas`, `nonce`) |
+| `manual_nonce` | `bool` | No | Enable manual nonce management |
+
+#### Returns
+
+`ACTPClient` - Initialized client ready for use
+
+#### Throws
+
+- `ValidationError` - If configuration is invalid
+- `RpcError` - If unable to connect or send transaction
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getAddress()
@@ -195,6 +273,9 @@ const client = await ACTPClient.create({
 <span className="badge badge--success">🟢 Basic</span>
 
 Returns the Ethereum address of the connected signer.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getAddress(): Promise<string>
@@ -212,11 +293,26 @@ console.log('Connected as:', address);
 // Output: Connected as: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+address = client.address
+print("Connected as:", address)
+# Output: Connected as: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getNetworkConfig() 🟢
 
 Returns the current network configuration.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 getNetworkConfig(): NetworkConfig
@@ -258,11 +354,31 @@ console.log('Chain ID:', config.chainId); // 84532
 console.log('Kernel:', config.contracts.actpKernel);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+config = client.config
+print("Network:", config.name.value)  # "base-sepolia"
+print("Chain ID:", config.chain_id)   # 84532
+print("Kernel:", config.actp_kernel)
+```
+
+#### Returns
+
+`NetworkConfig` - Network configuration dataclass (`name`, `chain_id`, `rpc_url`, `actp_kernel`, `escrow_vault`, `usdc`, `eas`, `eas_schema_registry`, `delivery_schema_uid`, `agent_registry`)
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getProvider() 🟢
 
 Returns the underlying ethers.js provider.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 getProvider(): JsonRpcProvider
@@ -280,11 +396,30 @@ const blockNumber = await provider.getBlockNumber();
 console.log('Current block:', blockNumber);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+provider = client.w3  # Web3 instance
+block_number = provider.eth.block_number
+print("Current block:", block_number)
+```
+
+#### Returns
+
+`Web3` - web3.py HTTP provider configured for the selected network
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getBlockNumber() 🟢
 
 Returns the current block number.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getBlockNumber(): Promise<number>
@@ -305,11 +440,29 @@ const blockNumber = await client.getBlockNumber();
 console.log('Block:', blockNumber);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+block_number = client.w3.eth.block_number
+print("Block:", block_number)
+```
+
+#### Returns
+
+`int` - Current block number
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getGasPrice()
 
 Returns the current gas price.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getGasPrice(): Promise<bigint>
@@ -330,6 +483,21 @@ const gasPrice = await client.getGasPrice();
 console.log('Gas price:', gasPrice.toString(), 'wei');
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+gas_price = client.w3.eth.gas_price
+print("Gas price:", gas_price, "wei")
+```
+
+#### Returns
+
+`int` - Gas price in wei
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### fundTransaction()
@@ -337,6 +505,9 @@ console.log('Gas price:', gasPrice.toString(), 'wei');
 <span className="badge badge--success">🟢 Basic</span>
 
 Convenience method that approves USDC and links escrow in one call. This is the recommended way to fund a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async fundTransaction(txId: string): Promise<string>
@@ -378,6 +549,45 @@ console.log('Escrow ID:', escrowId);
 // Transaction is now COMMITTED and ready for provider to work
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Create transaction first
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    amount=100_000_000,  # 100 USDC
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+
+# Fund the transaction (approves USDC + links escrow)
+escrow_id = client.fund_transaction(tx_id)
+print("Escrow ID:", escrow_id)
+
+# Transaction is now COMMITTED and ready for provider to work
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID (bytes32 hex string) |
+
+#### Returns
+
+`str` - Escrow ID created (bytes32 hex string)
+
+#### Throws
+
+- `ValidationError` - Invalid tx/state/deadline
+- `TransactionError` / `RpcError` - On-chain failures
+
+</TabItem>
+</Tabs>
+
 #### Notes
 
 - Validates that transaction exists and is in INITIATED or QUOTED state
@@ -399,6 +609,9 @@ console.log('Escrow ID:', escrowId);
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Releases escrow with EAS attestation verification. This is the secure way to settle transactions.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async releaseEscrowWithVerification(
@@ -437,8 +650,37 @@ const client = await ACTPClient.create({
 const tx = await client.kernel.getTransaction(txId);
 
 // Verify and release in one secure call
-await client.releaseEscrowWithVerification(txId, attestationUID);
+await client.releaseEscrowWithVerification(txId, tx.attestationUID);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Client must be initialized with EAS config (preconfigured for Base Sepolia)
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+)
+
+# Verify and release in one secure call
+client.release_escrow_with_verification(tx_id, attestation_uid)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID to settle |
+| `attestation_uid` | `str` | Yes | EAS attestation UID to verify |
+
+#### Throws
+
+- `ValidationError` / `TransactionError` - On invalid inputs or failed verification
+- `RpcError` - If transaction fails on-chain
+
+</TabItem>
+</Tabs>
 
 #### Security Notes
 
@@ -466,6 +708,9 @@ The kernel module handles ACTP transaction lifecycle management.
 
 Creates a new ACTP transaction between a requester and provider.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 async createTransaction(params: CreateTransactionParams): Promise<string>
 ```
@@ -479,7 +724,7 @@ async createTransaction(params: CreateTransactionParams): Promise<string>
 | `params.amount` | `bigint` | Yes | Amount in USDC (6 decimals). Use `parseUnits('10', 6)` for 10 USDC |
 | `params.deadline` | `number` | Yes | Unix timestamp when transaction expires |
 | `params.disputeWindow` | `number` | Yes | Seconds for dispute window after delivery |
-| `params.metadata` | `string` | No | Optional bytes32 service hash/metadata |
+| `params.metadata` | `string` | No | Optional bytes32 service hash/quote hash (stored as `serviceHash`) |
 
 #### Returns
 
@@ -513,6 +758,54 @@ console.log('Transaction ID:', txId);
 // Output: Transaction ID: 0x1234...abcd
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import ACTPClient, Network
+
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+)
+
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    amount=100_000_000,  # 100 USDC (6 decimals)
+    deadline=client.now() + 86400,  # 24 hours
+    dispute_window=7200,  # 2 hours
+    service_hash="0x" + "00" * 32,
+)
+
+print("Transaction ID:", tx_id)
+# Output: Transaction ID: 0x1234...abcd
+```
+
+#### Parameters (Python)
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `requester` | `str` | Yes | Requester address (payer, must match signer) |
+| `provider` | `str` | Yes | Provider address (payee) |
+| `amount` | `int` | Yes | Amount in USDC base units (6 decimals) |
+| `deadline` | `int` | Yes | Unix timestamp expiry |
+| `dispute_window` | `int` | Yes | Seconds for dispute window |
+| `service_hash` | `str` | No | Optional bytes32 hash |
+
+#### Returns
+
+`str` - Transaction ID (bytes32 hex)
+
+#### Throws
+
+- `ValidationError` - Invalid params (amount, deadline, addresses)
+- `DeadlineError` - If deadline is not in future
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
 #### Notes
 
 - Transaction starts in `INITIATED` state
@@ -534,6 +827,9 @@ console.log('Transaction ID:', txId);
 
 Retrieves transaction details by ID.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 async getTransaction(txId: string): Promise<Transaction>
 ```
@@ -554,11 +850,15 @@ interface Transaction {
   amount: bigint;         // Amount in USDC (6 decimals)
   state: State;           // Current state (0-7)
   createdAt: number;      // Creation timestamp
+  updatedAt: number;      // Last update timestamp
   deadline: number;       // Deadline timestamp
   disputeWindow: number;  // Dispute window in seconds
   escrowContract: string; // Linked escrow contract address
   escrowId: string;       // Escrow ID
-  metadata: string;       // Service hash/quote hash
+  serviceHash: string;    // Service hash (quote hash if QUOTED)
+  attestationUID: string; // EAS attestation UID (delivery proof)
+  metadata: string;       // Optional metadata (quote hash for QUOTED)
+  platformFeeBpsLocked: number; // Platform fee bps locked at creation
 }
 ```
 
@@ -577,11 +877,28 @@ console.log('Provider:', tx.provider);
 console.log('Deadline:', new Date(tx.deadline * 1000));
 ```
 
-#### See Also
+</TabItem>
+<TabItem value="py" label="Python">
 
-- [Transaction interface](#transaction) - Full type definition
-- [State enum](#state) - State values
-- [events.getTransactionHistory()](#gettransactionhistory) - Get all transactions
+```python
+tx = client.get_transaction(tx_id)
+
+print("State:", tx.state.name)          # "COMMITTED"
+print("Amount:", tx.amount)             # 100000000
+print("Provider:", tx.provider)
+print("Deadline:", tx.deadline)         # Unix timestamp
+```
+
+#### Returns
+
+`TransactionView` dataclass (`transaction_id`, `requester`, `provider`, `state`, `amount`, `created_at`, `updated_at`, `deadline`, `service_hash`, `escrow_contract`, `escrow_id`, `attestation_uid`, `dispute_window`, `metadata`, `platform_fee_bps_locked`)
+
+#### Throws
+
+- `TransactionError` / `RpcError` - If transaction not found or RPC fails
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -590,6 +907,9 @@ console.log('Deadline:', new Date(tx.deadline * 1000));
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Transitions a transaction to a new state.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async transitionState(
@@ -623,6 +943,35 @@ await client.kernel.transitionState(txId, State.IN_PROGRESS);
 // Provider delivers result
 await client.kernel.transitionState(txId, State.DELIVERED, proofData);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import State
+
+# Provider marks work as in progress
+client.transition_state(tx_id, State.IN_PROGRESS)
+
+# Provider delivers result
+client.transition_state(tx_id, State.DELIVERED, proof_bytes_or_hex)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `new_state` | `State` | Yes | Target state |
+| `proof` | `Union[str, bytes]` | No | Optional proof data for DELIVERED/DISPUTED |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If transition not allowed
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
 
 #### State Machine
 
@@ -660,6 +1009,9 @@ await providerClient.kernel.transitionState(txId, State.QUOTED, quoteProof);
 
 Links an escrow to a transaction, transitioning it to COMMITTED state.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 async linkEscrow(
   txId: string,
@@ -696,6 +1048,41 @@ const escrowId = id(`escrow-${txId}-${Date.now()}`);
 await client.kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import secrets
+
+# First approve USDC
+client.usdc.functions.approve(
+    client.config.escrow_vault,
+    100_000_000,  # amount in USDC (6 decimals)
+).transact({"from": client.address})
+
+# Generate unique escrow ID
+escrow_id = secrets.token_hex(32)
+
+# Link escrow (auto-transitions to COMMITTED)
+client.link_escrow(tx_id, escrow_contract=client.config.escrow_vault, escrow_id=escrow_id)
+```
+
+#### Parameters (Python)
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `escrow_contract` | `str` | Yes | EscrowVault contract address |
+| `escrow_id` | `str` | Yes | Unique escrow identifier (bytes32 hex) |
+
+#### Throws
+
+- `ValidationError` - If parameters invalid
+- `TransactionError` / `RpcError` - If approval/link fails on-chain
+
+</TabItem>
+</Tabs>
+
 #### Notes
 
 - Consumer must approve USDC to EscrowVault BEFORE calling linkEscrow
@@ -707,6 +1094,9 @@ await client.kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 ### releaseMilestone()
 
 Releases a partial milestone payment.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async releaseMilestone(txId: string, amount: bigint): Promise<void>
@@ -738,11 +1128,40 @@ await client.kernel.releaseMilestone(txId, parseUnits('25', 6));
 await client.kernel.releaseMilestone(txId, parseUnits('25', 6));
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Release partial payment of 25 USDC
+client.release_milestone(tx_id, 25_000_000)
+
+# Release another 25 USDC later
+client.release_milestone(tx_id, 25_000_000)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `amount` | `int` | Yes | Amount to release in USDC base units (6 decimals) |
+
+#### Throws
+
+- `ValidationError` - If amount invalid or exceeds remaining escrow
+- `TransactionError` / `RpcError` - If contract reverts
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### releaseEscrow()
 
 Releases full escrow to settle the transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async releaseEscrow(txId: string): Promise<void>
@@ -764,6 +1183,27 @@ async releaseEscrow(txId: string): Promise<void>
 ```typescript
 await client.kernel.releaseEscrow(txId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.release_escrow(tx_id)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID to settle |
+
+#### Throws
+
+- `ValidationError` - If tx_id is invalid or state not DELIVERED
+- `TransactionError` / `RpcError` - If contract reverts
+
+</TabItem>
+</Tabs>
 
 #### Security Warning
 
@@ -795,6 +1235,172 @@ await requesterClient.kernel.transitionState(txId, State.DISPUTED, '0x');
 
 ---
 
+### deliver() (Convenience)
+
+Provider helper to mark work as delivered with optional dispute window override.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+Not available as a convenience helper in TS; use `transitionState(txId, State.DELIVERED, proof)` directly.
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.deliver(
+    tx_id,
+    dispute_window_seconds=3600,  # optional override
+)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `dispute_window_seconds` | `int` | No | Optional override |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If not in IN_PROGRESS
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
+---
+
+### dispute() (Convenience)
+
+Raise a dispute on a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+Not available as a convenience helper in TS; use `transitionState(txId, State.DISPUTED, proof)` during dispute window.
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.dispute(tx_id)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If not in DELIVERED during dispute window
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
+---
+
+### cancel() (Convenience)
+
+Cancel a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+Not available as a convenience helper in TS; use `transitionState(txId, State.CANCELLED, proof)` respecting cancellation rules.
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.cancel(tx_id, proof=b"timeout")
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `proof` | `Union[str, bytes]` | No | Optional cancellation proof |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If cancellation not allowed from current state
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
+---
+
+### dispute() (Convenience)
+
+Raise a dispute on a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+Not available as a convenience helper in TS; use `transitionState(txId, State.DISPUTED, proof)` during dispute window.
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.dispute(tx_id)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If not in DELIVERED during dispute window
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
+---
+
+### cancel() (Convenience)
+
+Cancel a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+Not available as a convenience helper in TS; use `transitionState(txId, State.CANCELLED, proof)` respecting cancellation rules.
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.cancel(tx_id, proof=b"timeout")
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `proof` | `Union[str, bytes]` | No | Optional cancellation proof |
+
+#### Throws
+
+- `InvalidStateTransitionError` - If cancellation not allowed from current state
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
+---
+
 ### resolveDispute()
 
 :::danger Admin-Only in V1
@@ -817,11 +1423,49 @@ function resolveDispute(
 
 Regular users cannot call this method. Contact protocol admin to resolve disputes in V1.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+// Admin-only
+await client.kernel.resolveDispute(txId, {
+  requesterAmount: parseUnits('2.5', 6),
+  providerAmount: parseUnits('7', 6),
+  mediatorAmount: parseUnits('0.5', 6),
+  mediator: await client.getAddress()
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.resolve_dispute(
+    tx_id,
+    requester_amount=250_000,   # example split
+    provider_amount=700_000,
+    mediator_amount=50_000,
+    mediator=client.address,
+)
+```
+
+#### Throws
+
+- `InvalidStateTransitionError` - If transaction not in DISPUTED
+- `ValidationError` - Invalid amounts/mediator
+- `TransactionError` / `RpcError` - On-chain failure
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### anchorAttestation()
 
 Anchors an EAS attestation UID to a transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async anchorAttestation(
@@ -850,6 +1494,29 @@ const attestation = await client.eas!.attestDeliveryProof(proof, recipient);
 await client.kernel.anchorAttestation(txId, attestation.uid);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# After creating EAS attestation (if using EAS client separately)
+client.anchor_attestation(tx_id, attestation_uid)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Transaction ID |
+| `attestation_uid` | `str` | Yes | EAS attestation UID (bytes32 hex) |
+
+#### Throws
+
+- `ValidationError` - If UID format invalid
+- `TransactionError` / `RpcError` - If contract reverts
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getEconomicParams()
@@ -861,6 +1528,9 @@ The contract does **not** have a `getEconomicParams()` function. Economic parame
 <span className="badge badge--secondary">🔮 Planned</span>
 
 **V1 Alternative:** Query individual contract variables directly:
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // V1: Read individual public variables from contract
@@ -875,6 +1545,23 @@ const feePercent = Number(platformFeeBps) / 100;
 console.log('Platform fee:', feePercent + '%'); // "Platform fee: 1%"
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+kernel = client.kernel  # web3.py Contract
+
+platform_fee_bps = kernel.functions.platformFeeBps().call()
+fee_recipient = kernel.functions.feeRecipient().call()
+requester_penalty_bps = kernel.functions.requesterPenaltyBps().call()
+
+fee_percent = platform_fee_bps / 100
+print(f"Platform fee: {fee_percent}%")  # "Platform fee: 1%"
+```
+
+</TabItem>
+</Tabs>
+
 **Available public variables in V1:**
 - `platformFeeBps` - Platform fee in basis points (100 = 1%)
 - `feeRecipient` - Address receiving platform fees
@@ -886,6 +1573,9 @@ console.log('Platform fee:', feePercent + '%'); // "Platform fee: 1%"
 ### estimateCreateTransaction()
 
 Estimates gas for transaction creation.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async estimateCreateTransaction(
@@ -911,11 +1601,36 @@ const gas = await client.kernel.estimateCreateTransaction({
 console.log('Estimated gas:', gas.toString());
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+gas = client.estimate_create_transaction(
+    requester=client.address,
+    provider="0x742d35...",
+    amount=100_000_000,
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+print("Estimated gas:", gas)
+```
+
+#### Returns
+
+`int` - Estimated gas units
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getAddress()
 
 Returns the ACTPKernel contract address.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 getAddress(): string
@@ -924,6 +1639,21 @@ getAddress(): string
 #### Returns
 
 `string` - Contract address
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+kernel_address = client.kernel.address
+print(kernel_address)
+```
+
+#### Returns
+
+`str` - Contract address
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -934,6 +1664,9 @@ The escrow module handles USDC token approvals and escrow state queries.
 ### approveToken()
 
 Approves USDC tokens for escrow creation.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async approveToken(tokenAddress: string, amount: bigint): Promise<void>
@@ -960,6 +1693,35 @@ const amount = parseUnits('100', 6);
 await client.escrow.approveToken(config.contracts.usdc, amount);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+config = client.config
+amount = 100_000_000  # 100 USDC
+
+tx_hash = client.usdc.functions.approve(
+    config.escrow_vault,
+    amount,
+).transact({"from": client.address})
+client.w3.eth.wait_for_transaction_receipt(tx_hash)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `token_address` | `str` | Yes | USDC contract address |
+| `amount` | `int` | Yes | Amount to approve (6 decimals) |
+
+#### Throws
+
+- `ValidationError` - If address or amount invalid
+- `RpcError` / `TransactionError` - If approval fails
+
+</TabItem>
+</Tabs>
+
 #### Notes
 
 - Must be called BEFORE `linkEscrow()`
@@ -971,6 +1733,9 @@ await client.escrow.approveToken(config.contracts.usdc, amount);
 ### getEscrow()
 
 Retrieves escrow details by ID.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getEscrow(escrowId: string): Promise<Escrow>
@@ -1005,11 +1770,36 @@ console.log('Amount locked:', escrow.amount.toString());
 console.log('Released:', escrow.released);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+is_active, escrow_amount = client.get_escrow_status(
+    None,
+    escrow_id,
+    expected_requester=None,
+    expected_provider=None,
+    expected_amount=None,
+)
+print("Is active:", is_active)
+print("Amount locked:", escrow_amount)
+```
+
+#### Returns
+
+`Tuple[bool, int]` - `(is_active, amount)`; detailed escrow struct is not exposed on-chain (mapping is private), use events for full details
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getEscrowBalance()
 
 Gets the locked balance of an escrow.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getEscrowBalance(escrowId: string): Promise<bigint>
@@ -1019,11 +1809,35 @@ async getEscrowBalance(escrowId: string): Promise<bigint>
 
 `Promise<bigint>` - Locked amount in USDC
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+is_active, escrow_amount = client.get_escrow_status(
+    None,
+    escrow_id,
+    expected_requester=None,
+    expected_provider=None,
+    expected_amount=None,
+)
+print("Escrow balance:", escrow_amount)
+```
+
+#### Returns
+
+`int` - Locked amount in USDC base units (6 decimals)
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### releaseEscrow()
 
 Releases escrow to specified recipients (only callable by authorized kernel).
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async releaseEscrow(
@@ -1046,11 +1860,41 @@ async releaseEscrow(
 - `ValidationError` - If arrays length mismatch or invalid values
 - `TransactionRevertedError` - If not authorized or other error
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+client.escrow_release(
+    escrow_id,
+    recipients=["0xProvider", "0xPlatform"],
+    amounts=[99_000_000, 1_000_000],
+)
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `escrow_id` | `str` | Yes | Escrow ID |
+| `recipients` | `list[str]` | Yes | Array of recipient addresses |
+| `amounts` | `list[int]` | Yes | Amounts (6 decimals), length must match recipients |
+
+#### Throws
+
+- `ValidationError` - If arrays mismatch or invalid values
+- `TransactionError` / `RpcError` - If not authorized or other error
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getTokenBalance()
 
 Gets USDC balance of an address.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getTokenBalance(
@@ -1073,11 +1917,29 @@ const balance = await client.escrow.getTokenBalance(
 console.log('USDC balance:', balance.toString());
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+balance = client.usdc.functions.balanceOf(client.address).call()
+print("USDC balance:", balance)
+```
+
+#### Returns
+
+`int` - Token balance (base units, 6 decimals)
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getTokenAllowance()
 
 Gets USDC allowance for a spender.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getTokenAllowance(
@@ -1102,15 +1964,47 @@ const allowance = await client.escrow.getTokenAllowance(
 console.log('Approved:', allowance.toString());
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+allowance = client.usdc.functions.allowance(
+    client.address,
+    client.config.escrow_vault,
+).call()
+print("Approved:", allowance)
+```
+
+#### Returns
+
+`int` - Approved allowance
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getAddress()
 
 Returns the EscrowVault contract address.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 getAddress(): string
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+escrow_address = client.config.escrow_vault
+print(escrow_address)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1123,6 +2017,9 @@ The EAS module handles Ethereum Attestation Service operations. Only available i
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Creates an EAS attestation for a delivery proof.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async attestDeliveryProof(
@@ -1169,11 +2066,26 @@ const attestation = await client.eas!.attestDeliveryProof(
 console.log('Attestation UID:', attestation.uid);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Python SDK does not wrap EAS attestation creation.
+# Use the EAS contract via web3.py if you need to create attestations,
+# then anchor the UID on-chain with client.anchor_attestation(tx_id, uid).
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### revokeAttestation()
 
 Revokes a previously created attestation.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async revokeAttestation(uid: string): Promise<string>
@@ -1189,11 +2101,22 @@ async revokeAttestation(uid: string): Promise<string>
 
 `Promise<string>` - Revocation transaction hash
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+Python SDK does not provide `revoke_attestation`; use EAS directly via web3.py if needed.
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getAttestation()
 
 Fetches attestation data from EAS contract.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getAttestation(uid: string): Promise<Attestation>
@@ -1203,11 +2126,22 @@ async getAttestation(uid: string): Promise<Attestation>
 
 Attestation object with uid, schema, recipient, attester, time, expirationTime, revocable, refUID, data, bump fields.
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+Python SDK does not expose `get_attestation`; use EAS contracts directly if needed.
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### verifyDeliveryAttestation()
 
 Verifies that an attestation is valid for a specific transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async verifyDeliveryAttestation(
@@ -1242,17 +2176,175 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+attestation = client.verify_delivery_attestation(tx_id, attestation_uid)
+print("Attestation UID:", attestation[0].hex())  # tuple[uid, schema, refUID, time, ...]
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tx_id` | `str` | Yes | Expected transaction ID |
+| `attestation_uid` | `str` | Yes | Attestation UID to verify |
+
+#### Returns
+
+`tuple` - Attestation tuple from EAS (`uid, schema, refUID, time, expirationTime, revocationTime, recipient, attester, data`)
+
+#### Throws
+
+- `ValidationError` - If UID format invalid
+- `TransactionError` / `RpcError` - If attestation not found, revoked, expired, schema mismatch, or txId mismatch
+
+</TabItem>
+</Tabs>
+
+---
+
+## client.agentRegistry
+
+Agent Registry helpers (AIP-7) for registering and managing agent metadata.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+// Initialized automatically when network config includes agentRegistry
+const registry = client.registry!;
+
+const serviceType = 'text-generation';
+const serviceTypeHash = registry.computeServiceTypeHash(serviceType);
+
+await registry.registerAgent({
+  endpoint: 'https://agent.example.com/webhook',
+  serviceDescriptors: [{
+    serviceType,
+    serviceTypeHash,
+    schemaURI: 'ipfs://QmSchema...',
+    minPrice: 1_000_000n,    // 1 USDC
+    maxPrice: 50_000_000n,   // 50 USDC
+    avgCompletionTime: 120,  // seconds
+    metadataCID: 'QmMetadata...'
+  }]
+});
+
+// Pagination-aware query (AIP-7 signature)
+const agents = await registry.queryAgentsByService({
+  serviceTypeHash,
+  minReputation: 5000,
+  offset: 0,
+  limit: 50
+});
+
+// DID helpers (chain-bound, lowercase)
+const did = await registry.buildDID(await client.getAddress()); // did:ethr:<chainId>:<addr>
+const profile = await registry.getAgentByDID(did);
+```
+
+#### Methods (TypeScript)
+- `registerAgent(params: { endpoint, serviceDescriptors[] })`
+- `updateEndpoint(newEndpoint: string)`
+- `addServiceType(serviceType: string)`
+- `removeServiceType(serviceTypeHash: string)`
+- `setActiveStatus(isActive: boolean)`
+- `getAgent(address: string)`
+- `getAgentByDID(did: string)`
+- `getServiceDescriptors(address: string)`
+- `queryAgentsByService({ serviceTypeHash, minReputation, offset, limit })`
+- `supportsService(address: string, serviceTypeHash: string)`
+- `computeServiceTypeHash(serviceType: string)`
+- `buildDID(address: string)`
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Compute required hash (lowercase service type)
+service_type = "text-generation"
+service_type_hash = client.compute_service_type_hash(service_type)
+
+# (Optional) validate descriptors client-side before sending on-chain
+descriptors = [{
+    "serviceType": service_type,
+    "serviceTypeHash": service_type_hash,
+    "schemaURI": "ipfs://QmSchema...",
+    "minPrice": 1_000_000,       # 1 USDC
+    "maxPrice": 50_000_000,      # 50 USDC
+    "avgCompletionTime": 120,    # seconds
+    "metadataCID": "QmMetadata..."
+}]
+client.validate_service_descriptors(descriptors)
+
+# Register agent (AIP-7)
+client.register_agent(
+    endpoint="https://agent.example.com/webhook",
+    service_descriptors=descriptors,
+)
+
+# Query with pagination (AIP-7 signature)
+agents = client.query_agents_by_service(
+    service_type_hash=service_type_hash,
+    min_reputation=5000,
+    offset=0,
+    limit=50,
+)
+
+# DID helpers (chain-bound, lowercase)
+did = client.build_did(client.address)               # did:ethr:<chainId>:<addr>
+profile = client.get_agent_by_did(did)
+
+# Other helpers
+client.update_endpoint("https://agent.example.com/new-webhook")
+client.add_service_type("compute")
+client.remove_service_type("0x" + "ab"*32)
+client.set_active_status(True)
+services = client.get_service_descriptors("0xAgentAddress")
+```
+
+#### Methods (Python)
+
+- `register_agent(endpoint: str, service_descriptors: list[dict])`
+- `update_endpoint(new_endpoint: str)`
+- `add_service_type(service_type: str)`
+- `remove_service_type(service_type_hash: Union[str, bytes])`
+- `set_active_status(is_active: bool)`
+- `get_agent(agent_address: str)`
+- `get_agent_by_did(did: str)`
+- `get_service_descriptors(agent_address: str)`
+- `query_agents_by_service(service_type_hash: str, min_reputation=0, offset=0, limit=100)`
+- `supports_service(agent_address: str, service_type_hash: str)`
+- `compute_service_type_hash(service_type: str)`
+- `validate_service_descriptors(descriptors: list[dict])`
+- `build_did(address: str)`
+
+</TabItem>
+</Tabs>
+
+:::note DID validation (AIP-7)
+Both SDKs enforce full `did:ethr:<chainId>:<lowercase-address>` format and reject mismatched chain IDs when calling `getAgentByDID`. Always include the chain ID and lowercase address.
+:::
+
 ---
 
 ## client.events
 
 The events module provides real-time blockchain event monitoring.
 
+:::info Python SDK
+Python SDK uses web3.py filters; polling examples are provided in PY tabs. There are no built-in async watchers yet.
+:::
 ### watchTransaction()
 
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Watches for state changes on a specific transaction.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 watchTransaction(
@@ -1287,6 +2379,28 @@ const unsubscribe = client.events.watchTransaction(txId, (state) => {
 unsubscribe();
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+event_filter = client.kernel.events.StateTransitioned.create_filter(
+    argument_filters={"transactionId": tx_id},
+    fromBlock="latest",
+)
+
+def poll():
+    for evt in event_filter.get_new_entries():
+        to_state = evt["args"]["toState"]
+        print("New state:", to_state)
+        if to_state == State.DELIVERED:
+            print("Provider delivered!")
+
+# Call poll() periodically; no built-in watcher helper in Python yet.
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### waitForState()
@@ -1294,6 +2408,9 @@ unsubscribe();
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Waits for a transaction to reach a specific state.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async waitForState(
@@ -1332,11 +2449,35 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import time
+from agirails_sdk import State
+
+def wait_for_state(tx_id: str, target: State, timeout_seconds: int = 60):
+    start = time.time()
+    while True:
+        tx = client.get_transaction(tx_id)
+        if tx.state == target:
+            return tx
+        if time.time() - start > timeout_seconds:
+            raise TimeoutError(f"Timed out waiting for state {target}")
+        time.sleep(5)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getTransactionHistory()
 
 Gets all transactions for an address.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async getTransactionHistory(
@@ -1372,11 +2513,32 @@ const myJobs = await client.events.getTransactionHistory(
 );
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from web3 import Web3
+
+# Build history via event filters on TransactionCreated
+created_filter = client.kernel.events.TransactionCreated.create_filter(
+    argument_filters={"requester": client.address},
+    fromBlock="earliest",
+)
+tx_ids = [evt["args"]["transactionId"] for evt in created_filter.get_all_entries()]
+txs = [client.get_transaction(tx_id) for tx_id in tx_ids]
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### onTransactionCreated()
 
 Subscribes to all new transaction creation events.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 onTransactionCreated(
@@ -1400,11 +2562,37 @@ const unsubscribe = client.events.onTransactionCreated((tx) => {
 unsubscribe();
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Python SDK: use event filter and poll
+created_filter = client.kernel.events.TransactionCreated.create_filter(
+    fromBlock="latest",
+)
+
+def poll_created():
+    for evt in created_filter.get_new_entries():
+        tx_id = evt["args"]["transactionId"]
+        provider = evt["args"]["provider"]
+        requester = evt["args"]["requester"]
+        amount = evt["args"]["amount"]
+        print("New transaction:", tx_id, provider, requester, amount)
+
+# Call poll_created() periodically.
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### onStateChanged()
 
 Subscribes to all state change events.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 onStateChanged(
@@ -1424,11 +2612,33 @@ const unsubscribe = client.events.onStateChanged((txId, from, to) => {
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+state_filter = client.kernel.events.StateTransitioned.create_filter(
+    fromBlock="latest",
+)
+
+def poll_state_changes():
+    for evt in state_filter.get_new_entries():
+        tx_id = evt["args"]["transactionId"]
+        from_state = evt["args"]["fromState"]
+        to_state = evt["args"]["toState"]
+        print(f"{tx_id}: {from_state} -> {to_state}")
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### onEscrowReleased()
 
 Subscribes to escrow release events.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 onEscrowReleased(
@@ -1440,11 +2650,43 @@ onEscrowReleased(
 
 `() => void` - Cleanup function
 
+#### Example
+
+```typescript
+const unsubscribe = client.events.onEscrowReleased((txId, amount) => {
+  console.log(`Escrow released for ${txId}: ${amount.toString()}`);
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+event_filter = client.kernel.events.EscrowReleased.create_filter(fromBlock="latest")
+
+def poll_escrow_released():
+    for evt in event_filter.get_new_entries():
+        tx_id = evt["args"]["transactionId"]
+        amount = evt["args"]["amount"]
+        print(f"Escrow released for {tx_id}: {amount}")
+```
+
+#### Returns
+
+Manual polling; implement your own loop/scheduler.
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## client.quote
 
 The quote builder module handles AIP-2 price quote construction.
+
+:::info Python SDK
+Python SDK exposes quote helpers via `MessageSigner` + `QuoteBuilder`. See Python tabs below.
+:::
 
 ### build()
 
@@ -1498,6 +2740,9 @@ interface QuoteMessage {
 
 #### Example
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const quote = await client.quote.build({
   txId,
@@ -1517,11 +2762,47 @@ const quote = await client.quote.build({
 console.log('Quote signature:', quote.signature);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os, time
+from agirails_sdk.message_signer import MessageSigner
+from agirails_sdk.quote_builder import QuoteBuilder
+
+signer = MessageSigner(private_key=os.getenv("PRIVATE_KEY"))
+signer.init_domain(kernel_address=config.contracts.actpKernel, chain_id=84532)
+builder = QuoteBuilder(signer)
+
+quote = builder.build(
+    tx_id=tx_id,
+    provider="did:ethr:84532:0xProvider...",
+    consumer="did:ethr:84532:0xConsumer...",
+    quoted_amount="7500000",   # $7.50 USDC
+    original_amount="5000000", # $5.00 original offer
+    max_price="10000000",      # $10.00 maximum
+    chain_id=84532,
+    kernel_address=config.contracts.actpKernel,
+    justification={
+        "reason": "Additional compute resources required",
+        "estimatedTime": 300,
+    },
+)
+
+print("Quote signature:", quote["signature"])
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### verify()
 
 Verifies a quote's signature and business rules.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async verify(
@@ -1556,11 +2837,35 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.quote_builder import QuoteBuilder
+from agirails_sdk.message_signer import MessageSigner
+
+signer = MessageSigner(private_key=os.getenv("PRIVATE_KEY"))
+signer.init_domain(kernel_address=config.contracts.actpKernel, chain_id=84532)
+builder = QuoteBuilder(signer)
+
+try:
+    builder.verify(quote, config.contracts.actpKernel)
+    print("Quote is valid!")
+except Exception as error:
+    print("Invalid quote:", error)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### computeHash()
 
 Computes the keccak256 hash of a quote for on-chain storage.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 computeHash(quote: QuoteMessage): string
@@ -1576,6 +2881,21 @@ computeHash(quote: QuoteMessage): string
 const quoteHash = client.quote.computeHash(quote);
 await client.kernel.submitQuote(txId, quoteHash);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.quote_builder import canonical_json_stringify
+from web3 import Web3
+
+canonical = canonical_json_stringify(quote)
+quote_hash = Web3.keccak(text=canonical).hex()
+print("Quote hash:", quote_hash)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1601,11 +2921,18 @@ async uploadToIPFS(quote: QuoteMessage): Promise<string>
 
 The proof generator module creates content hashes and delivery proofs.
 
+:::info Python SDK
+Python SDK exposes proof helpers via `ProofGenerator` (hash, generate, encode/decode, verify, hash_from_url).
+:::
+
 ### hashContent()
 
 <span className="badge badge--success">🟢 Basic</span>
 
 Hashes content using Keccak256.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 hashContent(content: string | Buffer): string
@@ -1628,6 +2955,19 @@ const hash = client.proofGenerator.hashContent('Hello, World!');
 console.log('Content hash:', hash);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.proof_generator import ProofGenerator
+
+hash_hex = ProofGenerator.hash_content("Hello, World!")
+print("Content hash:", hash_hex)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### generateDeliveryProof()
@@ -1635,6 +2975,9 @@ console.log('Content hash:', hash);
 <span className="badge badge--warning">🟡 Intermediate</span>
 
 Generates a complete delivery proof object.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 generateDeliveryProof(params: {
@@ -1685,11 +3028,33 @@ console.log('Content hash:', proof.contentHash);
 console.log('Size:', proof.metadata.size, 'bytes');
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.proof_generator import ProofGenerator
+
+proof = ProofGenerator.generate_delivery_proof(
+    tx_id="0x123...",
+    deliverable="Completed analysis report...",
+    delivery_url="ipfs://Qm...",
+    metadata={"mimeType": "application/json"},
+)
+print("Content hash:", proof["contentHash"])
+print("Size:", proof["metadata"]["size"])
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### encodeProof()
 
 Encodes a proof for on-chain submission.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 encodeProof(proof: DeliveryProof): BytesLike
@@ -1699,11 +3064,30 @@ encodeProof(proof: DeliveryProof): BytesLike
 
 `BytesLike` - ABI-encoded proof data
 
+```typescript
+const encoded = client.proofGenerator.encodeProof(proof);
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.proof_generator import ProofGenerator
+
+encoded = ProofGenerator.encode_proof(proof)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### decodeProof()
 
 Decodes proof data from on-chain.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 decodeProof(proofData: BytesLike): {
@@ -1713,22 +3097,34 @@ decodeProof(proofData: BytesLike): {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.proof_generator import ProofGenerator
+
+decoded = ProofGenerator.decode_proof(encoded_bytes)
+print(decoded["txId"], decoded["contentHash"], decoded["timestamp"])
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### verifyDeliverable()
 
 Verifies deliverable content matches expected hash.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 verifyDeliverable(
   deliverable: string | Buffer,
   expectedHash: string
 ): boolean
-```
 
-#### Example
-
-```typescript
 const isValid = client.proofGenerator.verifyDeliverable(
   deliveredContent,
   proof.contentHash
@@ -1739,19 +3135,50 @@ if (!isValid) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.proof_generator import ProofGenerator
+
+is_valid = ProofGenerator.verify_deliverable(delivered_content, proof["contentHash"])
+if not is_valid:
+    raise ValueError("Content does not match proof!")
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### hashFromUrl()
 
 Fetches content from URL and computes hash.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 async hashFromUrl(url: string): Promise<string>
 ```
 
-#### Returns
+</TabItem>
+<TabItem value="py" label="Python">
 
-`Promise<string>` - Keccak256 hash of fetched content
+```python
+# requires aiohttp
+import asyncio
+from agirails_sdk.proof_generator import ProofGenerator
+
+async def run():
+    h = await ProofGenerator.hash_from_url("https://example.com/file.txt")
+    print(h)
+
+asyncio.run(run())
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -1762,6 +3189,10 @@ Converts a generated `DeliveryProof` to EIP-712 typed data format for signing.
 ```typescript
 toDeliveryProofTypedData(proof: DeliveryProof): DeliveryProofData
 ```
+
+:::info Python SDK
+Python SDK does not expose this helper; build typed data manually if needed when using `MessageSigner.sign_delivery_proof`.
+:::
 
 #### Parameters
 
@@ -1803,12 +3234,31 @@ console.log('Typed data:', typedData);
 
 The message signer module handles EIP-712 message signing for ACTP.
 
+:::info Python SDK
+Python SDK exposes `MessageSigner` helpers (init_domain, sign_quote, sign_delivery_proof, verify).
+:::
+
 ### initDomain()
 
 Initializes the EIP-712 domain (called automatically by ACTPClient.create()).
 
 ```typescript
 async initDomain(kernelAddress: string, chainId?: number): Promise<void>
+```
+
+**Python usage (MessageSigner):**
+
+```python
+from agirails_sdk.message_signer import MessageSigner
+
+signer = MessageSigner(private_key=os.getenv("PRIVATE_KEY"), chain_id=84532)
+signer.init_domain(kernel_address="0xKernelAddress", name="ACTP", version="1.0")
+
+# Sign quote (AIP-2)
+signature = signer.sign_quote(message_dict)
+
+# Sign delivery proof (AIP-4)
+signature_dp = signer.sign_delivery_proof(proof_dict)
 ```
 
 ---
@@ -1861,6 +3311,9 @@ async signDeliveryProof(data: DeliveryProofData): Promise<string>
 
 Signs a delivery proof from ProofGenerator.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 async signGeneratedDeliveryProof(proof: DeliveryProof): Promise<string>
 ```
@@ -1872,11 +3325,31 @@ const proof = client.proofGenerator.generateDeliveryProof({...});
 const signature = await client.messageSigner.signGeneratedDeliveryProof(proof);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.message_signer import MessageSigner
+
+signer = MessageSigner(private_key=os.getenv("PRIVATE_KEY"))
+signer.init_domain(kernel_address="0xKernelAddress", chain_id=84532)
+
+# Sign quote or delivery proof typed data
+quote_signature = signer.sign_quote(quote_message_dict)
+delivery_signature = signer.sign_delivery_proof(delivery_proof_dict)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### verifySignature()
 
 Verifies message signature.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async verifySignature(
@@ -1888,6 +3361,27 @@ async verifySignature(
 #### Returns
 
 `Promise<boolean>` - true if signature is valid
+
+```typescript
+const isValid = await client.messageSigner.verifySignature(message, signature);
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.message_signer import MessageSigner
+
+is_valid = MessageSigner.verify_signature(
+    typed_data,  # EIP-712 typed data dict
+    signature,
+    expected_signer,
+)
+print("Signature valid:", is_valid)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -2245,6 +3739,9 @@ The SDK exports several utility functions for common operations.
 
 Deterministic JSON serialization with sorted keys and no whitespace. Uses `fast-json-stable-stringify` for cross-language compatibility.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { canonicalJsonStringify } from '@agirails/sdk';
 
@@ -2272,11 +3769,34 @@ console.log(canonical);
 // Output: {"a":2,"m":{"a":4,"b":3},"z":1}
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import json
+
+def canonical_json_stringify(obj) -> str:
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"))
+
+obj = {"z": 1, "a": 2, "m": {"b": 3, "a": 4}}
+canonical = canonical_json_stringify(obj)
+print(canonical)
+# Output: {"a":2,"m":{"a":4,"b":3},"z":1}
+```
+
+*Python SDK does not expose a helper; use sorted `json.dumps` as above.*
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### computeCanonicalHash()
 
 Computes Keccak256 hash of canonical JSON representation.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { computeCanonicalHash } from '@agirails/sdk';
@@ -2305,11 +3825,33 @@ console.log(hash);
 // Output: 0x1234...abcd (64 hex chars)
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import json
+from web3 import Web3
+
+def compute_canonical_hash(obj) -> str:
+    canonical = json.dumps(obj, sort_keys=True, separators=(",", ":"))
+    return Web3.keccak(text=canonical).hex()
+
+data = {"result": "success", "value": 42}
+hash_hex = compute_canonical_hash(data)
+print(hash_hex)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### computeResultHash()
 
 Computes hash for delivery proof result data. Alias for `computeCanonicalHash()` with semantic naming for AIP-4.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { computeResultHash } from '@agirails/sdk';
@@ -2336,6 +3878,19 @@ const result = { analysis: 'Complete', score: 95 };
 const hash = computeResultHash(result);
 // Use in delivery proof
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Alias of compute_canonical_hash in Python example above
+result = {"analysis": "Complete", "score": 95}
+hash_hex = compute_canonical_hash(result)
+print("Result hash:", hash_hex)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -2432,6 +3987,10 @@ interface EIP712Domain {
 }
 ```
 
+:::info Python SDK
+Python SDK does not expose EIP-712 domain helpers; construct manually when signing with eth_account/web3.py if needed.
+:::
+
 ---
 
 ### AIP4DeliveryProofTypes
@@ -2460,6 +4019,9 @@ const AIP4DeliveryProofTypes = {
 
 EIP-712 type definition for legacy delivery proofs (deprecated, use AIP4DeliveryProofTypes).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const DeliveryProofTypes = {
   DeliveryProof: [
@@ -2472,6 +4034,14 @@ const DeliveryProofTypes = {
   ]
 };
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+Python SDK does not expose EIP-712 type constants. For Python signing/verification, use `MessageSigner.sign_delivery_proof` and `ProofGenerator.encode_proof`; construct typed data manually if you need custom EIP-712 verification with `eth_account`.
+
+</TabItem>
+</Tabs>
 
 #### Usage Example
 
@@ -2514,6 +4084,13 @@ const recoveredAddress = verifyTypedData(
 ---
 
 ## Errors
+
+:::info Python SDK
+Python SDK raises `ValidationError`, `TransactionError`, `RpcError`, `InvalidStateTransitionError`, `DeadlineError`, and generic `Exception` equivalents. Map TS errors roughly as:
+- `TransactionRevertedError` → `TransactionError`
+- `NetworkError` → `RpcError`
+- `InsufficientFundsError` → `TransactionError` (with revert reason)
+:::
 
 ### ACTPError
 
@@ -2560,6 +4137,9 @@ try {
 
 Thrown when a transaction ID does not exist.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 class TransactionNotFoundError extends ACTPError {
   constructor(txId: string)
@@ -2578,11 +4158,31 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import ACTPClientError
+
+try:
+    client.get_transaction("0xinvalid...")
+except ACTPClientError as error:
+    # Python SDK does not expose a specific TransactionNotFoundError;
+    # it raises ACTPClientError from RPC; inspect message/code if needed.
+    print("Transaction not found:", error)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### TransactionRevertedError
 
 Thrown when an on-chain transaction reverts.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 class TransactionRevertedError extends ACTPError {
@@ -2605,9 +4205,29 @@ try {
 
 ---
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import TransactionError
+
+try:
+    client.release_escrow(tx_id)
+except TransactionError as error:
+    # Inspect error message / RPC revert reason
+    print("Reverted:", error)
+```
+
+</TabItem>
+</Tabs>
+
+
 ### InvalidStateTransitionError
 
 Thrown for invalid state machine transitions.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 class InvalidStateTransitionError extends ACTPError {
@@ -2631,6 +4251,23 @@ try {
 
 ---
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import InvalidStateTransitionError
+from agirails_sdk import State
+
+try:
+    client.transition_state(tx_id, State.DELIVERED)
+except InvalidStateTransitionError as error:
+    print("Invalid transition:", error)
+```
+
+</TabItem>
+</Tabs>
+
+
 ### NetworkError
 
 Thrown for network connectivity issues.
@@ -2647,6 +4284,9 @@ class NetworkError extends ACTPError {
 
 Thrown when signature verification fails.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 class SignatureVerificationError extends ACTPError {
   constructor(expectedSigner: string, recoveredSigner: string)
@@ -2655,9 +4295,26 @@ class SignatureVerificationError extends ACTPError {
 
 ---
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import ValidationError
+
+# Python SDK surfaces signature validation issues as ValidationError
+# or TransactionError depending on context.
+```
+
+</TabItem>
+</Tabs>
+
+
 ### InsufficientFundsError
 
 Thrown when account has insufficient balance.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 class InsufficientFundsError extends ACTPError {
@@ -2665,11 +4322,30 @@ class InsufficientFundsError extends ACTPError {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import TransactionError
+
+try:
+    client.fund_transaction("0x123...")
+except TransactionError as error:
+    # Inspect revert reason for insufficient funds / allowance
+    print("Insufficient funds or allowance:", error)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### DeadlineExpiredError
 
 Thrown when transaction deadline has passed.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 class DeadlineExpiredError extends ACTPError {
@@ -2679,11 +4355,30 @@ class DeadlineExpiredError extends ACTPError {
 
 ---
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import DeadlineError
+
+try:
+    client.transition_state(tx_id, State.IN_PROGRESS)
+except DeadlineError as error:
+    print("Deadline expired:", error)
+```
+
+</TabItem>
+</Tabs>
+
+
 ## Error Recovery
 
 Best practices for handling errors in production.
 
 ### Retry with Exponential Backoff
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ACTPClient, TransactionRevertedError, NetworkError } from '@agirails/sdk';
@@ -2714,7 +4409,35 @@ const txId = await withRetry(() =>
 );
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import time
+from agirails_sdk.errors import RpcError, TransactionError
+
+def with_retry(fn, max_retries: int = 3, base_delay: float = 1.0):
+    for attempt in range(max_retries):
+        try:
+            return fn()
+        except (RpcError, TransactionError) as error:
+            if attempt == max_retries - 1:
+                raise
+            delay = base_delay * (2 ** attempt)  # 1s, 2s, 4s
+            print(f"Attempt {attempt + 1} failed, retrying in {delay}s...")
+            time.sleep(delay)
+
+# Usage
+tx_id = with_retry(lambda: client.create_transaction(...))
+```
+
+</TabItem>
+</Tabs>
+
 ### Handle Specific Errors
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import {
@@ -2762,7 +4485,42 @@ async function safeCreateTransaction(params: CreateTransactionParams) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import (
+    ValidationError,
+    TransactionError,
+    RpcError,
+    DeadlineError,
+)
+
+def safe_create_transaction(params: dict):
+    try:
+        return client.create_transaction(**params)
+    except ValidationError as error:
+        print("Invalid parameter:", error)
+        raise
+    except RpcError as error:
+        print("Network/RPC error:", error)
+        return with_retry(lambda: client.create_transaction(**params))
+    except TransactionError as error:
+        # Inspect error message; if nonce-related, wait and retry
+        msg = str(error).lower()
+        if "nonce" in msg:
+            time.sleep(2)
+            return client.create_transaction(**params)
+        raise
+```
+
+</TabItem>
+</Tabs>
+
 ### Graceful Degradation
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 async function getTransactionSafe(txId: string): Promise<Transaction | null> {
@@ -2781,6 +4539,26 @@ async function getTransactionSafe(txId: string): Promise<Transaction | null> {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk.errors import ACTPClientError
+
+def get_transaction_safe(tx_id: str):
+    try:
+        return client.get_transaction(tx_id)
+    except ACTPClientError as error:
+        if "not found" in str(error).lower():
+            return None
+        print("Network issue or other error:", error)
+        # fallback: return cached transaction if you maintain one
+        return None
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Constants
@@ -2788,6 +4566,9 @@ async function getTransactionSafe(txId: string): Promise<Transaction | null> {
 ### Contract Addresses
 
 #### Base Sepolia (Testnet)
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { BASE_SEPOLIA } from '@agirails/sdk';
@@ -2799,7 +4580,27 @@ BASE_SEPOLIA.contracts.eas          // "0x42000000000000000000000000000000000000
 BASE_SEPOLIA.chainId                // 84532
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import Network
+
+Network.BASE_SEPOLIA.value  # "base-sepolia"
+Network.BASE_SEPOLIA.contracts.actp_kernel   # "0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba"
+Network.BASE_SEPOLIA.contracts.escrow_vault  # "0x921edE340770db5DB6059B5B866be987d1b7311F"
+Network.BASE_SEPOLIA.contracts.usdc          # "0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb"
+Network.BASE_SEPOLIA.contracts.eas           # "0x4200000000000000000000000000000000000021"
+Network.BASE_SEPOLIA.chain_id                # 84532
+```
+
+</TabItem>
+</Tabs>
+
 #### Base Mainnet
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { BASE_MAINNET } from '@agirails/sdk';
@@ -2808,6 +4609,19 @@ BASE_MAINNET.contracts.usdc  // "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" (Of
 BASE_MAINNET.chainId         // 8453
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import Network
+
+Network.BASE_MAINNET.contracts.usdc   # "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+Network.BASE_MAINNET.chain_id         # 8453
+```
+
+</TabItem>
+</Tabs>
+
 :::warning Mainnet Not Deployed
 ACTPKernel and EscrowVault are not yet deployed to Base Mainnet. The addresses are currently zero addresses.
 :::
@@ -2815,6 +4629,9 @@ ACTPKernel and EscrowVault are not yet deployed to Base Mainnet. The addresses a
 ---
 
 ### State Values
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { State } from '@agirails/sdk';
@@ -2829,9 +4646,31 @@ State.DISPUTED     // 6
 State.CANCELLED   // 7
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import State
+
+State.INITIATED     # 0
+State.QUOTED        # 1
+State.COMMITTED     # 2
+State.IN_PROGRESS   # 3
+State.DELIVERED     # 4
+State.SETTLED       # 5
+State.DISPUTED      # 6
+State.CANCELLED     # 7
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### Network Functions
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { getNetwork, isValidNetwork, NETWORKS } from '@agirails/sdk';
@@ -2847,6 +4686,26 @@ isValidNetwork('ethereum');     // false
 Object.keys(NETWORKS); // ['base-sepolia', 'base-mainnet']
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import Network
+
+# Validate / list networks (Python uses enum)
+Network.BASE_SEPOLIA.name    # "BASE_SEPOLIA"
+Network.BASE_MAINNET.name    # "BASE_MAINNET"
+[n.value for n in Network]    # ['base-sepolia', 'base-mainnet']
+
+# Access config
+net = Network.BASE_SEPOLIA
+net.chain_id                  # 84532
+net.contracts.usdc            # Mock USDC on testnet
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Common Patterns
@@ -2860,6 +4719,9 @@ Object.keys(NETWORKS); // ['base-sepolia', 'base-mainnet']
 ### Pattern 1: Requester Happy Path
 
 Complete flow for a requester creating and settling a payment:
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
@@ -2895,14 +4757,61 @@ async function requesterHappyPath() {
 
   // 4. Get attestation and release
   const tx = await client.kernel.getTransaction(txId);
-  await client.releaseEscrowWithVerification(txId, tx.metadata);
+  await client.releaseEscrowWithVerification(txId, tx.attestationUID);
   console.log('4. Released! Payment complete.');
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import ACTPClient, Network, State
+
+def requester_happy_path():
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("PRIVATE_KEY"),
+    )
+
+    # 1. Create transaction
+    tx_id = client.create_transaction(
+        requester=client.address,
+        provider="0xProviderAddress...",
+        amount=10_000_000,  # 10 USDC
+        deadline=client.now() + 86400,
+        dispute_window=7200,
+        service_hash="0x" + "00" * 32,
+    )
+    print("1. Created:", tx_id)
+
+    # 2. Fund (approve + escrow)
+    escrow_id = client.fund_transaction(tx_id)
+    print("2. Funded:", escrow_id)
+
+    # 3. Poll for delivery (pseudo)
+    print("3. Waiting for delivery...")
+    # Implement event polling or polling get_transaction(tx_id).state until DELIVERED
+
+    # 4. Release with verification (requires attestation UID)
+    tx = client.get_transaction(tx_id)
+    client.release_escrow_with_verification(tx_id, tx.attestation_uid)
+    print("4. Released! Payment complete.")
+```
+
+#### Notes
+- Python SDK does not have wait_for_state; poll events or transaction state.
+- Pass the attestation UID when calling `release_escrow_with_verification`.
+
+</TabItem>
+</Tabs>
+
 ### Pattern 2: Provider Happy Path
 
 Complete flow for a provider accepting and completing work:
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
@@ -2950,9 +4859,49 @@ async function providerHappyPath(txId: string) {
 }
 ```
 
-### Pattern 3: Event-Driven Provider
+</TabItem>
+<TabItem value="py" label="Python">
 
-Watch for new jobs matching your capabilities:
+```python
+import os
+from agirails_sdk import ACTPClient, Network, State
+from agirails_sdk.proof_generator import ProofGenerator
+import json
+
+def provider_happy_path(tx_id: str):
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+    )
+
+    tx = client.get_transaction(tx_id)
+    print("Job amount:", tx.amount)
+
+    # 1. Signal work started
+    client.transition_state(tx_id, State.IN_PROGRESS)
+    print("Started work")
+
+    # 2. Do the work...
+    result = {"status": "done"}
+
+    # 3. Generate delivery proof (optional URL + metadata)
+    proof = ProofGenerator.generate_delivery_proof(
+        tx_id=tx_id,
+        deliverable=json.dumps(result),
+        delivery_url="ipfs://Qm...",
+        metadata={"mimeType": "application/json"},
+    )
+
+    # 4. Deliver (attestation optional in PY SDK; pass encoded proof if desired)
+    client.transition_state(tx_id, State.DELIVERED, ProofGenerator.encode_proof(proof))
+    print("Delivered work. Waiting for payment...")
+```
+
+</TabItem>
+</Tabs>
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
@@ -2981,12 +4930,53 @@ async function eventDrivenProvider() {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+from agirails_sdk import ACTPClient, Network
+
+def event_driven_provider():
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+    )
+    my_address = client.address.lower()
+
+    created_filter = client.kernel.events.TransactionCreated.create_filter(
+        fromBlock="latest",
+    )
+
+    def poll_jobs():
+        for evt in created_filter.get_new_entries():
+            tx_id = evt["args"]["transactionId"]
+            provider = evt["args"]["provider"].lower()
+            amount = evt["args"]["amount"]
+            if provider == my_address:
+                print("New job!", tx_id, "for", amount, "USDC")
+                # Auto-accept jobs under 100 USDC (example)
+                if amount <= 100_000_000:
+                    # handle_job(client, tx_id)  # implement your handler
+                    pass
+
+    print("Listening for jobs...")
+    # Call poll_jobs() in a loop/scheduler
+```
+
+</TabItem>
+</Tabs>
+
 ### Pattern 4: Dispute Handling
 
 Handle disputes as a requester:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
 async function handleDispute(txId: string) {
   const client = await ACTPClient.create({
@@ -3025,9 +5015,51 @@ async function resolveAsMediator(txId: string) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+from agirails_sdk import ACTPClient, Network, State
+
+def handle_dispute(tx_id: str):
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("PRIVATE_KEY"),
+    )
+    tx = client.get_transaction(tx_id)
+    if tx.state == State.DELIVERED:
+        client.raise_dispute(
+            tx_id,
+            "Delivered content did not match specifications",
+            "ipfs://QmEvidenceHash...",
+        )
+        print("Dispute raised. Awaiting mediation.")
+
+def resolve_as_mediator(tx_id: str):
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("MEDIATOR_PRIVATE_KEY"),
+    )
+    # Example split: 70% provider, 25% requester, 5% mediator
+    client.resolve_dispute(
+        tx_id=tx_id,
+        requester_amount=2_500_000,  # 25% of 10 USDC example
+        provider_amount=7_000_000,    # 70%
+        mediator_amount=500_000,      # 5%
+        mediator=client.address,
+    )
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Complete Example
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
@@ -3070,7 +5102,7 @@ async function completeTransaction() {
       const tx = await client.kernel.getTransaction(txId);
 
       // 6. Verify attestation and release escrow
-      await client.releaseEscrowWithVerification(txId, tx.metadata);
+      await client.releaseEscrowWithVerification(txId, tx.attestationUID);
       console.log('Payment released!');
 
       unsubscribe();
@@ -3078,6 +5110,54 @@ async function completeTransaction() {
   });
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+from agirails_sdk import ACTPClient, Network, State
+
+def complete_transaction():
+    # 1. Create client
+    client = ACTPClient(
+        network=Network.BASE_SEPOLIA,
+        private_key=os.getenv("PRIVATE_KEY"),
+    )
+
+    my_address = client.address
+    provider_address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+
+    # 2. Create transaction
+    tx_id = client.create_transaction(
+        requester=my_address,
+        provider=provider_address,
+        amount=10_000_000,  # 10 USDC (6 decimals)
+        deadline=client.now() + 86400,
+        dispute_window=7200,
+        service_hash="0x" + "00" * 32,
+    )
+    print("Created transaction:", tx_id)
+
+    # 3. Fund transaction (approve + link escrow)
+    escrow_id = client.fund_transaction(tx_id)
+    print("Funded with escrow:", escrow_id)
+
+    # 4. Poll for delivery (simple polling example)
+    import time
+    while True:
+        tx = client.get_transaction(tx_id)
+        print("State:", tx.state)
+    if tx.state == State.DELIVERED:
+        # 5. Release escrow with attestation verification if available
+        client.release_escrow_with_verification(tx_id, tx.attestation_uid)
+        print("Payment released!")
+        break
+        time.sleep(5)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

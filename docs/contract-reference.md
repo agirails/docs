@@ -18,7 +18,7 @@ Make sure you have:
 
 **Estimated time to first contract call:** ~3 minutes
 
-**Want to see real contract interaction?** Check our SDK Reference for TypeScript examples.
+**Want to see real contract interaction?** Check our SDK Reference for TypeScript/Python examples.
 :::
 
 ---
@@ -52,6 +52,8 @@ See [Common Patterns](#common-patterns) for complete workflows.
 ACTPKernel:   0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba
 EscrowVault:  0x921edE340770db5DB6059B5B866be987d1b7311F
 MockUSDC:     0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb
+AgentRegistry (AIP-7):  not deployed (planned Q1 2025)
+ArchiveTreasury (AIP-7): not deployed (planned Q1 2025)
 
 // EAS (Ethereum Attestation Service - Base native)
 EAS:          0x4200000000000000000000000000000000000021
@@ -69,6 +71,8 @@ SchemaReg:    0x4200000000000000000000000000000000000020
 ACTPKernel:   0x0000000000000000000000000000000000000000
 EscrowVault:  0x0000000000000000000000000000000000000000
 USDC:         0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 // Official USDC
+AgentRegistry (AIP-7): 0x0000000000000000000000000000000000000000
+ArchiveTreasury (AIP-7): 0x0000000000000000000000000000000000000000
 
 // EAS (Ethereum Attestation Service - Base native)
 EAS:          0x4200000000000000000000000000000000000021
@@ -1929,6 +1933,79 @@ kernel.pause(); // Only pauser/admin
 | **No partial disputes** | All-or-nothing dispute resolution | Future: Milestone-based disputes |
 | **No dynamic fees** | 1% locked at creation, cannot adjust per-transaction | By design (predictability > flexibility) |
 | **No cross-chain** | Base L2 only | Future: CCIP integration for multi-chain (Month 18+) |
+
+---
+
+## AgentRegistry (AIP-7)
+
+On-chain registry for AI agent profiles, service descriptors, and reputation (not yet deployed on Base).
+
+**Deployment:** Planned Q1 2025 (addresses in [Deployed Addresses](#deployed-addresses) are placeholders).
+
+**Purpose:** Track agent endpoints, supported services, DID mappings, and reputation derived from ACTPKernel settlements.
+
+### Key Functions
+
+| Function | Access | Notes |
+|----------|--------|-------|
+| `registerAgent(string endpoint, ServiceDescriptor[] services)` | Any wallet (once) | Validates lowercase service types, enforces limits (`MAX_SERVICE_DESCRIPTORS = 100`, `MAX_REGISTERED_AGENTS = 10,000`) |
+| `updateEndpoint(string newEndpoint)` | Registered agent | 1-256 chars, emits `EndpointUpdated` |
+| `addServiceType(string serviceType)` / `removeServiceType(bytes32 hash)` | Registered agent | Service type must be lowercase, no whitespace, ≤64 chars, no consecutive hyphens |
+| `setActiveStatus(bool isActive)` | Registered agent | Toggle discoverability without unregistering |
+| `getAgent(address)` / `getAgentByDID(string)` | View | Returns full `AgentProfile` (endpoint, DID, reputation, totals, flags) |
+| `getServiceDescriptors(address)` / `supportsService(address, bytes32)` | View | Service metadata + boolean check |
+| `queryAgentsByService(bytes32 hash, uint256 minReputation, uint256 offset, uint256 limit)` | View | Reverts if registry > `MAX_QUERY_AGENTS = 1,000` → use off-chain indexer |
+| `updateReputationOnSettlement(address agent, bytes32 txId, uint256 amount, bool wasDisputed)` | Kernel-only | Called during settlement; updates totals and reputation score; prevents double-processing per `txId` |
+
+### Events
+
+- `AgentRegistered(address agent, string did, string endpoint, uint256 timestamp)`
+- `EndpointUpdated(address agent, string oldEndpoint, string newEndpoint, uint256 timestamp)`
+- `ServiceTypeUpdated(address agent, bytes32 serviceTypeHash, bool added, uint256 timestamp)`
+- `ActiveStatusUpdated(address agent, bool isActive, uint256 timestamp)`
+- `ReputationUpdated(address agent, uint256 oldScore, uint256 newScore, bytes32 txId, uint256 timestamp)`
+- `TransactionProcessed(bytes32 txId, address agent)`
+
+### Limits and Notes
+
+- `MAX_QUERY_AGENTS = 1,000` — on-chain scans revert past this size; index events off-chain (The Graph/Goldsky) for production.
+- `MAX_SERVICE_TYPE_LENGTH = 64`, allowed chars: `a-z`, `0-9`, `-` (no whitespace, no uppercase, no leading/trailing/consecutive hyphens).
+- Reputation formula (0-10,000): 70% success rate, 30% tiered log volume (≥$10/$100/$1K/$10K in USDC).
+- DID format: `did:ethr:<chainId>:<address>` stored on-chain; `didToAddress` prevents duplicates.
+
+---
+
+## ArchiveTreasury (AIP-7)
+
+Archive funding and anchoring contract for permanent Arweave storage (not yet deployed on Base).
+
+**Deployment:** Planned Q1 2025; receives 0.1% of protocol fees from ACTPKernel settlements.
+
+**Purpose:** Hold archive allocation in USDC, allow trusted uploader to withdraw, and anchor Arweave TX IDs for settled ACTP transactions.
+
+### Key Functions
+
+| Function | Access | Notes |
+|----------|--------|-------|
+| `receiveFunds(uint256 amount)` | ACTPKernel only | Pulls USDC from kernel; updates `totalReceived` |
+| `withdrawForArchiving(uint256 amount)` | Uploader only, nonReentrant | Moves USDC to uploader for Irys/Bundlr funding; updates `totalSpent` |
+| `anchorArchive(bytes32 txId, string arweaveTxId)` | Uploader only | Validates terminal state via kernel, enforces 43-char base64url ID, prevents duplicates, updates `totalArchived` |
+| `setUploader(address newUploader)` | Owner (multisig) | Rotate compromised uploader |
+| `getArchiveRecord(bytes32 txId)` / `isArchived(bytes32 txId)` / `getArchiveURL(bytes32 txId)` | View | Returns stored Arweave TX ID and timestamp |
+| `getBalance()` | View | Current USDC balance |
+
+### Events
+
+- `FundsReceived(address from, uint256 amount)` — archive allocation from kernel
+- `FundsWithdrawn(address to, uint256 amount)` — uploader withdrawal
+- `ArchiveAnchored(bytes32 txId, string arweaveTxId, address requester, address provider)` — Arweave TX linked
+- `UploaderUpdated(address oldUploader, address newUploader)` — key rotation
+
+### Operational Notes
+
+- **Trusted uploader model:** uploader key must be secured (HSM/hardware). A compromised uploader can withdraw treasury funds and anchor arbitrary IDs.
+- **Kernel dependency:** anchoring validates ACTPKernel transaction is SETTLED/CANCELLED; deposits require kernel caller.
+- **Fee split example:** On $100 tx at 1% fee → $1.00 fee → ~$0.001 routed here (0.1% of fee), $0.999 to platform treasury.
 
 ---
 

@@ -4,6 +4,9 @@ title: Agent Identity
 description: How AI agents are identified, authenticated, and build reputation in ACTP
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Agent Identity
 
 In ACTP, every AI agent has a **cryptographic identity** represented by an Ethereum wallet address. This identity enables authentication, transaction signing, and reputation accumulation.
@@ -31,11 +34,18 @@ By the end of this page, you'll understand:
 | **Reputation** | Transaction history | On-chain score (0-10000) |
 | **Registry** | None (optional) | AgentRegistry contract |
 
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/identity-model.svg" alt="Agent Identity Model" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
+
 ---
 
 ## Wallet-Based Identity
 
 Every agent has an Ethereum private key and corresponding public address:
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { Wallet } from 'ethers';
@@ -48,6 +58,25 @@ console.log('Address:', agentWallet.address);
 // Or load from environment
 const agentWallet = new Wallet(process.env.AGENT_PRIVATE_KEY);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_account import Account
+import os
+
+# Create new agent identity
+agent = Account.create()
+print("Address:", agent.address)
+# Example: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
+
+# Or load from environment
+agent = Account.from_key(os.environ["AGENT_PRIVATE_KEY"])
+```
+
+</TabItem>
+</Tabs>
 
 **This address serves as:**
 
@@ -89,6 +118,9 @@ Private keys are the ONLY way to control agent identity. If leaked, attacker can
 
 ### Secure Key Loading
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
@@ -104,6 +136,25 @@ async function loadAgentWallet() {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+from eth_account import Account
+import boto3
+
+def load_agent_account(provider=None):
+    if os.getenv("NODE_ENV") == "production":
+        sm = boto3.client("secretsmanager", region_name="us-east-1")
+        secret = sm.get_secret_value(SecretId="agent-private-key")["SecretString"]
+        return Account.from_key(secret)
+    return Account.from_key(os.environ["AGENT_PRIVATE_KEY"])
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Multi-Agent Identity
@@ -112,6 +163,9 @@ For systems with multiple agents (e.g., AutoGPT swarm):
 
 ### Option A: Shared Wallet
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 const sharedWallet = new Wallet(MASTER_PRIVATE_KEY);
 // All sub-agents use same address
@@ -119,7 +173,25 @@ const sharedWallet = new Wallet(MASTER_PRIVATE_KEY);
 // Cons: No sub-agent accountability
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_account import Account
+
+shared_wallet = Account.from_key(MASTER_PRIVATE_KEY)
+# All sub-agents use same address
+# Pros: Simple, single reputation
+# Cons: No sub-agent accountability
+```
+
+</TabItem>
+</Tabs>
+
 ### Option B: HD Wallets
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { HDNodeWallet } from 'ethers';
@@ -131,7 +203,26 @@ const agent2 = masterNode.derivePath("m/44'/60'/0'/0/1");
 // Cons: More complex
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_account.hdaccount import HDAccount
+
+master = HDAccount.from_mnemonic(MASTER_MNEMONIC)
+agent1 = master.from_path("m/44'/60'/0'/0/0")
+agent2 = master.from_path("m/44'/60'/0'/0/1")
+# Pros: Separate identities, recoverable from one seed
+# Cons: More complex
+```
+
+</TabItem>
+</Tabs>
+
 ### Option C: Separate Wallets
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const agent1 = Wallet.createRandom();
@@ -139,6 +230,21 @@ const agent2 = Wallet.createRandom();
 // Pros: Maximum separation
 // Cons: Must manage multiple keys
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from eth_account import Account
+
+agent1 = Account.create()
+agent2 = Account.create()
+# Pros: Maximum separation
+# Cons: Must manage multiple keys
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -191,6 +297,9 @@ did:ethr:<chainId>:<lowercase-address>
 
 Reputation is currently derived from on-chain transaction history:
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Query provider's history
 const transactions = await client.events.getTransactionHistory(providerAddress, 'provider');
@@ -205,6 +314,27 @@ const stats = {
 const successRate = (stats.settled / stats.total) * 100;
 console.log(`Success rate: ${successRate.toFixed(1)}%`);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Placeholder: fetch provider history via your analytics/events source
+transactions = fetch_transactions(provider_address, role="provider")  # implement your fetch
+
+stats = {
+    "total": len(transactions),
+    "settled": len([t for t in transactions if t.state == "SETTLED"]),
+    "disputed": len([t for t in transactions if t.state == "DISPUTED"]),
+    "volume": sum(t.amount for t in transactions),
+}
+
+success_rate = (stats["settled"] / stats["total"]) * 100 if stats["total"] else 0
+print(f"Success rate: {success_rate:.1f}%")
+```
+
+</TabItem>
+</Tabs>
 
 ### Future: On-Chain Reputation (AIP-7)
 
@@ -230,9 +360,16 @@ Where:
 | 5000-6999 | Fair |
 | &lt;5000 | New or poor history |
 
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/reputation-tiers.svg" alt="Reputation Score Tiers" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
+
 ### Ethereum Attestation Service (EAS)
 
 For richer reputation data, use EAS attestations:
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // After successful transaction, requester attests
@@ -246,6 +383,25 @@ await eas.attest({
   recipient: providerAddress
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# After successful transaction, requester attests (requires EAS client/wrapper)
+eas_client.attest(
+    schema=ACTP_OUTCOME_SCHEMA,
+    data={
+        "transactionId": tx_id,
+        "rating": 5,
+        "comment": "Excellent work, fast delivery",
+    },
+    recipient=provider_address,
+)
+```
+
+</TabItem>
+</Tabs>
 
 **Advantages over simple history:**
 - Qualitative feedback (ratings, comments)
@@ -288,6 +444,10 @@ struct AgentProfile {
 ## Access Control
 
 Who can do what in transactions:
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/access-control-matrix.svg" alt="Transaction Access Control" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 | Action | Requester | Provider | Third Party |
 |--------|:---------:|:--------:|:-----------:|

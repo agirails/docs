@@ -1,0 +1,72 @@
+<svg viewBox="0 0 900 410" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="410" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700">Multi-Agent Budget Coordination</text>
+  <text x="450" y="50" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">Central treasury + per-agent spending limits + approval workflows</text>
+
+  <!-- ═══ TREASURY (TOP CENTER) ═══ -->
+  <rect x="325" y="100" width="250" height="100" rx="12" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <rect x="335" y="80" width="230" height="28" rx="6" fill="#8B5CF6"/>
+  <text x="450" y="99" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">BUDGET COORDINATOR</text>
+
+  <text x="450" y="130" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="20">🏦</text>
+  <text x="450" y="155" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Treasury Wallet</text>
+  <text x="450" y="175" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="10">Total Budget: $1,000 USDC</text>
+  <text x="450" y="190" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Single source of truth</text>
+
+  <!-- ═══ CONNECTING LINES ═══ -->
+  <!-- Treasury to agents -->
+  <line x1="380" y1="200" x2="150" y2="240" stroke="#6B7280" stroke-width="2"/>
+  <line x1="450" y1="200" x2="450" y2="240" stroke="#6B7280" stroke-width="2"/>
+  <line x1="520" y1="200" x2="750" y2="240" stroke="#6B7280" stroke-width="2"/>
+
+  <!-- ═══ RESEARCH AGENT ═══ -->
+  <rect x="50" y="240" width="200" height="100" rx="10" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="2"/>
+  <rect x="60" y="220" width="180" height="24" rx="6" fill="#0EA5E9"/>
+  <text x="150" y="237" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">RESEARCH AGENT</text>
+
+  <text x="150" y="275" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="18">🔬</text>
+  <text x="150" y="300" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10">Per-tx: $100</text>
+  <text x="150" y="315" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $300 | Approval > $50</text>
+
+  <!-- ═══ DATA AGENT ═══ -->
+  <rect x="350" y="240" width="200" height="100" rx="10" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="2"/>
+  <rect x="360" y="220" width="180" height="24" rx="6" fill="#F59E0B"/>
+  <text x="450" y="237" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">DATA AGENT</text>
+
+  <text x="450" y="275" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="18">📊</text>
+  <text x="450" y="300" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10">Per-tx: $200</text>
+  <text x="450" y="315" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $500 | Approval > $100</text>
+
+  <!-- ═══ COMPUTE AGENT ═══ -->
+  <rect x="650" y="240" width="200" height="100" rx="10" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="2"/>
+  <rect x="660" y="220" width="180" height="24" rx="6" fill="#10B981"/>
+  <text x="750" y="237" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">COMPUTE AGENT</text>
+
+  <text x="750" y="275" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="18">⚡</text>
+  <text x="750" y="300" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10">Per-tx: $500</text>
+  <text x="750" y="315" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily: $1000 | Approval > $200</text>
+
+  <!-- ═══ BOTTOM: AUTHORIZATION FLOW ═══ -->
+  <rect x="50" y="360" width="800" height="40" rx="8" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+
+  <text x="100" y="385" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Agent requests</text>
+  <polygon points="150,385 156,380 156,390" fill="#6B7280"/>
+
+  <text x="230" y="385" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9">Per-tx limit</text>
+  <polygon points="285,385 291,380 291,390" fill="#6B7280"/>
+
+  <text x="355" y="385" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9">Daily limit</text>
+  <polygon points="410,385 416,380 416,390" fill="#6B7280"/>
+
+  <text x="480" y="385" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">Approval?</text>
+  <polygon points="535,385 541,380 541,390" fill="#6B7280"/>
+
+  <text x="600" y="385" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">Total budget</text>
+  <polygon points="655,385 661,380 661,390" fill="#6B7280"/>
+
+  <rect x="710" y="372" width="80" height="24" rx="4" fill="#22C55E" fill-opacity="0.2" stroke="#22C55E" stroke-width="1"/>
+  <text x="750" y="388" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">APPROVED</text>
+</svg>

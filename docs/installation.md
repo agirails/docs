@@ -8,6 +8,13 @@ description: Install and configure the AGIRAILS SDK for your development environ
 
 Complete setup guide for the AGIRAILS SDK.
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/installation-overview.svg" alt="Installation Overview - 5 Steps to Ready" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
+
 :::info What You'll Learn
 By the end of this guide, you'll have:
 - **Installed** the AGIRAILS SDK
@@ -27,6 +34,7 @@ By the end of this guide, you'll have:
 | **Node.js** | 16+ |
 | **TypeScript** | 5.2+ (recommended) |
 | **ethers.js** | v6 (auto-installed) |
+| **Python** | 3.9+ (AGIRAILS Python SDK) |
 | **Network** | Base Sepolia (testnet) |
 
 ---
@@ -41,6 +49,14 @@ The AGIRAILS SDK is currently in beta (v2.0.x-beta). APIs may change before stab
 npm install @agirails/sdk
 ```
 
+:::note Python?
+Install AGIRAILS Python SDK from PyPI:
+```bash
+pip install agirails-sdk
+```
+See Quick Start for Python snippets.
+:::
+
 :::tip ethers.js v6
 AGIRAILS SDK uses **ethers.js v6**. If migrating from v5:
 - `ethers.utils.parseUnits()` → `ethers.parseUnits()` or `parseUnits()`
@@ -50,6 +66,9 @@ AGIRAILS SDK uses **ethers.js v6**. If migrating from v5:
 :::
 
 ### From Source (Optional)
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 For development or latest features:
 
@@ -64,6 +83,20 @@ Then in your project:
 ```bash
 npm link @agirails/sdk
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+For development or latest features:
+
+```bash
+git clone https://github.com/agirails/sdk-python.git
+cd sdk-python
+pip install -e .
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -132,6 +165,9 @@ ETH is required for gas fees:
 
 Mint mock USDC tokens:
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript title="mint-usdc.ts"
 import { ethers, parseUnits } from 'ethers';
 import 'dotenv/config';
@@ -151,6 +187,28 @@ await tx.wait();
 console.log('Minted 1000 USDC');
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python title="mint_usdc.py"
+import os
+from dotenv import load_dotenv
+from agirails_sdk import ACTPClient, Network
+
+load_dotenv()
+
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
+usdc = client.usdc
+tx = usdc.functions.mint(client.address, 1_000 * 1_000_000).build_transaction(
+    client._tx_meta(gas=120_000)
+)
+receipt = client._build_and_send(tx)
+print("Minted 1000 USDC", receipt["transactionHash"].hex())
+```
+
+</TabItem>
+</Tabs>
+
 :::tip No Public Mint?
 If the Mock USDC contract doesn't have a public mint, contact us on [Discord](https://discord.gg/nuhCt75qe4).
 :::
@@ -160,6 +218,9 @@ If the Mock USDC contract doesn't have a public mint, contact us on [Discord](ht
 ## Step 5: Verify Installation
 
 Test your setup:
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript title="verify-setup.ts"
 import { ACTPClient } from '@agirails/sdk';
@@ -200,6 +261,34 @@ verify().catch(e => {
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python title="verify_setup.py"
+import os
+from dotenv import load_dotenv
+from agirails_sdk import ACTPClient, Network
+
+load_dotenv()
+
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
+usdc = client.usdc
+
+eth_balance = client.w3.eth.get_balance(client.address)
+usdc_balance = usdc.functions.balanceOf(client.address).call()
+
+print("✓ Wallet:", client.address)
+print("✓ Network: Base Sepolia")
+print("✓ ACTPKernel:", client.config.actp_kernel)
+print("✓ EscrowVault:", client.config.escrow_vault)
+print("✓ ETH balance:", client.w3.from_wei(eth_balance, 'ether'), "ETH")
+print("✓ USDC balance:", usdc_balance / 1_000_000, "USDC")
+print("\n✅ Setup verified!")
+```
+
+</TabItem>
+</Tabs>
+
 Run:
 
 ```bash
@@ -222,6 +311,10 @@ Expected output:
 ---
 
 ## Network Configuration
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/network-config.svg" alt="Network Configuration - Base Sepolia and Mainnet" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ### Base Sepolia (Testnet)
 
@@ -291,6 +384,9 @@ Using `network: 'base-mainnet'` will fail until contracts are deployed. Zero add
 
 ## SDK Initialization Options
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
 
@@ -313,6 +409,30 @@ const client = await ACTPClient.create({
   signer: externalSigner // ethers.Signer from wallet
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails_sdk import ACTPClient, Network
+import os
+
+# Minimal
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.environ["PRIVATE_KEY"],
+)
+
+# With custom RPC
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.environ["PRIVATE_KEY"],
+    rpc_url="https://base-sepolia.g.alchemy.com/v2/YOUR_KEY",
+)
+```
+
+</TabItem>
+</Tabs>
 
 :::info Read-Only Mode Not Supported in V1
 The SDK currently requires a signer for initialization. True read-only access (for querying transaction state without a private key) is planned for a future release. For now, use a throwaway private key if you only need to read data.

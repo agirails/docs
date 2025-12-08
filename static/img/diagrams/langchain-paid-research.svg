@@ -1,0 +1,63 @@
+<svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="160" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">Paid Research Chain Flow</text>
+
+  <!-- Step 1: Plan Research -->
+  <rect x="20" y="45" width="120" height="55" rx="6" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="80" y="68" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">1. Plan</text>
+  <text x="80" y="85" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="8">Analyze topic</text>
+  <text x="80" y="95" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Select providers</text>
+
+  <!-- Arrow 1 -->
+  <line x1="140" y1="72" x2="170" y2="72" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="175,72 167,68 167,76" fill="#6B7280"/>
+
+  <!-- Step 2: Pay Providers -->
+  <rect x="180" y="45" width="120" height="55" rx="6" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="240" y="68" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">2. Pay</text>
+  <text x="240" y="85" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">AGIRAILS escrow</text>
+  <text x="240" y="95" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Lock USDC</text>
+
+  <!-- Arrow 2 -->
+  <line x1="300" y1="72" x2="330" y2="72" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="335,72 327,68 327,76" fill="#6B7280"/>
+
+  <!-- Step 3: Fetch Data -->
+  <rect x="340" y="45" width="120" height="55" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="400" y="68" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">3. Fetch</text>
+  <text x="400" y="85" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">Get paid data</text>
+  <text x="400" y="95" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">From providers</text>
+
+  <!-- Arrow 3 -->
+  <line x1="460" y1="72" x2="490" y2="72" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="495,72 487,68 487,76" fill="#6B7280"/>
+
+  <!-- Step 4: Synthesize -->
+  <rect x="500" y="45" width="120" height="55" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="560" y="68" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">4. Synthesize</text>
+  <text x="560" y="85" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">LLM analysis</text>
+  <text x="560" y="95" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Generate report</text>
+
+  <!-- Arrow to Output -->
+  <line x1="620" y1="72" x2="650" y2="72" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="655,72 647,68 647,76" fill="#10B981"/>
+
+  <!-- Output -->
+  <rect x="660" y="55" width="30" height="35" rx="4" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="1.5"/>
+  <text x="675" y="77" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="16">📄</text>
+
+  <!-- Data Providers at bottom -->
+  <text x="240" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Data Providers:</text>
+
+  <rect x="120" y="135" width="70" height="20" rx="3" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="155" y="149" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8">Academic</text>
+
+  <rect x="205" y="135" width="70" height="20" rx="3" fill="#3B82F6" fill-opacity="0.1" stroke="#3B82F6" stroke-width="1"/>
+  <text x="240" y="149" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="8">Market</text>
+
+  <rect x="290" y="135" width="70" height="20" rx="3" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1"/>
+  <text x="325" y="149" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="8">News</text>
+</svg>

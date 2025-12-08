@@ -1,0 +1,54 @@
+<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="600" height="200" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="300" y="25" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">When to Use What</text>
+
+  <!-- Header row -->
+  <text x="30" y="50" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Need to...</text>
+  <text x="400" y="50" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Use this recipe</text>
+
+  <!-- Divider line -->
+  <line x1="30" y1="60" x2="570" y2="60" stroke="#374151" stroke-width="1"/>
+
+  <!-- Row 1: Provider Agent -->
+  <rect x="30" y="70" width="200" height="22" rx="4" fill="#10B981" fill-opacity="0.1"/>
+  <text x="40" y="85" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10">Get paid for AI services</text>
+  <line x1="240" y1="81" x2="380" y2="81" stroke="#374151" stroke-width="1" stroke-dasharray="4,3"/>
+  <polygon points="385,81 377,77 377,85" fill="#374151"/>
+  <rect x="390" y="70" width="180" height="22" rx="4" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1"/>
+  <text x="480" y="85" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Automated Provider Agent</text>
+
+  <!-- Row 2: API Pay-Per-Call -->
+  <rect x="30" y="96" width="200" height="22" rx="4" fill="#0EA5E9" fill-opacity="0.1"/>
+  <text x="40" y="111" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10">Charge per API request</text>
+  <line x1="240" y1="107" x2="380" y2="107" stroke="#374151" stroke-width="1" stroke-dasharray="4,3"/>
+  <polygon points="385,107 377,103 377,111" fill="#374151"/>
+  <rect x="390" y="96" width="180" height="22" rx="4" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1"/>
+  <text x="480" y="111" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">API Pay-Per-Call</text>
+
+  <!-- Row 3: Multi-Agent Budget -->
+  <rect x="30" y="122" width="200" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.1"/>
+  <text x="40" y="137" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10">Manage team of agents</text>
+  <line x1="240" y1="133" x2="380" y2="133" stroke="#374151" stroke-width="1" stroke-dasharray="4,3"/>
+  <polygon points="385,133 377,129 377,137" fill="#374151"/>
+  <rect x="390" y="122" width="180" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="480" y="137" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Multi-Agent Budget</text>
+
+  <!-- Row 4: Secure Key Management -->
+  <rect x="30" y="148" width="200" height="22" rx="4" fill="#EF4444" fill-opacity="0.1"/>
+  <text x="40" y="163" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10">Secure production deployment</text>
+  <line x1="240" y1="159" x2="380" y2="159" stroke="#374151" stroke-width="1" stroke-dasharray="4,3"/>
+  <polygon points="385,159 377,155 377,163" fill="#374151"/>
+  <rect x="390" y="148" width="180" height="22" rx="4" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="1"/>
+  <text x="480" y="163" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Secure Key Management</text>
+
+  <!-- Row 5: n8n Workflow -->
+  <rect x="30" y="174" width="200" height="22" rx="4" fill="#F59E0B" fill-opacity="0.1"/>
+  <text x="40" y="189" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10">Build without coding</text>
+  <line x1="240" y1="185" x2="380" y2="185" stroke="#374151" stroke-width="1" stroke-dasharray="4,3"/>
+  <polygon points="385,185 377,181 377,189" fill="#374151"/>
+  <rect x="390" y="174" width="180" height="22" rx="4" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1"/>
+  <text x="480" y="189" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">n8n Workflow</text>
+</svg>

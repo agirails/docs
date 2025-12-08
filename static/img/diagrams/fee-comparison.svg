@@ -1,0 +1,62 @@
+<svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="200" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Fee Comparison: $100 Transaction</text>
+
+  <!-- ACTP (our platform) -->
+  <rect x="25" y="50" width="120" height="130" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="85" y="75" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">AGIRAILS</text>
+  <text x="85" y="105" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">$1.00</text>
+  <text x="85" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">1% flat</text>
+
+  <!-- Bar -->
+  <rect x="45" y="140" width="80" height="15" rx="3" fill="#1F2937"/>
+  <rect x="45" y="140" width="8" height="15" rx="3" fill="#10B981"/>
+  <text x="85" y="165" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">CHEAPEST</text>
+
+  <!-- Stripe -->
+  <rect x="160" y="50" width="120" height="130" rx="8" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="220" y="75" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">Stripe</text>
+  <text x="220" y="105" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">$3.20</text>
+  <text x="220" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">2.9% + $0.30</text>
+
+  <!-- Bar -->
+  <rect x="180" y="140" width="80" height="15" rx="3" fill="#1F2937"/>
+  <rect x="180" y="140" width="26" height="15" rx="3" fill="#8B5CF6"/>
+  <text x="220" y="165" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">3.2x more</text>
+
+  <!-- PayPal -->
+  <rect x="295" y="50" width="120" height="130" rx="8" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="355" y="75" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">PayPal</text>
+  <text x="355" y="105" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">$3.98</text>
+  <text x="355" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">3.49% + $0.49</text>
+
+  <!-- Bar -->
+  <rect x="315" y="140" width="80" height="15" rx="3" fill="#1F2937"/>
+  <rect x="315" y="140" width="32" height="15" rx="3" fill="#0EA5E9"/>
+  <text x="355" y="165" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">4x more</text>
+
+  <!-- Square -->
+  <rect x="430" y="50" width="120" height="130" rx="8" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="490" y="75" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">Square</text>
+  <text x="490" y="105" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">$2.70</text>
+  <text x="490" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">2.6% + $0.10</text>
+
+  <!-- Bar -->
+  <rect x="450" y="140" width="80" height="15" rx="3" fill="#1F2937"/>
+  <rect x="450" y="140" width="22" height="15" rx="3" fill="#F59E0B"/>
+  <text x="490" y="165" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">2.7x more</text>
+
+  <!-- Wire -->
+  <rect x="565" y="50" width="120" height="130" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="625" y="75" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">Wire</text>
+  <text x="625" y="105" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700">$25.00</text>
+  <text x="625" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">flat fee</text>
+
+  <!-- Bar -->
+  <rect x="585" y="140" width="80" height="15" rx="3" fill="#1F2937"/>
+  <rect x="585" y="140" width="80" height="15" rx="3" fill="#EF4444"/>
+  <text x="625" y="165" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8">25x more</text>
+</svg>

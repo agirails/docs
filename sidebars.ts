@@ -88,9 +88,35 @@ const sidebars: SidebarsConfig = {
           label: 'Integrations',
           items: [
             'guides/integrations/n8n',
+            'guides/integrations/langchain',
+            'guides/integrations/crewai',
           ],
         },
       ],
+    },
+
+    // Cookbook - Production-Ready Recipes
+    {
+      type: 'category',
+      label: 'Cookbook',
+      link: {
+        type: 'doc',
+        id: 'cookbook/index',
+      },
+      items: [
+        'cookbook/automated-provider-agent',
+        'cookbook/api-pay-per-call',
+        'cookbook/multi-agent-budget',
+        'cookbook/secure-key-management',
+        'cookbook/n8n-workflow',
+      ],
+    },
+
+    // Developer Responsibilities
+    {
+      type: 'doc',
+      id: 'developer-responsibilities',
+      label: 'Developer Responsibilities',
     },
   ],
 

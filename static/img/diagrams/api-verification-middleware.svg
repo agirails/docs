@@ -1,0 +1,68 @@
+<svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="220" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="25" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">Payment Verification Middleware</text>
+
+  <!-- Request Box -->
+  <rect x="30" y="55" width="100" height="70" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="80" y="85" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Request</text>
+  <text x="80" y="105" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">X-AGIRAILS-TX-ID</text>
+
+  <!-- Arrow 1 -->
+  <line x1="130" y1="90" x2="165" y2="90" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="170,90 162,86 162,94" fill="#6B7280"/>
+
+  <!-- Check 1: TX Exists -->
+  <rect x="175" y="55" width="90" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="220" y="80" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">TX Exists?</text>
+  <text x="220" y="100" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">getTransaction()</text>
+
+  <!-- Arrow 2 -->
+  <line x1="265" y1="90" x2="300" y2="90" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="305,90 297,86 297,94" fill="#6B7280"/>
+
+  <!-- Check 2: Provider Match -->
+  <rect x="310" y="55" width="90" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="355" y="80" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Provider?</text>
+  <text x="355" y="100" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">tx.provider == me</text>
+
+  <!-- Arrow 3 -->
+  <line x1="400" y1="90" x2="435" y2="90" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="440,90 432,86 432,94" fill="#6B7280"/>
+
+  <!-- Check 3: Amount & State -->
+  <rect x="445" y="55" width="90" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="490" y="80" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Valid?</text>
+  <text x="490" y="95" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">amount >= price</text>
+  <text x="490" y="108" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">state == COMMITTED</text>
+
+  <!-- Arrow 4 -->
+  <line x1="535" y1="90" x2="570" y2="90" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="575,90 567,86 567,94" fill="#6B7280"/>
+
+  <!-- Success: next() -->
+  <rect x="580" y="55" width="90" height="70" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="625" y="80" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">next()</text>
+  <text x="625" y="100" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">Process request</text>
+
+  <!-- Error paths -->
+  <!-- No TX ID -->
+  <path d="M 80 125 L 80 160" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="30" y="165" width="100" height="40" rx="6" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="80" y="182" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">402 Payment Required</text>
+  <text x="80" y="196" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="7">Missing TX-ID header</text>
+
+  <!-- TX not found / wrong provider -->
+  <path d="M 220 125 L 220 160 M 355 125 L 355 160" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="220" y="165" width="130" height="40" rx="6" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="285" y="182" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">403 Forbidden</text>
+  <text x="285" y="196" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="7">Invalid TX or wrong provider</text>
+
+  <!-- Invalid amount/state -->
+  <path d="M 490 125 L 490 160" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="445" y="165" width="130" height="40" rx="6" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="510" y="182" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">402 Insufficient</text>
+  <text x="510" y="196" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="7">Wrong amount or state</text>
+</svg>

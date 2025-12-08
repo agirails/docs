@@ -4,6 +4,9 @@ title: Fee Model
 description: Understanding ACTP's 1% fee with $0.05 minimum transaction
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Fee Model
 
 ACTP charges a simple, predictable fee on all transactions.
@@ -75,13 +78,35 @@ By the end of this page, you'll understand:
 
 Agents calculate fees deterministically:
 
-```typescript
-// Off-chain (SDK/frontend) - with minimum fee
-const fee = max(amount * 0.01n, parseUnits('0.05', 6)); // 1% or $0.05 min
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
-// On-chain (smart contract) - exact 1%
-const fee = (amount * 100n) / 10_000n; // Exactly 1%, no minimum
+```typescript
+// Off-chain (SDK/frontend) - apply 1% or $0.05 minimum
+const amount = parseUnits('1', 6); // 6 decimals (USDC)
+const calculated = (amount * 100n) / 10_000n; // 1%
+const minFee = parseUnits('0.05', 6);         // $0.05
+const fee = calculated > minFee ? calculated : minFee;
+
+// On-chain (smart contract) - exact 1% (no minimum)
+const feeOnchain = (amount * 100n) / 10_000n;
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from decimal import Decimal
+
+# Off-chain (SDK/frontend) - with minimum fee
+fee = max(int(amount * Decimal("0.01")), 50_000)  # 1% or $0.05 min (6 decimals)
+
+# On-chain (smart contract) - exact 1%
+fee_onchain = (amount * 100) // 10_000  # Exactly 1%, no minimum
+```
+
+</TabItem>
+</Tabs>
 
 No tiers, no hidden costs, no surprises.
 
@@ -94,6 +119,10 @@ No tiers, no hidden costs, no surprises.
 | PayPal | $3.98 (3.49% + $0.49) |
 | Square | $2.70 (2.6% + $0.10) |
 | Wire Transfer | $25.00 |
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/fee-comparison.svg" alt="Fee Comparison: $100 Transaction" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ### No Tiers
 
@@ -111,6 +140,10 @@ Prevents **dust spam attacks**:
 | State bloat | High | Economically impractical |
 
 The minimum forces meaningful capital commitment.
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/fee-curve.svg" alt="Fee Curve: Minimum vs Percentage" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 ### Why Separate Minimum Fee?
 
@@ -143,6 +176,9 @@ function _calculateFee(uint256 amount, uint16 feeBps) internal pure returns (uin
 
 ### SDK (with minimum fee enforcement)
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { parseUnits, formatUnits } from 'ethers';
 
@@ -171,8 +207,43 @@ console.log(`Fee on $1: ${formatUnits(smallFee, 6)} USDC`);
 // Output: Fee on $1: 0.05 USDC (minimum applied)
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from decimal import Decimal
+
+USDC_DECIMALS = 6
+FEE_BPS = 100  # 1%
+MAX_BPS = 10_000
+MIN_FEE = 50_000  # $0.05 minimum (6 decimals)
+
+
+def calculate_fee(amount: int) -> int:
+    calculated_fee = (amount * FEE_BPS) // MAX_BPS
+    return calculated_fee if calculated_fee > MIN_FEE else MIN_FEE
+
+
+# Usage
+amount = 100_000_000  # $100
+fee = calculate_fee(amount)
+provider_net = amount - fee
+
+print(f"Provider receives: {provider_net / 1_000_000} USDC")
+# Output: Provider receives: 99.0 USDC
+
+# Example with small amount
+small_amount = 1_000_000  # $1
+small_fee = calculate_fee(small_amount)
+print(f\"Fee on $1: {small_fee / 1_000_000} USDC\")
+# Output: Fee on $1: 0.05 USDC (minimum applied)
+```
+
+</TabItem>
+</Tabs>
+
 :::warning Important
-If you integrate directly with the smart contract (not via SDK), you MUST implement the $0.05 minimum fee logic yourself. The contract only calculates exactly 1%.
+SDKs currently do not enforce the $0.05 minimum fee for you. Whether you use the SDK or call the contract directly, you MUST apply the minimum-fee check off-chain; the contract only calculates exactly 1%.
 :::
 
 ---
@@ -216,7 +287,14 @@ Day 10: Transaction settles
 
 ## Fee Scenarios
 
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/fee-scenarios.svg" alt="When Are Fees Charged?" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
+
 ### Scenario 1: Simple Settlement
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // $100 transaction settles
@@ -227,7 +305,24 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happen
 // Platform: $1.00
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# $100 transaction settles
+client.transition_state(tx_id, State.SETTLED, b"\x00")
+# Distribution:
+# Provider: $99.00
+# Platform: $1.00
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 2: Milestone Releases
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // $1,000 transaction with milestones
@@ -247,7 +342,34 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happen
 // TOTAL: Provider $990, Platform $10
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# $1,000 transaction with milestones
+
+# Milestone 1: $250
+client.release_milestone(tx_id, 250_000_000)
+# Fee: $2.50, Provider: $247.50
+
+# Milestone 2: $250
+client.release_milestone(tx_id, 250_000_000)
+# Fee: $2.50, Provider: $247.50
+
+# Final: $500
+client.transition_state(tx_id, State.SETTLED, b"\x00")
+# Fee: $5.00, Provider: $495.00
+
+# TOTAL: Provider $990, Platform $10
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 3: Dispute Resolution
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // $100 transaction disputed
@@ -260,7 +382,27 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happen
 // Platform: $0.60
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# $100 transaction disputed
+# Resolution: 60% provider, 30% requester, 10% mediator
+
+# Fee only on provider payout:
+# Provider: $60 - $0.60 = $59.40
+# Requester: $30 (refund, no fee)
+# Mediator: $10 (no fee)
+# Platform: $0.60
+```
+
+</TabItem>
+</Tabs>
+
 ### Scenario 4: Cancellation
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // $500 canceled after deadline
@@ -269,6 +411,20 @@ await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happen
 // Provider penalty: $25 (no fee)
 // Platform: $0
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# $500 canceled after deadline
+
+# Refund: $475 (no fee)
+# Provider penalty: $25 (no fee)
+# Platform: $0
+```
+
+</TabItem>
+</Tabs>
 
 **Rule:** Fee only on provider payouts, not refunds or mediator fees.
 
@@ -417,6 +573,9 @@ Still cheaper than Stripe ($3.20), PayPal ($3.98).
 
 ### Fee Calculator
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 function estimateCost(amount: bigint): {
   platformFee: bigint;
@@ -439,6 +598,32 @@ console.log(`Fee: $${formatUnits(cost.platformFee, 6)}`); // $0.05 (minimum)
 const cost2 = estimateCost(parseUnits('100', 6)); // $100 transaction
 console.log(`Fee: $${formatUnits(cost2.platformFee, 6)}`); // $1.00 (1%)
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from decimal import Decimal
+
+def estimate_cost(amount: int) -> dict:
+    # amount in 6-decimal USDC units
+    calculated_fee = (amount * 100) // 10_000  # 1%
+    min_fee = 50_000  # $0.05
+    platform_fee = calculated_fee if calculated_fee > min_fee else min_fee
+
+    gas = 5_000  # ~$0.005 with 6 decimals
+    return {"platform_fee": platform_fee, "gas": gas, "total": platform_fee + gas}
+
+# Example
+cost = estimate_cost(1_000_000)  # $1
+print(f"Fee: ${cost['platform_fee']/1_000_000:.2f}")  # $0.05 (minimum)
+
+cost2 = estimate_cost(100_000_000)  # $100
+print(f"Fee: ${cost2['platform_fee']/1_000_000:.2f}")  # $1.00 (1%)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

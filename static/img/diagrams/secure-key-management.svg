@@ -1,0 +1,82 @@
+<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="340" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700">Secure Key Management Tiers</text>
+  <text x="450" y="50" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">Graduate from env vars → secret managers → HSMs as your value grows</text>
+
+  <!-- ═══ TIER 1: ENV VARS ═══ -->
+  <rect x="40" y="100" width="250" height="150" rx="12" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="2"/>
+  <rect x="50" y="80" width="230" height="28" rx="6" fill="#F59E0B"/>
+  <text x="165" y="99" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">TIER 1: ENV VARIABLES</text>
+
+  <text x="165" y="135" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="28">📝</text>
+  <text x="165" y="165" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Basic Security</text>
+
+  <text x="165" y="190" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">.env files, never commit</text>
+  <text x="165" y="205" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">Good for: Development</text>
+  <text x="165" y="220" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">Cost: Free</text>
+
+  <rect x="60" y="230" width="80" height="16" rx="4" fill="#F59E0B" fill-opacity="0.3"/>
+  <text x="100" y="242" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9">Low effort</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="290" y1="175" x2="320" y2="175" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="325,175 317,170 317,180" fill="#6B7280"/>
+
+  <!-- ═══ TIER 2: SECRET MANAGERS ═══ -->
+  <rect x="330" y="100" width="250" height="150" rx="12" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="2"/>
+  <rect x="340" y="80" width="230" height="28" rx="6" fill="#8B5CF6"/>
+  <text x="455" y="99" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">TIER 2: SECRET MANAGERS</text>
+
+  <text x="455" y="135" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="28">🔐</text>
+  <text x="455" y="165" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Production Security</text>
+
+  <text x="455" y="190" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">AWS/GCP/Vault + audit logs</text>
+  <text x="455" y="205" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Good for: Production apps</text>
+  <text x="455" y="220" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Cost: ~$0.40/secret/month</text>
+
+  <rect x="350" y="230" width="100" height="16" rx="4" fill="#8B5CF6" fill-opacity="0.3"/>
+  <text x="400" y="242" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">Recommended</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="580" y1="175" x2="610" y2="175" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="615,175 607,170 607,180" fill="#6B7280"/>
+
+  <!-- ═══ TIER 3: HSM ═══ -->
+  <rect x="620" y="100" width="250" height="150" rx="12" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="2"/>
+  <rect x="630" y="80" width="230" height="28" rx="6" fill="#10B981"/>
+  <text x="745" y="99" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">TIER 3: HSM / KMS</text>
+
+  <text x="745" y="135" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="28">🏛️</text>
+  <text x="745" y="165" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Enterprise Security</text>
+
+  <text x="745" y="190" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Key never leaves hardware</text>
+  <text x="745" y="205" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Good for: High-value, compliance</text>
+  <text x="745" y="220" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Cost: ~$1-5/hour</text>
+
+  <rect x="640" y="230" width="80" height="16" rx="4" fill="#10B981" fill-opacity="0.3"/>
+  <text x="680" y="242" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9">Enterprise</text>
+
+  <!-- ═══ BOTTOM: SECURITY PROGRESSION ═══ -->
+  <rect x="40" y="270" width="830" height="55" rx="10" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+
+  <text x="100" y="293" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">$0 - $1K</text>
+  <text x="100" y="310" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Use Tier 1</text>
+
+  <line x1="180" y1="285" x2="180" y2="315" stroke="#374151" stroke-width="1"/>
+
+  <text x="300" y="293" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">$1K - $100K</text>
+  <text x="300" y="310" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Upgrade to Tier 2</text>
+
+  <line x1="420" y1="285" x2="420" y2="315" stroke="#374151" stroke-width="1"/>
+
+  <text x="540" y="293" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">$100K+</text>
+  <text x="540" y="310" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Consider Tier 3</text>
+
+  <line x1="640" y1="285" x2="640" y2="315" stroke="#374151" stroke-width="1"/>
+
+  <text x="760" y="295" text-anchor="middle" fill="#EC4899" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Always rotate keys</text>
+  <text x="760" y="312" text-anchor="middle" fill="#F9A8D4" font-family="system-ui, -apple-system, sans-serif" font-size="9">when team members leave</text>
+</svg>

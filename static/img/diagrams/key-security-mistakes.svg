@@ -1,0 +1,55 @@
+<svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Common Key Security Mistakes</text>
+
+  <!-- Mistake 1: Logging -->
+  <rect x="25" y="45" width="155" height="120" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="102" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="18">📋</text>
+  <text x="102" y="88" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Logging Keys</text>
+
+  <rect x="35" y="98" width="135" height="28" rx="4" fill="#1F2937"/>
+  <text x="102" y="110" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">console.log(config)</text>
+  <text x="102" y="122" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">exposes in log aggregators</text>
+
+  <text x="102" y="145" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Fix: Redact sensitive data</text>
+  <text x="102" y="158" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">key: '[REDACTED]'</text>
+
+  <!-- Mistake 2: URLs -->
+  <rect x="195" y="45" width="155" height="120" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="272" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="18">🔗</text>
+  <text x="272" y="88" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Keys in URLs</text>
+
+  <rect x="205" y="98" width="135" height="28" rx="4" fill="#1F2937"/>
+  <text x="272" y="110" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">?key=0x1234...</text>
+  <text x="272" y="122" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">logged by proxies/browsers</text>
+
+  <text x="272" y="145" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Fix: Use headers/body</text>
+  <text x="272" y="158" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Authorization header</text>
+
+  <!-- Mistake 3: localStorage -->
+  <rect x="365" y="45" width="155" height="120" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="442" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="18">💾</text>
+  <text x="442" y="88" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Browser Storage</text>
+
+  <rect x="375" y="98" width="135" height="28" rx="4" fill="#1F2937"/>
+  <text x="442" y="110" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">localStorage.set(key)</text>
+  <text x="442" y="122" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">XSS can read it</text>
+
+  <text x="442" y="145" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Fix: Use wallets</text>
+  <text x="442" y="158" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">MetaMask/WalletConnect</text>
+
+  <!-- Mistake 4: Errors -->
+  <rect x="535" y="45" width="140" height="120" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="605" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="18">⚠️</text>
+  <text x="605" y="88" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Error Messages</text>
+
+  <rect x="545" y="98" width="120" height="28" rx="4" fill="#1F2937"/>
+  <text x="605" y="110" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">Error: key ${pk}</text>
+  <text x="605" y="122" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">stack traces leak vars</text>
+
+  <text x="605" y="145" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Fix: Generic errors</text>
+  <text x="605" y="158" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">"Signing failed"</text>
+</svg>

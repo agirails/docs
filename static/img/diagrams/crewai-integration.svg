@@ -1,0 +1,63 @@
+<svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="800" height="220" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="400" y="25" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600">CrewAI + AGIRAILS Payment Flow</text>
+
+  <!-- Crew Box (container) -->
+  <rect x="20" y="45" width="380" height="160" rx="10" fill="#8B5CF6" fill-opacity="0.08" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="210" y="68" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">AI Crew</text>
+
+  <!-- Payment Coordinator -->
+  <rect x="40" y="85" width="100" height="50" rx="6" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="90" y="107" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Payment</text>
+  <text x="90" y="120" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">Coordinator</text>
+
+  <!-- Researcher -->
+  <rect x="160" y="85" width="100" height="50" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="210" y="107" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Researcher</text>
+  <text x="210" y="120" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">Agent</text>
+
+  <!-- Writer -->
+  <rect x="280" y="85" width="100" height="50" rx="6" fill="#3B82F6" fill-opacity="0.15" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="330" y="107" text-anchor="middle" fill="#3B82F6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Writer</text>
+  <text x="330" y="120" text-anchor="middle" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">Agent</text>
+
+  <!-- Internal arrows -->
+  <line x1="140" y1="110" x2="155" y2="110" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="260" y1="110" x2="275" y2="110" stroke="#6B7280" stroke-width="1" stroke-dasharray="3,2"/>
+
+  <!-- Treasury label -->
+  <rect x="60" y="150" width="80" height="22" rx="4" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1"/>
+  <text x="100" y="165" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="8">Treasury</text>
+
+  <!-- Arrow from Coordinator to Treasury -->
+  <line x1="90" y1="135" x2="90" y2="147" stroke="#F59E0B" stroke-width="1"/>
+
+  <!-- Arrow from Crew to AGIRAILS -->
+  <line x1="400" y1="125" x2="450" y2="125" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="455,125 447,120 447,130" fill="#6B7280"/>
+  <text x="427" y="115" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">pays</text>
+
+  <!-- AGIRAILS Box -->
+  <rect x="460" y="90" width="130" height="70" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="525" y="118" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">AGIRAILS</text>
+  <text x="525" y="135" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Escrow</text>
+  <text x="525" y="150" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">Base L2</text>
+
+  <!-- Arrow to Provider -->
+  <line x1="590" y1="125" x2="640" y2="125" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="645,125 637,120 637,130" fill="#6B7280"/>
+
+  <!-- External Provider -->
+  <rect x="650" y="90" width="130" height="70" rx="8" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="2"/>
+  <text x="715" y="118" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">Provider</text>
+  <text x="715" y="135" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="9">External Service</text>
+  <text x="715" y="150" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">API / Data</text>
+
+  <!-- Return arrow (service) -->
+  <path d="M 715 165 L 715 195 L 210 195 L 210 175" fill="none" stroke="#10B981" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <polygon points="210,170 205,178 215,178" fill="#10B981"/>
+  <text x="480" y="208" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="9">Service / Data Delivered to Crew</text>
+</svg>

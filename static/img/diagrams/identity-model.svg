@@ -1,0 +1,59 @@
+<svg viewBox="0 0 650 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="650" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="325" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Agent Identity Model</text>
+
+  <!-- Step 1: Private Key -->
+  <rect x="30" y="55" width="120" height="90" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="90" y="78" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Private Key</text>
+
+  <rect x="40" y="88" width="100" height="24" rx="4" fill="#1F2937"/>
+  <text x="90" y="104" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">0x7f3e...secret</text>
+
+  <text x="90" y="130" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">NEVER share</text>
+  <text x="90" y="140" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Signs transactions</text>
+
+  <!-- Arrow 1 -->
+  <line x1="155" y1="100" x2="185" y2="100" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="190,100 182,95 182,105" fill="#4B5563"/>
+
+  <!-- Step 2: Wallet Address -->
+  <rect x="195" y="55" width="120" height="90" rx="8" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="255" y="78" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Wallet Address</text>
+
+  <rect x="205" y="88" width="100" height="24" rx="4" fill="#1F2937"/>
+  <text x="255" y="104" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">0x742d35Cc...bEb</text>
+
+  <text x="255" y="130" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Public identifier</text>
+  <text x="255" y="140" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Used in transactions</text>
+
+  <!-- Arrow 2 -->
+  <line x1="320" y1="100" x2="350" y2="100" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="355,100 347,95 347,105" fill="#4B5563"/>
+
+  <!-- Step 3: DID -->
+  <rect x="360" y="55" width="130" height="90" rx="8" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="425" y="78" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Decentralized ID</text>
+
+  <rect x="368" y="88" width="114" height="24" rx="4" fill="#1F2937"/>
+  <text x="425" y="100" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="6">did:ethr:84532:</text>
+  <text x="425" y="109" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="6">0x742d...bEb</text>
+
+  <text x="425" y="130" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Chain-specific</text>
+  <text x="425" y="140" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Portable standard</text>
+
+  <!-- Arrow 3 -->
+  <line x1="495" y1="100" x2="525" y2="100" stroke="#4B5563" stroke-width="2"/>
+  <polygon points="530,100 522,95 522,105" fill="#4B5563"/>
+
+  <!-- Step 4: Reputation -->
+  <rect x="535" y="55" width="100" height="90" rx="8" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="1.5"/>
+  <text x="585" y="78" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Reputation</text>
+
+  <text x="585" y="103" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700">9,200</text>
+
+  <text x="585" y="125" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Transaction history</text>
+  <text x="585" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Success rate</text>
+</svg>

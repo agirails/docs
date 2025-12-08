@@ -1,0 +1,26 @@
+<svg viewBox="0 0 360 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="360" height="60" fill="#0A0A0A"/>
+
+  <!-- Node 1: Get Tx -->
+  <rect x="15" y="12" width="90" height="36" rx="5" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="60" y="35" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Get Tx</text>
+
+  <!-- Arrow 1 -->
+  <line x1="105" y1="30" x2="125" y2="30" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="130,30 124,27 124,33" fill="#6B7280"/>
+
+  <!-- Node 2: Switch on State -->
+  <rect x="135" y="12" width="90" height="36" rx="5" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="180" y="28" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Switch</text>
+  <text x="180" y="40" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="7">on State</text>
+
+  <!-- Arrow 2 -->
+  <line x1="225" y1="30" x2="245" y2="30" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="250,30 244,27 244,33" fill="#6B7280"/>
+
+  <!-- Node 3: Proceed or Error -->
+  <rect x="255" y="12" width="90" height="36" rx="5" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="300" y="28" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="700">Proceed</text>
+  <text x="300" y="40" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">or Error</text>
+</svg>

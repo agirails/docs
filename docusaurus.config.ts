@@ -39,16 +39,16 @@ const config: Config = {
         },
         blog: {
           path: 'updates',
-          routeBasePath: 'updates',
-          blogTitle: 'AGIRAILS Updates',
+          routeBasePath: 'changelog',
+          blogTitle: 'AGIRAILS Changelog',
           blogDescription: 'Release notes, engineering insights, and ecosystem news from AGIRAILS',
-          blogSidebarTitle: 'Recent Updates',
+          blogSidebarTitle: 'Recent Changes',
           blogSidebarCount: 10,
           showReadingTime: true,
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
-            title: 'AGIRAILS Updates',
+            title: 'AGIRAILS Changelog',
             description: 'Release notes, engineering insights, and ecosystem news',
           },
           editUrl: 'https://github.com/agirails/agirails/tree/main/docs-site/',
@@ -96,6 +96,11 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
+        {
+          to: '/playground',
+          label: 'Playground',
+          position: 'left',
+        },
         // TODO: Uncomment when pages exist
         // {
         //   to: '/sdk',
@@ -113,8 +118,8 @@ const config: Config = {
         //   position: 'left',
         // },
         {
-          to: '/updates',
-          label: 'Updates',
+          to: '/changelog',
+          label: 'Changelog',
           position: 'left',
         },
         // Right side
@@ -160,7 +165,7 @@ const config: Config = {
             { label: 'Discord', href: 'https://discord.gg/nuhCt75qe4' },
             { label: 'X', href: 'https://x.com/agirails' },
             { label: 'GitHub', href: 'https://github.com/agirails' },
-            { label: 'Updates', to: '/updates' },
+            { label: 'Changelog', to: '/changelog' },
           ],
         },
         {

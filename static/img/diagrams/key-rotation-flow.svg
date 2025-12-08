@@ -1,0 +1,58 @@
+<svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="180" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Key Rotation Process</text>
+
+  <!-- Step 1: Generate -->
+  <rect x="25" y="45" width="95" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="72" y="68" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">1. Generate</text>
+  <text x="72" y="85" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">New key in</text>
+  <text x="72" y="98" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">secure env</text>
+
+  <!-- Arrow -->
+  <line x1="120" y1="80" x2="145" y2="80" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="150,80 142,76 142,84" fill="#6B7280"/>
+
+  <!-- Step 2: Fund -->
+  <rect x="155" y="45" width="95" height="70" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="202" y="68" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">2. Fund</text>
+  <text x="202" y="85" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">ETH for gas</text>
+  <text x="202" y="98" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">+ test tx</text>
+
+  <!-- Arrow -->
+  <line x1="250" y1="80" x2="275" y2="80" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="280,80 272,76 272,84" fill="#6B7280"/>
+
+  <!-- Step 3: Schedule -->
+  <rect x="285" y="45" width="95" height="70" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="332" y="68" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">3. Schedule</text>
+  <text x="332" y="85" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">Set rotation</text>
+  <text x="332" y="98" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">timestamp</text>
+
+  <!-- Arrow -->
+  <line x1="380" y1="80" x2="405" y2="80" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="410,80 402,76 402,84" fill="#6B7280"/>
+
+  <!-- Step 4: Deploy -->
+  <rect x="415" y="45" width="95" height="70" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="462" y="68" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">4. Deploy</text>
+  <text x="462" y="85" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">New config</text>
+  <text x="462" y="98" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">+ monitor</text>
+
+  <!-- Arrow -->
+  <line x1="510" y1="80" x2="535" y2="80" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="540,80 532,76 532,84" fill="#6B7280"/>
+
+  <!-- Step 5: Drain and Destroy -->
+  <rect x="545" y="45" width="130" height="70" rx="8" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="610" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">5. Drain &amp; Destroy</text>
+  <text x="610" y="85" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="8">Move funds from old</text>
+  <text x="610" y="98" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="8">Revoke old key</text>
+
+  <!-- Bottom warning -->
+  <rect x="150" y="130" width="400" height="35" rx="6" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1"/>
+  <text x="350" y="150" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Always rotate when team members leave!</text>
+  <text x="350" y="162" text-anchor="middle" fill="#FCA5A5" font-family="system-ui, -apple-system, sans-serif" font-size="8">Grace period: 24-48 hours before destroying old key</text>
+</svg>

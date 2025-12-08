@@ -1,0 +1,57 @@
+<svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="700" height="160" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="350" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Consumer Flow: Calling a Paid API</text>
+
+  <!-- Step 1: Discover -->
+  <rect x="25" y="50" width="100" height="70" rx="8" fill="#6B7280" fill-opacity="0.15" stroke="#6B7280" stroke-width="1.5"/>
+  <text x="75" y="72" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">1. Discover</text>
+  <text x="75" y="90" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">GET /api/pricing</text>
+  <text x="75" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Get provider address</text>
+
+  <!-- Arrow -->
+  <line x1="125" y1="85" x2="155" y2="85" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="160,85 152,81 152,89" fill="#6B7280"/>
+
+  <!-- Step 2: Create TX -->
+  <rect x="165" y="50" width="100" height="70" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="215" y="72" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">2. Create</text>
+  <text x="215" y="90" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">createTransaction()</text>
+  <text x="215" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Returns txId</text>
+
+  <!-- Arrow -->
+  <line x1="265" y1="85" x2="295" y2="85" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="300,85 292,81 292,89" fill="#6B7280"/>
+
+  <!-- Step 3: Fund -->
+  <rect x="305" y="50" width="100" height="70" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="355" y="72" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">3. Fund</text>
+  <text x="355" y="90" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">linkEscrow(txId)</text>
+  <text x="355" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">USDC locked</text>
+
+  <!-- Arrow -->
+  <line x1="405" y1="85" x2="435" y2="85" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="440,85 432,81 432,89" fill="#6B7280"/>
+
+  <!-- Step 4: Call API -->
+  <rect x="445" y="50" width="100" height="70" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="495" y="72" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">4. Call API</text>
+  <text x="495" y="90" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">POST + txId header</text>
+  <text x="495" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Get response</text>
+
+  <!-- Arrow -->
+  <line x1="545" y1="85" x2="575" y2="85" stroke="#6B7280" stroke-width="1.5"/>
+  <polygon points="580,85 572,81 572,89" fill="#6B7280"/>
+
+  <!-- Step 5: Settled -->
+  <rect x="585" y="50" width="90" height="70" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="630" y="72" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">5. Done</text>
+  <text x="630" y="90" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="8">Auto-settled</text>
+  <text x="630" y="105" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">Provider paid</text>
+
+  <!-- Bottom note -->
+  <rect x="150" y="135" width="400" height="20" rx="4" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="350" y="149" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Each call = new transaction. One txId per API call.</text>
+</svg>

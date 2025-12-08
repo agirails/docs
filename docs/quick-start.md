@@ -4,9 +4,16 @@ title: Quick Start
 description: Create your first AGIRAILS transaction in 5 minutes
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Quick Start
 
 Create your first agent-to-agent transaction in **5 minutes**.
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/quick-start-overview.svg" alt="Quick Start Overview - 5 Minutes to First Transaction" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 :::info What You'll Learn
 By the end of this guide, you'll have:
@@ -24,9 +31,14 @@ By the end of this guide, you'll have:
 | Requirement | How to Get It |
 |-------------|---------------|
 | **Node.js 16+** | [nodejs.org](https://nodejs.org) |
+| **Python 3.9+** | [python.org](https://python.org) |
 | **Two testnet wallets** | Requester and Provider must be different addresses |
 | **Base Sepolia ETH** | [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) (both wallets) |
 | **Mock USDC** | See [Installation Guide](./installation#step-4-get-testnet-tokens) (requester wallet) |
+
+<div style={{textAlign: 'center', margin: '1.5rem 0'}}>
+  <img src="/img/diagrams/two-wallets-required.svg" alt="Two Wallets Required - Requester and Provider must be different" style={{maxWidth: '100%', height: 'auto'}} />
+</div>
 
 :::warning Two Wallets Required
 The contract requires `requester != provider`. You need two separate wallets to test the full flow. Generate a second wallet for testing, or use a friend's address as provider.
@@ -36,9 +48,22 @@ The contract requires `requester != provider`. You need two separate wallets to 
 
 ## Step 1: Install SDK
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript" default>
+
 ```bash npm2yarn
 npm install @agirails/sdk ethers dotenv
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```bash
+pip install agirails-sdk
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -58,6 +83,9 @@ Never commit private keys. Add `.env` to `.gitignore`.
 ---
 
 ## Step 3: Create Your First Transaction
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript" default>
 
 Create `agent.ts` (run as **requester**):
 
@@ -92,9 +120,9 @@ async function main() {
 
   console.log('Transaction created:', txId);
 
-  // Fund the transaction (locks USDC in escrow)
+  // Fund (approve USDC + link escrow)
   const escrowId = await requesterClient.fundTransaction(txId);
-  console.log('Escrow created:', escrowId);
+  console.log('Escrow funded:', escrowId);
 
   console.log('✅ Transaction created and funded!');
   console.log('Transaction ID (save this):', txId);
@@ -108,6 +136,51 @@ Run it:
 ```bash
 npx ts-node agent.ts
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+Create `agent.py` (run as **requester**):
+
+```python title="agent.py"
+import os, time
+from dotenv import load_dotenv
+from agirails_sdk import ACTPClient, Network
+
+load_dotenv()
+
+requester_client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("REQUESTER_PRIVATE_KEY"))
+provider_address = os.getenv("PROVIDER_ADDRESS")  # derive from provider PK if needed
+
+print("Requester:", requester_client.address)
+print("Provider:", provider_address)
+
+amount = 1_000_000  # 1 USDC (6 decimals)
+deadline = int(time.time()) + 86400  # 24 hours
+dispute_window = 3600  # 1 hour
+
+tx_id = requester_client.create_transaction(
+    provider=provider_address,
+    requester=requester_client.address,
+    amount=amount,
+    deadline=deadline,
+    dispute_window=dispute_window,
+    service_hash="0x" + "00"*32,
+)
+escrow_id = requester_client.fund_transaction(tx_id)
+
+print("✅ Transaction created! txId:", tx_id)
+print("✅ Escrow funded! Escrow ID:", escrow_id)
+```
+
+Run it:
+
+```bash
+python agent.py
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -124,6 +197,9 @@ Your transaction is now in **COMMITTED** state with 1 USDC locked.
 ## Step 4: Complete the Lifecycle (Provider Side)
 
 The **provider** must perform these transitions using their own wallet:
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="provider-deliver.ts"
 import { ACTPClient, State } from '@agirails/sdk';
@@ -151,17 +227,100 @@ async function deliver() {
   console.log('(In production, use event listeners instead of sleeping)');
   await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
 
-  // Provider transitions to SETTLED (required before releaseEscrow)
+  // Provider requests settlement (admin/bot executes payout after dispute window)
   await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
-  console.log('Settled state reached!');
-
-  // Release escrow (either party can call after SETTLED)
-  await providerClient.kernel.releaseEscrow(txId);
-  console.log('✅ Funds released! Provider received ~0.99 USDC');
+  console.log('Settled state reached! (admin/bot will execute payout)');
 }
 
 deliver().catch(console.error);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python title="provider_deliver.py"
+import os
+import time
+from dotenv import load_dotenv
+from web3 import Web3
+from eth_account import Account
+
+load_dotenv()
+
+# Network configuration
+RPC_URL = "https://sepolia.base.org"
+KERNEL_ADDRESS = "0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba"
+
+# State enum values (from contract)
+STATE_IN_PROGRESS = 3
+STATE_DELIVERED = 4
+STATE_SETTLED = 5
+
+# Initialize Web3
+w3 = Web3(Web3.HTTPProvider(RPC_URL))
+
+# Load provider account
+provider = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
+
+# Transaction ID from Step 3
+TX_ID = "YOUR_TX_ID_FROM_STEP_3"  # bytes32
+
+# Simplified ABI
+KERNEL_ABI = [
+    {
+        "name": "transitionState",
+        "type": "function",
+        "inputs": [
+            {"name": "txId", "type": "bytes32"},
+            {"name": "newState", "type": "uint8"},
+            {"name": "proof", "type": "bytes32"}
+        ]
+    }
+]
+
+kernel = w3.eth.contract(address=KERNEL_ADDRESS, abi=KERNEL_ABI)
+
+def transition_state(tx_id: str, new_state: int, proof: bytes = b'\x00' * 32):
+    """Transition transaction to new state."""
+    tx = kernel.functions.transitionState(
+        bytes.fromhex(tx_id[2:]) if tx_id.startswith('0x') else bytes.fromhex(tx_id),
+        new_state,
+        proof
+    ).build_transaction({
+        'from': provider.address,
+        'nonce': w3.eth.get_transaction_count(provider.address),
+        'gas': 100000,
+        'gasPrice': w3.eth.gas_price
+    })
+
+    signed = provider.sign_transaction(tx)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+    w3.eth.wait_for_transaction_receipt(tx_hash)
+    return tx_hash.hex()
+
+# Transition to IN_PROGRESS
+print("Transitioning to IN_PROGRESS...")
+transition_state(TX_ID, STATE_IN_PROGRESS)
+print("In progress!")
+
+# Transition to DELIVERED
+print("Transitioning to DELIVERED...")
+transition_state(TX_ID, STATE_DELIVERED)
+print("Delivered!")
+
+# Wait for dispute window
+print("Waiting for 1 hour dispute window...")
+print("(In production, use event listeners instead)")
+time.sleep(3660)  # 61 minutes
+
+# Transition to SETTLED (admin/bot executes payout)
+print("Transitioning to SETTLED...")
+transition_state(TX_ID, STATE_SETTLED)
+print("Settled requested. Payout occurs after admin/bot execution.")
+```
+
+</TabItem>
+</Tabs>
 
 :::warning Provider-Only Transitions
 Only the **provider** can call `transitionState` for IN_PROGRESS, DELIVERED, and SETTLED. Using the requester's wallet will revert.
@@ -169,7 +328,7 @@ Only the **provider** can call `transitionState` for IN_PROGRESS, DELIVERED, and
 
 :::warning State Transition Rules
 You **cannot** skip states. Required path:
-`COMMITTED → IN_PROGRESS → DELIVERED → (wait) → SETTLED → releaseEscrow()`
+`COMMITTED → IN_PROGRESS → DELIVERED → (wait) → SETTLED (admin/bot executes payout)`
 :::
 
 ---
@@ -177,6 +336,9 @@ You **cannot** skip states. Required path:
 ## Test the Full Flow (Two Wallets)
 
 Complete end-to-end test with both requester and provider:
+
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="full-flow-test.ts"
 import { ACTPClient, State } from '@agirails/sdk';
@@ -212,9 +374,9 @@ async function testFullFlow() {
   });
   console.log('1. Created:', txId);
 
-  // 2. REQUESTER funds
+  // 2. REQUESTER funds (approves USDC + links escrow)
   const escrowId = await requesterClient.fundTransaction(txId);
-  console.log('2. Funded:', escrowId);
+  console.log('2. Escrow funded:', escrowId);
 
   // 3. PROVIDER starts work
   await providerClient.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
@@ -228,13 +390,9 @@ async function testFullFlow() {
   console.log('5. Waiting for 1 hour dispute window...');
   await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
 
-  // 6. PROVIDER transitions to SETTLED
+  // 6. PROVIDER requests SETTLED (admin/bot executes payout)
   await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
-  console.log('6. Settled state (provider)');
-
-  // 7. Release escrow (either party can call)
-  await providerClient.kernel.releaseEscrow(txId);
-  console.log('7. Funds released! ✅');
+  console.log('6. Settled state requested (admin/bot executes payout)');
 
   console.log(`\nProvider received ~0.99 USDC`);
 }
@@ -247,6 +405,71 @@ Run it:
 ```bash
 npx ts-node full-flow-test.ts
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python title="full_flow_test.py"
+import os, time
+from dotenv import load_dotenv
+from agirails_sdk import ACTPClient, Network, State
+from agirails_sdk.errors import ValidationError, TransactionError, RpcError
+
+load_dotenv()
+
+def main():
+    requester = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("REQUESTER_PRIVATE_KEY"))
+    provider = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
+
+    print("Requester:", requester.address)
+    print("Provider:", provider.address)
+
+    # 1. Create
+    tx_id = requester.create_transaction(
+        requester=requester.address,
+        provider=provider.address,
+        amount=1_000_000,  # 1 USDC (6 decimals)
+        deadline=requester.now() + 86400,
+        dispute_window=3600,
+        service_hash="0x" + "00" * 32,
+    )
+    print("1. Created:", tx_id)
+
+    # 2. Fund (approve + link escrow)
+    escrow_id = requester.fund_transaction(tx_id)
+    print("2. Funded:", escrow_id)
+
+    # 3. Provider starts work
+    provider.transition_state(tx_id, State.IN_PROGRESS)
+    print("3. In progress (provider)")
+
+    # 4. Provider delivers
+    provider.transition_state(tx_id, State.DELIVERED)
+    print("4. Delivered (provider)")
+
+    # 5. Wait dispute window (short sleep for demo)
+    print("5. Waiting dispute window...")
+    time.sleep(5)
+
+    # 6. Requester settles (with optional attestation UID if used)
+    try:
+        requester.release_escrow(tx_id)
+        print("6. Settled (payment released)")
+    except (ValidationError, TransactionError, RpcError) as e:
+        print("Settlement failed:", e)
+
+if __name__ == "__main__":
+    main()
+```
+
+Run it:
+
+```bash
+python full_flow_test.py
+```
+
+</TabItem>
+</Tabs>
 
 :::tip Expected Result
 - Requester spends: 1 USDC + gas (~$0.002)
@@ -273,7 +496,7 @@ The contract enforces a **minimum 1-hour dispute window** (`MIN_DISPUTE_WINDOW =
 | **COMMITTED** | USDC locked, provider can start work |
 | **IN_PROGRESS** | Provider working (required before DELIVERED) |
 | **DELIVERED** | Provider submitted proof |
-| **SETTLED** | Payment released ✅ |
+| **SETTLED** | Settlement requested; admin/bot executes payout ✅ |
 | **DISPUTED** | Requester disputed delivery, needs mediation |
 | **CANCELLED** | Transaction cancelled before completion |
 
@@ -288,9 +511,9 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | Function | What It Does |
 |----------|--------------|
 | `createTransaction()` | Create new transaction |
-| `fundTransaction()` | Lock USDC in escrow |
+| `linkEscrow()` | Lock USDC in escrow |
 | `transitionState()` | Move to next state |
-| `releaseEscrow()` | Settle and pay provider |
+| `transitionState(SETTLED)` | Trigger payout (admin/bot executes) |
 
 ### Transaction Parameters
 
@@ -312,10 +535,10 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | **"Insufficient funds"** | Get ETH from [faucet](https://portal.cdp.coinbase.com/products/faucet), mint USDC |
 | **"Invalid private key"** | Ensure key starts with `0x` and is 66 characters |
 | **"requester == provider"** | Contract requires different addresses. Use two wallets. |
-| **"Only provider can call"** | IN_PROGRESS, DELIVERED, SETTLED require provider's wallet |
-| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → SETTLED |
-| **"releaseEscrow failed"** | Must be in SETTLED state first. Call `transitionState(SETTLED)` before release. |
-| **"Dispute window active"** | Wait for dispute window to expire before transitioning to SETTLED |
+| **"Only provider can call"** | IN_PROGRESS, DELIVERED, SETTLED require provider's wallet (or admin/bot for settlement) |
+| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → SETTLED (admin/bot executes payout) |
+| **"Payout not received"** | Ensure SETTLED was requested and admin/bot executed payout; wait until dispute window expires. |
+| **"Dispute window active"** | Wait for dispute window to expire before settlement executes |
 
 ---
 

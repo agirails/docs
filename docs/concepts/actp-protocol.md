@@ -4,6 +4,9 @@ title: The ACTP Protocol
 description: Understanding the Agent Commerce Transaction Protocol - payment infrastructure for the AI agent economy
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # The ACTP Protocol
 
 The **Agent Commerce Transaction Protocol (ACTP)** is an open, blockchain-based protocol that enables autonomous AI agents to conduct secure, trustless commerce with each other.
@@ -228,6 +231,8 @@ ACTP is implemented through three layers:
 | **ACTPKernel** | State machine, lifecycle management | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
 | **EscrowVault** | Holds USDC during transactions | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
 | **Mock USDC** | Test token for development | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+| **AgentRegistry** (AIP-7) | Agent profiles, service types, reputation | Not deployed (planned Q1 2025) |
+| **ArchiveTreasury** (AIP-7) | Archive funding + Arweave anchoring | Not deployed (planned Q1 2025) |
 
 ### Layer 2: Developer Tools (SDK)
 
@@ -289,6 +294,9 @@ You do **not** need to buy a governance token to use ACTP. Transactions are paid
 
 ### Example 1: Simple Service Payment
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
@@ -317,7 +325,46 @@ await client.kernel.transitionState(txId, State.DELIVERED, '0x');
 await client.kernel.releaseEscrow(txId);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+
+from agirails_sdk import ACTPClient, Network, State
+
+client = ACTPClient(
+    network=Network.BASE_SEPOLIA,
+    private_key=os.getenv("PRIVATE_KEY"),
+)
+
+# Requester: Create and fund transaction
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xProviderAddress",
+    amount=10_000_000,  # $10 USDC (6 decimals)
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+
+client.fund_transaction(tx_id)
+
+# Provider: Deliver work
+client.transition_state(tx_id, State.IN_PROGRESS, "0x")
+client.transition_state(tx_id, State.DELIVERED, "0x")
+
+# Requester: Release payment
+client.release_escrow(tx_id)
+```
+
+</TabItem>
+</Tabs>
+
 ### Example 2: Multi-Agent Pipeline
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Agent A pays Agent B, then Agent C
@@ -344,7 +391,47 @@ await Promise.all([
 ]);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+
+from agirails_sdk import ACTPClient, Network
+
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
+
+# Agent A pays Agent B, then Agent C
+tx_b = client.create_transaction(
+    requester="0xAgentA",
+    provider="0xAgentB",
+    amount=10_000_000,  # $10 USDC
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+
+tx_c = client.create_transaction(
+    requester="0xAgentA",
+    provider="0xAgentC",
+    amount=15_000_000,  # $15 USDC
+    deadline=client.now() + 86400,
+    dispute_window=7200,
+    service_hash="0x" + "00" * 32,
+)
+
+# Fund both sequentially (Python)
+client.fund_transaction(tx_b)
+client.fund_transaction(tx_c)
+```
+
+</TabItem>
+</Tabs>
+
 ### Example 3: Milestone Payments
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Long-running task with partial releases
@@ -363,6 +450,37 @@ await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 25%
 await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 50%
 await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // 100%
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os
+
+from agirails_sdk import ACTPClient, Network
+
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
+
+# Long-running task with partial releases
+tx_id = client.create_transaction(
+    requester=client.address,
+    provider="0xMlProvider",
+    amount=1_000_000_000,  # $1,000 total
+    deadline=client.now() + 7 * 86400,
+    dispute_window=172800,
+    service_hash="0x" + "00" * 32,
+)
+
+client.fund_transaction(tx_id)
+
+# Release milestones as work progresses
+client.release_milestone(tx_id, 250_000_000)  # 25%
+client.release_milestone(tx_id, 250_000_000)  # 50%
+client.release_milestone(tx_id, 500_000_000)  # 100%
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

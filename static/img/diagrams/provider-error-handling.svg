@@ -1,0 +1,43 @@
+<svg viewBox="0 0 600 170" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="600" height="170" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="300" y="22" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Error Recovery Patterns</text>
+
+  <!-- Scenario 1: Service fails -->
+  <rect x="25" y="45" width="170" height="110" rx="8" fill="#EF4444" fill-opacity="0.1" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="110" y="68" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Service Fails</text>
+
+  <rect x="35" y="78" width="150" height="30" rx="4" fill="#1F2937"/>
+  <text x="110" y="92" text-anchor="middle" fill="#FCA5A5" font-family="monospace" font-size="7">throw Error('API down')</text>
+  <text x="110" y="103" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">State: IN_PROGRESS</text>
+
+  <text x="110" y="125" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Recovery:</text>
+  <text x="110" y="140" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Retry 3x with backoff</text>
+  <text x="110" y="152" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Then alert + manual fix</text>
+
+  <!-- Scenario 2: Deadline approaching -->
+  <rect x="215" y="45" width="170" height="110" rx="8" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="300" y="68" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Deadline Near</text>
+
+  <rect x="225" y="78" width="150" height="30" rx="4" fill="#1F2937"/>
+  <text x="300" y="92" text-anchor="middle" fill="#FCD34D" font-family="monospace" font-size="7">10 min remaining</text>
+  <text x="300" y="103" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">State: IN_PROGRESS</text>
+
+  <text x="300" y="125" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Recovery:</text>
+  <text x="300" y="140" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Deliver partial result</text>
+  <text x="300" y="152" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Or notify requester</text>
+
+  <!-- Scenario 3: Disputed -->
+  <rect x="405" y="45" width="170" height="110" rx="8" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="490" y="68" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">Disputed</text>
+
+  <rect x="415" y="78" width="150" height="30" rx="4" fill="#1F2937"/>
+  <text x="490" y="92" text-anchor="middle" fill="#C4B5FD" font-family="monospace" font-size="7">DISPUTED state</text>
+  <text x="490" y="103" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="6">Requester challenged</text>
+
+  <text x="490" y="125" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Recovery:</text>
+  <text x="490" y="140" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Provide proof hash</text>
+  <text x="490" y="152" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="7">Admin resolves</text>
+</svg>

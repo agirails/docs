@@ -1,0 +1,92 @@
+<svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="320" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700">Automated Provider Agent Flow</text>
+  <text x="450" y="50" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">Zero intervention from deploy to payout</text>
+
+  <!-- ═══ STEP 1: LISTEN ═══ -->
+  <rect x="40" y="80" width="120" height="100" rx="10" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="2"/>
+  <circle cx="100" cy="105" r="16" fill="#0EA5E9"/>
+  <text x="100" y="110" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">1</text>
+  <text x="100" y="140" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">LISTEN</text>
+  <text x="100" y="158" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">onTransaction</text>
+  <text x="100" y="172" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Created()</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="160" y1="130" x2="190" y2="130" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="195,130 187,125 187,135" fill="#6B7280"/>
+
+  <!-- ═══ STEP 2: FILTER ═══ -->
+  <rect x="200" y="80" width="120" height="100" rx="10" fill="#F59E0B" fill-opacity="0.1" stroke="#F59E0B" stroke-width="2"/>
+  <circle cx="260" cy="105" r="16" fill="#F59E0B"/>
+  <text x="260" y="110" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">2</text>
+  <text x="260" y="140" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">FILTER</text>
+  <text x="260" y="158" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">Amount bounds</text>
+  <text x="260" y="172" text-anchor="middle" fill="#FCD34D" font-family="system-ui, -apple-system, sans-serif" font-size="9">Deadline check</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="320" y1="130" x2="350" y2="130" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="355,130 347,125 347,135" fill="#6B7280"/>
+
+  <!-- ═══ STEP 3: EXECUTE ═══ -->
+  <rect x="360" y="80" width="120" height="100" rx="10" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="2"/>
+  <circle cx="420" cy="105" r="16" fill="#8B5CF6"/>
+  <text x="420" y="110" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">3</text>
+  <text x="420" y="140" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">EXECUTE</text>
+  <text x="420" y="158" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">Your service</text>
+  <text x="420" y="172" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="9">logic here</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="480" y1="130" x2="510" y2="130" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="515,130 507,125 507,135" fill="#6B7280"/>
+
+  <!-- ═══ STEP 4: PROVE ═══ -->
+  <rect x="520" y="80" width="120" height="100" rx="10" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="2"/>
+  <circle cx="580" cy="105" r="16" fill="#10B981"/>
+  <text x="580" y="110" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">4</text>
+  <text x="580" y="140" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">PROVE</text>
+  <text x="580" y="158" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">hashContent()</text>
+  <text x="580" y="172" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="9">Crypto proof</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="640" y1="130" x2="670" y2="130" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="675,130 667,125 667,135" fill="#6B7280"/>
+
+  <!-- ═══ STEP 5: DELIVER ═══ -->
+  <rect x="680" y="80" width="120" height="100" rx="10" fill="#EC4899" fill-opacity="0.1" stroke="#EC4899" stroke-width="2"/>
+  <circle cx="740" cy="105" r="16" fill="#EC4899"/>
+  <text x="740" y="110" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">5</text>
+  <text x="740" y="140" text-anchor="middle" fill="#EC4899" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">DELIVER</text>
+  <text x="740" y="158" text-anchor="middle" fill="#F9A8D4" font-family="system-ui, -apple-system, sans-serif" font-size="9">transition</text>
+  <text x="740" y="172" text-anchor="middle" fill="#F9A8D4" font-family="system-ui, -apple-system, sans-serif" font-size="9">State()</text>
+
+  <!-- Arrow 5→6 (curved down) -->
+  <path d="M 800 130 Q 850 130 850 200 Q 850 240 800 240" stroke="#6B7280" stroke-width="2" fill="none"/>
+  <polygon points="800,240 808,235 808,245" fill="#6B7280"/>
+
+  <!-- ═══ STEP 6: SETTLE ═══ -->
+  <rect x="600" y="210" width="180" height="90" rx="10" fill="#22C55E" fill-opacity="0.15" stroke="#22C55E" stroke-width="2"/>
+  <text x="690" y="240" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="24">💰</text>
+  <text x="690" y="265" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600">AUTO-SETTLE</text>
+  <text x="690" y="283" text-anchor="middle" fill="#86EFAC" font-family="system-ui, -apple-system, sans-serif" font-size="9">After dispute window passes</text>
+  <text x="690" y="295" text-anchor="middle" fill="#86EFAC" font-family="system-ui, -apple-system, sans-serif" font-size="9">USDC → Your Wallet</text>
+
+  <!-- ═══ BOTTOM INFO: Key Points ═══ -->
+  <rect x="40" y="210" width="230" height="90" rx="10" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="155" y="235" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Key Customization Points</text>
+  <text x="55" y="255" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">• shouldAcceptJob() - your filters</text>
+  <text x="55" y="270" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">• performService() - your logic</text>
+  <text x="55" y="285" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">• JobConfig - amount bounds</text>
+
+  <!-- ═══ CENTER INFO: Timing ═══ -->
+  <rect x="290" y="210" width="290" height="90" rx="10" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="435" y="235" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Typical Timing</text>
+  <text x="305" y="255" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9">Listen:</text>
+  <text x="360" y="255" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">~2s (block time)</text>
+  <text x="305" y="270" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9">Execute:</text>
+  <text x="360" y="270" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">Your service duration</text>
+  <text x="305" y="285" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="9">Settle:</text>
+  <text x="360" y="285" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">disputeWindow (default 1hr)</text>
+</svg>

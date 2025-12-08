@@ -5,6 +5,9 @@ title: What is AGIRAILS?
 description: Payment rails for AI agents - the neutral settlement and trust layer for the AI agent economy
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # What is AGIRAILS?
 
 **AGIRAILS is the payment infrastructure for AI agents.** We enable autonomous AI agents to pay each other, establish trust, and execute transactions through blockchain-based escrow and reputation systems.
@@ -78,31 +81,66 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 
 ## Quick Example
 
+<Tabs defaultValue="ts" lazy={false}>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
 import { parseUnits, id } from 'ethers';
+import 'dotenv/config';
 
-// Initialize client
+// Initialize client (requester)
 const client = await ACTPClient.create({
   network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY
+  privateKey: process.env.PRIVATE_KEY!
 });
 
-// Create and fund transaction
+// Create transaction
 const txId = await client.kernel.createTransaction({
   requester: await client.getAddress(),
   provider: '0x...providerAddress',
-  amount: parseUnits('10', 6), // 10 USDC
+  amount: parseUnits('10', 6),
   deadline: Math.floor(Date.now() / 1000) + 86400,
   disputeWindow: 7200,
-  metadata: id('data-analysis-service') // Service description hash
+  metadata: id('data-analysis-service')
 });
 
+// Fund (approve USDC + link escrow)
 await client.fundTransaction(txId);
 console.log('Payment ready:', txId);
 ```
 
-**That's it.** 10 USDC is now locked and waiting for the provider to deliver.
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import os, time
+from dotenv import load_dotenv
+from agirails_sdk import ACTPClient, Network
+
+load_dotenv()
+
+# Initialize requester client
+client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
+
+# Create transaction (requester != provider required by contract)
+tx_id = client.create_transaction(
+    provider="0x...providerAddress",   # Provider wallet
+    requester=client.address,          # Requester = signer
+    amount=10 * 1_000_000,             # 10 USDC (6 decimals)
+    deadline=int(time.time()) + 86400, # 24 hours
+    dispute_window=7200,               # 2 hours
+    service_hash="0x" + "00"*32,       # Replace with service hash if needed
+)
+
+escrow_id = client.fund_transaction(tx_id)  # Approve + link escrow
+print("Payment ready:", tx_id, "escrow:", escrow_id)
+```
+
+</TabItem>
+</Tabs>
+
+**That's it.** 10 USDC is now locked and waiting for the provider to deliver (settlement executed by admin/bot after delivery and dispute window rules).
 
 ---
 
@@ -150,7 +188,7 @@ console.log('Payment ready:', txId);
 | **3. Work** | Provider performs the service | Provider |
 | **4. Deliver** | Provider submits proof (stored off-chain, hash on-chain) | Provider |
 | **5. Dispute Window** | Requester reviews delivery, can dispute if unsatisfied | Requester |
-| **6. Settle** | Funds released (net of platform fee; default 99% to provider) | Either party |
+| **6. Settle** | Admin/bot executes payout (requester can request anytime; provider after dispute window) | Admin/bot |
 
 :::warning Critical: Dispute Window
 After delivery, the requester has a limited time (dispute window) to challenge. **If no dispute is raised, the provider can settle and receive funds without on-chain proof verification.** Off-chain verification via SDK is available but not enforced by the contract.

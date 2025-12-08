@@ -1,0 +1,40 @@
+<svg viewBox="0 0 550 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="550" height="110" fill="#0A0A0A"/>
+
+  <!-- DELIVERED box -->
+  <rect x="20" y="35" width="90" height="40" rx="5" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="1.5"/>
+  <text x="65" y="60" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">DELIVERED</text>
+
+  <!-- Main arrow to SETTLED -->
+  <line x1="110" y1="55" x2="430" y2="55" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="435,55 427,51 427,59" fill="#6B7280"/>
+
+  <!-- SETTLED box -->
+  <rect x="440" y="35" width="90" height="40" rx="5" fill="#10B981" fill-opacity="0.3" stroke="#10B981" stroke-width="2"/>
+  <text x="485" y="53" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">SETTLED</text>
+  <text x="485" y="67" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="8">(auto)</text>
+
+  <!-- Dispute window bracket with arrows pointing inward -->
+  <!-- Left vertical line -->
+  <line x1="130" y1="70" x2="130" y2="85" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- Horizontal line -->
+  <line x1="130" y1="85" x2="420" y2="85" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- Right vertical line -->
+  <line x1="420" y1="70" x2="420" y2="85" stroke="#F59E0B" stroke-width="1.5"/>
+
+  <!-- Left arrow pointing right (toward center) -->
+  <polygon points="145,85 135,80 135,90" fill="#F59E0B"/>
+  <!-- Right arrow pointing left (toward center) -->
+  <polygon points="405,85 415,80 415,90" fill="#F59E0B"/>
+
+  <!-- Dispute window label -->
+  <text x="275" y="102" text-anchor="middle" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">Dispute Window (e.g., 1 hour)</text>
+
+  <!-- DISPUTE indicator box -->
+  <rect x="210" y="8" width="130" height="24" rx="4" fill="#EF4444" fill-opacity="0.15" stroke="#EF4444" stroke-width="1"/>
+  <text x="275" y="24" text-anchor="middle" fill="#EF4444" font-family="system-ui, -apple-system, sans-serif" font-size="8" font-weight="600">Requester can DISPUTE</text>
+
+  <!-- Dashed line from bracket up to DISPUTE box -->
+  <line x1="275" y1="70" x2="275" y2="32" stroke="#EF4444" stroke-width="1" stroke-dasharray="3,2"/>
+</svg>

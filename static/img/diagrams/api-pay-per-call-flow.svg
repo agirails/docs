@@ -1,0 +1,72 @@
+<svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="380" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700">API Pay-Per-Call Flow</text>
+  <text x="450" y="50" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="11">Monetize your API with instant micropayments</text>
+
+  <!-- ═══ CONSUMER BOX ═══ -->
+  <rect x="40" y="110" width="180" height="180" rx="12" fill="#0EA5E9" fill-opacity="0.1" stroke="#0EA5E9" stroke-width="2"/>
+  <rect x="50" y="90" width="160" height="28" rx="6" fill="#0EA5E9"/>
+  <text x="130" y="109" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">CONSUMER AGENT</text>
+
+  <text x="130" y="145" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">1. Get /api/pricing</text>
+  <text x="130" y="175" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">2. createTransaction()</text>
+  <text x="130" y="205" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">3. escrow.fund()</text>
+  <text x="130" y="235" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">4. POST /api + txId</text>
+  <text x="130" y="265" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">5. Release or auto-settle</text>
+
+  <!-- ═══ YOUR API BOX ═══ -->
+  <rect x="360" y="110" width="180" height="180" rx="12" fill="#8B5CF6" fill-opacity="0.1" stroke="#8B5CF6" stroke-width="2"/>
+  <rect x="370" y="90" width="160" height="28" rx="6" fill="#8B5CF6"/>
+  <text x="450" y="109" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">YOUR API + MIDDLEWARE</text>
+
+  <text x="450" y="150" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="10">verifyPayment()</text>
+  <rect x="380" y="165" width="140" height="40" rx="6" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="450" y="183" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Check: provider match</text>
+  <text x="450" y="196" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Check: amount, deadline</text>
+
+  <text x="450" y="230" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="10">Process Request</text>
+  <text x="450" y="260" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="10">transitionState(DELIVERED)</text>
+
+  <!-- ═══ ESCROW BOX ═══ -->
+  <rect x="680" y="110" width="180" height="180" rx="12" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-width="2"/>
+  <rect x="690" y="90" width="160" height="28" rx="6" fill="#10B981"/>
+  <text x="770" y="109" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">AGIRAILS ESCROW</text>
+
+  <text x="770" y="150" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="24">🔒</text>
+  <text x="770" y="185" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">USDC Locked</text>
+  <text x="770" y="205" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">Until delivery</text>
+
+  <line x1="710" y1="225" x2="830" y2="225" stroke="#374151" stroke-width="1"/>
+
+  <text x="770" y="245" text-anchor="middle" fill="#22C55E" font-family="system-ui, -apple-system, sans-serif" font-size="10">On DELIVERED:</text>
+  <text x="770" y="265" text-anchor="middle" fill="#86EFAC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Provider gets 99%</text>
+  <text x="770" y="280" text-anchor="middle" fill="#86EFAC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Platform gets 1%</text>
+
+  <!-- ═══ ARROWS ═══ -->
+  <!-- Consumer → API -->
+  <line x1="220" y1="160" x2="355" y2="160" stroke="#6B7280" stroke-width="2"/>
+  <polygon points="360,160 352,155 352,165" fill="#6B7280"/>
+  <text x="288" y="150" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">POST + X-AGIRAILS-TX-ID</text>
+
+  <!-- API → Consumer (response) -->
+  <line x1="355" y1="230" x2="225" y2="230" stroke="#6B7280" stroke-width="2" stroke-dasharray="4,2"/>
+  <polygon points="220,230 228,225 228,235" fill="#6B7280"/>
+  <text x="288" y="245" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="8">Response + proof</text>
+
+  <!-- Consumer → Escrow (fund) -->
+  <path d="M 130 290 L 130 320 L 770 320 L 770 295" stroke="#0EA5E9" stroke-width="2" fill="none"/>
+  <polygon points="770,290 765,298 775,298" fill="#0EA5E9"/>
+  <text x="450" y="335" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="9">Fund escrow (step 3)</text>
+
+  <!-- API → Escrow (verify) -->
+  <line x1="540" y1="185" x2="675" y2="185" stroke="#8B5CF6" stroke-width="2"/>
+  <polygon points="680,185 672,180 672,190" fill="#8B5CF6"/>
+  <text x="608" y="175" text-anchor="middle" fill="#C4B5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">Verify tx</text>
+
+  <!-- ═══ BOTTOM: KEY INSIGHT ═══ -->
+  <rect x="250" y="350" width="400" height="24" rx="6" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <text x="450" y="366" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="10">Payment happens BEFORE API call • No chargebacks • Instant settlement</text>
+</svg>
