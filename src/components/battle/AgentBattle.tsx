@@ -159,7 +159,11 @@ function formatTxHash(hash?: string): string {
   return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
 }
 
-export default function AgentBattle() {
+interface AgentBattleProps {
+  hideHeader?: boolean;
+}
+
+export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
   const { state, dispatch, canPerformAction } = useBattleState();
   const { requesterWallet, providerWallet, transaction, timeline, isSimulating } = state;
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -293,38 +297,40 @@ export default function AgentBattle() {
   return (
     <div className="battle-container pg-container">
       {/* Header */}
-      <header className="battle-header">
-        <div className="battle-header-left">
-          <a href="/playground" className="battle-back-btn">
-            <ArrowLeftIcon />
-            Back to Playground
-          </a>
-          <div className="battle-header-divider" />
-          <div className="battle-header-title">
-            <div className="battle-icon">
-              <SwordsIcon />
-            </div>
-            <div>
-              <h1>Agent Battle</h1>
-              <p>Dual-agent transaction simulator</p>
+      {!hideHeader && (
+        <header className="battle-header">
+          <div className="battle-header-left">
+            <a href="/playground" className="battle-back-btn">
+              <ArrowLeftIcon />
+              Back to Playground
+            </a>
+            <div className="battle-header-divider" />
+            <div className="battle-header-title">
+              <div className="battle-icon">
+                <SwordsIcon />
+              </div>
+              <div>
+                <h1>Agent Battle</h1>
+                <p>Dual-agent transaction simulator</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="battle-header-right">
-          <div className="battle-network">
-            <ZapIcon />
-            <span>Base Sepolia (Simulation)</span>
+          <div className="battle-header-right">
+            <div className="battle-network">
+              <ZapIcon />
+              <span>Base Sepolia (Simulation)</span>
+            </div>
+            <button
+              className="battle-reset-btn"
+              onClick={() => dispatch({ type: 'RESET' })}
+            >
+              <RotateCcwIcon />
+              Reset
+            </button>
           </div>
-          <button
-            className="battle-reset-btn"
-            onClick={() => dispatch({ type: 'RESET' })}
-          >
-            <RotateCcwIcon />
-            Reset
-          </button>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Dispute Resolver */}
       {transaction?.state === 'DISPUTED' && (

@@ -1,22 +1,42 @@
 import { useState } from 'react';
 import { WalletState } from '../../types/playground';
 
+type ApiLevel = 'simple-api' | 'standard-api' | 'advanced-api' | 'canvas';
+
 interface HeaderProps {
   wallet: WalletState;
   onConnect: () => void;
   onDisconnect: () => void;
+  currentLevel?: ApiLevel;
 }
 
-export default function Header({ wallet, onConnect, onDisconnect }: HeaderProps) {
+const API_LEVELS: { id: ApiLevel; label: string; href: string }[] = [
+  { id: 'simple-api', label: 'Simple', href: '/simple-api' },
+  { id: 'standard-api', label: 'Standard', href: '/standard-api' },
+  { id: 'advanced-api', label: 'Advanced', href: '/advanced-api' },
+  { id: 'canvas', label: 'Canvas', href: '/canvas' },
+];
+
+export default function Header({ wallet, onConnect, onDisconnect, currentLevel = 'simple-api' }: HeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
     <header className="pg-header">
       <div className="pg-header-left">
-        <div className="pg-header-logo">
-          <span>A</span>
-        </div>
         <h1 className="pg-header-title">SDK Playground</h1>
+        
+        {/* API Level Navigation */}
+        <nav className="pg-header-nav">
+          {API_LEVELS.map((level) => (
+            <a
+              key={level.id}
+              href={level.href}
+              className={`pg-header-nav-item ${currentLevel === level.id ? 'pg-header-nav-item-active' : ''}`}
+            >
+              {level.label}
+            </a>
+          ))}
+        </nav>
       </div>
 
       {wallet.connected ? (

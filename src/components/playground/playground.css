@@ -841,6 +841,35 @@
   margin: 0;
 }
 
+/* Header Navigation */
+.pg-header-nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: 1.5rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--pg-border);
+}
+
+.pg-header-nav-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--pg-text-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.pg-header-nav-item:hover {
+  color: var(--pg-text);
+  background: var(--pg-secondary);
+}
+
+.pg-header-nav-item-active {
+  color: var(--pg-primary);
+  background: rgba(0, 228, 228, 0.1);
+}
+
 /* Connect Wallet Button */
 .pg-connect-btn {
   display: flex;
