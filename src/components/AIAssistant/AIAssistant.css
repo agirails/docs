@@ -85,6 +85,27 @@ body {
   border-bottom: none;
 }
 
+/* Resize handle */
+.ai-assistant-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.2s ease;
+  z-index: 10;
+}
+
+.ai-assistant-resize-handle:hover {
+  background: rgba(0, 228, 228, 0.5);
+}
+
+.ai-assistant-resize-handle:active {
+  background: rgba(0, 228, 228, 0.7);
+}
+
 /* Expanded mode - fullscreen */
 .ai-assistant-panel.expanded {
   bottom: 1rem;

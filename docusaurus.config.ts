@@ -97,7 +97,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          to: '/playground',
+          to: '/simple-api',
           label: 'Playground',
           position: 'left',
         },
@@ -122,64 +122,50 @@ const config: Config = {
           label: 'Changelog',
           position: 'left',
         },
+        {
+          type: 'search',
+          position: 'left',
+        },
         // Right side
         {
-          href: 'https://github.com/agirails',
-          label: 'GitHub',
+          type: 'html',
           position: 'right',
+          value: `<div class="ai-launcher-wrapper"><button class="ai-assistant-launcher" type="button" aria-label="Ask AI" onclick="window.dispatchEvent(new CustomEvent('agirails-toggle-assistant'))">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="4" y="8" width="16" height="12" rx="2"/>
+    <circle cx="12" cy="3" r="2"/>
+    <path d="M12 5v3"/>
+    <line x1="9" y1="14" x2="9" y2="14"/>
+    <line x1="15" y1="14" x2="15" y2="14"/>
+    <rect x="1" y="11" width="3" height="5" rx="1"/>
+    <rect x="20" y="11" width="3" height="5" rx="1"/>
+  </svg>
+  <span>Ask AI</span>
+</button></div>`,
         },
         {
-          href: 'https://discord.gg/nuhCt75qe4',
-          label: 'Discord',
+          type: 'html',
           position: 'right',
+          value: `<a class="nav-icon-btn" href="https://github.com/agirails" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 5v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.74c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 17.13V21" />
+  </svg>
+</a>`,
+        },
+        {
+          type: 'html',
+          position: 'right',
+          value: `<a class="nav-icon-btn" href="https://discord.gg/nuhCt75qe4" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+  <img src="/img/discord-outline.svg" alt="Discord" width="20" height="20" loading="lazy" />
+</a>`,
         },
       ],
     },
 
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Learn',
-          items: [
-            { label: 'What is AGIRAILS?', to: '/' },
-            { label: 'Quick Start', to: '/quick-start' },
-            // TODO: Add when pages exist
-            // { label: 'Core Concepts', to: '/concepts' },
-            // { label: 'Tutorials', to: '/tutorials' },
-          ],
-        },
-        {
-          title: 'Develop',
-          items: [
-            // TODO: Add when pages exist
-            // { label: 'SDK Reference', to: '/sdk' },
-            // { label: 'Smart Contracts', to: '/contracts' },
-            // { label: 'Protocol Specs (AIPs)', to: '/aips' },
-            { label: 'Examples', href: 'https://github.com/agirails/examples' },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            { label: 'Discord', href: 'https://discord.gg/nuhCt75qe4' },
-            { label: 'X', href: 'https://x.com/agirails' },
-            { label: 'GitHub', href: 'https://github.com/agirails' },
-            { label: 'Changelog', to: '/changelog' },
-          ],
-        },
-        {
-          title: 'Resources',
-          items: [
-            // TODO: Add when pages exist
-            // { label: 'Testnet Faucet', to: '/resources/faucet' },
-            { label: 'Block Explorer', href: 'https://sepolia.basescan.org' },
-            // { label: 'Brand Assets', to: '/resources/brand' },
-            // { label: 'Security', to: '/security' },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} AGIRAILS Inc. Built with Docusaurus.`,
+      links: [],
+      copyright: `© ${new Date().getFullYear()} AGIRAILS. All rights reserved.`,
     },
 
     prism: {
@@ -214,7 +200,8 @@ const config: Config = {
         explicitSearchResultPath: true,
         docsRouteBasePath: '/',
         indexBlog: false,
-        searchBarPosition: 'right',
+        searchBarPosition: 'left',
+        searchBarShortcutHint: false,
       },
     ],
   ],

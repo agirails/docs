@@ -30,12 +30,32 @@ export default function AIAssistant() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(420);
+  const [isResizing, setIsResizing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Listen for navbar "Ask AI" button click - toggle behavior
+  useEffect(() => {
+    const handleToggleAssistant = () => {
+      setIsOpen(prev => {
+        if (prev) {
+          return false;
+        } else {
+          setViewMode('docked');
+          return true;
+        }
+      });
+    };
+    window.addEventListener('agirails-toggle-assistant', handleToggleAssistant);
+    return () => {
+      window.removeEventListener('agirails-toggle-assistant', handleToggleAssistant);
+    };
+  }, []);
 
   // Track location changes for re-applying docked class
   const location = useLocation();
@@ -44,14 +64,41 @@ export default function AIAssistant() {
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (isOpen && viewMode === 'docked') {
-      root.style.setProperty('--ai-dock-width', '420px');
+      root.style.setProperty('--ai-dock-width', `${sidebarWidth}px`);
     } else {
       root.style.setProperty('--ai-dock-width', '0px');
     }
     return () => {
       root.style.setProperty('--ai-dock-width', '0px');
     };
-  }, [isOpen, viewMode]);
+  }, [isOpen, viewMode, sidebarWidth]);
+
+  // Handle resize
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const newWidth = window.innerWidth - e.clientX;
+      setSidebarWidth(Math.min(800, Math.max(320, newWidth)));
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -93,25 +140,9 @@ export default function AIAssistant() {
     inputRef.current?.focus();
   };
 
-  // Floating button when closed
+  // No floating button - use navbar "Ask AI" button instead
   if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="ai-assistant-fab"
-        aria-label="Open AI Assistant"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="4" y="8" width="16" height="12" rx="2"/>
-          <circle cx="12" cy="3" r="2"/>
-          <path d="M12 5v3"/>
-          <line x1="9" y1="14" x2="9" y2="14"/>
-          <line x1="15" y1="14" x2="15" y2="14"/>
-          <rect x="1" y="11" width="3" height="5" rx="1"/>
-          <rect x="20" y="11" width="3" height="5" rx="1"/>
-        </svg>
-      </button>
-    );
+    return null;
   }
 
   const cycleViewMode = () => {
@@ -121,7 +152,17 @@ export default function AIAssistant() {
   };
 
   return (
-    <div className={`ai-assistant-panel ${viewMode}`}>
+    <div 
+      className={`ai-assistant-panel ${viewMode}`}
+      style={viewMode === 'docked' ? { width: `${sidebarWidth}px` } : undefined}
+    >
+      {/* Resize handle */}
+      {viewMode === 'docked' && (
+        <div
+          className="ai-assistant-resize-handle"
+          onMouseDown={() => setIsResizing(true)}
+        />
+      )}
       {/* Header */}
       <div className="ai-assistant-header">
         <div className="ai-assistant-title">
@@ -136,41 +177,6 @@ export default function AIAssistant() {
           </div>
         </div>
         <div className="ai-assistant-actions">
-          {/* Dock to sidebar */}
-          <button
-            onClick={() => setViewMode(viewMode === 'docked' ? 'floating' : 'docked')}
-            className={`ai-assistant-btn ${viewMode === 'docked' ? 'active' : ''}`}
-            aria-label="Dock to sidebar"
-            title="Dock to sidebar"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="15" y1="3" x2="15" y2="21"/>
-            </svg>
-          </button>
-          {/* Expand fullscreen */}
-          <button
-            onClick={() => setViewMode(viewMode === 'expanded' ? 'floating' : 'expanded')}
-            className={`ai-assistant-btn ${viewMode === 'expanded' ? 'active' : ''}`}
-            aria-label={viewMode === 'expanded' ? 'Minimize' : 'Maximize'}
-            title={viewMode === 'expanded' ? 'Minimize' : 'Fullscreen'}
-          >
-            {viewMode === 'expanded' ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="4 14 10 14 10 20" />
-                <polyline points="20 10 14 10 14 4" />
-                <line x1="14" y1="10" x2="21" y2="3" />
-                <line x1="3" y1="21" x2="10" y2="14" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="15 3 21 3 21 9" />
-                <polyline points="9 21 3 21 3 15" />
-                <line x1="21" y1="3" x2="14" y2="10" />
-                <line x1="3" y1="21" x2="10" y2="14" />
-              </svg>
-            )}
-          </button>
           {/* Close */}
           <button
             onClick={() => setIsOpen(false)}

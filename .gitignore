@@ -11,6 +11,10 @@
 # Misc
 .DS_Store
 .env.local
+
+# Deprecated pages (replaced by simple-api, advanced-api)
+src/pages/playground.tsx
+src/pages/battle.tsx
 .env.development.local
 .env.test.local
 .env.production.local

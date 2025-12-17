@@ -630,10 +630,187 @@ html {
   margin-right: 0.5rem;
 }
 
-/* Local search plugin styling */
-.navbar__items--right > div[class*='searchBox'] {
-  order: -1;
+/* Search bar - align right within left navbar */
+.navbar__inner {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.navbar__items:not(.navbar__items--right) {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Push search to the right of left navbar items */
+.navbar__items:not(.navbar__items--right) > .navbar__item:last-child,
+.navbar__items:not(.navbar__items--right) > div:last-child,
+.navbar__items:not(.navbar__items--right) > [class*='search']:last-child {
+  margin-left: auto !important;
+}
+
+/* Target local search plugin container specifically */
+.navbarSearchContainer,
+[class*='navbarSearchContainer'],
+.navbar__search {
+  margin-left: auto !important;
   margin-right: 0.5rem;
+}
+
+/* Search bar styling - wider, less padding */
+.navbar input[type="search"],
+.navbar input[type="text"][placeholder*="Search"],
+.navbar [class*="search"] input,
+.navbar button[class*="search"],
+.aa-Input,
+.aa-Form {
+  min-width: 280px !important;
+  width: 280px !important;
+  padding: 0.35rem 0.75rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Local search specific */
+.aa-Autocomplete,
+.aa-DetachedSearchButton,
+[data-ds-theme] button {
+  min-width: 280px !important;
+  width: 280px !important;
+  padding: 0 !important;
+}
+
+/* Any search wrapper */
+.navbar [class*="search"],
+.navbar [class*="Search"] {
+  padding: 0 !important;
+  min-width: 280px !important;
+  width: 280px !important;
+}
+
+/* Target the actual search button/input container */
+.navbar .DocSearch-Button,
+.navbar [class*="searchBar"] button,
+.navbar [class*="searchBar"] input {
+  min-width: 280px !important;
+  width: 280px !important;
+}
+
+/* Search field - black background, cyan border */
+.navbar [class*="search"] button,
+.navbar [class*="search"] input,
+.navbar [class*="Search"] button,
+.navbar [class*="Search"] input,
+.DocSearch-Button,
+[class*="searchBar"] button,
+[class*="searchBar"] input {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: none !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 228, 228, 0.3) !important;
+  border-radius: 30px !important;
+}
+
+/* Center search label/placeholder */
+.navbar [class*="search"] button,
+.navbar [class*="search"] input,
+.navbar .DocSearch-Button {
+  text-align: center !important;
+  justify-content: center !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar [class*="search"] button span,
+.navbar [class*="search"] input::placeholder,
+.DocSearch-Button-Placeholder {
+  text-align: center !important;
+  width: 100% !important;
+  color: #888888 !important;
+}
+
+/* Ask AI button styling */
+.ai-launcher-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.ai-assistant-launcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: linear-gradient(135deg, rgba(0, 228, 228, 0.15) 0%, rgba(0, 82, 255, 0.15) 100%);
+  border: 1px solid rgba(0, 228, 228, 0.3);
+  border-radius: 20px;
+  color: #00E4E4;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-assistant-launcher:hover {
+  background: linear-gradient(135deg, rgba(0, 228, 228, 0.25) 0%, rgba(0, 82, 255, 0.25) 100%);
+  border-color: rgba(0, 228, 228, 0.5);
+  transform: translateY(-1px);
+}
+
+.ai-assistant-launcher svg {
+  width: 16px;
+  height: 16px;
+  stroke: #00E4E4 !important;
+  fill: none !important;
+  color: #00E4E4 !important;
+}
+
+.ai-assistant-launcher svg * {
+  stroke: #00E4E4 !important;
+  fill: none !important;
+}
+
+.ai-assistant-launcher span {
+  color: #00E4E4;
+}
+
+/* GitHub and Discord icon buttons alignment */
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.navbar__items--right > div {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__items--right {
+  align-items: center;
+}
+
+/* Search icon - white color */
+.navbar [class*="search"] svg,
+.navbar [class*="search"] svg path,
+.navbar [class*="Search"] svg,
+.navbar [class*="Search"] svg path,
+.navbar button svg,
+.navbar button svg path,
+.DocSearch-Button svg,
+.DocSearch-Search-Icon,
+[class*="searchBar"] svg,
+[class*="searchBar"] svg path {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Also target any icon inside navbar search */
+.navbar__items svg[class*="search"],
+.navbar__items [class*="search"] svg * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: #ffffff !important;
 }
 
 /* ============================================
