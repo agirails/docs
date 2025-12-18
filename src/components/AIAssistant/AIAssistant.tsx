@@ -1,40 +1,62 @@
-import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import { useLocation } from '@docusaurus/router';
+import { getPlaygroundContext, formatPlaygroundContextForPrompt, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  timestamp: Date;
 }
 
 const suggestedPrompts = [
-  "How do I create my first transaction?",
+  "How do I get started with the SDK?",
   "Explain the escrow flow",
-  "What happens if a dispute is raised?",
+  "What's the difference between Level 0, 1, and 2 APIs?",
   "How does the state machine work?",
 ];
 
 type ViewMode = 'floating' | 'docked' | 'expanded';
 
+// API URL - use local server in development, Vercel in production
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api/chat'
+  : '/api/chat';
+
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('floating');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?",
-      timestamp: new Date(),
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(420);
   const [isResizing, setIsResizing] = useState(false);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?",
+    }
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [playgroundContext, setPlaygroundContext] = useState<PlaygroundContext | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Listen for playground context updates
+  useEffect(() => {
+    const handleContextUpdate = (event: CustomEvent<PlaygroundContext | null>) => {
+      setPlaygroundContext(event.detail);
+    };
+
+    // Get initial context
+    setPlaygroundContext(getPlaygroundContext());
+
+    window.addEventListener('playground-context-update', handleContextUpdate as EventListener);
+    return () => {
+      window.removeEventListener('playground-context-update', handleContextUpdate as EventListener);
+    };
+  }, []);
+
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -60,7 +82,7 @@ export default function AIAssistant() {
   // Track location changes for re-applying docked class
   const location = useLocation();
 
-  // Apply CSS custom property for docked state - Docusaurus doesn't touch :root styles
+  // Apply CSS custom property for docked state
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (isOpen && viewMode === 'docked') {
@@ -100,35 +122,99 @@ export default function AIAssistant() {
     };
   }, [isResizing]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = useCallback(async () => {
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
-      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsTyping(true);
+    setIsLoading(true);
+    setError(null);
 
-    // Simulate AI response (replace with actual AI integration later)
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Get current playground context for contextual help
+      const currentContext = getPlaygroundContext();
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: getSimulatedResponse(userMessage.content),
-      timestamp: new Date(),
-    };
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+          playgroundContext: currentContext,
+        }),
+      });
 
-    setIsTyping(false);
-    setMessages(prev => [...prev, assistantMessage]);
-  };
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      const decoder = new TextDecoder();
+      let assistantContent = '';
+      const assistantId = (Date.now() + 1).toString();
+
+      // Add empty assistant message that we'll update
+      setMessages(prev => [...prev, {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+      }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.content) {
+                assistantContent += parsed.content;
+                setMessages(prev =>
+                  prev.map(m =>
+                    m.id === assistantId
+                      ? { ...m, content: assistantContent }
+                      : m
+                  )
+                );
+              }
+            } catch {
+              // Skip invalid JSON lines
+            }
+          }
+        }
+      }
+
+    } catch (err) {
+      console.error('Chat error:', err);
+      setError('Failed to get response. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [input, isLoading, messages]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -140,19 +226,153 @@ export default function AIAssistant() {
     inputRef.current?.focus();
   };
 
-  // No floating button - use navbar "Ask AI" button instead
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSend();
+  };
+
+  // Format message content with markdown support
+  const formatContent = (content: string) => {
+    if (!content) return null;
+
+    // Split by code blocks first (preserve them)
+    const parts = content.split(/(```[\s\S]*?```)/g);
+
+    return parts.map((part, partIndex) => {
+      if (part.startsWith('```')) {
+        // Extract language and code
+        const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
+        if (match) {
+          const [, lang, code] = match;
+          return (
+            <pre key={partIndex} className="ai-code-block" data-language={lang || 'text'}>
+              <code>{code.trim()}</code>
+            </pre>
+          );
+        }
+      }
+
+      // Process markdown in non-code parts
+      const lines = part.split('\n');
+
+      return (
+        <span key={partIndex}>
+          {lines.map((line, lineIndex) => {
+            // Headers
+            if (line.startsWith('### ')) {
+              return <h4 key={lineIndex} className="ai-heading">{formatInline(line.slice(4))}</h4>;
+            }
+            if (line.startsWith('## ')) {
+              return <h3 key={lineIndex} className="ai-heading">{formatInline(line.slice(3))}</h3>;
+            }
+            if (line.startsWith('# ')) {
+              return <h2 key={lineIndex} className="ai-heading">{formatInline(line.slice(2))}</h2>;
+            }
+
+            // Bullet points
+            if (line.match(/^[\-\*]\s/)) {
+              return (
+                <div key={lineIndex} className="ai-list-item">
+                  <span className="ai-bullet">•</span>
+                  <span>{formatInline(line.slice(2))}</span>
+                </div>
+              );
+            }
+
+            // Numbered lists
+            const numberedMatch = line.match(/^(\d+)\.\s(.*)$/);
+            if (numberedMatch) {
+              return (
+                <div key={lineIndex} className="ai-list-item">
+                  <span className="ai-number">{numberedMatch[1]}.</span>
+                  <span>{formatInline(numberedMatch[2])}</span>
+                </div>
+              );
+            }
+
+            // Empty lines become breaks
+            if (line.trim() === '') {
+              return <br key={lineIndex} />;
+            }
+
+            // Regular paragraph
+            return <span key={lineIndex}>{formatInline(line)}{lineIndex < lines.length - 1 ? '\n' : ''}</span>;
+          })}
+        </span>
+      );
+    });
+  };
+
+  // Format inline markdown (bold, italic, code, links)
+  const formatInline = (text: string): React.ReactNode => {
+    if (!text) return null;
+
+    // Process in order: links, bold, italic, inline code
+    const elements: React.ReactNode[] = [];
+    let remaining = text;
+    let key = 0;
+
+    while (remaining.length > 0) {
+      // Check for link [text](url)
+      const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+      if (linkMatch) {
+        elements.push(
+          <a key={key++} href={linkMatch[2]} className="ai-link" target="_blank" rel="noopener noreferrer">
+            {linkMatch[1]}
+          </a>
+        );
+        remaining = remaining.slice(linkMatch[0].length);
+        continue;
+      }
+
+      // Check for bold **text**
+      const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
+      if (boldMatch) {
+        elements.push(<strong key={key++}>{boldMatch[1]}</strong>);
+        remaining = remaining.slice(boldMatch[0].length);
+        continue;
+      }
+
+      // Check for italic *text* (but not **)
+      const italicMatch = remaining.match(/^\*([^*]+)\*/);
+      if (italicMatch && !remaining.startsWith('**')) {
+        elements.push(<em key={key++}>{italicMatch[1]}</em>);
+        remaining = remaining.slice(italicMatch[0].length);
+        continue;
+      }
+
+      // Check for inline code `text`
+      const codeMatch = remaining.match(/^`([^`]+)`/);
+      if (codeMatch) {
+        elements.push(<code key={key++} className="ai-inline-code">{codeMatch[1]}</code>);
+        remaining = remaining.slice(codeMatch[0].length);
+        continue;
+      }
+
+      // No match - take next character
+      const nextSpecial = remaining.search(/[\[*`]/);
+      if (nextSpecial === -1) {
+        elements.push(remaining);
+        break;
+      } else if (nextSpecial === 0) {
+        // Special char but didn't match pattern - take it literally
+        elements.push(remaining[0]);
+        remaining = remaining.slice(1);
+      } else {
+        elements.push(remaining.slice(0, nextSpecial));
+        remaining = remaining.slice(nextSpecial);
+      }
+    }
+
+    return elements.length === 1 ? elements[0] : elements;
+  };
+
   if (!isOpen) {
     return null;
   }
 
-  const cycleViewMode = () => {
-    if (viewMode === 'floating') setViewMode('docked');
-    else if (viewMode === 'docked') setViewMode('expanded');
-    else setViewMode('floating');
-  };
-
   return (
-    <div 
+    <div
       className={`ai-assistant-panel ${viewMode}`}
       style={viewMode === 'docked' ? { width: `${sidebarWidth}px` } : undefined}
     >
@@ -163,6 +383,7 @@ export default function AIAssistant() {
           onMouseDown={() => setIsResizing(true)}
         />
       )}
+
       {/* Header */}
       <div className="ai-assistant-header">
         <div className="ai-assistant-title">
@@ -173,11 +394,10 @@ export default function AIAssistant() {
           </div>
           <div>
             <h3>AI Assistant</h3>
-            <span>Powered by AGIRAILS</span>
+            <span>{playgroundContext ? `Viewing: ${playgroundContext.title.split(' ')[0]}` : 'Powered by AGIRAILS'}</span>
           </div>
         </div>
         <div className="ai-assistant-actions">
-          {/* Close */}
           <button
             onClick={() => setIsOpen(false)}
             className="ai-assistant-btn"
@@ -191,6 +411,13 @@ export default function AIAssistant() {
           </button>
         </div>
       </div>
+
+      {/* Error Banner */}
+      {error && (
+        <div className="ai-error-banner">
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="ai-assistant-messages">
@@ -211,12 +438,12 @@ export default function AIAssistant() {
               )}
             </div>
             <div className="ai-message-content">
-              <p>{message.content}</p>
+              <div className="ai-message-text">{formatContent(message.content)}</div>
             </div>
           </div>
         ))}
 
-        {isTyping && (
+        {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
           <div className="ai-message assistant">
             <div className="ai-message-avatar">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -258,132 +485,31 @@ export default function AIAssistant() {
 
       {/* Input */}
       <div className="ai-assistant-input">
-        <div className="ai-input-row">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask about AGIRAILS..."
-            rows={1}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || isTyping}
-            className="ai-send-btn"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </button>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="ai-input-row">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about AGIRAILS..."
+              rows={1}
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || isLoading}
+              className="ai-send-btn"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </div>
+        </form>
         <p className="ai-disclaimer">AI can make mistakes. Verify important information.</p>
       </div>
     </div>
   );
-}
-
-function getSimulatedResponse(userMessage: string): string {
-  const lowerMessage = userMessage.toLowerCase();
-
-  if (lowerMessage.includes('create') && lowerMessage.includes('transaction')) {
-    return `To create a transaction, you'll need:
-
-1. Provider Address - The wallet that will receive payment
-2. Amount - How much USDC to escrow
-3. Deadline - When the transaction expires
-4. Dispute Window - Time for raising disputes
-
-Here's the basic flow:
-
-const txId = await client.kernel.createTransaction({
-  provider: '0x...',
-  requester: await client.getAddress(),
-  amount: parseUnits('100', 6),
-  deadline: Math.floor(Date.now()/1000) + 86400,
-  disputeWindow: 3600
-});
-
-Check out the SDK Playground to test this interactively!`;
-  }
-
-  if (lowerMessage.includes('escrow')) {
-    return `The escrow flow in AGIRAILS works like this:
-
-1. Requester creates transaction → Funds locked in escrow
-2. Provider links escrow → Confirms they'll do the work
-3. State transitions → INITIATED → COMMITTED → IN_PROGRESS → DELIVERED
-4. Release escrow → Funds sent to provider
-
-The escrow contract ensures neither party can cheat - funds are only released when conditions are met or through dispute resolution.
-
-See the Protocol Concepts docs for more details!`;
-  }
-
-  if (lowerMessage.includes('dispute')) {
-    return `Dispute Resolution in AGIRAILS:
-
-When a dispute is raised:
-1. Transaction state changes to DISPUTED
-2. Both parties can submit evidence (attestations)
-3. Arbitrator reviews and makes decision
-4. Funds distributed based on ruling
-
-Key methods:
-• raiseDispute() - Initiate dispute
-• anchorAttestation() - Submit evidence
-• resolveDispute() - Arbitrator decision
-
-The dispute window is configurable per transaction (default: 1 hour after delivery).`;
-  }
-
-  if (lowerMessage.includes('state') && lowerMessage.includes('machine')) {
-    return `AGIRAILS uses an 8-state transaction lifecycle:
-
-1. INITIATED - Transaction created, awaiting escrow
-2. QUOTED - Provider submitted price (optional)
-3. COMMITTED - Escrow linked, work begins
-4. IN_PROGRESS - Provider working (optional)
-5. DELIVERED - Work completed with proof
-6. SETTLED - Payment released (terminal)
-7. DISPUTED - Under arbitration
-8. CANCELLED - Transaction cancelled (terminal)
-
-Happy path: INITIATED → COMMITTED → DELIVERED → SETTLED
-
-All transitions are one-way and enforced by smart contracts.`;
-  }
-
-  if (lowerMessage.includes('sdk') || lowerMessage.includes('install')) {
-    return `To get started with the AGIRAILS SDK:
-
-TypeScript:
-npm install @agirails/sdk
-
-Python:
-pip install agirails-sdk
-
-Quick example:
-
-import { ACTPClient } from '@agirails/sdk';
-
-const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY
-});
-
-Check the SDK Reference docs for all available methods!`;
-  }
-
-  return `I understand you're asking about "${userMessage.slice(0, 50)}${userMessage.length > 50 ? '...' : ''}"
-
-Here are some things I can help with:
-• Explaining ACTP protocol concepts
-• Generating code snippets
-• Understanding the state machine
-• SDK installation and usage
-• Debugging common issues
-
-Could you be more specific about what you'd like to learn?`;
 }

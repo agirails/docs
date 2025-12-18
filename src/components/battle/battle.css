@@ -317,6 +317,110 @@
   gap: 0.75rem;
 }
 
+/* ===== FLIP CARD ===== */
+.battle-flip-card {
+  perspective: 1000px;
+  margin-bottom: 0.75rem;
+}
+
+.battle-flip-card-inner {
+  position: relative;
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.battle-flip-card.flipped .battle-flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.battle-flip-card-front,
+.battle-flip-card-back {
+  backface-visibility: hidden;
+}
+
+.battle-flip-card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+.battle-flip-card .battle-card {
+  margin-bottom: 0;
+}
+
+.battle-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.battle-flip-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 228, 228, 0.1);
+  color: var(--pg-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.battle-flip-toggle:hover {
+  background: rgba(0, 228, 228, 0.2);
+  transform: scale(1.05);
+}
+
+.battle-wallet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.battle-wallet-address-full {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.battle-wallet-address-full code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  color: var(--pg-text-muted);
+  word-break: break-all;
+}
+
+.battle-form-divider {
+  height: 1px;
+  background: var(--pg-border);
+  margin: 0.5rem 0;
+}
+
+.battle-code-body {
+  gap: 1rem;
+}
+
+.battle-code {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--pg-border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.battle-code code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--pg-text);
+  white-space: pre;
+}
+
 /* ===== BADGES ===== */
 .battle-badge {
   font-size: 0.625rem;

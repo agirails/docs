@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useBattleState } from '../../hooks/useBattleState';
 import { STATE_COLORS, STATE_DESCRIPTIONS, TransactionState } from '../../types/battle';
+import { usePlaygroundContext, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 import './battle.css';
 
 // Icons as SVG components
@@ -145,6 +146,20 @@ const ArrowLeftIcon = () => (
   </svg>
 );
 
+const CodeIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+);
+
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleTimeString('en-US', {
@@ -170,6 +185,7 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
 
   // Form states
   const [formData, setFormData] = useState({
+    providerAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE21',
     amount: '50',
     description: 'Translate 500 words EN→DE',
     deadlineHours: '24',
@@ -184,6 +200,56 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
   const [rightWidth, setRightWidth] = useState(30);
   const [isResizingLeft, setIsResizingLeft] = useState(false);
   const [isResizingRight, setIsResizingRight] = useState(false);
+
+  // Flip card states
+  const [createTxFlipped, setCreateTxFlipped] = useState(false);
+
+  // Build playground context for AI Assistant
+  const playgroundContext = useMemo((): PlaygroundContext => {
+    const stateDescription = transaction
+      ? STATE_DESCRIPTIONS[transaction.state] || transaction.state
+      : 'No transaction created yet';
+
+    const recentEvents = timeline.slice(-5).map(e => e.description);
+
+    return {
+      type: 'advanced-api',
+      title: 'Advanced API Playground (Level 2)',
+      description: 'Full ACTP protocol control - create transactions, manage escrow, handle state transitions',
+      summary: transaction
+        ? `Transaction in ${transaction.state} state - ${stateDescription}`
+        : 'Ready to create a new transaction - shows full ACTP lifecycle',
+      data: {
+        transaction: transaction ? {
+          id: transaction.id,
+          state: transaction.state,
+          stateDescription,
+          amount: `$${transaction.amount} USDC`,
+          escrowLinked: transaction.escrowLinked,
+          createdAt: transaction.createdAt ? new Date(transaction.createdAt).toLocaleTimeString() : null,
+        } : null,
+        requesterWallet: {
+          address: requesterWallet.address.slice(0, 10) + '...',
+          balance: requesterWallet.usdcBalance,
+        },
+        providerWallet: {
+          address: providerWallet.address.slice(0, 10) + '...',
+          balance: providerWallet.usdcBalance,
+        },
+        formData: {
+          amount: formData.amount,
+          description: formData.description,
+          deadlineHours: formData.deadlineHours,
+          disputeWindowHours: formData.disputeWindowHours,
+        },
+        recentEvents,
+        isSimulating,
+      },
+    };
+  }, [transaction, requesterWallet, providerWallet, formData, timeline, isSimulating]);
+
+  // Emit context for AI Assistant
+  usePlaygroundContext(playgroundContext);
 
   // Auto-scroll timeline
   useEffect(() => {
@@ -371,25 +437,7 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
         {/* Requester Panel */}
         <div className="battle-panel requester" style={{ width: `${leftWidth}%` }}>
           <div className="battle-panel-scroll">
-            {/* Wallet Card */}
-            <div className="battle-card requester-card">
-              <div className="battle-card-header">
-                <UserIcon />
-                <span className="requester-text">Requester Agent</span>
-              </div>
-              <div className="battle-card-body">
-                <div className="battle-wallet-address">
-                  <WalletIcon />
-                  <code>{requesterWallet.address.slice(0, 6)}...{requesterWallet.address.slice(-4)}</code>
-                </div>
-                <div className="battle-balances">
-                  <span className="eth-balance">{requesterWallet.ethBalance}</span>
-                  <span className="usdc-balance">{requesterWallet.usdcBalance}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Transaction Status */}
+            {/* Transaction Status (only shown after creation) */}
             {transaction && (
               <div className="battle-card dashed">
                 <div className="battle-card-header">
@@ -414,60 +462,149 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
               </div>
             )}
 
-            {/* Create Transaction Form */}
+            {/* Create Transaction - Flippable Card */}
             {canCreateTransaction && (
-              <div className="battle-card">
-                <div className="battle-card-header">
-                  <span>Create Transaction</span>
-                </div>
-                <div className="battle-card-body">
-                  <div className="battle-form-group">
-                    <label>Amount (USDC)</label>
-                    <input
-                      type="number"
-                      className="pg-input"
-                      value={formData.amount}
-                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                      placeholder="100"
-                    />
-                  </div>
-                  <div className="battle-form-group">
-                    <label>Description</label>
-                    <textarea
-                      className="pg-input pg-textarea"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Describe the work..."
-                    />
-                  </div>
-                  <div className="battle-form-row">
-                    <div className="battle-form-group">
-                      <label>Deadline (hours)</label>
-                      <input
-                        type="number"
-                        className="pg-input"
-                        value={formData.deadlineHours}
-                        onChange={(e) => setFormData({ ...formData, deadlineHours: e.target.value })}
-                      />
+              <div className={`battle-flip-card ${createTxFlipped ? 'flipped' : ''}`}>
+                <div className="battle-flip-card-inner">
+                  {/* Front - Form */}
+                  <div className="battle-flip-card-front">
+                    <div className="battle-card requester-card">
+                      <div className="battle-card-header">
+                        <div className="battle-card-header-left">
+                          <UserIcon />
+                          <span className="requester-text">Requester Agent</span>
+                        </div>
+                        <button
+                          className="battle-flip-toggle"
+                          onClick={() => setCreateTxFlipped(true)}
+                          title="Show code"
+                        >
+                          <CodeIcon />
+                        </button>
+                      </div>
+                      <div className="battle-card-body">
+                        {/* Wallet Info */}
+                        <div className="battle-wallet-info">
+                          <div className="battle-wallet-address-full">
+                            <WalletIcon />
+                            <code>{requesterWallet.address}</code>
+                          </div>
+                          <div className="battle-balances">
+                            <span className="eth-balance">{requesterWallet.ethBalance}</span>
+                            <span className="usdc-balance">{requesterWallet.usdcBalance}</span>
+                          </div>
+                        </div>
+
+                        <div className="battle-form-divider" />
+
+                        {/* Form Fields */}
+                        <div className="battle-form-group">
+                          <label>Provider Address</label>
+                          <input
+                            type="text"
+                            className="pg-input"
+                            value={formData.providerAddress}
+                            onChange={(e) => setFormData({ ...formData, providerAddress: e.target.value })}
+                            placeholder="0x..."
+                          />
+                        </div>
+                        <div className="battle-form-group">
+                          <label>Amount (USDC)</label>
+                          <input
+                            type="number"
+                            className="pg-input"
+                            value={formData.amount}
+                            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                            placeholder="100"
+                          />
+                        </div>
+                        <div className="battle-form-group">
+                          <label>Description</label>
+                          <textarea
+                            className="pg-input pg-textarea"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            placeholder="Describe the work..."
+                          />
+                        </div>
+                        <div className="battle-form-row">
+                          <div className="battle-form-group">
+                            <label>Deadline (hours)</label>
+                            <input
+                              type="number"
+                              className="pg-input"
+                              value={formData.deadlineHours}
+                              onChange={(e) => setFormData({ ...formData, deadlineHours: e.target.value })}
+                            />
+                          </div>
+                          <div className="battle-form-group">
+                            <label>Dispute Window (hours)</label>
+                            <input
+                              type="number"
+                              className="pg-input"
+                              value={formData.disputeWindowHours}
+                              onChange={(e) => setFormData({ ...formData, disputeWindowHours: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
+                          onClick={handleCreateTransaction}
+                          disabled={!canPerformAction || !formData.amount}
+                        >
+                          <SendIcon />
+                          Create Transaction
+                        </button>
+                      </div>
                     </div>
-                    <div className="battle-form-group">
-                      <label>Dispute Window (hours)</label>
-                      <input
-                        type="number"
-                        className="pg-input"
-                        value={formData.disputeWindowHours}
-                        onChange={(e) => setFormData({ ...formData, disputeWindowHours: e.target.value })}
-                      />
+                  </div>
+
+                  {/* Back - Code */}
+                  <div className="battle-flip-card-back">
+                    <div className="battle-card requester-card">
+                      <div className="battle-card-header">
+                        <div className="battle-card-header-left">
+                          <CodeIcon />
+                          <span>Generated Code</span>
+                        </div>
+                        <button
+                          className="battle-flip-toggle"
+                          onClick={() => setCreateTxFlipped(false)}
+                          title="Show form"
+                        >
+                          <SettingsIcon />
+                        </button>
+                      </div>
+                      <div className="battle-card-body battle-code-body">
+                        <pre className="battle-code"><code>{`import { ACTPClient } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+const txId = await client.kernel.createTransaction({
+  provider: '${formData.providerAddress}',
+  amount: parseUnits('${formData.amount}', 6),
+  deadline: Math.floor(Date.now() / 1000) + ${Number(formData.deadlineHours) * 3600},
+  disputeWindow: ${Number(formData.disputeWindowHours) * 3600},
+  metadata: '${formData.description}',
+});
+
+console.log('Transaction created:', txId);
+// State: INITIATED`}</code></pre>
+                        <button
+                          className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
+                          onClick={handleCreateTransaction}
+                          disabled={!canPerformAction || !formData.amount}
+                        >
+                          <SendIcon />
+                          Create Transaction
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
-                    onClick={handleCreateTransaction}
-                    disabled={!canPerformAction || !formData.amount}
-                  >
-                    <SendIcon />
-                    Create Transaction
-                  </button>
                 </div>
               </div>
             )}

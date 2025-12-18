@@ -185,6 +185,14 @@
   color: var(--pg-text-muted);
 }
 
+.pg-input-readonly {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--pg-text-muted);
+  cursor: not-allowed;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+}
+
 .pg-input-row {
   display: flex;
   gap: 0.5rem;
