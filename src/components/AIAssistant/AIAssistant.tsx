@@ -1,11 +1,84 @@
 import React, { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import { useLocation } from '@docusaurus/router';
+import { Highlight, themes } from 'prism-react-renderer';
 import { getPlaygroundContext, formatPlaygroundContextForPrompt, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+}
+
+// Map common language aliases
+const languageMap: Record<string, string> = {
+  ts: 'typescript',
+  js: 'javascript',
+  tsx: 'tsx',
+  jsx: 'jsx',
+  json: 'json',
+  bash: 'bash',
+  sh: 'bash',
+  shell: 'bash',
+  text: 'text',
+};
+
+// CodeBlock component with syntax highlighting and copy functionality
+function CodeBlock({ code, language }: { code: string; language: string }) {
+  const [copied, setCopied] = React.useState(false);
+  const normalizedLang = languageMap[language.toLowerCase()] || language.toLowerCase() || 'text';
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="ai-code-block-wrapper">
+      <div className="ai-code-block-header">
+        <span className="ai-code-block-lang">{language || 'text'}</span>
+        <button
+          className="ai-code-block-copy"
+          onClick={handleCopy}
+          title={copied ? 'Copied!' : 'Copy code'}
+        >
+          {copied ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          )}
+        </button>
+      </div>
+      <Highlight
+        theme={themes.dracula}
+        code={code}
+        language={normalizedLang as any}
+      >
+        {({ style, tokens, getLineProps, getTokenProps }) => (
+          <pre className="ai-code-block" style={{ ...style, background: 'transparent', margin: 0 }}>
+            <code>
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
+            </code>
+          </pre>
+        )}
+      </Highlight>
+    </div>
+  );
 }
 
 const suggestedPrompts = [
@@ -245,9 +318,7 @@ export default function AIAssistant() {
         if (match) {
           const [, lang, code] = match;
           return (
-            <pre key={partIndex} className="ai-code-block" data-language={lang || 'text'}>
-              <code>{code.trim()}</code>
-            </pre>
+            <CodeBlock key={partIndex} code={code.trim()} language={lang || 'text'} />
           );
         }
       }
@@ -394,7 +465,7 @@ export default function AIAssistant() {
           </div>
           <div>
             <h3>AI Assistant</h3>
-            <span>{playgroundContext ? `Viewing: ${playgroundContext.title.split(' ')[0]}` : 'Powered by AGIRAILS'}</span>
+            <span>Powered by AGIRAILS</span>
           </div>
         </div>
         <div className="ai-assistant-actions">

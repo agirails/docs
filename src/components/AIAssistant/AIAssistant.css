@@ -258,11 +258,58 @@ body {
 }
 
 /* Code Blocks */
-.ai-code-block {
+.ai-code-block-wrapper {
   margin: 0.75rem 0;
-  padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.4);
   border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.ai-code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-code-block-lang {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Fira Code', 'SF Mono', Monaco, monospace;
+}
+
+.ai-code-block-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-code-block-copy:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #00e4e4;
+}
+
+.ai-code-block-copy:active {
+  transform: scale(0.95);
+}
+
+.ai-code-block {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border-radius: 0;
   overflow-x: auto;
   font-family: 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', monospace;
   font-size: 0.8125rem;
