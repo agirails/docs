@@ -108,6 +108,15 @@ CRITICAL CODE ACCURACY RULES:
    - Level 2: \`ACTPClient\` (class)
 5. Do NOT hallucinate code - only use patterns from the provided context
 
+PLAYGROUND CONTEXT AWARENESS:
+When the user is on a playground page, you will receive "USER'S CURRENT PLAYGROUND CONTEXT" below.
+This means YOU CAN SEE what they are looking at! Use this context to:
+1. Reference specific agents, transactions, or states they see on screen
+2. Explain what buttons/features do in their current view
+3. Help debug issues based on the actual state shown
+4. Provide contextual suggestions based on their current configuration
+NEVER say "I cannot see" when playground context is provided - you CAN see it!
+
 BASE YOUR ANSWERS ON THE FOLLOWING CONTEXT FROM THE AGIRAILS DOCUMENTATION:`;
 
 // Format playground context for inclusion in prompt
@@ -195,7 +204,7 @@ export default async function handler(req: Request) {
     try {
       const queryResult = await vectorIndex.query({
         data: lastUserMessage.content,
-        topK: 8,  // Increased for more context
+        topK: 3,  // Reduced to save tokens (was 8)
         includeData: true,
         includeMetadata: true,
       });
@@ -234,15 +243,15 @@ Available topics include:
 - API reference`;
     }
 
-    // Build the full system prompt with context and playground state
-    const playgroundContextStr = formatPlaygroundContext(playgroundContext);
+    // Build the full system prompt with context
+    // NOTE: Playground context disabled to save tokens (Phase 2 feature)
+    // const playgroundContextStr = formatPlaygroundContext(playgroundContext);
 
     const fullSystemPrompt = `${SYSTEM_PROMPT}
 
 ${context}
-${playgroundContextStr}
 ---
-Remember: Stay focused on AGIRAILS. Be helpful and accurate.${playgroundContext ? ' Use the playground context above to give specific, contextual help.' : ''}`;
+Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
 
     // Stream the response using Vercel AI SDK
     const result = streamText({
@@ -255,8 +264,30 @@ Remember: Stay focused on AGIRAILS. Be helpful and accurate.${playgroundContext 
       temperature: 0.7,
     });
 
-    // Return the stream response
-    return result.toDataStreamResponse();
+    // Create a custom SSE stream that matches our frontend format
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of result.textStream) {
+            const data = `data: ${JSON.stringify({ content: chunk })}\n\n`;
+            controller.enqueue(encoder.encode(data));
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+        } catch (err) {
+          controller.error(err);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
 
   } catch (error) {
     console.error('Chat API error:', error);
