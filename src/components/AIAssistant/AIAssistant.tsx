@@ -304,6 +304,56 @@ export default function AIAssistant() {
     handleSend();
   };
 
+  // Parse markdown table into structured data
+  const parseTable = (tableLines: string[]): { headers: string[]; rows: string[][] } | null => {
+    if (tableLines.length < 2) return null;
+
+    const parseRow = (line: string): string[] => {
+      return line
+        .split('|')
+        .map(cell => cell.trim())
+        .filter((_, i, arr) => i > 0 && i < arr.length); // Remove empty first/last from | borders
+    };
+
+    const headers = parseRow(tableLines[0]);
+    if (headers.length === 0) return null;
+
+    // Skip separator line (|---|---|)
+    const dataLines = tableLines.slice(2);
+    const rows = dataLines.map(parseRow).filter(row => row.length > 0);
+
+    return { headers, rows };
+  };
+
+  // Render a markdown table
+  const renderTable = (tableLines: string[], key: number) => {
+    const table = parseTable(tableLines);
+    if (!table) return null;
+
+    return (
+      <div key={key} className="ai-table-wrapper">
+        <table className="ai-table">
+          <thead>
+            <tr>
+              {table.headers.map((header, i) => (
+                <th key={i}>{formatInline(header)}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <td key={cellIndex}>{formatInline(cell)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   // Format message content with markdown support
   const formatContent = (content: string) => {
     if (!content) return null;
@@ -323,54 +373,89 @@ export default function AIAssistant() {
         }
       }
 
-      // Process markdown in non-code parts
+      // Process markdown in non-code parts - handle tables specially
       const lines = part.split('\n');
+      const elements: React.ReactNode[] = [];
+      let i = 0;
 
-      return (
-        <span key={partIndex}>
-          {lines.map((line, lineIndex) => {
-            // Headers
-            if (line.startsWith('### ')) {
-              return <h4 key={lineIndex} className="ai-heading">{formatInline(line.slice(4))}</h4>;
-            }
-            if (line.startsWith('## ')) {
-              return <h3 key={lineIndex} className="ai-heading">{formatInline(line.slice(3))}</h3>;
-            }
-            if (line.startsWith('# ')) {
-              return <h2 key={lineIndex} className="ai-heading">{formatInline(line.slice(2))}</h2>;
-            }
+      while (i < lines.length) {
+        const line = lines[i];
 
-            // Bullet points
-            if (line.match(/^[\-\*]\s/)) {
-              return (
-                <div key={lineIndex} className="ai-list-item">
-                  <span className="ai-bullet">•</span>
-                  <span>{formatInline(line.slice(2))}</span>
-                </div>
-              );
+        // Check if this is the start of a table (line starts with |)
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          // Collect all table lines
+          const tableLines: string[] = [];
+          while (i < lines.length && lines[i].trim().startsWith('|')) {
+            tableLines.push(lines[i]);
+            i++;
+          }
+          // Render table if we have at least header + separator
+          if (tableLines.length >= 2) {
+            const tableElement = renderTable(tableLines, elements.length);
+            if (tableElement) {
+              elements.push(tableElement);
+              continue;
             }
+          }
+          // If not a valid table, fall through to render lines normally
+          i -= tableLines.length;
+        }
 
-            // Numbered lists
-            const numberedMatch = line.match(/^(\d+)\.\s(.*)$/);
-            if (numberedMatch) {
-              return (
-                <div key={lineIndex} className="ai-list-item">
-                  <span className="ai-number">{numberedMatch[1]}.</span>
-                  <span>{formatInline(numberedMatch[2])}</span>
-                </div>
-              );
-            }
+        // Headers
+        if (line.startsWith('### ')) {
+          elements.push(<h4 key={elements.length} className="ai-heading">{formatInline(line.slice(4))}</h4>);
+          i++;
+          continue;
+        }
+        if (line.startsWith('## ')) {
+          elements.push(<h3 key={elements.length} className="ai-heading">{formatInline(line.slice(3))}</h3>);
+          i++;
+          continue;
+        }
+        if (line.startsWith('# ')) {
+          elements.push(<h2 key={elements.length} className="ai-heading">{formatInline(line.slice(2))}</h2>);
+          i++;
+          continue;
+        }
 
-            // Empty lines become breaks
-            if (line.trim() === '') {
-              return <br key={lineIndex} />;
-            }
+        // Bullet points
+        if (line.match(/^[\-\*]\s/)) {
+          elements.push(
+            <div key={elements.length} className="ai-list-item">
+              <span className="ai-bullet">•</span>
+              <span>{formatInline(line.slice(2))}</span>
+            </div>
+          );
+          i++;
+          continue;
+        }
 
-            // Regular paragraph
-            return <span key={lineIndex}>{formatInline(line)}{lineIndex < lines.length - 1 ? '\n' : ''}</span>;
-          })}
-        </span>
-      );
+        // Numbered lists
+        const numberedMatch = line.match(/^(\d+)\.\s(.*)$/);
+        if (numberedMatch) {
+          elements.push(
+            <div key={elements.length} className="ai-list-item">
+              <span className="ai-number">{numberedMatch[1]}.</span>
+              <span>{formatInline(numberedMatch[2])}</span>
+            </div>
+          );
+          i++;
+          continue;
+        }
+
+        // Empty lines become breaks
+        if (line.trim() === '') {
+          elements.push(<br key={elements.length} />);
+          i++;
+          continue;
+        }
+
+        // Regular paragraph
+        elements.push(<span key={elements.length}>{formatInline(line)}{i < lines.length - 1 ? '\n' : ''}</span>);
+        i++;
+      }
+
+      return <span key={partIndex}>{elements}</span>;
     });
   };
 
