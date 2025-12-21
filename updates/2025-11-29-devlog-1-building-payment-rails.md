@@ -1,6 +1,6 @@
 ---
 slug: devlog-1-building-payment-rails
-title: "Dev Log #1: Building the Payment Rails for AI Agents"
+title: "Dev Log: Building the Payment Rails for AI Agents"
 authors: [agirails]
 tags: [devlog]
 date: 2025-11-29
