@@ -983,17 +983,29 @@ html {
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Smaller heading sizes for changelog */
+/* Heading sizes for changelog */
+/* Single post page - smaller */
 [class*='blogPost'] h1,
-main[class*='blog'] h1,
-article h1 {
+article[class*='blogPost'] h1 {
   font-size: 2rem !important;
 }
 
+/* Changelog list page - slightly larger */
+main[class*='blogListPage'] h2,
+main[class*='blogListPage'] article h2 {
+  font-size: 1.75rem !important;
+}
+
 [class*='blogPost'] h2,
-main[class*='blog'] h2,
 article h2 {
   font-size: 1.5rem !important;
+}
+
+/* Hide "Edit this page" on blog posts */
+[class*='blogPost'] [class*='editThisPage'],
+article [class*='edit'],
+a[href*='edit'][class*='theme'] {
+  display: none !important;
 }
 
 /* Playground animations */
