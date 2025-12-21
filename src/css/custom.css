@@ -984,7 +984,13 @@ html {
 }
 
 /* Heading sizes for changelog */
-/* Blog post title - single post page only */
+/* Blog list page - article titles 2rem */
+[class*='blogListPage'] [class*='title_'],
+main[class*='blogListPage'] [class*='title_'] {
+  font-size: 2rem !important;
+}
+
+/* Blog post title - single post page only 2.5rem */
 [class*='blogPostPage'] [class*='title_'],
 [class*='blogPost'][class*='Page'] h1 {
   font-size: 2.5rem !important;
