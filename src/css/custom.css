@@ -984,8 +984,9 @@ html {
 }
 
 /* Heading sizes for changelog */
-/* Blog post title class */
-[class*='title_'] {
+/* Blog post title - single post page only */
+[class*='blogPostPage'] [class*='title_'],
+[class*='blogPost'][class*='Page'] h1 {
   font-size: 2.5rem !important;
 }
 
@@ -995,14 +996,15 @@ article[class*='blogPost'] h1 {
   font-size: 2rem !important;
 }
 
-/* Changelog list page - slightly larger */
+/* Changelog list page - article titles */
 main[class*='blogListPage'] h2,
-main[class*='blogListPage'] article h2 {
-  font-size: 1.75rem !important;
+main[class*='blogListPage'] article h2,
+[class*='blogListPage'] article h2,
+article[class*='blogPost'] h2 {
+  font-size: 2rem !important;
 }
 
-[class*='blogPost'] h2,
-article h2 {
+[class*='blogPost'] h2 {
   font-size: 2rem !important;
 }
 
