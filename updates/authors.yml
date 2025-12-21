@@ -2,21 +2,13 @@
 # Note: Following governance principles - use role titles, not personal names
 
 agirails:
-  name: AGIRAILS Team
-  title: Core Team
-  url: https://agirails.io
+  name: AGIRAILS Core Team
 
 protocol-team:
-  name: Protocol Team
-  title: Smart Contract & Protocol Development
-  url: https://github.com/agirails
+  name: AGIRAILS Core Team
 
 sdk-team:
-  name: SDK Team
-  title: SDK & Developer Experience
-  url: https://github.com/agirails
+  name: AGIRAILS Core Team
 
 community:
-  name: Community
-  title: AGIRAILS Community
-  url: https://discord.gg/agirails
+  name: AGIRAILS Core Team
