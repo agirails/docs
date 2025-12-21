@@ -518,9 +518,22 @@ table td, table th {
 }
 
 /* Announcement bar */
-div[class*='announcementBar'] {
-  background: linear-gradient(90deg, #0052FF 0%, #00D4FF 100%);
+div[class*='announcementBar'],
+div[class*='announcementBar'] * {
+  background: #890000 !important;
   border: none;
+  color: #ffffff !important;
+}
+
+div[class*='announcementBar'] a {
+  color: #ffffff !important;
+  text-decoration: underline;
+}
+
+div[class*='announcementBar'] button,
+div[class*='announcementBar'] button svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
 }
 
 /* Footer - cleaner */

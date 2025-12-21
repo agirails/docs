@@ -67,9 +67,9 @@ const config: Config = {
 
     // Announcement bar for important updates
     announcementBar: {
-      id: 'testnet_live',
-      content: '🚀 AGIRAILS is live on Base Sepolia Testnet! <a href="/quick-start">Try it now →</a>',
-      backgroundColor: '#0052FF', // Base blue
+      id: 'testnet_live_v3',
+      content: 'AGIRAILS testnet available on Base Sepolia. <a href="/installation">View details</a>',
+      backgroundColor: '#890000',
       textColor: '#ffffff',
       isCloseable: true,
     },
