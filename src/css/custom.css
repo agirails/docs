@@ -947,41 +947,53 @@ html {
    ============================================ */
 
 /* Changelog page - white titles instead of cyan, smaller size */
+[data-theme='dark'] h1[class*='blogPost'],
+[data-theme='dark'] h2[class*='blogPost'],
+[data-theme='dark'] [class*='blogPost'] h1,
+[data-theme='dark'] [class*='blogPost'] h2,
 [data-theme='dark'] .blog-list-page h1,
 [data-theme='dark'] .blog-list-page h2,
-[data-theme='dark'] .blog-post-page h1,
-[data-theme='dark'] .blog-post-page h2,
-[data-theme='dark'] article[class*='blog'] h1,
-[data-theme='dark'] article[class*='blog'] h2 {
+[data-theme='dark'] main[class*='blog'] h1,
+[data-theme='dark'] main[class*='blog'] h2,
+[data-theme='dark'] article h1,
+[data-theme='dark'] article h2,
+[data-theme='dark'] header h1,
+[data-theme='dark'] header h2 {
   color: #ffffff !important;
   background: none !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Blog post title links */
+[data-theme='dark'] h2 a[class*='blog'],
+[data-theme='dark'] [class*='blogPost'] h2 a,
+[data-theme='dark'] article h2 a,
+[data-theme='dark'] header h2 a {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Author name - white instead of cyan */
+[data-theme='dark'] [class*='author'] a,
+[data-theme='dark'] [class*='Author'] a,
+[data-theme='dark'] a[class*='author'],
+[data-theme='dark'] .avatar__name a {
+  color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
 /* Smaller heading sizes for changelog */
-.blog-list-page h1,
-.blog-post-page h1,
-article[class*='blog'] h1 {
+[class*='blogPost'] h1,
+main[class*='blog'] h1,
+article h1 {
   font-size: 2rem !important;
 }
 
-.blog-list-page h2,
-.blog-post-page h2,
-article[class*='blog'] h2 {
+[class*='blogPost'] h2,
+main[class*='blog'] h2,
+article h2 {
   font-size: 1.5rem !important;
-}
-
-/* Blog post titles in list */
-[data-theme='dark'] .blog-list-page article h2 a,
-[data-theme='dark'] article[class*='blogPost'] h2 a {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-[data-theme='dark'] .blog-list-page article h2 a:hover,
-[data-theme='dark'] article[class*='blogPost'] h2 a:hover {
-  color: #e0e0e0 !important;
-  -webkit-text-fill-color: #e0e0e0 !important;
 }
 
 /* Playground animations */
