@@ -1003,7 +1003,7 @@ main[class*='blogListPage'] article h2 {
 
 [class*='blogPost'] h2,
 article h2 {
-  font-size: 1.5rem !important;
+  font-size: 2rem !important;
 }
 
 /* Hide "Edit this page" on blog posts */
