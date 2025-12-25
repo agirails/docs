@@ -28,9 +28,9 @@ The SDK now offers three levels of abstraction to match your needs:
 
 | Layer | Use Case | Complexity |
 |-------|----------|------------|
-| **Beginner** | Quick integrations, demos | Minimal |
-| **Intermediate** | Production applications | Standard |
-| **Runtime** | Custom implementations | Full control |
+| **Basic** | Quick integrations, demos | Minimal |
+| **Standard** | Production applications | Balanced |
+| **Advanced** | Custom implementations | Full control |
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
@@ -40,21 +40,21 @@ const client = await ACTPClient.create({
   privateKey: process.env.PRIVATE_KEY
 });
 
-// Beginner: One-liner payment
-const result = await client.beginner.pay({
+// Basic: One-liner payment
+const result = await client.basic.pay({
   provider: '0x...',
   amount: '10.00',
   service: 'echo'
 });
 
-// Intermediate: Full control
-const txId = await client.intermediate.createTransaction({
+// Standard: Full control
+const txId = await client.standard.createTransaction({
   provider: '0x...',
   amount: '10.00',
   deadline: '+1h',
   disputeWindow: 3600
 });
-await client.intermediate.linkEscrow(txId);
+await client.standard.linkEscrow(txId);
 ```
 
 ### Mock Mode
@@ -67,7 +67,7 @@ const client = await ACTPClient.create({
 });
 
 // Full ACTP flow works identically
-const result = await client.beginner.pay({
+const result = await client.basic.pay({
   provider: '0x1234...',
   amount: '5.00',
   service: 'test'
@@ -143,12 +143,12 @@ actp simulate --amount 5
 
 | v1.x | v2.x |
 |------|------|
-| `client.kernel.createTransaction()` | `client.intermediate.createTransaction()` |
-| `client.kernel.transitionState()` | `client.intermediate.transitionState()` |
-| `client.fundTransaction()` | `client.intermediate.linkEscrow()` |
-| `client.releaseEscrowWithVerification()` | `client.intermediate.releaseEscrow()` |
+| `client.kernel.createTransaction()` | `client.standard.createTransaction()` |
+| `client.kernel.transitionState()` | `client.standard.transitionState()` |
+| `client.fundTransaction()` | `client.standard.linkEscrow()` |
+| `client.releaseEscrowWithVerification()` | `client.standard.releaseEscrow()` |
 
-The v2 API is more intuitive with clear separation between beginner and intermediate use cases.
+The v2 API is more intuitive with clear separation between basic and standard use cases.
 
 ---
 

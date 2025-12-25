@@ -9,7 +9,7 @@
  *   - /sdk-js/src/level0/* - Basic API (provide/request)
  *   - /sdk-js/src/level1/* - Standard API (Agent class)
  *   - /sdk-js/src/ACTPClient.ts - Advanced API
- *   - /sdk-js/src/adapters/* - Beginner/Intermediate adapters
+ *   - /sdk-js/src/adapters/* - Basic/Standard adapters
  *   - /Protocol/aips/*.md - AGIRAILS Improvement Proposals
  *   - /Protocol/actp-kernel/src/interfaces/*.sol - Contract interfaces
  *
@@ -53,7 +53,7 @@ const CONFIG = {
   sdkKeyPaths: [
     'level0',           // Basic API: provide(), request()
     'level1',           // Standard API: Agent class
-    'adapters',         // BeginnerAdapter, IntermediateAdapter
+    'adapters',         // BasicAdapter, StandardAdapter
     'ACTPClient.ts',    // Advanced API
     'index.ts',         // Main exports
   ],

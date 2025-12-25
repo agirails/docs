@@ -18,7 +18,7 @@ SDK v2 i n8n node v2 su objavljeni na npm. Dokumentacija treba update da reflekt
 
 | File | Status | Issues |
 |------|--------|--------|
-| `quick-start.md` | 🔴 OUTDATED | Koristi stari API (`client.kernel.*`), treba `client.intermediate.*` ili `client.beginner.*` |
+| `quick-start.md` | 🔴 OUTDATED | Koristi stari API (`client.kernel.*`), treba `client.standard.*` ili `client.basic.*` |
 | `installation.md` | 🟡 PARTIAL | Većinom OK, Python SDK link ne postoji još |
 | `sdk-reference.md` | 🔴 OUTDATED | 118KB - koristi stari API, nedostaju DID/Agent Registry sekcije |
 | `concepts/agent-identity.md` | 🔴 OUTDATED | Kaže "Future (AIP-7)" ali AIP-7 JE IMPLEMENTIRAN |
@@ -34,7 +34,7 @@ SDK v2 i n8n node v2 su objavljeni na npm. Dokumentacija treba update da reflekt
 |-------|----------|-------|
 | **DID System** | 🔴 P0 | `DIDManager`, `DIDResolver` - potpuno nedostaje |
 | **Agent Registry** | 🔴 P0 | `AgentRegistry` contract + SDK methods |
-| **SDK v2 API Layers** | 🔴 P0 | `beginner`, `intermediate`, `runtime` API struktura |
+| **SDK v2 API Layers** | 🔴 P0 | `basic`, `standard`, `runtime` API struktura |
 | **n8n Node v2** | 🟡 P1 | Simple vs Advanced mode, nove operacije |
 | **Python SDK** | 🟢 P2 | Čeka dok Python SDK bude gotov |
 | **CLI Reference** | 🟡 P1 | `actp` CLI commands |
@@ -52,16 +52,16 @@ client.kernel.transitionState(...)
 client.escrow.approveToken(...)
 client.fundTransaction(...)
 
-// NEW (v2.x) - Beginner Layer
-client.beginner.pay({ provider, amount, service })
-client.beginner.checkStatus(txId)
+// NEW (v2.x) - Basic Layer
+client.basic.pay({ provider, amount, service })
+client.basic.checkStatus(txId)
 
-// NEW (v2.x) - Intermediate Layer
-client.intermediate.createTransaction({ provider, amount, deadline, disputeWindow })
-client.intermediate.linkEscrow(txId)
-client.intermediate.transitionState(txId, state)
-client.intermediate.releaseEscrow(txId)
-client.intermediate.getTransaction(txId)
+// NEW (v2.x) - Standard Layer
+client.standard.createTransaction({ provider, amount, deadline, disputeWindow })
+client.standard.linkEscrow(txId)
+client.standard.transitionState(txId, state)
+client.standard.releaseEscrow(txId)
+client.standard.getTransaction(txId)
 
 // NEW (v2.x) - Runtime Layer
 client.runtime  // Direct BlockchainRuntime or MockRuntime access
@@ -69,7 +69,7 @@ client.runtime  // Direct BlockchainRuntime or MockRuntime access
 
 ### New Features in v2
 
-1. **Three API Layers**: beginner (simple), intermediate (standard), runtime (low-level)
+1. **Three API Layers**: basic (simple), standard (balanced), advanced (full control)
 2. **Mock Mode**: `mode: 'mock'` - no blockchain needed for testing
 3. **DID Support**: `DIDManager`, `DIDResolver` classes
 4. **Agent Registry**: On-chain agent registration and reputation
@@ -123,21 +123,21 @@ const requesterClient = await ACTPClient.create({
 
 **Should be:**
 ```typescript
-// NEW API - Beginner layer (simplest)
-const result = await client.beginner.pay({
+// NEW API - Basic layer (simplest)
+const result = await client.basic.pay({
   provider: '0x...',
   amount: '10.00',
   service: 'echo'
 });
 
-// OR NEW API - Intermediate layer (more control)
-const txId = await client.intermediate.createTransaction({
+// OR NEW API - Standard layer (more control)
+const txId = await client.standard.createTransaction({
   provider: '0x...',
   amount: '10.00',
   deadline: '+1h',
   disputeWindow: 3600
 });
-await client.intermediate.linkEscrow(txId);
+await client.standard.linkEscrow(txId);
 ```
 
 ---
