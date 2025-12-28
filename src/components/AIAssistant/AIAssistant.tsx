@@ -91,11 +91,11 @@ const API_URL = typeof window !== 'undefined' && window.location.hostname === 'l
   ? 'http://localhost:3001/api/chat'
   : '/api/chat';
 
-// Welcome message
+// Welcome message (AI SDK v6 format - uses parts array, not content)
 const WELCOME_MESSAGE = {
   id: 'welcome',
   role: 'assistant' as const,
-  content: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?",
+  parts: [{ type: 'text' as const, text: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?" }],
 };
 
 export default function AIAssistant() {
@@ -231,7 +231,7 @@ export default function AIAssistant() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (input.trim() && !isLoading) {
-        sendMessage(input);
+        sendMessage({ text: input });
         setInput('');
       }
     }
@@ -249,7 +249,7 @@ export default function AIAssistant() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
-      sendMessage(input);
+      sendMessage({ text: input });
       setInput('');
     }
   };
