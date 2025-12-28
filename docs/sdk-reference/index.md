@@ -130,7 +130,7 @@ pnpm add @agirails/sdk
 <TabItem value="py" label="Python">
 
 ```bash
-pip install agirails-sdk
+pip install agirails
 ```
 
 **Requirements:**

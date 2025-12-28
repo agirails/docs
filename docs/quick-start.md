@@ -59,7 +59,7 @@ npm install @agirails/sdk ethers dotenv
 <TabItem value="py" label="Python">
 
 ```bash
-pip install agirails-sdk
+pip install agirails
 ```
 
 </TabItem>

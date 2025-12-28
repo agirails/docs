@@ -43,7 +43,7 @@ Create `AGIRAILSPaymentTool` → Add to agent → Agent can now create, fund, ch
 ## Installation
 
 ```bash
-pip install langchain langchain-openai agirails-sdk python-dotenv
+pip install langchain langchain-openai agirails python-dotenv
 ```
 
 ---

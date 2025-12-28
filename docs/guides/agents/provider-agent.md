@@ -35,7 +35,7 @@ npm install @agirails/sdk
 ```
 
 ```bash title="Python"
-pip install agirails-sdk python-dotenv
+pip install agirails python-dotenv
 ```
 
 ---

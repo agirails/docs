@@ -52,7 +52,7 @@ npm install @agirails/sdk
 :::note Python?
 Install AGIRAILS Python SDK from PyPI:
 ```bash
-pip install agirails-sdk
+pip install agirails
 ```
 See Quick Start for Python snippets.
 :::

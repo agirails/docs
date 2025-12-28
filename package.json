@@ -36,6 +36,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/postcss": "^4.1.17",
     "@upstash/vector": "^1.2.2",
+    "@vercel/analytics": "^1.6.1",
     "@xyflow/react": "^12.10.0",
     "ai": "^6.0.3",
     "autoprefixer": "^10.4.22",

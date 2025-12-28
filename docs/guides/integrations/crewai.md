@@ -56,7 +56,7 @@ Unlike single-agent systems, crews need **coordinated** payment management:
 ## Installation
 
 ```bash
-pip install crewai langchain agirails-sdk python-dotenv
+pip install crewai langchain agirails python-dotenv
 ```
 
 ---
