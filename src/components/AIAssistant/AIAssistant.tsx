@@ -130,6 +130,19 @@ export default function AIAssistant() {
   // Derive isLoading from status
   const isLoading = status === 'streaming' || status === 'submitted';
 
+  // Helper to extract text content from message (AI SDK v6 uses parts array)
+  const getMessageContent = (message: any): string => {
+    // v6 format: message.parts array with { type: 'text', text: string }
+    if (message.parts && Array.isArray(message.parts)) {
+      return message.parts
+        .filter((part: any) => part.type === 'text')
+        .map((part: any) => part.text)
+        .join('');
+    }
+    // Fallback to v5 format: message.content string
+    return message.content || '';
+  };
+
   // Listen for playground context updates
   useEffect(() => {
     const handleContextUpdate = (event: CustomEvent<PlaygroundContext | null>) => {
@@ -542,7 +555,7 @@ export default function AIAssistant() {
               )}
             </div>
             <div className="ai-message-content">
-              <div className="ai-message-text">{formatContent(message.content)}</div>
+              <div className="ai-message-text">{formatContent(getMessageContent(message))}</div>
             </div>
           </div>
         ))}
