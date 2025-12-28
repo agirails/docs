@@ -17,6 +17,19 @@ const vectorIndex = new Index({
   token: process.env.UPSTASH_VECTOR_REST_TOKEN!,
 });
 
+// Helper to extract text from message (supports both v5 content and v6 parts format)
+function getMessageText(message: any): string {
+  // v6 format: parts array
+  if (message.parts && Array.isArray(message.parts)) {
+    return message.parts
+      .filter((part: any) => part.type === 'text')
+      .map((part: any) => part.text)
+      .join('');
+  }
+  // v5 format: content string
+  return message.content || '';
+}
+
 // Input validation
 function validateInput(message: string): { valid: boolean; error?: string } {
   if (!message || typeof message !== 'string') {
@@ -273,8 +286,11 @@ export default async function handler(req: Request) {
       });
     }
 
+    // Extract text from message (supports both v5 and v6 format)
+    const messageText = getMessageText(lastUserMessage);
+
     // Validate input
-    const validation = validateInput(lastUserMessage.content);
+    const validation = validateInput(messageText);
     if (!validation.valid) {
       return new Response(JSON.stringify({ error: validation.error }), {
         status: 400,
@@ -288,7 +304,7 @@ export default async function handler(req: Request) {
 
     try {
       const queryResult = await vectorIndex.query({
-        data: lastUserMessage.content,
+        data: messageText,
         topK: 3,  // Reduced to save tokens (was 8)
         includeData: true,
         includeMetadata: true,
@@ -338,13 +354,14 @@ ${context}
 ---
 Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
 
-    // Filter out messages with undefined/empty content (can happen during streaming)
+    // Filter out messages with empty content and convert to LLM format
+    // Supports both v5 (content) and v6 (parts) message formats
     const validMessages = messages
-      .filter((m: any) => m.content !== undefined && m.content !== null && m.content !== '')
       .map((m: any) => ({
         role: m.role,
-        content: m.content,
-      }));
+        content: getMessageText(m),
+      }))
+      .filter((m: any) => m.content !== '');
 
     // Stream the response using Vercel AI SDK
     const result = streamText({
