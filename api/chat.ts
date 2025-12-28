@@ -117,6 +117,91 @@ This means YOU CAN SEE what they are looking at! Use this context to:
 4. Provide contextual suggestions based on their current configuration
 NEVER say "I cannot see" when playground context is provided - you CAN see it!
 
+CANVAS AGENT CODE - CRITICAL RULES:
+When writing code for Canvas/Playground agents, you MUST follow these rules:
+
+1. **NO ASYNC/AWAIT** - The sandbox is synchronous. Never use \`async\`, \`await\`, \`Promise\`, or \`.then()\`
+2. **Use ctx.state for persistence** - State persists between ticks: \`ctx.state.myVar = value;\`
+3. **Use ctx.services.* for async work** - For translations, AI calls, etc:
+   \`\`\`javascript
+   // Submit job (returns jobId immediately)
+   var jobId = ctx.services.translate({ text: "Hello", to: "es" });
+   ctx.state.pendingJob = jobId;
+
+   // Next tick: check if job is complete
+   var job = ctx.state.jobs[ctx.state.pendingJob];
+   if (job && job.status === "completed") {
+     ctx.log("Result: " + job.result.text);
+   }
+   \`\`\`
+4. **const/let/arrow functions ARE supported** - QuickJS is ES2020 compliant
+5. **Transaction structure** - Transactions have ONLY these fields:
+   - \`tx.id\` - unique transaction ID
+   - \`tx.sourceId\` - requester agent ID
+   - \`tx.targetId\` - provider agent ID
+   - \`tx.state\` - "INITIATED", "QUOTED", "COMMITTED", "IN_PROGRESS", "DELIVERED", "SETTLED", "DISPUTED", "CANCELLED"
+   - \`tx.amountMicro\` - amount in micro units (divide by 1000000 for dollars)
+   - \`tx.service\` - service description string
+   - **CRITICAL: There is NO tx.input, NO tx.output, NO tx.data field!**
+   - **To pass data between agents, use the service description string or ctx.state**
+
+6. **ctx.createTransaction parameters** - ONLY these are valid:
+   \`\`\`javascript
+   ctx.createTransaction({
+     provider: "agent-id",     // REQUIRED: target agent ID (not name!)
+     amountMicro: 5000000,     // REQUIRED: amount in micro (5 USDC)
+     service: "task description" // REQUIRED: what the job is
+   });
+   // NOTE: There is NO input, NO output, NO data parameter!
+   \`\`\`
+
+7. **CRITICAL: Guard against duplicate transactions** - createTransaction is called every tick!
+   \`\`\`javascript
+   // WRONG - creates new transaction every tick:
+   ctx.createTransaction({ provider: "x", amountMicro: 1000000, service: "job" });
+
+   // CORRECT - only create once:
+   if (!ctx.state.transactionCreated) {
+     ctx.createTransaction({ provider: "x", amountMicro: 1000000, service: "job" });
+     ctx.state.transactionCreated = true;
+   }
+   \`\`\`
+6. **Available ctx methods**:
+   - \`ctx.log(msg)\`, \`ctx.warn(msg)\`, \`ctx.error(msg)\` - logging
+   - \`ctx.transitionState(txId, newState)\` - change transaction state
+   - \`ctx.releaseEscrow(txId)\` - release funds to provider
+   - \`ctx.initiateDispute(txId, reason)\` - raise a dispute
+   - \`ctx.createTransaction({provider, amountMicro, service})\` - create new transaction
+   - \`ctx.services.translate({text, to})\` - async translation job
+6. **Available ctx properties**:
+   - \`ctx.agentId\` - this agent's ID
+   - \`ctx.balance\` - balance in micro units (divide by 1000000 for dollars)
+   - \`ctx.transactions\` - all transactions involving this agent
+   - \`ctx.incomingTransactions\` - transactions where this agent is provider
+   - \`ctx.state\` - persistent state object
+   - \`ctx.state.jobs\` - completed async jobs
+
+Example Canvas agent code (correct pattern):
+\`\`\`javascript
+// Provider agent - accepts work and delivers
+ctx.state.processed = ctx.state.processed || {};
+
+ctx.log("Balance: $" + (ctx.balance / 1000000).toFixed(2));
+
+ctx.incomingTransactions.forEach(function(tx) {
+  if (tx.state === "COMMITTED" && !ctx.state.processed[tx.id]) {
+    ctx.log("Starting work on: " + tx.service);
+    ctx.transitionState(tx.id, "IN_PROGRESS");
+    ctx.state.processed[tx.id] = true;
+  }
+
+  if (tx.state === "IN_PROGRESS") {
+    ctx.log("Delivering: " + tx.service);
+    ctx.transitionState(tx.id, "DELIVERED");
+  }
+});
+\`\`\`
+
 BASE YOUR ANSWERS ON THE FOLLOWING CONTEXT FROM THE AGIRAILS DOCUMENTATION:`;
 
 // Format playground context for inclusion in prompt
@@ -264,30 +349,8 @@ Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
       temperature: 0.7,
     });
 
-    // Create a custom SSE stream that matches our frontend format
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.textStream) {
-            const data = `data: ${JSON.stringify({ content: chunk })}\n\n`;
-            controller.enqueue(encoder.encode(data));
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-          controller.close();
-        } catch (err) {
-          controller.error(err);
-        }
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      },
-    });
+    // Return standard Vercel AI SDK streaming response (compatible with useChat)
+    return result.toTextStreamResponse();
 
   } catch (error) {
     console.error('Chat API error:', error);

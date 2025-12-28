@@ -1,13 +1,8 @@
-import React, { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation } from '@docusaurus/router';
+import { useChat } from '@ai-sdk/react';
 import { Highlight, themes } from 'prism-react-renderer';
-import { getPlaygroundContext, formatPlaygroundContextForPrompt, PlaygroundContext } from '../../hooks/usePlaygroundContext';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-}
+import { getPlaygroundContext, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 
 // Map common language aliases
 const languageMap: Record<string, string> = {
@@ -95,24 +90,44 @@ const API_URL = typeof window !== 'undefined' && window.location.hostname === 'l
   ? 'http://localhost:3001/api/chat'
   : '/api/chat';
 
+// Welcome message
+const WELCOME_MESSAGE = {
+  id: 'welcome',
+  role: 'assistant' as const,
+  content: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?",
+};
+
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('floating');
   const [sidebarWidth, setSidebarWidth] = useState(420);
   const [isResizing, setIsResizing] = useState(false);
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?",
-    }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [playgroundContext, setPlaygroundContext] = useState<PlaygroundContext | null>(null);
+  const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Vercel AI SDK useChat hook (v3 API)
+  const {
+    messages,
+    sendMessage,
+    status,
+    error,
+    stop,
+    regenerate,
+  } = useChat({
+    api: API_URL,
+    initialMessages: [WELCOME_MESSAGE],
+    body: {
+      playgroundContext,
+    },
+    onError: (err) => {
+      console.error('Chat error:', err);
+    },
+  });
+
+  // Derive isLoading from status
+  const isLoading = status === 'streaming' || status === 'submitted';
 
   // Listen for playground context updates
   useEffect(() => {
@@ -195,103 +210,18 @@ export default function AIAssistant() {
     };
   }, [isResizing]);
 
-  const handleSend = useCallback(async () => {
-    if (!input.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Get current playground context for contextual help
-      const currentContext = getPlaygroundContext();
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({
-            role: m.role,
-            content: m.content,
-          })),
-          playgroundContext: currentContext,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
-
-      const decoder = new TextDecoder();
-      let assistantContent = '';
-      const assistantId = (Date.now() + 1).toString();
-
-      // Add empty assistant message that we'll update
-      setMessages(prev => [...prev, {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-      }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                assistantContent += parsed.content;
-                setMessages(prev =>
-                  prev.map(m =>
-                    m.id === assistantId
-                      ? { ...m, content: assistantContent }
-                      : m
-                  )
-                );
-              }
-            } catch {
-              // Skip invalid JSON lines
-            }
-          }
-        }
-      }
-
-    } catch (err) {
-      console.error('Chat error:', err);
-      setError('Failed to get response. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [input, isLoading, messages]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (input.trim() && !isLoading) {
+        sendMessage({ content: input });
+        setInput('');
+      }
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -301,7 +231,10 @@ export default function AIAssistant() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSend();
+    if (input.trim() && !isLoading) {
+      sendMessage({ content: input });
+      setInput('');
+    }
   };
 
   // Parse markdown table into structured data
@@ -554,6 +487,19 @@ export default function AIAssistant() {
           </div>
         </div>
         <div className="ai-assistant-actions">
+          {/* Stop generation button (when loading) */}
+          {isLoading && (
+            <button
+              onClick={stop}
+              className="ai-assistant-btn"
+              aria-label="Stop generation"
+              title="Stop"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={() => setIsOpen(false)}
             className="ai-assistant-btn"
@@ -571,7 +517,8 @@ export default function AIAssistant() {
       {/* Error Banner */}
       {error && (
         <div className="ai-error-banner">
-          <span>{error}</span>
+          <span>{error.message || 'An error occurred'}</span>
+          <button onClick={() => regenerate()}>Retry</button>
         </div>
       )}
 
@@ -646,7 +593,7 @@ export default function AIAssistant() {
             <textarea
               ref={inputRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Ask about AGIRAILS..."
               rows={1}
