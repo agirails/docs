@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: SDK Reference
-description: Complete API reference for @agirails/sdk (TypeScript) and agirails-sdk (Python)
+description: Complete API reference for @agirails/sdk (TypeScript) and agirails (Python)
 ---
 
 import Tabs from '@theme/Tabs';
@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 
 Complete API documentation for:
 - `@agirails/sdk` (TypeScript/Node.js)
-- `agirails-sdk` (Python)
+- `agirails` (Python)
 
 ---
 
