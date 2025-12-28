@@ -63,6 +63,7 @@ pip install agirails python-dotenv
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/provider.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { keccak256, parseUnits, toUtf8Bytes } from 'ethers';
 import 'dotenv/config';
@@ -99,16 +100,18 @@ const CONFIG = {
 <TabItem value="py" label="Python">
 
 ```python title="provider.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time, json
-from agirails_sdk import ACTPClient, Network, ProofGenerator, State
-from agirails_sdk.errors import ValidationError, InvalidStateTransitionError
+from agirails import ACTPClient, ProofGenerator, State
+from agirails.errors import ValidationError, InvalidStateTransitionError
 from dotenv import load_dotenv
 from web3 import Web3
 
 load_dotenv()
 
 client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
+    mode='testnet',
+    requester_address=os.getenv("PROVIDER_ADDRESS"),
     private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
     # Agent registry: set AGENT_REGISTRY in env if deployed, otherwise leave default
     agent_registry=os.getenv("AGENT_REGISTRY"),
@@ -147,6 +150,7 @@ Advertise your endpoint + services so consumers can discover you.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 if (client.registry) {
   await client.registry.registerAgent({
     endpoint: 'https://agent.example.com/webhook',
@@ -162,6 +166,7 @@ if (client.registry) {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 if client.agent_registry:
     client.register_agent(
         endpoint="https://agent.example.com/webhook",
@@ -183,13 +188,14 @@ if client.agent_registry:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { State } from '@agirails/sdk';
 
 function watchFundedJobs() {
   return client.events.onStateChanged(async (txId, _from, to) => {
     if (to !== State.COMMITTED) return;
 
-    const tx = await client.runtime.getTransaction(txId);
+    const tx = await client.advanced.getTransaction(txId);
     if (tx.provider.toLowerCase() !== CONFIG.providerAddress.toLowerCase()) return;
 
     await evaluateJob(tx);
@@ -201,10 +207,11 @@ function watchFundedJobs() {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from web3 import Web3
 
 def watch_funded_jobs(poll_interval=5):
-    event = client.runtime.events.StateTransitioned.create_filter(
+    event = client.advanced.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
     )
     while True:
@@ -227,7 +234,8 @@ def watch_funded_jobs(poll_interval=5):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-async function evaluateJob(tx: Awaited<ReturnType<typeof client.runtime.getTransaction>>) {
+// Level 2: Advanced API - Direct protocol control
+async function evaluateJob(tx: Awaited<ReturnType<typeof client.advanced.getTransaction>>) {
   const timeRemaining = tx.deadline - Math.floor(Date.now() / 1000);
   if (tx.amount < CONFIG.minAmount || tx.amount > CONFIG.maxAmount) return;
   if (timeRemaining < 300) return; // <5 min left
@@ -244,6 +252,7 @@ async function evaluateJob(tx: Awaited<ReturnType<typeof client.runtime.getTrans
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def evaluate_job(tx):
     now = int(time.time())
     if tx.amount < CONFIG["min_amount"] or tx.amount > CONFIG["max_amount"]:
@@ -270,8 +279,9 @@ def evaluate_job(tx):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 async function executeJob(tx: any) {
-  await client.runtime.transitionState(tx.txId, State.IN_PROGRESS);
+  await client.advanced.transitionState(tx.txId, State.IN_PROGRESS);
 
   const result = await performWork(tx); // your service logic
   const proof = client.proofGenerator.generateDeliveryProof({
@@ -289,9 +299,9 @@ async function executeJob(tx: any) {
     attestationUid = att.uid;
   }
 
-  await client.runtime.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.advanced.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
   if (attestationUid) {
-    await client.runtime.anchorAttestation(tx.txId, attestationUid);
+    await client.advanced.anchorAttestation(tx.txId, attestationUid);
   }
 
   monitorSettlement(tx, attestationUid);
@@ -302,6 +312,7 @@ async function executeJob(tx: any) {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def execute_job(tx):
     client.transition_state(tx.tx_id, State.IN_PROGRESS)
 
@@ -339,6 +350,7 @@ def execute_job(tx):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 function monitorSettlement(tx: any, attestationUid?: string) {
   const unsubscribe = client.events.watchTransaction(tx.txId, async (state) => {
     if (state === State.SETTLED) {
@@ -352,9 +364,9 @@ function monitorSettlement(tx: any, attestationUid?: string) {
   });
 
   setTimeout(async () => {
-    const latest = await client.runtime.getTransaction(tx.txId);
+    const latest = await client.advanced.getTransaction(tx.txId);
     if (latest.state === State.DELIVERED) {
-      await client.runtime.transitionState(tx.txId, State.SETTLED, attestationUid || '0x');
+      await client.advanced.transitionState(tx.txId, State.SETTLED, attestationUid || '0x');
     }
   }, (tx.disputeWindow + 60) * 1000);
 }
@@ -364,6 +376,7 @@ function monitorSettlement(tx: any, attestationUid?: string) {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def monitor_settlement(tx, attestation_uid=None):
     settle_after = int(time.time()) + tx.dispute_window + 60
     while True:
@@ -391,6 +404,7 @@ def monitor_settlement(tx, attestation_uid=None):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/run-provider.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import 'dotenv/config';
 
@@ -399,10 +413,10 @@ const client = await ACTPClient.create({ mode: 'testnet',
 
 client.events.onStateChanged(async (txId, _from, to) => {
   if (to !== State.COMMITTED) return;
-  const tx = await client.runtime.getTransaction(txId);
-  await client.runtime.transitionState(txId, State.IN_PROGRESS);
+  const tx = await client.advanced.getTransaction(txId);
+  await client.advanced.transitionState(txId, State.IN_PROGRESS);
   const proof = client.proofGenerator.generateDeliveryProof({ txId, deliverable: '{"status":"ok"}' });
-  await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.advanced.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 });
 
 console.log('Provider running... (Ctrl+C to exit)');
@@ -413,15 +427,16 @@ await new Promise(() => {});
 <TabItem value="py" label="Python">
 
 ```python title="run_provider.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time, json
-from agirails_sdk import ACTPClient, Network, ProofGenerator, State
+from agirails import ACTPClient, ProofGenerator, State
 from dotenv import load_dotenv
 
 load_dotenv()
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
+client = ACTPClient(mode='testnet', requester_address=os.getenv("PROVIDER_ADDRESS"), private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
 proof_gen = ProofGenerator()
 
-filt = client.runtime.events.StateTransitioned.create_filter(
+filt = client.advanced.events.StateTransitioned.create_filter(
     fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
 )
 print("Provider running... (Ctrl+C to exit)")

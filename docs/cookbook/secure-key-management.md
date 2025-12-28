@@ -76,6 +76,7 @@ PRIVATE_KEY=0x...your_private_key...
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/env-key-loader.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient } from '@agirails/sdk';
 import 'dotenv/config';
 
@@ -110,8 +111,9 @@ async function main() {
 <TabItem value="python" label="Python">
 
 ```python title="env_key_loader.py"
+# Level 2: Advanced API - Direct protocol control
 import os
-from agirails import ACTPClient, Network
+from agirails import ACTPClient
 from dotenv import load_dotenv
 
 def main():
@@ -128,8 +130,9 @@ def main():
     if not private_key.startswith("0x") or len(private_key) != 66:
         raise Exception("Invalid private key format")
 
-    client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ.get("REQUESTER_ADDRESS"),
         private_key=private_key
     )
 
@@ -232,6 +235,7 @@ Use your cloud provider's secret management service.
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/aws-key-loader.ts"
+// Level 2: Advanced API - Direct protocol control
 import {
   SecretsManagerClient,
   GetSecretValueCommand
@@ -272,9 +276,10 @@ async function main() {
 <TabItem value="python" label="Python">
 
 ```python title="aws_key_loader.py"
+# Level 2: Advanced API - Direct protocol control
 import os, json
 import boto3
-from agirails import ACTPClient, Network
+from agirails import ACTPClient
 
 def get_private_key() -> str:
     client = boto3.client('secretsmanager', region_name='us-east-1')
@@ -290,8 +295,9 @@ def get_private_key() -> str:
 def main():
     private_key = get_private_key()
 
-    client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ.get("REQUESTER_ADDRESS"),
         private_key=private_key
     )
 
@@ -328,6 +334,7 @@ aws secretsmanager create-secret \
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/gcp-key-loader.ts"
+// Level 2: Advanced API - Direct protocol control
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import { ACTPClient } from '@agirails/sdk';
 
@@ -351,8 +358,9 @@ async function getPrivateKey(): Promise<string> {
 <TabItem value="python" label="Python">
 
 ```python title="gcp_key_loader.py"
+# Level 2: Advanced API - Direct protocol control
 from google.cloud import secretmanager
-from agirails import ACTPClient, Network
+from agirails import ACTPClient
 
 def get_private_key() -> str:
     client = secretmanager.SecretManagerServiceClient()
@@ -369,8 +377,9 @@ def get_private_key() -> str:
 def main():
     private_key = get_private_key()
 
-    client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ.get("REQUESTER_ADDRESS"),
         private_key=private_key
     )
 
@@ -386,6 +395,7 @@ def main():
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/vault-key-loader.ts"
+// Level 2: Advanced API - Direct protocol control
 import Vault from 'node-vault';
 import { ACTPClient } from '@agirails/sdk';
 
@@ -405,9 +415,10 @@ async function getPrivateKey(): Promise<string> {
 <TabItem value="python" label="Python">
 
 ```python title="vault_key_loader.py"
+# Level 2: Advanced API - Direct protocol control
 import os
 import hvac
-from agirails import ACTPClient, Network
+from agirails import ACTPClient
 
 def get_private_key() -> str:
     client = hvac.Client(
@@ -423,8 +434,9 @@ def get_private_key() -> str:
 def main():
     private_key = get_private_key()
 
-    client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ.get("REQUESTER_ADDRESS"),
         private_key=private_key
     )
 

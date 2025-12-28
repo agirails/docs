@@ -71,6 +71,7 @@ agent = Agent(config)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 import { Agent } from '@agirails/sdk';
 
 const agent = new Agent({
@@ -94,6 +95,7 @@ const agent = new Agent({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 from agirails import Agent
 import os
 
@@ -230,6 +232,7 @@ agent.provide(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 const agent = new Agent({ name: 'MultiServiceAgent', network: 'mock' });
 
 // Simple service (string shorthand)
@@ -274,6 +277,7 @@ await agent.start();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 agent = Agent({'name': 'MultiServiceAgent', 'network': 'mock'})
 
 # Simple service
@@ -347,6 +351,7 @@ The SDK provides a **Cost + Margin** pricing model that automatically:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 // Per-word pricing (translation)
 const translationPricing: PricingStrategy = {
   cost: {
@@ -388,6 +393,7 @@ const gptPricing: PricingStrategy = {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 # Per-word pricing (translation)
 translation_pricing = {
     'cost': {
@@ -454,6 +460,7 @@ The handler receives a context object with utilities:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 agent.provide('process-data', async (job, context) => {
   const { data, options } = job.input;
 
@@ -489,6 +496,7 @@ agent.provide('process-data', async (job, context) => {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 async def process_handler(job, context):
     data = job.input.get('data', [])
     options = job.input.get('options', {})
@@ -554,6 +562,7 @@ Subscribe to agent lifecycle and job events.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 const agent = new Agent({ name: 'EventfulAgent', network: 'mock' });
 
 // Lifecycle events
@@ -590,6 +599,7 @@ await agent.start();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 agent = Agent({'name': 'EventfulAgent', 'network': 'mock'})
 
 # Lifecycle events
@@ -660,6 +670,7 @@ await agent.start()
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 import { Agent } from '@agirails/sdk';
 
 async function main() {
@@ -725,6 +736,7 @@ main().catch(console.error);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 1: Standard API - Agent with lifecycle management
 import asyncio
 import signal
 from agirails import Agent

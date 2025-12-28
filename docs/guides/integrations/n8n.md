@@ -631,6 +631,7 @@ The Mock USDC contract allows minting test tokens.
 ### Using Code
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ethers } from 'ethers';
 
 const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');

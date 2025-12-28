@@ -32,7 +32,7 @@ You want to:
 
 ## Solution
 
-Create a custom LangChain `BaseTool` that wraps the AGIRAILS **Python SDK** (`agirails_sdk`). Use the SDK for funded transactions, attestation-verified release, and (optionally) AIP-7 Agent Registry operations.
+Create a custom LangChain `BaseTool` that wraps the AGIRAILS **Python SDK** (`agirails`). Use the SDK for funded transactions, attestation-verified release, and (optionally) AIP-7 Agent Registry operations.
 
 :::tip TL;DR
 Create `AGIRAILSPaymentTool` → Add to agent → Agent can now create, fund, check status, and release with attestation verification. Optional: add registry helpers for AIP-7 discovery/registration.
@@ -72,11 +72,12 @@ The `AGIRAILSPaymentTool` extends LangChain's `BaseTool` and provides core actio
 ### Step 1: Create the Payment Tool
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os, time
 from typing import Optional, Literal
 from langchain.tools import BaseTool
-from agirails_sdk import ACTPClient, Network, State
-from agirails_sdk.errors import ValidationError, TransactionError, RpcError
+from agirails import ACTPClient, State
+from agirails.errors import ValidationError, TransactionError, RpcError
 
 Action = Literal["create_transaction", "fund_transaction", "check_status", "release_with_verification"]
 
@@ -86,9 +87,9 @@ class AGIRAILSPaymentTool(BaseTool):
     name = "agirails_payment"
     description = "create_transaction, fund_transaction, check_status, release_with_verification"
 
-    def __init__(self, private_key: str, network: Network = Network.BASE_SEPOLIA):
+    def __init__(self, private_key: str, requester_address: str, mode: str = 'testnet'):
         super().__init__()
-        self.client = ACTPClient(network=network, private_key=private_key)
+        self.client = ACTPClient(mode=mode, requester_address=requester_address, private_key=private_key)
 
     def _run(self, action: Action, **kwargs) -> str:
         try:
@@ -125,11 +126,11 @@ class AGIRAILSPaymentTool(BaseTool):
         return f"Created tx: {tx_id}"
 
     def _fund_transaction(self, tx_id: str, amount: Optional[int] = None) -> str:
-        escrow_id = self.client.fund_transaction(tx_id, amount=amount)
+        escrow_id = self.client.advanced.link_escrow(tx_id)
         return f"Funded tx {tx_id} with escrow {escrow_id}"
 
     def _check_status(self, tx_id: str) -> str:
-        tx = self.client.get_transaction(tx_id)
+        tx = self.client.advanced.get_transaction(tx_id)
         return f"tx {tx_id} state={tx.state.name}, amount={tx.amount}, provider={tx.provider}"
 
     def _release_with_verification(self, tx_id: str, attestation_uid: str) -> str:
@@ -140,6 +141,7 @@ class AGIRAILSPaymentTool(BaseTool):
 ### Step 2: Add to LangChain Agent
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from langchain.agents import initialize_agent, AgentType
 from langchain_openai import ChatOpenAI
 
@@ -148,7 +150,8 @@ llm = ChatOpenAI(model="gpt-4", temperature=0)
 
 # Initialize payment tool
 payment_tool = AGIRAILSPaymentTool(
-    private_key=os.getenv("PRIVATE_KEY")
+    private_key=os.getenv("PRIVATE_KEY"),
+    requester_address=os.getenv("REQUESTER_ADDRESS"),
 )
 
 # Create agent with payment capability
@@ -175,9 +178,10 @@ print(response)
 If your agent should self-publish or discover providers, wrap Agent Registry helpers:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from typing import Literal
 from langchain.tools import BaseTool
-from agirails_sdk import ACTPClient, Network
+from agirails import ACTPClient
 
 RegistryAction = Literal["register_agent", "query_agents"]
 
@@ -185,9 +189,9 @@ class AGIRAILSRegistryTool(BaseTool):
     name = "agirails_registry"
     description = "register_agent, query_agents"
 
-    def __init__(self, private_key: str, network: Network = Network.BASE_SEPOLIA):
+    def __init__(self, private_key: str, requester_address: str, mode: str = 'testnet'):
         super().__init__()
-        self.client = ACTPClient(network=network, private_key=private_key)
+        self.client = ACTPClient(mode=mode, requester_address=requester_address, private_key=private_key)
 
     def _run(self, action: RegistryAction, **kwargs) -> str:
         if not self.client.agent_registry:
@@ -220,6 +224,7 @@ A complete example that pays for research data and synthesizes it using the SDK-
 </div>
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from langchain.chains import LLMChain
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -295,6 +300,7 @@ print(report)
 Prevent runaway spending with per-transaction and daily limits:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 class BudgetedPaymentTool(AGIRAILSPaymentTool):
     """Payment tool with budget limits."""
 
@@ -321,6 +327,7 @@ class BudgetedPaymentTool(AGIRAILSPaymentTool):
 ### 2. Error Handling
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def _run(self, action: str, **kwargs) -> str:
     try:
         result = self._execute_action(action, **kwargs)
@@ -337,6 +344,7 @@ def _run(self, action: str, **kwargs) -> str:
 ### 3. Transaction Logging
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import logging
 
 logger = logging.getLogger("agirails")
@@ -357,6 +365,7 @@ def _create_and_fund(self, **kwargs) -> str:
 Check both USDC and ETH balances:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 usdc_balance = payment_tool._get_balance()
 eth_balance = payment_tool.w3.eth.get_balance(payment_tool.account.address)
 print(f"USDC: {usdc_balance}, ETH: {eth_balance / 1e18}")

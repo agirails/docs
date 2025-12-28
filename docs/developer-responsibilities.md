@@ -42,13 +42,18 @@ Your private key is the **only thing** between your funds and an attacker.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ NEVER do this
 const client = await ACTPClient.create({
+  mode: 'testnet',
+  requesterAddress: process.env.ADDRESS!,
   privateKey: '0x1234567890abcdef...' // Hardcoded = leaked
 });
 
 // ✅ Always do this
 const client = await ACTPClient.create({
+  mode: 'testnet',
+  requesterAddress: process.env.ADDRESS!,
   privateKey: process.env.PRIVATE_KEY!
 });
 ```
@@ -57,21 +62,24 @@ const client = await ACTPClient.create({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ NEVER do this
 import os
-from agirails_sdk import ACTPClient, Network
+from agirails import ACTPClient
 
 client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
+    mode='testnet',
+    requester_address=os.getenv("ADDRESS"),
     private_key="0x1234567890abcdef...",  # Hardcoded = leaked
 )
 
 # ✅ Always do this
 import os
-from agirails_sdk import ACTPClient, Network
+from agirails import ACTPClient
 
 client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
+    mode='testnet',
+    requester_address=os.getenv("ADDRESS"),
     private_key=os.getenv("PRIVATE_KEY"),
 )
 ```
@@ -225,8 +233,9 @@ Before mainnet deployment:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ This will cause issues
-const tx = await client.runtime.createTransaction({
+const tx = await client.advanced.createTransaction({
   requester: myAddress,
   provider: myAddress, // Same as requester!
   ...
@@ -237,16 +246,17 @@ const tx = await client.runtime.createTransaction({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ This will cause issues
-from agirails_sdk import ACTPClient, Network
+from agirails import ACTPClient
 
-tx = client.create_transaction(
+tx = client.advanced.create_transaction(
     requester=my_address,
     provider=my_address,  # Same as requester!
     amount=10_000_000,
-    deadline=client.now() + 86_400,
+    deadline=int(time.time()) + 86_400,
     dispute_window=7_200,
-    service_hash="0x" + "00" * 32,
+    metadata="0x",
 )
 ```
 
@@ -263,30 +273,32 @@ tx = client.create_transaction(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ Proceeding before confirmation
-const txId = await client.runtime.createTransaction({...});
-await client.runtime.transitionState(txId, State.DELIVERED); // Might fail!
+const txId = await client.advanced.createTransaction({...});
+await client.advanced.transitionState(txId, State.DELIVERED); // Might fail!
 
 // ✅ Wait for transaction confirmation
-const tx = await client.runtime.createTransaction({...});
+const tx = await client.advanced.createTransaction({...});
 await tx.wait(); // Wait for block
-await client.runtime.transitionState(txId, State.DELIVERED);
+await client.advanced.transitionState(txId, State.DELIVERED);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ Proceeding before confirmation
-from agirails_sdk import ACTPClient, Network, State
+from agirails import ACTPClient, State
 
-tx_id = client.create_transaction(...)
-client.transition_state(tx_id, State.DELIVERED)  # Might fail!
+tx_id = client.advanced.create_transaction(...)
+client.advanced.transition_state(tx_id, State.DELIVERED)  # Might fail!
 
 # ✅ Wait for transaction confirmation
-tx_receipt = client.create_transaction(..., return_receipt=True)
+tx_receipt = client.advanced.create_transaction(..., return_receipt=True)
 client.wait_for_receipt(tx_receipt)
-client.transition_state(tx_receipt.tx_id, State.DELIVERED)
+client.advanced.transition_state(tx_receipt.tx_id, State.DELIVERED)
 ```
 
 </TabItem>
@@ -298,28 +310,30 @@ client.transition_state(tx_receipt.tx_id, State.DELIVERED)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ Can't skip from COMMITTED to DELIVERED
-await client.runtime.transitionState(txId, State.DELIVERED);
+await client.advanced.transitionState(txId, State.DELIVERED);
 // Error: Invalid state transition
 
 // ✅ Must go through IN_PROGRESS first (or handle in your logic)
-await client.runtime.transitionState(txId, State.IN_PROGRESS);
-await client.runtime.transitionState(txId, State.DELIVERED);
+await client.advanced.transitionState(txId, State.IN_PROGRESS);
+await client.advanced.transitionState(txId, State.DELIVERED);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ Can't skip from COMMITTED to DELIVERED
-from agirails_sdk import State
+from agirails import State
 
-client.transition_state(tx_id, State.DELIVERED)
+client.advanced.transition_state(tx_id, State.DELIVERED)
 # Error: Invalid state transition
 
 # ✅ Must go through IN_PROGRESS first (or handle in your logic)
-client.transition_state(tx_id, State.IN_PROGRESS)
-client.transition_state(tx_id, State.DELIVERED)
+client.advanced.transition_state(tx_id, State.IN_PROGRESS)
+client.advanced.transition_state(tx_id, State.DELIVERED)
 ```
 
 </TabItem>
@@ -331,24 +345,26 @@ client.transition_state(tx_id, State.DELIVERED)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ Funding manually without approval
-await client.runtime.linkEscrow(txId, escrowVault, escrowId); // will revert if no allowance
+await client.advanced.linkEscrow(txId); // will revert if no allowance
 
-// ✅ Use standard.linkEscrow() to approve + link escrow in one call
-const txId = await client.runtime.createTransaction({...});
-const escrowId = await client.standard.linkEscrow(txId);
+// ✅ Use advanced.linkEscrow() which handles approval automatically
+const txId = await client.advanced.createTransaction({...});
+const escrowId = await client.advanced.linkEscrow(txId);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ Funding manually without approval
-client.link_escrow(tx_id=tx_id, amount=amount)  # may fail if allowance missing
+client.advanced.link_escrow(tx_id=tx_id)  # may fail if allowance missing
 
-# ✅ Use fund_transaction to approve + link escrow in one call
-tx_id = client.create_transaction(...)
-escrow_id = client.fund_transaction(tx_id)
+# ✅ Use advanced.link_escrow() which handles approval automatically
+tx_id = client.advanced.create_transaction(...)
+escrow_id = client.advanced.link_escrow(tx_id)
 ```
 
 </TabItem>
@@ -360,15 +376,16 @@ escrow_id = client.fund_transaction(tx_id)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ Creating transaction with deadline too tight
-const tx = await client.runtime.createTransaction({
+const tx = await client.advanced.createTransaction({
   deadline: Math.floor(Date.now() / 1000) + 60, // Only 1 minute!
   ...
 });
 // If processing takes 2 minutes, transaction expires
 
 // ✅ Allow reasonable time
-const tx = await client.runtime.createTransaction({
+const tx = await client.advanced.createTransaction({
   deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours
   ...
 });
@@ -378,18 +395,20 @@ const tx = await client.runtime.createTransaction({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ Creating transaction with deadline too tight
-from agirails_sdk import ACTPClient, Network
+import time
+from agirails import ACTPClient
 
-tx_id = client.create_transaction(
-    deadline=client.now() + 60,  # Only 1 minute!
+tx_id = client.advanced.create_transaction(
+    deadline=int(time.time()) + 60,  # Only 1 minute!
     ...
 )
 # If processing takes 2 minutes, transaction expires
 
 # ✅ Allow reasonable time
-tx_id = client.create_transaction(
-    deadline=client.now() + 86_400,  # 24 hours
+tx_id = client.advanced.create_transaction(
+    deadline=int(time.time()) + 86_400,  # 24 hours
     ...
 )
 ```
@@ -403,33 +422,35 @@ tx_id = client.create_transaction(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // ❌ Delivering without proof
-await client.runtime.transitionState(txId, State.DELIVERED, '0x');
+await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 // No proof = weak position in disputes
 
 // ✅ Always create and anchor proof
 const result = await performService();
 const proofHash = await client.proofs.hashContent(JSON.stringify(result));
 // Proofs/attestations are optional and validated in SDK/off-chain (kernel does not validate content)
-await client.runtime.transitionState(txId, State.DELIVERED, proofHash);
+await client.advanced.transitionState(txId, State.DELIVERED, proofHash);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # ❌ Delivering without proof
 import json
-from agirails_sdk import ACTPClient, Network, State
+from agirails import ACTPClient, State
 
-client.transition_state(tx_id, State.DELIVERED, "0x")
+client.advanced.transition_state(tx_id, State.DELIVERED, "0x")
 # No proof = weak position in disputes
 
 # ✅ Always create and anchor proof
 result = perform_service()
 proof_hash = client.proofs.hash_content(json.dumps(result))
 # Proofs/attestations are optional and validated in SDK/off-chain (kernel does not validate content)
-client.transition_state(tx_id, State.DELIVERED, proof_hash)
+client.advanced.transition_state(tx_id, State.DELIVERED, proof_hash)
 ```
 
 </TabItem>

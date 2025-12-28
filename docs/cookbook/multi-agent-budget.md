@@ -65,6 +65,7 @@ Central treasury wallet → Agents request spending → Coordinator checks limit
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/budget-coordinator.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits, formatUnits } from 'ethers';
 
@@ -164,7 +165,7 @@ class BudgetCoordinator {
   ): Promise<SpendingResponse> {
     try {
       // Create transaction on behalf of requester
-      const txId = await this.client.runtime.createTransaction({
+      const txId = await this.client.advanced.createTransaction({
         requester: await this.client.getAddress(), // Coordinator pays
         provider: request.provider,
         amount: request.amount,
@@ -174,7 +175,7 @@ class BudgetCoordinator {
       });
 
       // Fund escrow (approve + link)
-      await this.client.standard.linkEscrow(txId);
+      await this.client.advanced.linkEscrow(txId);
 
       // Record spending
       this.spending.push({
@@ -301,10 +302,11 @@ interface BudgetReport {
 <TabItem value="python" label="Python">
 
 ```python title="budget_coordinator.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time
 from typing import Dict, List, Optional
 from dataclasses import dataclass
-from agirails import ACTPClient, Network, State
+from agirails import ACTPClient, State
 
 @dataclass
 class AgentConfig:
@@ -399,7 +401,7 @@ class BudgetCoordinator:
     def _execute_spending(self, request: SpendingRequest, agent: AgentConfig) -> SpendingResponse:
         try:
             # Create transaction
-            tx_id = self.client.runtime.create_transaction(
+            tx_id = self.client.advanced.create_transaction(
                 requester=self.client.address,
                 provider=request.provider,
                 amount=request.amount,
@@ -409,7 +411,7 @@ class BudgetCoordinator:
             )
 
             # Fund escrow
-            self.client.fund_transaction(tx_id)
+            self.client.advanced.link_escrow(tx_id)
 
             # Record spending
             self.spending.append(SpendingRecord(
@@ -482,6 +484,7 @@ class BudgetCoordinator:
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/budgeted-agent.ts"
+// Level 2: Advanced API - Direct protocol control
 class BudgetedAgent {
   private agentId: string;
   private coordinator: BudgetCoordinator;
@@ -535,6 +538,7 @@ class BudgetedAgent {
 <TabItem value="python" label="Python">
 
 ```python title="budgeted_agent.py"
+# Level 2: Advanced API - Direct protocol control
 from dataclasses import dataclass
 from typing import Optional
 
@@ -582,6 +586,7 @@ class BudgetedAgent:
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/main.ts"
+// Level 2: Advanced API - Direct protocol control
 async function main() {
   // Initialize coordinator with treasury wallet
   const coordinatorClient = await ACTPClient.create({
@@ -669,13 +674,15 @@ main().catch(console.error);
 <TabItem value="python" label="Python">
 
 ```python title="main.py"
+# Level 2: Advanced API - Direct protocol control
 import os
-from agirails import ACTPClient, Network
+from agirails import ACTPClient
 
 def main():
     # Initialize coordinator with treasury wallet
-    coordinator_client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    coordinator_client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ["TREASURY_ADDRESS"],
         private_key=os.environ["TREASURY_PRIVATE_KEY"]
     )
 
@@ -1066,14 +1073,14 @@ class BudgetCoordinator:
 
 ```typescript
 try {
-  const txId = await this.client.runtime.createTransaction({...});
+  const txId = await this.client.advanced.createTransaction({...});
 
   try {
     await this.client.escrow.fund(txId);
   } catch (fundError) {
     // Transaction created but not funded - CANCEL IT
     console.error('Funding failed, cancelling transaction');
-    await this.client.runtime.transitionState(txId, State.CANCELLED, '0x');
+    await this.client.advanced.transitionState(txId, State.CANCELLED, '0x');
     throw fundError;
   }
 
@@ -1090,14 +1097,14 @@ try {
 
 ```python
 try:
-    tx_id = self.client.runtime.create_transaction(...)
+    tx_id = self.client.advanced.create_transaction(...)
 
     try:
         self.client.escrow.fund(tx_id)
     except Exception as fund_error:
         # Transaction created but not funded - CANCEL IT
         print("Funding failed, cancelling transaction")
-        self.client.runtime.transition_state(tx_id, State.CANCELLED, "0x")
+        self.client.advanced.transition_state(tx_id, State.CANCELLED, "0x")
         raise fund_error
 
     # Only record if fully successful

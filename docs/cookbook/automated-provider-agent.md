@@ -66,6 +66,7 @@ Register your provider agent in the **Agent Registry** so consumers can discover
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/automated-provider.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { formatUnits, parseUnits } from 'ethers';
 
@@ -98,7 +99,7 @@ class AutomatedProviderAgent {
       if (!this.isRunning) return;
       if (to !== State.COMMITTED) return;
 
-      const tx = await this.client.runtime.getTransaction(txId);
+      const tx = await this.client.advanced.getTransaction(txId);
 
       // Only process transactions where we're the provider
       if (tx.provider.toLowerCase() !== myAddress.toLowerCase()) {
@@ -151,7 +152,7 @@ class AutomatedProviderAgent {
     console.log('   ⏳ Processing job...');
 
     // Step 1: Transition to IN_PROGRESS
-    await this.client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+    await this.client.advanced.transitionState(txId, State.IN_PROGRESS, '0x');
     console.log('   ✅ Status: IN_PROGRESS');
 
     // Step 2: Do the actual work
@@ -177,9 +178,9 @@ class AutomatedProviderAgent {
     }
 
     // Step 4: Deliver with proof
-    await this.client.runtime.transitionState(txId, State.DELIVERED, this.client.proofGenerator.encodeProof(proof));
+    await this.client.advanced.transitionState(txId, State.DELIVERED, this.client.proofGenerator.encodeProof(proof));
     if (attUid) {
-      await this.client.runtime.anchorAttestation(txId, attUid);
+      await this.client.advanced.anchorAttestation(txId, attUid);
     }
     console.log('   ✅ Status: DELIVERED');
     console.log(`   📋 Proof hash: ${proof.contentHash}`);
@@ -277,9 +278,10 @@ main().catch(console.error);
 <TabItem value="py" label="Python">
 
 ```python title="automated_provider.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time, json
 from web3 import Web3
-from agirails_sdk import ACTPClient, Network, ProofGenerator, State
+from agirails import ACTPClient, ProofGenerator, State
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -290,7 +292,7 @@ CONFIG = {
     "service_types": {"api-call", "computation", "data-fetch"},
 }
 
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
+client = ACTPClient(mode='testnet', requester_address=os.getenv("PROVIDER_ADDRESS"), private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
 proof_gen = ProofGenerator()
 provider_address = client.address.lower()
 
@@ -314,7 +316,7 @@ def handle_job(tx_id, tx):
     print(f"Delivered {tx_id} with proof {proof['contentHash']}")
 
 def watch_jobs(poll_interval=5):
-    filt = client.runtime.events.StateTransitioned.create_filter(
+    filt = client.advanced.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
     )
     print("Listening for funded jobs (COMMITTED)...")
@@ -383,7 +385,7 @@ this.client.events.onTransactionCreated(async (event) => {
 
 ```python
 # Using Web3.py event filters
-filter = client.runtime.events.TransactionCreated.create_filter(fromBlock="latest")
+filter = client.advanced.events.TransactionCreated.create_filter(fromBlock="latest")
 for event in filter.get_new_entries():
     # React to new transactions instantly
     pass
@@ -618,7 +620,7 @@ If your service fails mid-job, you're stuck in `IN_PROGRESS`:
 ```typescript
 try {
   await this.performService(tx);
-  await this.client.runtime.transitionState(txId, State.DELIVERED, proof);
+  await this.client.advanced.transitionState(txId, State.DELIVERED, proof);
 } catch (error) {
   // Log error, maybe notify yourself
   // Consider: Should you cancel? Retry? Alert?
@@ -632,7 +634,7 @@ try {
 ```python
 try:
     await self.perform_service(tx)
-    await self.client.runtime.transition_state(tx_id, State.DELIVERED, proof)
+    await self.client.advanced.transition_state(tx_id, State.DELIVERED, proof)
 except Exception as error:
     # Log error, maybe notify yourself
     # Consider: Should you cancel? Retry? Alert?

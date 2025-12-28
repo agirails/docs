@@ -45,26 +45,28 @@ Approve USDC for escrow creation. **Must be called before `linkEscrow()`**.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { parseUnits } from 'ethers';
 
 // Approve 100 USDC for escrow
 const amount = parseUnits('100', 6); // USDC has 6 decimals
 await client.escrow.approveToken(USDC_ADDRESS, amount);
 
-// Now link escrow via standard API
-await client.standard.linkEscrow(txId);
+// Now link escrow via advanced API
+await client.advanced.linkEscrow(txId);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Approve 100 USDC for escrow
 amount = 100 * 10**6  # USDC has 6 decimals
 await client.escrow.approve_token(USDC_ADDRESS, amount)
 
-# Now link escrow via standard API
-await client.standard.link_escrow(tx_id)
+# Now link escrow via advanced API
+await client.advanced.link_escrow(tx_id)
 ```
 
 </TabItem>
@@ -147,6 +149,7 @@ console.log('EscrowVault:', vaultAddress);
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, parseUnits } from '@agirails/sdk';
 import { BASE_SEPOLIA } from '@agirails/sdk/config';
 
@@ -157,10 +160,12 @@ async function completeEscrowFlow() {
   });
 
   // 1. Create transaction
-  const txId = await client.standard.createTransaction({
+  const txId = await client.advanced.createTransaction({
     provider: '0x2222222222222222222222222222222222222222',
-    amount: '100', // $100 USDC
-    deadline: '+24h',
+    requester: '0x1111111111111111111111111111111111111111',
+    amount: parseUnits('100', 6), // $100 USDC
+    deadline: Math.floor(Date.now() / 1000) + 86400,
+    disputeWindow: 172800,
   });
 
   // 2. Approve USDC
@@ -168,7 +173,7 @@ async function completeEscrowFlow() {
   await client.escrow.approveToken(BASE_SEPOLIA.contracts.usdc, amount);
 
   // 3. Link escrow (auto-transitions to COMMITTED)
-  const escrowId = await client.standard.linkEscrow(txId);
+  const escrowId = await client.advanced.linkEscrow(txId);
   console.log('Escrow linked:', escrowId);
 
   // 4. Check escrow balance
@@ -176,7 +181,7 @@ async function completeEscrowFlow() {
   console.log('Funds locked:', remaining);
 
   // 5. After delivery and dispute window...
-  await client.standard.releaseEscrow(escrowId);
+  await client.advanced.releaseEscrow(escrowId);
   console.log('Funds released to provider');
 }
 ```
@@ -185,6 +190,8 @@ async function completeEscrowFlow() {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import time
 from agirails import ACTPClient
 
 async def complete_escrow_flow():
@@ -194,10 +201,12 @@ async def complete_escrow_flow():
     )
 
     # 1. Create transaction
-    tx_id = await client.standard.create_transaction({
+    tx_id = await client.advanced.create_transaction({
         'provider': '0x2222222222222222222222222222222222222222',
-        'amount': '100',  # $100 USDC
-        'deadline': '+24h',
+        'requester': '0x1111111111111111111111111111111111111111',
+        'amount': '100000000',  # $100 USDC in wei
+        'deadline': int(time.time()) + 86400,
+        'dispute_window': 172800,
     })
 
     # 2. Approve USDC
@@ -205,7 +214,7 @@ async def complete_escrow_flow():
     await client.escrow.approve_token(USDC_ADDRESS, amount)
 
     # 3. Link escrow
-    escrow_id = await client.standard.link_escrow(tx_id)
+    escrow_id = await client.advanced.link_escrow(tx_id)
     print(f'Escrow linked: {escrow_id}')
 
     # 4. Check balance
@@ -213,7 +222,7 @@ async def complete_escrow_flow():
     print(f'Funds locked: {remaining}')
 
     # 5. Release after dispute window
-    await client.standard.release_escrow(escrow_id)
+    await client.advanced.release_escrow(escrow_id)
     print('Funds released to provider')
 ```
 

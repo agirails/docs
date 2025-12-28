@@ -42,10 +42,10 @@ The AGIRAILS SDK provides **three levels of abstraction** to match your needs:
 - Learning the ACTP protocol
 
 ```typescript
-// 3 lines to create a payment
+// Level 0: Basic API - One-liners
 import { provide, request } from '@agirails/sdk';
 
-const provider = provide('echo', async (job) => job.input);
+provide('echo', async (job) => job.input);
 const { result } = await request('echo', { input: 'Hello!', budget: '1.00' });
 ```
 
@@ -56,12 +56,13 @@ const { result } = await request('echo', { input: 'Hello!', budget: '1.00' });
 - Managing multiple services per agent
 
 ```typescript
-// Production agent with full lifecycle
+// Level 1: Standard API - Agent with lifecycle management
 import { Agent } from '@agirails/sdk';
 
 const agent = new Agent({
   name: 'TranslationAgent',
   network: 'mock',
+  wallet: { privateKey: process.env.PRIVATE_KEY! },
 });
 
 agent.provide('translate', async (job) => {
@@ -78,21 +79,27 @@ await agent.start();
 - Require direct access to escrow, events, attestations
 
 ```typescript
-// Full protocol control
-import { ACTPClient } from '@agirails/sdk';
+// Level 2: Advanced API - Direct protocol control
+import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
-const client = await ACTPClient.create({ mode: 'mock' });
-
-// Manual transaction lifecycle
-const txId = await client.standard.createTransaction({
-  provider: '0x...',
-  amount: '100',
-  deadline: '+7d',
+const client = await ACTPClient.create({
+  mode: 'mock',
+  requesterAddress: '0x...',
+  privateKey: process.env.PRIVATE_KEY,
 });
 
-await client.standard.linkEscrow(txId);
-await client.standard.transitionState(txId, 'DELIVERED');
-await client.standard.releaseEscrow(txId);
+// Manual transaction lifecycle with protocol-level types
+const txId = await client.advanced.createTransaction({
+  provider: '0x...',
+  requester: '0x...',
+  amount: parseUnits('100', 6),       // wei string
+  deadline: Math.floor(Date.now() / 1000) + 604800,  // unix timestamp
+  disputeWindow: 7200,
+});
+
+await client.advanced.linkEscrow(txId);
+await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 ```
 
 ---

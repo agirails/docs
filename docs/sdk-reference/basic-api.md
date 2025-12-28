@@ -104,6 +104,7 @@ def provide(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { provide } from '@agirails/sdk';
 
 // Simple echo service
@@ -144,6 +145,7 @@ await translateProvider.stop();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 from agirails import provide
 
 # Simple echo service
@@ -260,6 +262,7 @@ async def request(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { request } from '@agirails/sdk';
 
 // Simple request
@@ -293,6 +296,7 @@ const { result } = await request('image-gen', {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 from agirails import request
 
 # Simple request
@@ -336,6 +340,7 @@ In-memory registry of available service providers) Use it to discover providers.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { serviceDirectory } from '@agirails/sdk';
 
 // Find providers for a service
@@ -359,6 +364,7 @@ serviceDirectory.unregister('my-service', '0xMyAddress');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 from agirails import service_directory
 
 # Find providers for a service
@@ -393,6 +399,7 @@ The `serviceDirectory` is **in-memory and local** to your process. In production
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { provide, request } from '@agirails/sdk';
 
 // Provider side
@@ -432,6 +439,7 @@ await provider.stop();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 import asyncio
 from agirails import provide, request
 

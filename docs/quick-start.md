@@ -82,114 +82,108 @@ Never commit private keys. Add `.env` to `.gitignore`.
 
 ---
 
-## Step 3: Create Your First Transaction
+## Step 3: Start a Provider Agent
 
 <Tabs defaultValue="ts" lazy={false}>
 <TabItem value="ts" label="TypeScript" default>
 
-Create `agent.ts` (run as **requester**):
+Create `provider.ts`:
 
-```typescript title="agent.ts"
-import { ACTPClient } from '@agirails/sdk';
-import { Wallet } from 'ethers';
+```typescript title="provider.ts"
+// Level 1: Standard API - Agent with lifecycle management
+import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
-async function main() {
-  // Get addresses from private keys
-  const requesterWallet = new Wallet(process.env.REQUESTER_PRIVATE_KEY!);
-  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
+// Create provider agent
+const provider = new Agent({
+  name: 'EchoProvider',
+  network: 'testnet',
+  wallet: { privateKey: process.env.PROVIDER_PRIVATE_KEY! },
+});
 
-  // Initialize requester client
-  const requesterClient = await ACTPClient.create({
-    mode: 'testnet',
-    requesterAddress: requesterWallet.address,
-    privateKey: process.env.REQUESTER_PRIVATE_KEY!,
-  });
+// Register a paid service
+provider.provide('echo', async (job) => {
+  console.log('Received job:', job.id);
+  console.log('Input:', job.input);
+  console.log('Budget:', job.budget, 'USDC');
 
-  console.log('Requester:', requesterClient.getAddress());
-  console.log('Provider:', providerWallet.address);
+  // Do the work and return result
+  return { echoed: job.input, timestamp: Date.now() };
+});
 
-  // Create transaction (requester != provider required by contract)
-  const txId = await requesterClient.standard.createTransaction({
-    provider: providerWallet.address,
-    amount: 1,  // $1 USDC (SDK handles decimals)
-    deadline: '+24h',  // 24 hours from now
-    disputeWindow: 3600, // 1 hour (contract minimum)
-  });
+// Listen for events
+provider.on('payment:received', (amount) => {
+  console.log(`Earned ${amount} USDC!`);
+});
 
-  console.log('Transaction created:', txId);
+provider.on('job:completed', (job) => {
+  console.log('Job completed:', job.id);
+});
 
-  // Fund (approve USDC + link escrow)
-  await requesterClient.standard.linkEscrow(txId);
-  console.log('Escrow funded!');
-
-  console.log('✅ Transaction created and funded!');
-  console.log('Transaction ID (save this):', txId);
-}
-
-main().catch(console.error);
+// Start listening for jobs
+await provider.start();
+console.log('Provider running at:', provider.address);
 ```
 
 Run it:
 
 ```bash
-npx ts-node agent.ts
+npx ts-node provider.ts
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
-Create `agent.py` (run as **requester**):
+Create `provider.py`:
 
-```python title="agent.py"
+```python title="provider.py"
+# Level 1: Standard API - Agent with lifecycle management
 import asyncio
 import os
 from dotenv import load_dotenv
-from eth_account import Account
-from agirails import ACTPClient
+from agirails import Agent
 
 load_dotenv()
 
 async def main():
-    # Get addresses from private keys
-    requester_account = Account.from_key(os.getenv("REQUESTER_PRIVATE_KEY"))
-    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
-
-    # Initialize requester client
-    requester_client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=requester_account.address,
-        private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
+    # Create provider agent
+    provider = Agent(
+        name='EchoProvider',
+        network='testnet',
+        wallet={'private_key': os.getenv('PROVIDER_PRIVATE_KEY')},
     )
 
-    print("Requester:", requester_client.address)
-    print("Provider:", provider_account.address)
+    # Register a paid service
+    @provider.provide('echo')
+    async def echo_service(job):
+        print(f'Received job: {job.id}')
+        print(f'Input: {job.input}')
+        print(f'Budget: {job.budget} USDC')
 
-    # Create transaction (requester != provider required by contract)
-    tx_id = await requester_client.standard.create_transaction({
-        "provider": provider_account.address,
-        "amount": 1,  # $1 USDC (SDK handles decimals)
-        "deadline": "+24h",  # 24 hours from now
-        "dispute_window": 3600,  # 1 hour (contract minimum)
-    })
+        # Do the work and return result
+        return {'echoed': job.input, 'timestamp': asyncio.get_event_loop().time()}
 
-    print("Transaction created:", tx_id)
+    # Listen for events
+    @provider.on('payment:received')
+    def on_payment(amount):
+        print(f'Earned {amount} USDC!')
 
-    # Fund (approve USDC + link escrow)
-    await requester_client.standard.link_escrow(tx_id)
-    print("Escrow funded!")
+    @provider.on('job:completed')
+    def on_completed(job):
+        print(f'Job completed: {job.id}')
 
-    print("✅ Transaction created and funded!")
-    print("Transaction ID (save this):", tx_id)
+    # Start listening for jobs
+    await provider.start()
+    print(f'Provider running at: {provider.address}')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())
 ```
 
 Run it:
 
 ```bash
-python agent.py
+python provider.py
 ```
 
 </TabItem>
@@ -203,188 +197,165 @@ python agent.py
   <img src="/img/diagrams/what-just-happened.svg" alt="What Just Happened - Transaction Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
-Your transaction is now in **COMMITTED** state with 1 USDC locked.
+Your provider agent is now **listening for jobs** and ready to earn USDC.
 
 ---
 
-## Step 4: Complete the Lifecycle (Provider Side)
+## Step 4: Request a Service (Requester Side)
 
-The **provider** must perform these transitions using their own wallet:
+In a **separate terminal**, create a requester agent to pay for the service:
 
 <Tabs defaultValue="ts" lazy={false}>
 <TabItem value="ts" label="TypeScript" default>
 
-```typescript title="provider-deliver.ts"
-import { ACTPClient } from '@agirails/sdk';
-import { Wallet } from 'ethers';
+```typescript title="requester.ts"
+// Level 1: Standard API - Agent with lifecycle management
+import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
-async function deliver() {
-  // Get provider address from private key
-  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
-
-  // Initialize PROVIDER client (not requester!)
-  const providerClient = await ACTPClient.create({
-    mode: 'testnet',
-    requesterAddress: providerWallet.address,
-    privateKey: process.env.PROVIDER_PRIVATE_KEY!,
+async function main() {
+  // Create requester agent
+  const requester = new Agent({
+    name: 'Requester',
+    network: 'testnet',
+    wallet: { privateKey: process.env.REQUESTER_PRIVATE_KEY! },
   });
 
-  const txId = 'YOUR_TX_ID_FROM_STEP_3'; // Paste from Step 3
+  console.log('Requester:', requester.address);
 
-  // Provider transitions to IN_PROGRESS (required before DELIVERED)
-  await providerClient.standard.transitionState(txId, 'IN_PROGRESS');
-  console.log('In progress...');
+  // Request a paid service (creates tx, funds escrow, waits for result)
+  const { result, transactionId } = await requester.request('echo', {
+    input: { message: 'Hello from requester!' },
+    budget: 1,  // $1 USDC
+  });
 
-  // Provider delivers
-  await providerClient.standard.transitionState(txId, 'DELIVERED');
-  console.log('Delivered!');
-
-  // Wait for dispute window (1 hour as set in Step 3)
-  console.log('Waiting for 1 hour dispute window to expire...');
-  console.log('(In production, use event listeners instead of sleeping)');
-  await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
-
-  // Release escrow after dispute window expires
-  const tx = await providerClient.standard.getTransaction(txId);
-  if (tx?.escrowId) {
-    await providerClient.standard.releaseEscrow(tx.escrowId);
-    console.log('Settlement complete! Funds released.');
-  }
+  console.log('Transaction ID:', transactionId);
+  console.log('Result:', result);
+  console.log('Provider earned ~$0.99 USDC (after 1% fee)');
 }
 
-deliver().catch(console.error);
+main().catch(console.error);
+```
+
+Run it (in a separate terminal from the provider):
+
+```bash
+npx ts-node requester.ts
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
-```python title="provider_deliver.py"
+```python title="requester.py"
+# Level 1: Standard API - Agent with lifecycle management
 import asyncio
 import os
-import time
 from dotenv import load_dotenv
-from eth_account import Account
-from agirails import ACTPClient
+from agirails import Agent
 
 load_dotenv()
 
-async def deliver():
-    # Get provider address from private key
-    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
-
-    # Initialize PROVIDER client (not requester!)
-    provider_client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=provider_account.address,
-        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+async def main():
+    # Create requester agent
+    requester = Agent(
+        name='Requester',
+        network='testnet',
+        wallet={'private_key': os.getenv('REQUESTER_PRIVATE_KEY')},
     )
 
-    tx_id = "YOUR_TX_ID_FROM_STEP_3"  # Paste from Step 3
+    print(f'Requester: {requester.address}')
 
-    # Provider transitions to IN_PROGRESS (required before DELIVERED)
-    await provider_client.standard.transition_state(tx_id, "IN_PROGRESS")
-    print("In progress...")
+    # Request a paid service (creates tx, funds escrow, waits for result)
+    result = await requester.request('echo', {
+        'input': {'message': 'Hello from requester!'},
+        'budget': 1,  # $1 USDC
+    })
 
-    # Provider delivers
-    await provider_client.standard.transition_state(tx_id, "DELIVERED")
-    print("Delivered!")
+    print(f'Transaction ID: {result.transaction_id}')
+    print(f'Result: {result.data}')
+    print('Provider earned ~$0.99 USDC (after 1% fee)')
 
-    # Wait for dispute window (1 hour as set in Step 3)
-    print("Waiting for 1 hour dispute window to expire...")
-    print("(In production, use event listeners instead of sleeping)")
-    time.sleep(3660)  # 61 minutes
+if __name__ == '__main__':
+    asyncio.run(main())
+```
 
-    # Release escrow after dispute window expires
-    tx = await provider_client.standard.get_transaction(tx_id)
-    if tx and tx.escrow_id:
-        await provider_client.standard.release_escrow(tx.escrow_id)
-        print("Settlement complete! Funds released.")
+Run it (in a separate terminal from the provider):
 
-if __name__ == "__main__":
-    asyncio.run(deliver())
+```bash
+python requester.py
 ```
 
 </TabItem>
 </Tabs>
 
-:::warning Provider-Only Transitions
-Only the **provider** can call `standard.transitionState()` for IN_PROGRESS and DELIVERED. Using the requester's wallet will revert.
-:::
+:::tip What the Agent Does Automatically
+The `agent.request()` method handles the entire transaction lifecycle:
+1. Creates the transaction
+2. Funds escrow (approves + locks USDC)
+3. Waits for provider to deliver
+4. Waits for dispute window to expire
+5. Settles payment to provider
 
-:::warning State Transition Rules
-You **cannot** skip states. Required path:
-`COMMITTED → IN_PROGRESS → DELIVERED → (wait for dispute window) → releaseEscrow()`
+You don't need to manually call state transitions!
 :::
 
 ---
 
-## Test the Full Flow (Two Wallets)
+## Test the Full Flow (Single Script)
 
-Complete end-to-end test with both requester and provider:
+Complete end-to-end test with both provider and requester in one script:
 
 <Tabs defaultValue="ts" lazy={false}>
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="full-flow-test.ts"
-import { ACTPClient } from '@agirails/sdk';
-import { Wallet } from 'ethers';
+// Level 1: Standard API - Agent with lifecycle management
+import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
 async function testFullFlow() {
-  // Get addresses from private keys
-  const requesterWallet = new Wallet(process.env.REQUESTER_PRIVATE_KEY!);
-  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
-
-  // Initialize BOTH clients
-  const requesterClient = await ACTPClient.create({
-    mode: 'testnet',
-    requesterAddress: requesterWallet.address,
-    privateKey: process.env.REQUESTER_PRIVATE_KEY!,
+  // Create provider agent
+  const provider = new Agent({
+    name: 'TestProvider',
+    network: 'testnet',
+    wallet: { privateKey: process.env.PROVIDER_PRIVATE_KEY! },
   });
 
-  const providerClient = await ACTPClient.create({
-    mode: 'testnet',
-    requesterAddress: providerWallet.address,
-    privateKey: process.env.PROVIDER_PRIVATE_KEY!,
+  // Register service
+  provider.provide('test-echo', async (job) => {
+    console.log('Provider received job:', job.id);
+    return { echoed: job.input, success: true };
   });
 
-  console.log('Requester:', requesterClient.getAddress());
-  console.log('Provider:', providerClient.getAddress());
-
-  // 1. REQUESTER creates transaction
-  const txId = await requesterClient.standard.createTransaction({
-    provider: providerWallet.address,
-    amount: 1,  // $1 USDC
-    deadline: '+24h',
-    disputeWindow: 3600, // 1 hour (contract minimum)
+  provider.on('payment:received', (amount) => {
+    console.log(`Provider earned ${amount} USDC!`);
   });
-  console.log('1. Created:', txId);
 
-  // 2. REQUESTER funds (approves USDC + links escrow)
-  await requesterClient.standard.linkEscrow(txId);
-  console.log('2. Escrow funded!');
+  // Start provider (runs in background)
+  await provider.start();
+  console.log('1. Provider started:', provider.address);
 
-  // 3. PROVIDER starts work
-  await providerClient.standard.transitionState(txId, 'IN_PROGRESS');
-  console.log('3. In progress (provider)');
+  // Create requester agent
+  const requester = new Agent({
+    name: 'TestRequester',
+    network: 'testnet',
+    wallet: { privateKey: process.env.REQUESTER_PRIVATE_KEY! },
+  });
+  console.log('2. Requester ready:', requester.address);
 
-  // 4. PROVIDER delivers
-  await providerClient.standard.transitionState(txId, 'DELIVERED');
-  console.log('4. Delivered (provider)');
+  // Request service (handles full transaction lifecycle)
+  console.log('3. Requesting service...');
+  const { result, transactionId } = await requester.request('test-echo', {
+    input: { message: 'Hello, AGIRAILS!' },
+    budget: 1,  // $1 USDC
+  });
 
-  // 5. Wait for dispute window (1 hour minimum)
-  console.log('5. Waiting for 1 hour dispute window...');
-  await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
+  console.log('4. Transaction completed:', transactionId);
+  console.log('5. Result:', result);
+  console.log('\nProvider received ~$0.99 USDC (after 1% fee)');
 
-  // 6. Release escrow after dispute window expires
-  const tx = await requesterClient.standard.getTransaction(txId);
-  if (tx?.escrowId) {
-    await requesterClient.standard.releaseEscrow(tx.escrowId);
-    console.log('6. Settlement complete! Funds released.');
-  }
-
-  console.log(`\nProvider received ~0.99 USDC (after 1% fee)`);
+  // Cleanup
+  await provider.stop();
 }
 
 testFullFlow().catch(console.error);
@@ -400,70 +371,59 @@ npx ts-node full-flow-test.ts
 <TabItem value="py" label="Python">
 
 ```python title="full_flow_test.py"
+# Level 1: Standard API - Agent with lifecycle management
 import asyncio
 import os
-import time
 from dotenv import load_dotenv
-from eth_account import Account
-from agirails import ACTPClient
+from agirails import Agent
 
 load_dotenv()
 
 async def test_full_flow():
-    # Get addresses from private keys
-    requester_account = Account.from_key(os.getenv("REQUESTER_PRIVATE_KEY"))
-    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
-
-    # Initialize BOTH clients
-    requester_client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=requester_account.address,
-        private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
+    # Create provider agent
+    provider = Agent(
+        name='TestProvider',
+        network='testnet',
+        wallet={'private_key': os.getenv('PROVIDER_PRIVATE_KEY')},
     )
 
-    provider_client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=provider_account.address,
-        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+    # Register service
+    @provider.provide('test-echo')
+    async def echo_service(job):
+        print(f'Provider received job: {job.id}')
+        return {'echoed': job.input, 'success': True}
+
+    @provider.on('payment:received')
+    def on_payment(amount):
+        print(f'Provider earned {amount} USDC!')
+
+    # Start provider (runs in background)
+    await provider.start()
+    print(f'1. Provider started: {provider.address}')
+
+    # Create requester agent
+    requester = Agent(
+        name='TestRequester',
+        network='testnet',
+        wallet={'private_key': os.getenv('REQUESTER_PRIVATE_KEY')},
     )
+    print(f'2. Requester ready: {requester.address}')
 
-    print("Requester:", requester_client.address)
-    print("Provider:", provider_client.address)
-
-    # 1. REQUESTER creates transaction
-    tx_id = await requester_client.standard.create_transaction({
-        "provider": provider_account.address,
-        "amount": 1,  # $1 USDC
-        "deadline": "+24h",
-        "dispute_window": 3600,  # 1 hour (contract minimum)
+    # Request service (handles full transaction lifecycle)
+    print('3. Requesting service...')
+    result = await requester.request('test-echo', {
+        'input': {'message': 'Hello, AGIRAILS!'},
+        'budget': 1,  # $1 USDC
     })
-    print("1. Created:", tx_id)
 
-    # 2. REQUESTER funds (approves USDC + links escrow)
-    await requester_client.standard.link_escrow(tx_id)
-    print("2. Escrow funded!")
+    print(f'4. Transaction completed: {result.transaction_id}')
+    print(f'5. Result: {result.data}')
+    print('\nProvider received ~$0.99 USDC (after 1% fee)')
 
-    # 3. PROVIDER starts work
-    await provider_client.standard.transition_state(tx_id, "IN_PROGRESS")
-    print("3. In progress (provider)")
+    # Cleanup
+    await provider.stop()
 
-    # 4. PROVIDER delivers
-    await provider_client.standard.transition_state(tx_id, "DELIVERED")
-    print("4. Delivered (provider)")
-
-    # 5. Wait for dispute window (1 hour minimum)
-    print("5. Waiting for 1 hour dispute window...")
-    time.sleep(3660)  # 61 minutes
-
-    # 6. Release escrow after dispute window expires
-    tx = await requester_client.standard.get_transaction(tx_id)
-    if tx and tx.escrow_id:
-        await requester_client.standard.release_escrow(tx.escrow_id)
-        print("6. Settlement complete! Funds released.")
-
-    print("\nProvider received ~0.99 USDC (after 1% fee)")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(test_full_flow())
 ```
 
@@ -479,11 +439,7 @@ python full_flow_test.py
 :::tip Expected Result
 - Requester spends: 1 USDC + gas (~$0.002)
 - Provider receives: ~0.99 USDC (after 1% protocol fee)
-- Total time: ~65 minutes (1 hour dispute window + execution)
-:::
-
-:::info Dispute Window Minimum
-The contract enforces a **minimum 1-hour dispute window** (`MIN_DISPUTE_WINDOW = 3600`). For faster testing during development, you would need to deploy a modified contract with a lower minimum.
+- The Agent class handles all state transitions automatically!
 :::
 
 ---
@@ -511,25 +467,33 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 ## Quick Reference
 
-### Key Functions
+### Agent Methods (Level 1: Standard API)
 
-| Function | What It Does |
-|----------|--------------|
-| `standard.createTransaction()` | Create new transaction |
-| `standard.linkEscrow()` | Lock USDC in escrow |
-| `standard.transitionState()` | Move to next state (IN_PROGRESS, DELIVERED) |
-| `standard.releaseEscrow()` | Release funds after dispute window expires |
+| Method | What It Does |
+|--------|--------------|
+| `new Agent({ name, network, wallet })` | Create agent instance |
+| `agent.provide(service, handler)` | Register a paid service |
+| `agent.request(service, { input, budget })` | Pay for a service |
+| `agent.on(event, callback)` | Listen to events |
+| `agent.start()` | Start listening for jobs |
+| `agent.stop()` | Stop the agent |
 
-### Transaction Parameters
+### Request Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requester` | `address` | Who pays |
-| `provider` | `address` | Who delivers |
-| `amount` | `uint256` | USDC amount (6 decimals) |
-| `deadline` | `uint256` | Unix timestamp |
-| `disputeWindow` | `uint256` | Seconds to dispute after delivery |
-| `metadata` | `bytes32` | Hash of service description (optional) |
+| `service` | `string` | Service name to request |
+| `input` | `object` | Data to send to provider |
+| `budget` | `number` | Max USDC to spend |
+| `deadline` | `string` | Optional, e.g., `'+24h'` |
+
+### Events
+
+| Event | Callback Args | Description |
+|-------|---------------|-------------|
+| `payment:received` | `(amount)` | Provider earned USDC |
+| `job:completed` | `(job, result)` | Job finished successfully |
+| `job:failed` | `(job, error)` | Job failed |
 
 ---
 
@@ -540,10 +504,9 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | **"Insufficient funds"** | Get ETH from [faucet](https://portal.cdp.coinbase.com/products/faucet), mint USDC |
 | **"Invalid private key"** | Ensure key starts with `0x` and is 66 characters |
 | **"requester == provider"** | Contract requires different addresses. Use two wallets. |
-| **"Only provider can call"** | IN_PROGRESS, DELIVERED require provider's wallet |
-| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → releaseEscrow() |
-| **"Dispute window active"** | Wait for dispute window to expire before calling `releaseEscrow()` |
-| **"requesterAddress required"** | `ACTPClient.create()` requires `requesterAddress` parameter |
+| **"Service not found"** | Provider must call `agent.start()` before requester calls `agent.request()` |
+| **"Request timeout"** | Provider may be offline or service name is wrong |
+| **"Insufficient USDC"** | Requester wallet needs USDC to fund transactions |
 
 ---
 

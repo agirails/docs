@@ -74,6 +74,7 @@ Providers can register their APIs in the **Agent Registry** (AIP-7) with service
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/api-server.ts"
+// Level 2: Advanced API - Direct protocol control
 import express from 'express';
 import { ACTPClient, State } from '@agirails/sdk';
 import { formatUnits } from 'ethers';
@@ -107,7 +108,7 @@ async function verifyPayment(req: any, res: any, next: any) {
 
   try {
     // Fetch transaction details
-    const tx = await client.runtime.getTransaction(txId);
+    const tx = await client.advanced.getTransaction(txId);
 
     // Verify we're the provider
     if (tx.provider.toLowerCase() !== PROVIDER_ADDRESS.toLowerCase()) {
@@ -168,7 +169,7 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
   try {
     // Mark as IN_PROGRESS if not already
     if (tx.state === State.COMMITTED) {
-      await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+      await client.advanced.transitionState(txId, State.IN_PROGRESS, '0x');
     }
 
     // ===========================================
@@ -184,7 +185,7 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
     });
 
     // Deliver with encoded proof
-    await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+    await client.advanced.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 
     // Return result to consumer
     res.json({
@@ -257,15 +258,17 @@ app.listen(3000, () => {
 <TabItem value="python" label="Python">
 
 ```python title="api_server.py"
+# Level 2: Advanced API - Direct protocol control
 import os, json, time
 from flask import Flask, request, jsonify
-from agirails import ACTPClient, Network, ProofGenerator, State
+from agirails import ACTPClient, ProofGenerator, State
 
 app = Flask(__name__)
 
 # Initialize AGIRAILS client
-client = ACTPClient.create(
-    network=Network.BASE_SEPOLIA,
+client = ACTPClient(
+    mode='testnet',
+    requester_address=os.environ["PROVIDER_ADDRESS"],
     private_key=os.environ["PROVIDER_PRIVATE_KEY"]
 )
 
@@ -287,7 +290,7 @@ def verify_payment():
         }), 402
 
     try:
-        tx = client.runtime.get_transaction(tx_id)
+        tx = client.advanced.get_transaction(tx_id)
 
         # Verify we're the provider
         if tx.provider.lower() != PROVIDER_ADDRESS.lower():
@@ -338,7 +341,7 @@ def generate():
     try:
         # Mark as IN_PROGRESS
         if tx.state == State.COMMITTED:
-            client.runtime.transition_state(tx_id, State.IN_PROGRESS)
+            client.advanced.transition_state(tx_id, State.IN_PROGRESS)
 
         # YOUR SERVICE LOGIC HERE
         result = generate_content(prompt)
@@ -350,7 +353,7 @@ def generate():
         )
 
         # Deliver with proof
-        client.runtime.transition_state(tx_id, State.DELIVERED, proof=proof_gen.encode_proof(proof))
+        client.advanced.transition_state(tx_id, State.DELIVERED, proof=proof_gen.encode_proof(proof))
 
         return jsonify({
             "success": True,
@@ -421,6 +424,7 @@ if (client.registry) {
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="src/api-consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
@@ -438,7 +442,7 @@ async function callPaidAPI(prompt: string): Promise<string> {
 
   // Step 1: Create transaction
   console.log('Creating payment transaction...');
-  const txId = await client.runtime.createTransaction({
+  const txId = await client.advanced.createTransaction({
     requester: myAddress,
     provider: API_PROVIDER,
     amount: parseUnits('0.10', 6), // $0.10
@@ -450,7 +454,7 @@ async function callPaidAPI(prompt: string): Promise<string> {
 
   // Step 2: Fund escrow (approve + link in one call)
   console.log('Funding transaction via linkEscrow...');
-  const escrowId = await client.standard.linkEscrow(txId);
+  const escrowId = await client.advanced.linkEscrow(txId);
   console.log(`Transaction funded - USDC locked in escrow (escrowId ${escrowId})`);
 
   // Step 3: Call the API with transaction ID
@@ -488,13 +492,15 @@ console.log('Result:', result);
 <TabItem value="python" label="Python">
 
 ```python title="api_consumer.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time
-from agirails import ACTPClient, Network, State
+from agirails import ACTPClient, State
 
 async def call_paid_api(prompt: str) -> str:
     # Initialize client
-    client = ACTPClient.create(
-        network=Network.BASE_SEPOLIA,
+    client = ACTPClient(
+        mode='testnet',
+        requester_address=os.environ["CONSUMER_ADDRESS"],
         private_key=os.environ["CONSUMER_PRIVATE_KEY"]
     )
 
@@ -504,7 +510,7 @@ async def call_paid_api(prompt: str) -> str:
 
     # Step 1: Create transaction
     print("Creating payment transaction...")
-    tx_id = client.runtime.create_transaction(
+    tx_id = client.advanced.create_transaction(
         requester=my_address,
         provider=API_PROVIDER,
         amount=100_000,  # $0.10 USDC
@@ -515,8 +521,8 @@ async def call_paid_api(prompt: str) -> str:
     print(f"Transaction created: {tx_id}")
 
     # Step 2: Fund escrow (approve + link in one call)
-    print("Funding transaction via fund_transaction...")
-    escrow_id = client.fund_transaction(tx_id)
+    print("Funding transaction via link_escrow...")
+    escrow_id = client.advanced.link_escrow(tx_id)
     print(f"Transaction funded - USDC locked in escrow (escrowId {escrow_id})")
 
     # Step 3: Call the API with transaction ID
@@ -741,7 +747,7 @@ await call_api(tx_id2)
 ```typescript
 try {
   const result = await yourService(input);
-  await client.runtime.transitionState(txId, State.DELIVERED, proof);
+  await client.advanced.transitionState(txId, State.DELIVERED, proof);
   return result;
 } catch (error) {
   // DON'T deliver - let consumer cancel or retry
@@ -755,7 +761,7 @@ try {
 ```python
 try:
     result = await your_service(input)
-    await client.runtime.transition_state(tx_id, State.DELIVERED, proof)
+    await client.advanced.transition_state(tx_id, State.DELIVERED, proof)
     return result
 except Exception as error:
     # DON'T deliver - let consumer cancel or retry
@@ -843,7 +849,7 @@ For high-frequency, low-value calls, use a credit system:
 
 ```typescript
 // Consumer: Prepay for 100 calls
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   amount: parseUnits('10', 6), // $10 for 100 calls at $0.10
   // ...
 });
@@ -861,7 +867,7 @@ app.post('/api/generate', async (req, res) => {
 
   if (remainingCalls === 0) {
     // Final call - settle the transaction
-    await client.runtime.transitionState(txId, State.DELIVERED, proof);
+    await client.advanced.transitionState(txId, State.DELIVERED, proof);
   }
 });
 ```
@@ -871,7 +877,7 @@ app.post('/api/generate', async (req, res) => {
 
 ```python
 # Consumer: Prepay for 100 calls
-tx_id = client.runtime.create_transaction(
+tx_id = client.advanced.create_transaction(
     amount=10_000_000,  # $10 for 100 calls at $0.10
     # ...
 )
@@ -891,7 +897,7 @@ def generate():
 
     if remaining_calls == 0:
         # Final call - settle the transaction
-        client.runtime.transition_state(tx_id, State.DELIVERED, proof)
+        client.advanced.transition_state(tx_id, State.DELIVERED, proof)
 
     return jsonify({"result": result})
 ```

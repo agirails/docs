@@ -380,8 +380,10 @@ All plugin examples use mock mode by default for safe development:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const client = await ACTPClient.create({
   mode: 'testnet',  // Change from 'mock'
+  requesterAddress: process.env.REQUESTER_ADDRESS,
   privateKey: process.env.PRIVATE_KEY,
 });
 ```
@@ -390,8 +392,10 @@ const client = await ACTPClient.create({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 client = await ACTPClient.create(
     mode="testnet",  # Change from 'mock'
+    requester_address=os.environ["REQUESTER_ADDRESS"],
     private_key=os.environ["PRIVATE_KEY"],
 )
 ```

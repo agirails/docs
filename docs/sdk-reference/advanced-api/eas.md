@@ -272,16 +272,16 @@ async function deliverWithAttestation(txId: string, result: string) {
     deliveryProofSchemaId: SCHEMA_ID,
   });
 
-  const tx = await client.runtime.getTransaction(txId);
+  const tx = await client.advanced.getTransaction(txId);
   const attestation = await eas.attestDeliveryProof(proof, tx.requester);
 
   console.log('Created attestation:', attestation.uid);
 
   // 3. Anchor attestation to transaction
-  await client.runtime.anchorAttestation(txId, attestation.uid);
+  await client.advanced.anchorAttestation(txId, attestation.uid);
 
   // 4. Transition to DELIVERED
-  await client.runtime.transitionState(txId, State.DELIVERED);
+  await client.advanced.transitionState(txId, State.DELIVERED);
 
   console.log('Delivery complete with on-chain proof!');
 }

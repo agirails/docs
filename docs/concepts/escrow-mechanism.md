@@ -76,6 +76,7 @@ Before creating escrow, requester must approve the vault:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ethers, parseUnits } from 'ethers';
 
 const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
@@ -89,20 +90,19 @@ await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os
+from agirails import ACTPClient
 
-from agirails_sdk import ACTPClient, Network
-
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('PRIVATE_KEY'),
+)
 
 # Approve exact amount (security best practice)
 amount = 100_000_000  # $100 USDC (6 decimals)
-tx_hash = client.usdc.functions.approve(
-    client.config.escrow_vault,
-    amount,
-).transact({"from": client.address})
-
-client.w3.eth.wait_for_transaction_receipt(tx_hash)
+await client.advanced.approve_usdc(amount)
 ```
 
 </TabItem>
@@ -119,28 +119,26 @@ client.w3.eth.wait_for_transaction_receipt(tx_hash)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Generate escrow ID
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
 
 // Link escrow (auto-transitions to COMMITTED)
-await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.advanced.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import secrets
 
 # Generate escrow ID
 escrow_id = secrets.token_hex(32)
 
 # Link escrow (auto-transitions to COMMITTED)
-client.link_escrow(
-    tx_id,
-    escrow_contract=client.config.escrow_vault,
-    escrow_id=escrow_id,
-)
+await client.advanced.link_escrow(tx_id, escrow_id)
 ```
 
 </TabItem>
@@ -187,9 +185,10 @@ When transaction settles, funds are released by transitioning to SETTLED state:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // releaseEscrow() is called INTERNALLY when transitioning to SETTLED state
 // Users should call transitionState() instead:
-await client.runtime.transitionState(txId, State.SETTLED, '0x');
+await client.advanced.transitionState(txId, State.SETTLED, '0x');
 // This internally triggers releaseEscrow() if all conditions are met
 ```
 
@@ -197,8 +196,9 @@ await client.runtime.transitionState(txId, State.SETTLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # release_escrow() is called internally when transitioning to SETTLED
-client.transition_state(tx_id, State.SETTLED, "0x")
+await client.advanced.transition_state(tx_id, State.SETTLED, b'')
 # This internally triggers release_escrow() if all conditions are met
 ```
 
@@ -293,23 +293,31 @@ contract EscrowVault is ReentrancyGuard {
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
+import { ACTPClient, State } from '@agirails/sdk';
+import { ethers, parseUnits } from 'ethers';
+
 // 1. Create transaction
-const txId = await client.runtime.createTransaction({...});
+const txId = await client.advanced.createTransaction({
+  provider: '0xProvider...',
+  requester: client.address,
+  amount: parseUnits('100', 6),
+  deadline: Math.floor(Date.now() / 1000) + 86400,
+  disputeWindow: 7200,
+});
 
 // 2. Fund escrow
-const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
-await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
-
+await client.advanced.approveUsdc(parseUnits('100', 6));
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
-await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.advanced.linkEscrow(txId, escrowId);
 // Escrow: $100, State: COMMITTED
 
 // 3. Provider delivers
-await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
-await client.runtime.transitionState(txId, State.DELIVERED, '0x');
+await client.advanced.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 
 // 4. Settle transaction (internally releases escrow)
-await client.runtime.transitionState(txId, State.SETTLED, '0x');
+await client.advanced.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $99, Platform: $1
 ```
 
@@ -317,34 +325,39 @@ await client.runtime.transitionState(txId, State.SETTLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import os
 import secrets
+import time
+from agirails import ACTPClient, State
 
-# 1. Create transaction
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xProvider",
-    amount=100_000_000,  # $100 USDC
-    deadline=client.now() + 86400,
-    dispute_window=7200,
-    service_hash="0x" + "00" * 32,
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('PRIVATE_KEY'),
 )
 
-# 2. Fund escrow
-client.usdc.functions.approve(
-    client.config.escrow_vault,
-    100_000_000,
-).transact({"from": client.address})
+# 1. Create transaction
+tx_id = await client.advanced.create_transaction({
+    'provider': '0xProvider...',
+    'requester': client.address,
+    'amount': '100000000',  # $100 USDC (wei string)
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 7200,
+})
 
+# 2. Fund escrow
+await client.advanced.approve_usdc(100_000_000)
 escrow_id = secrets.token_hex(32)
-client.link_escrow(tx_id, escrow_contract=client.config.escrow_vault, escrow_id=escrow_id)
+await client.advanced.link_escrow(tx_id, escrow_id)
 # Escrow: $100, State: COMMITTED
 
 # 3. Provider delivers
-client.transition_state(tx_id, State.IN_PROGRESS, "0x")
-client.transition_state(tx_id, State.DELIVERED, "0x")
+await client.advanced.transition_state(tx_id, State.IN_PROGRESS, b'')
+await client.advanced.transition_state(tx_id, State.DELIVERED, b'')
 
 # 4. Settle transaction (internally releases escrow)
-client.transition_state(tx_id, State.SETTLED, "0x")
+await client.advanced.transition_state(tx_id, State.SETTLED, b'')
 # Provider receives: $99, Platform: $1
 ```
 
@@ -357,26 +370,34 @@ client.transition_state(tx_id, State.SETTLED, "0x")
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
+import { ACTPClient, State } from '@agirails/sdk';
+import { ethers, parseUnits } from 'ethers';
+
 // 1. Create and fund $1,000 transaction
-const txId = await client.runtime.createTransaction({...});
+const txId = await client.advanced.createTransaction({
+  provider: '0xProvider...',
+  requester: client.address,
+  amount: parseUnits('1000', 6),
+  deadline: Math.floor(Date.now() / 1000) + 7 * 86400,
+  disputeWindow: 172800,
+});
 
-const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
-await usdcContract.approve(ESCROW_VAULT_ADDRESS, parseUnits('1000', 6));
-
+await client.advanced.approveUsdc(parseUnits('1000', 6));
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
-await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.advanced.linkEscrow(txId, escrowId);
 // Escrow: $1,000
 
 // 2. Release milestone 1
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $750
 
 // 3. Release milestone 2
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $500
 
 // 4. Final settlement
-await client.runtime.transitionState(txId, State.SETTLED, '0x');
+await client.advanced.transitionState(txId, State.SETTLED, '0x');
 // Provider: $495, Total received: $990
 ```
 
@@ -384,37 +405,42 @@ await client.runtime.transitionState(txId, State.SETTLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import os
 import secrets
+import time
+from agirails import ACTPClient, State
 
-# 1. Create and fund $1,000 transaction
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xProvider",
-    amount=1_000_000_000,  # $1,000 USDC
-    deadline=client.now() + 7 * 86400,
-    dispute_window=172800,
-    service_hash="0x" + "00" * 32,
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('PRIVATE_KEY'),
 )
 
-client.usdc.functions.approve(
-    client.config.escrow_vault,
-    1_000_000_000,
-).transact({"from": client.address})
+# 1. Create and fund $1,000 transaction
+tx_id = await client.advanced.create_transaction({
+    'provider': '0xProvider...',
+    'requester': client.address,
+    'amount': '1000000000',  # $1,000 USDC (wei string)
+    'deadline': int(time.time()) + 7 * 86400,
+    'dispute_window': 172800,
+})
 
+await client.advanced.approve_usdc(1_000_000_000)
 escrow_id = secrets.token_hex(32)
-client.link_escrow(tx_id, escrow_contract=client.config.escrow_vault, escrow_id=escrow_id)
+await client.advanced.link_escrow(tx_id, escrow_id)
 # Escrow: $1,000
 
 # 2. Release milestone 1
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Provider: $247.50, Escrow remaining: $750
 
 # 3. Release milestone 2
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Provider: $247.50, Escrow remaining: $500
 
 # 4. Final settlement
-client.transition_state(tx_id, State.SETTLED, "0x")
+await client.advanced.transition_state(tx_id, State.SETTLED, b'')
 # Provider: $495, Total received: $990
 ```
 
@@ -427,8 +453,9 @@ client.transition_state(tx_id, State.SETTLED, "0x")
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Requester cancels after deadline
-await client.runtime.transitionState(txId, State.CANCELLED, '0x');
+await client.advanced.transitionState(txId, State.CANCELLED, '0x');
 
 // Distribution:
 // Requester refund: $475 (95%)
@@ -440,8 +467,9 @@ await client.runtime.transitionState(txId, State.CANCELLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Requester cancels after deadline
-client.transition_state(tx_id, State.CANCELLED, "0x")
+await client.advanced.transition_state(tx_id, State.CANCELLED, b'')
 
 # Distribution:
 # Requester refund: $475 (95%)
@@ -462,6 +490,7 @@ Dispute resolution can only be performed by admin/pauser role via `transitionSta
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Admin resolves: 60% provider, 30% requester, 10% mediator
 // Encode resolution proof with fund distribution
 const resolutionProof = ethers.AbiCoder.defaultAbiCoder().encode(
@@ -475,7 +504,7 @@ const resolutionProof = ethers.AbiCoder.defaultAbiCoder().encode(
 );
 
 // Admin transitions DISPUTED → SETTLED with resolution
-await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
+await adminClient.advanced.transitionState(txId, State.SETTLED, resolutionProof);
 
 // Distribution:
 // Provider: $59.40 ($60 - 1% fee)
@@ -488,21 +517,22 @@ await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 <TabItem value="py" label="Python">
 
 ```python
-from web3 import Web3
+# Level 2: Advanced API - Direct protocol control
+from eth_abi import encode
 
 # Admin resolves: 60% provider, 30% requester, 10% mediator
-resolution_proof = Web3().codec.encode(
-    ["uint256", "uint256", "uint256", "address"],
+resolution_proof = encode(
+    ['uint256', 'uint256', 'uint256', 'address'],
     [
         30_000_000,   # requesterAmount
         60_000_000,   # providerAmount
         10_000_000,   # mediatorAmount
-        "0xMediatorAddress",
+        '0xMediatorAddress',
     ],
 )
 
 # Admin transitions DISPUTED → SETTLED with resolution
-admin_client.transition_state(tx_id, State.SETTLED, resolution_proof.hex())
+await admin_client.advanced.transition_state(tx_id, State.SETTLED, resolution_proof)
 
 # Distribution:
 # Provider: $59.40 ($60 - 1% fee)
@@ -522,12 +552,15 @@ admin_client.transition_state(tx_id, State.SETTLED, resolution_proof.hex())
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
+import { formatUnits } from 'ethers';
+
 // Get remaining balance using public getter
-const remaining = await escrowVault.remaining(escrowId);
+const remaining = await client.advanced.getEscrowRemaining(escrowId);
 console.log(`Escrow balance: ${formatUnits(remaining, 6)} USDC`);
 
 // Verify escrow exists and get validation
-const isValid = await escrowVault.verifyEscrow(escrowId, expectedAmount);
+const isValid = await client.advanced.verifyEscrow(escrowId, expectedAmount);
 console.log(`Escrow valid: ${isValid}`);
 ```
 
@@ -535,15 +568,14 @@ console.log(`Escrow valid: ${isValid}`);
 <TabItem value="py" label="Python">
 
 ```python
-# Verify escrow exists and get validation + balance
-is_active, escrow_amount = client.get_escrow_status(
-    None,
-    escrow_id,
-    expected_requester=client.address,
-    expected_provider="0xProvider",
-    expected_amount=100_000_000,
-)
-print(f"Escrow valid: {is_active}, balance: {escrow_amount / 1_000_000} USDC")
+# Level 2: Advanced API - Direct protocol control
+# Get remaining balance using public getter
+remaining = await client.advanced.get_escrow_remaining(escrow_id)
+print(f'Escrow balance: {remaining / 1_000_000} USDC')
+
+# Verify escrow exists and get validation
+is_valid = await client.advanced.verify_escrow(escrow_id, expected_amount)
+print(f'Escrow valid: {is_valid}')
 ```
 
 </TabItem>
@@ -568,7 +600,10 @@ event EscrowCompleted(bytes32 indexed escrowId, uint256 totalReleased);
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-client.events.on('EscrowCreated', (escrowId, requester, provider, amount) => {
+// Level 2: Advanced API - Direct protocol control
+import { formatUnits } from 'ethers';
+
+client.advanced.events.on('EscrowCreated', (escrowId, requester, provider, amount) => {
   console.log(`New escrow: ${escrowId} for ${formatUnits(amount, 6)} USDC`);
 });
 ```
@@ -577,13 +612,9 @@ client.events.on('EscrowCreated', (escrowId, requester, provider, amount) => {
 <TabItem value="py" label="Python">
 
 ```python
-from web3 import Web3
-
-event_filter = client.runtime.events.EscrowCreated.create_filter(fromBlock="latest")
-for evt in event_filter.get_new_entries():
-    escrow_id = Web3.to_hex(evt["args"]["escrowId"])
-    amount = evt["args"]["amount"]
-    print(f"New escrow: {escrow_id} for {amount / 1_000_000} USDC")
+# Level 2: Advanced API - Direct protocol control
+async for event in client.advanced.events.escrow_created():
+    print(f"New escrow: {event.escrow_id} for {event.amount / 1_000_000} USDC")
 ```
 
 </TabItem>

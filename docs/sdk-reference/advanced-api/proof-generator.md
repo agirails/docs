@@ -261,12 +261,12 @@ async function deliver(txId: string, result: string) {
 
   // 3. Create EAS attestation (optional, for on-chain proof)
   const eas = new EASHelper(client.signer, EAS_CONFIG);
-  const tx = await client.runtime.getTransaction(txId);
+  const tx = await client.advanced.getTransaction(txId);
   const attestation = await eas.attestDeliveryProof(proof, tx.requester);
 
   // 4. Anchor and transition
-  await client.runtime.anchorAttestation(txId, attestation.uid);
-  await client.runtime.transitionState(txId, State.DELIVERED);
+  await client.advanced.anchorAttestation(txId, attestation.uid);
+  await client.advanced.transitionState(txId, State.DELIVERED);
 
   console.log('Delivered with proof!');
   return proof;
@@ -301,7 +301,7 @@ async def deliver(tx_id: str, result: str):
     print(f'Size: {proof.metadata["size"]} bytes')
 
     # Transition to DELIVERED
-    await client.runtime.transition_state(tx_id, State.DELIVERED)
+    await client.advanced.transition_state(tx_id, State.DELIVERED)
 
     print('Delivered with proof!')
     return proof

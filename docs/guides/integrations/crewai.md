@@ -66,12 +66,13 @@ pip install crewai langchain agirails python-dotenv
 ### Step 1: Create the Crew Payment Tool (SDK)
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os, time
 from typing import Literal
 from crewai import Agent, Task, Crew, Process
 from langchain.tools import BaseTool
-from agirails_sdk import ACTPClient, Network
-from agirails_sdk.errors import ValidationError, TransactionError, RpcError
+from agirails import ACTPClient
+from agirails.errors import ValidationError, TransactionError, RpcError
 
 Action = Literal["request_budget", "pay_provider", "check_balance", "log_expense"]
 
@@ -81,12 +82,12 @@ class CrewPaymentTool(BaseTool):
     name = "crew_payment"
     description = "request_budget, pay_provider, check_balance, log_expense"
 
-    def __init__(self, treasury_key: str, network: Network = Network.BASE_SEPOLIA, daily_budget: int = 100_000_000):
+    def __init__(self, treasury_key: str, treasury_address: str, mode: str = 'testnet', daily_budget: int = 100_000_000):
         super().__init__()
         self.daily_budget = daily_budget  # USDC 6dp
         self.spent_today = 0
         self.expense_log = []
-        self.client = ACTPClient(network=network, private_key=treasury_key)
+        self.client = ACTPClient(mode=mode, requester_address=treasury_address, private_key=treasury_key)
 
     def _run(self, action: Action, **kwargs) -> str:
         actions = {
@@ -132,7 +133,7 @@ def _pay_provider(self, provider: str, amount_usdc: int, purpose: str, agent: st
             dispute_window=7200,
             service_hash="0x" + "00"*32,
         )
-        escrow_id = self.client.fund_transaction(tx_id)
+        escrow_id = self.client.advanced.link_escrow(tx_id)
 
         remaining_after = self.daily_budget - self.spent_today
         return (
@@ -164,9 +165,11 @@ def _pay_provider(self, provider: str, amount_usdc: int, purpose: str, agent: st
 Use the payment tool (and optional registry tool) when building your crew.
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 payment_tool = CrewPaymentTool(
     treasury_key=os.getenv("TREASURY_PRIVATE_KEY"),
-    network=Network.BASE_SEPOLIA,
+    treasury_address=os.getenv("TREASURY_ADDRESS"),
+    mode='testnet',
     daily_budget=100_000_000,  # $100 (6dp)
 )
 
@@ -185,6 +188,7 @@ coordinator = Agent(
 ### Step 3: Define Tasks and Run
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def run_research_project(topic: str):
     coordinator, researcher, analyst, payment_tool = create_research_crew()
 
@@ -248,6 +252,7 @@ print(result)
 All payments flow through a central Treasury agent:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Treasury Agent controls all spending
 treasury = Agent(
     role="Treasury Manager",
@@ -276,6 +281,7 @@ worker = Agent(
 Each agent gets their own budget allocation:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 class DelegatedBudgetTool(BaseTool):
     """Per-agent budget tool."""
 
@@ -313,6 +319,7 @@ analyst_budget = DelegatedBudgetTool("analyst", budget=10.0)
 Agents post and claim tasks with bounties:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 class TaskMarketplaceTool(BaseTool):
     """Task marketplace with bounties."""
 
@@ -372,6 +379,7 @@ class TaskMarketplaceTool(BaseTool):
 When crews need to transact with each other:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 class InterCrewPaymentTool(BaseTool):
     """Payments between different crews."""
 
@@ -428,6 +436,7 @@ external_agent = Agent(
 ### 1. Budget Guards
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 class GuardedPaymentTool(CrewPaymentTool):
     """Payment tool with hard limits."""
 
@@ -450,6 +459,7 @@ class GuardedPaymentTool(CrewPaymentTool):
 ### 2. Audit Trails
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import json
 from datetime import datetime
 
@@ -489,6 +499,7 @@ class AuditedPaymentTool(CrewPaymentTool):
 Always run Payment Coordinator first in sequential crews:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 crew = Crew(
     agents=[coordinator, researcher, analyst],  # Coordinator FIRST
     tasks=[budget_task, research_task, analysis_task],
@@ -507,6 +518,7 @@ crew = Crew(
 **Solution**: Hard limits in tool, not just instructions:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def _pay_provider(self, amount: float, **kwargs) -> str:
     remaining = self.daily_budget - self.spent_today
     if amount > remaining:
@@ -526,6 +538,7 @@ def _pay_provider(self, amount: float, **kwargs) -> str:
 **Solution**: Verify actual blockchain calls:
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def _pay_provider(self, **kwargs) -> str:
     # Execute real transaction
     tx_hash = self._blockchain_payment(**kwargs)

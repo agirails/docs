@@ -178,6 +178,7 @@ Each example follows this pattern:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 /**
  * Example Title
  *
@@ -211,6 +212,7 @@ main().catch(console.error);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 """
 Example Title
 
@@ -248,6 +250,7 @@ The simplest possible AGIRAILS integration:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { provide, request } from '@agirails/sdk';
 
 // Provider: offer an echo service
@@ -277,6 +280,7 @@ await provider.stop();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners
 import asyncio
 from agirails import provide, request
 

@@ -73,6 +73,7 @@ client = await ACTPClient.create(config)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient } from '@agirails/sdk';
 
 // Mock mode (development)
@@ -102,13 +103,14 @@ const mainnetClient = await ACTPClient.create({
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import ACTPClient
 import os
 
 # Mock mode (development)
 mock_client = await ACTPClient.create({
     'mode': 'mock',
-    'requesterAddress': '0x1234567890123456789012345678901234567890',
+    'requester_address': '0x1234567890123456789012345678901234567890',
 })
 
 # Testnet mode (testing)
@@ -131,8 +133,7 @@ testnet_client = await ACTPClient.create({
 |----------|------|-------------|
 | `basic` | `BasicAdapter` | Basic API adapter (pay, checkStatus) |
 | `standard` | `StandardAdapter` | Standard API adapter (createTransaction, etc.) |
-| `advanced` | `IACTPRuntime` | Direct runtime access |
-| `runtime` | `IACTPRuntime` | Alias for advanced |
+| `advanced` | `IACTPRuntime` | Direct protocol access (Level 2) |
 | `mode` | `ACTPClientMode` | Current operating mode |
 
 ---
@@ -191,40 +192,45 @@ const tx = await client.standard.getTransaction(txId);
 console.log('State:', tx?.state);
 ```
 
-### client.advanced (client.runtime)
+### client.advanced
 
-Direct protocol access for full control.
+Direct protocol access for full control with protocol-level types (wei strings, unix timestamps).
 
 ```typescript
-// Direct runtime access
-const runtime = client.advanced; // or client.runtime
+// Level 2: Advanced API - Direct protocol control
+import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
-// Create transaction
-const txId = await runtime.createTransaction({
+const client = await ACTPClient.create({
+  mode: 'mock',
+  requesterAddress: '0x...',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Create transaction with protocol-level types
+const txId = await client.advanced.createTransaction({
   provider: '0x...',
   requester: '0x...',
-  amount: '100000000', // Wei (6 decimals for USDC)
+  amount: parseUnits('100', 6),  // Wei (6 decimals for USDC)
   deadline: Math.floor(Date.now() / 1000) + 86400,
   disputeWindow: 172800,
 });
 
 // Get transaction
-const tx = await runtime.getTransaction(txId);
+const tx = await client.advanced.getTransaction(txId);
 
 // State transitions
-await runtime.linkEscrow(txId, '100000000');
-await runtime.transitionState(txId, 'DELIVERED');
-await runtime.releaseEscrow(txId);
+await client.advanced.linkEscrow(txId);
+await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 
 // Time control (mock only)
-if ('time' in runtime) {
-  runtime.time.advance(3600); // Advance 1 hour
-  runtime.time.set(1735689600); // Set specific timestamp
+if ('time' in client.advanced) {
+  client.advanced.time.advance(3600); // Advance 1 hour
 }
 
 // Token minting (mock only)
-if ('mintTokens' in runtime) {
-  await runtime.mintTokens('0x...', '1000000000'); // 1000 USDC
+if ('mintTokens' in client.advanced) {
+  await client.advanced.mintTokens('0x...', '1000000000'); // 1000 USDC
 }
 ```
 
@@ -353,7 +359,9 @@ See [Errors](../errors) for complete error hierarchy.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-import { ACTPClient } from '@agirails/sdk';
+// Level 2: Advanced API - Direct protocol control
+import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
 
 async function main() {
   // Create client
@@ -371,38 +379,40 @@ async function main() {
 
   console.log('Requester balance:', await client.getBalance(requester));
 
-  // Create transaction
-  const txId = await client.standard.createTransaction({
+  // Create transaction with protocol-level types
+  const txId = await client.advanced.createTransaction({
     provider,
-    amount: '50', // $50 USDC
-    deadline: '+24h',
+    requester,
+    amount: parseUnits('50', 6),
+    deadline: Math.floor(Date.now() / 1000) + 86400,
+    disputeWindow: 172800,
   });
   console.log('Created transaction:', txId);
 
-  // Link escrow (locks funds)
-  const escrowId = await client.standard.linkEscrow(txId);
-  console.log('Escrow linked:', escrowId);
+  // Link escrow (locks funds, auto-transitions to COMMITTED)
+  await client.advanced.linkEscrow(txId);
+  console.log('Escrow linked');
 
   // Check transaction state
-  let tx = await client.standard.getTransaction(txId);
+  let tx = await client.advanced.getTransaction(txId);
   console.log('State after escrow:', tx?.state); // COMMITTED
 
-  // Provider delivers (in real scenario, provider does this)
-  await client.runtime.transitionState(txId, 'IN_PROGRESS');
-  await client.runtime.transitionState(txId, 'DELIVERED');
+  // Provider delivers
+  await client.advanced.transitionState(txId, State.IN_PROGRESS, '0x');
+  await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 
-  tx = await client.standard.getTransaction(txId);
+  tx = await client.advanced.getTransaction(txId);
   console.log('State after delivery:', tx?.state); // DELIVERED
 
   // Wait for dispute window (mock: advance time)
-  if ('time' in client.runtime) {
-    client.runtime.time.advance(172801); // 2 days + 1 second
+  if ('time' in client.advanced) {
+    client.advanced.time.advance(172801); // 2 days + 1 second
   }
 
-  // Release escrow
-  await client.standard.releaseEscrow(escrowId);
+  // Settle transaction
+  await client.advanced.transitionState(txId, State.SETTLED, '0x');
 
-  tx = await client.standard.getTransaction(txId);
+  tx = await client.advanced.getTransaction(txId);
   console.log('Final state:', tx?.state); // SETTLED
 
   console.log('Provider balance:', await client.getBalance(provider));
@@ -415,14 +425,16 @@ main().catch(console.error);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import asyncio
-from agirails import ACTPClient
+import time
+from agirails import ACTPClient, State
 
 async def main():
     # Create client
     client = await ACTPClient.create({
         'mode': 'mock',
-        'requesterAddress': '0x1111111111111111111111111111111111111111',
+        'requester_address': '0x1111111111111111111111111111111111111111',
     })
 
     # Setup: Mint tokens
@@ -434,29 +446,31 @@ async def main():
 
     print(f'Requester balance: {await client.get_balance(requester)}')
 
-    # Create transaction
-    tx_id = await client.standard.create_transaction({
+    # Create transaction with protocol-level types
+    tx_id = await client.advanced.create_transaction({
         'provider': provider,
-        'amount': '50',
-        'deadline': '+24h',
+        'requester': requester,
+        'amount': '50000000',  # $50 in wei (6 decimals)
+        'deadline': int(time.time()) + 86400,
+        'dispute_window': 172800,
     })
     print(f'Created transaction: {tx_id}')
 
-    # Link escrow
-    escrow_id = await client.standard.link_escrow(tx_id)
-    print(f'Escrow linked: {escrow_id}')
+    # Link escrow (auto-transitions to COMMITTED)
+    await client.advanced.link_escrow(tx_id)
+    print('Escrow linked')
 
     # Provider delivers
-    await client.runtime.transition_state(tx_id, 'IN_PROGRESS')
-    await client.runtime.transition_state(tx_id, 'DELIVERED')
+    await client.advanced.transition_state(tx_id, State.IN_PROGRESS, b'')
+    await client.advanced.transition_state(tx_id, State.DELIVERED, b'')
 
-    # Wait for dispute window
-    client.runtime.time.advance(172801)
+    # Wait for dispute window (mock: advance time)
+    client.advanced.time.advance(172801)
 
-    # Release escrow
-    await client.standard.release_escrow(escrow_id)
+    # Settle transaction
+    await client.advanced.transition_state(tx_id, State.SETTLED, b'')
 
-    tx = await client.standard.get_transaction(tx_id)
+    tx = await client.advanced.get_transaction(tx_id)
     print(f'Final state: {tx["state"]}')
 
 asyncio.run(main())

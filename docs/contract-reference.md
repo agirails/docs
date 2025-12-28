@@ -338,7 +338,7 @@ cast call 0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba \
 ```
 
 **See Also:**
-- [SDK: client.runtime.getTransaction()](/sdk-reference/advanced-api/kernel#gettransaction)
+- [SDK: client.advanced.getTransaction()](/sdk-reference/advanced-api/kernel#gettransaction)
 
 ---
 
@@ -580,7 +580,7 @@ cast send 0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba \
 
 **See Also:**
 - [linkEscrow()](#linkescrow) - Next step to commit funds
-- [SDK: client.runtime.createTransaction()](/sdk-reference/advanced-api/kernel#createtransaction)
+- [SDK: client.advanced.createTransaction()](/sdk-reference/advanced-api/kernel#createtransaction)
 
 ---
 
@@ -718,7 +718,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 **See Also:**
 - [EscrowVault.createEscrow()](#createescrow) - Internal call made by linkEscrow
-- [SDK: client.standard.linkEscrow()](/sdk-reference/advanced-api/kernel#linkescrow)
+- [SDK: client.advanced.linkEscrow()](/sdk-reference/advanced-api/kernel#linkescrow)
 
 ---
 
@@ -897,7 +897,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 **See Also:**
 - [State Machine](#state-machine) - Valid transitions
-- [SDK: client.runtime.transitionState()](/sdk-reference/advanced-api/kernel#transitionstate)
+- [SDK: client.advanced.transitionState()](/sdk-reference/advanced-api/kernel#transitionstate)
 
 ---
 

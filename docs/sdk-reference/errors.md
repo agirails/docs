@@ -80,6 +80,7 @@ class ACTPError extends Error {
 Thrown when account doesn't have enough USDC.
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 try {
   await client.standard.createTransaction({ ... });
 } catch (error) {
@@ -101,6 +102,7 @@ try {
 Thrown when transaction ID doesn't exist.
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 try {
   await client.standard.getTransaction(txId);
 } catch (error) {
@@ -130,8 +132,9 @@ Thrown when trying to act on an expired transaction.
 Thrown when attempting an invalid state transition.
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 try {
-  await client.runtime.transitionState(txId, 'SETTLED');
+  await client.advanced.transitionState(txId, State.SETTLED, '0x');
 } catch (error) {
   if (error instanceof InvalidStateTransitionError) {
     console.log('From:', error.details.from);
@@ -199,6 +202,7 @@ Base class for input validation errors.
 Thrown for invalid Ethereum addresses.
 
 ```typescript
+// Level 1: Standard API - Agent with lifecycle management
 import { InvalidAddressError } from '@agirails/sdk';
 
 try {
@@ -230,10 +234,11 @@ Thrown for invalid IPFS Content IDs.
 Thrown when no provider offers the requested service.
 
 ```typescript
+// Level 0: Basic API - One-liners
 import { request, NoProviderFoundError } from '@agirails/sdk';
 
 try {
-  await request('unknown-service', { input: 'test', budget: 1 });
+  await request('unknown-service', { input: 'test', budget: '1.00' });
 } catch (error) {
   if (error instanceof NoProviderFoundError) {
     console.log('Service not found:', error.details.service);
@@ -340,6 +345,7 @@ Base class for storage-related errors.
 Thrown when registry is too large for on-chain queries.
 
 ```typescript
+// Registry utility - standalone component
 import { QueryCapExceededError } from '@agirails/sdk';
 
 try {
@@ -371,6 +377,7 @@ try {
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 0: Basic API - One-liners (with comprehensive error handling)
 import {
   ACTPError,
   InsufficientFundsError,
@@ -452,6 +459,7 @@ async function handleTransaction() {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 0: Basic API - One-liners (with comprehensive error handling)
 from agirails import (
     ACTPError,
     InsufficientFundsError,
@@ -496,6 +504,7 @@ async def handle_transaction():
 ### Retry with Error Classification
 
 ```typescript
+// Utility pattern: Works with any API level
 import { NetworkError, TimeoutError, ACTPError } from '@agirails/sdk';
 
 async function retryableOperation<T>(

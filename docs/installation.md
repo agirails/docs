@@ -243,43 +243,30 @@ Test your setup:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="verify-setup.ts"
-import { ACTPClient, getNetwork } from '@agirails/sdk';
-import { ethers, formatEther, formatUnits, Wallet } from 'ethers';
+// Level 1: Standard API - Agent with lifecycle management
+import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
 async function verify() {
-  const wallet = new Wallet(process.env.PRIVATE_KEY!);
-  const networkConfig = getNetwork('base-sepolia');
-  const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
-
-  const client = await ACTPClient.create({
-    mode: 'testnet',
-    requesterAddress: wallet.address,
-    privateKey: process.env.PRIVATE_KEY!,
+  // Create agent to verify setup
+  const agent = new Agent({
+    name: 'VerifySetup',
+    network: 'testnet',
+    wallet: { privateKey: process.env.PRIVATE_KEY! },
   });
 
-  const address = client.getAddress();
+  // Get balances
+  const balances = await agent.getBalances();
 
-  // Check balances
-  const ethBalance = await provider.getBalance(address);
-  const usdcContract = new ethers.Contract(
-    networkConfig.contracts.usdc,
-    ['function balanceOf(address) view returns (uint256)'],
-    provider
-  );
-  const usdcBalance = await usdcContract.balanceOf(address);
-
-  console.log('✓ Wallet:', address);
+  console.log('✓ Wallet:', agent.address);
   console.log('✓ Network: Base Sepolia');
-  console.log('✓ ACTPKernel:', networkConfig.contracts.actpKernel);
-  console.log('✓ EscrowVault:', networkConfig.contracts.escrowVault);
-  console.log('✓ ETH balance:', formatEther(ethBalance), 'ETH');
-  console.log('✓ USDC balance:', formatUnits(usdcBalance, 6), 'USDC');
+  console.log('✓ ETH balance:', balances.eth, 'ETH');
+  console.log('✓ USDC balance:', balances.usdc, 'USDC');
   console.log('\n✅ Setup verified!');
 }
 
 verify().catch(e => {
-  console.error('❌ Failed:', e.message);
+  console.error('Failed:', e.message);
   process.exit(1);
 });
 ```
@@ -288,47 +275,32 @@ verify().catch(e => {
 <TabItem value="py" label="Python">
 
 ```python title="verify_setup.py"
+# Level 1: Standard API - Agent with lifecycle management
 import asyncio
 import os
 from dotenv import load_dotenv
-from eth_account import Account
-from web3 import Web3
-from agirails import ACTPClient
+from agirails import Agent
 
 load_dotenv()
 
 async def verify():
-    account = Account.from_key(os.environ["PRIVATE_KEY"])
-    w3 = Web3(Web3.HTTPProvider("https://sepolia.base.org"))
-
-    client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=account.address,
-        private_key=os.environ["PRIVATE_KEY"],
+    # Create agent to verify setup
+    agent = Agent(
+        name='VerifySetup',
+        network='testnet',
+        wallet={'private_key': os.environ['PRIVATE_KEY']},
     )
 
-    # Contract addresses for Base Sepolia
-    actp_kernel = "0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba"
-    escrow_vault = "0x921edE340770db5DB6059B5B866be987d1b7311F"
-    usdc_address = "0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb"
+    # Get balances
+    balances = await agent.get_balances()
 
-    usdc = w3.eth.contract(
-        address=usdc_address,
-        abi=[{"name": "balanceOf", "type": "function", "inputs": [{"name": "account", "type": "address"}], "outputs": [{"type": "uint256"}]}]
-    )
+    print(f'✓ Wallet: {agent.address}')
+    print('✓ Network: Base Sepolia')
+    print(f'✓ ETH balance: {balances.eth} ETH')
+    print(f'✓ USDC balance: {balances.usdc} USDC')
+    print('\n✅ Setup verified!')
 
-    eth_balance = w3.eth.get_balance(client.address)
-    usdc_balance = usdc.functions.balanceOf(client.address).call()
-
-    print("✓ Wallet:", client.address)
-    print("✓ Network: Base Sepolia")
-    print("✓ ACTPKernel:", actp_kernel)
-    print("✓ EscrowVault:", escrow_vault)
-    print("✓ ETH balance:", w3.from_wei(eth_balance, "ether"), "ETH")
-    print("✓ USDC balance:", usdc_balance / 1_000_000, "USDC")
-    print("\n✅ Setup verified!")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(verify())
 ```
 
@@ -346,8 +318,6 @@ Expected output:
 ```
 ✓ Wallet: 0x742d35Cc6634C0532925a3b844Bc9e7595f12345
 ✓ Network: Base Sepolia
-✓ ACTPKernel: 0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba
-✓ EscrowVault: 0x921edE340770db5DB6059B5B866be987d1b7311F
 ✓ ETH balance: 0.1 ETH
 ✓ USDC balance: 1000.0 USDC
 
@@ -428,36 +398,36 @@ Using `mode: 'mainnet'` will fail until contracts are deployed. Zero addresses a
 
 ---
 
-## SDK Initialization Options
+## Agent Initialization Options
 
 <Tabs defaultValue="ts" lazy={false}>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-import { ACTPClient } from '@agirails/sdk';
-import { Wallet } from 'ethers';
-
-const wallet = new Wallet(process.env.PRIVATE_KEY!);
+// Level 1: Standard API - Agent with lifecycle management
+import { Agent } from '@agirails/sdk';
+import 'dotenv/config';
 
 // Minimal (uses defaults)
-const client = await ACTPClient.create({
-  mode: 'testnet',
-  requesterAddress: wallet.address,
-  privateKey: process.env.PRIVATE_KEY!,
+const agent = new Agent({
+  name: 'MyAgent',
+  network: 'testnet',
+  wallet: { privateKey: process.env.PRIVATE_KEY! },
 });
 
 // With custom RPC
-const clientWithRpc = await ACTPClient.create({
-  mode: 'testnet',
-  requesterAddress: wallet.address,
-  privateKey: process.env.PRIVATE_KEY!,
+const agentWithRpc = new Agent({
+  name: 'MyAgent',
+  network: 'testnet',
+  wallet: { privateKey: process.env.PRIVATE_KEY! },
   rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/YOUR_KEY',
 });
 
 // Mock mode (local development, no blockchain needed)
-const mockClient = await ACTPClient.create({
-  mode: 'mock',
-  requesterAddress: wallet.address,
+const mockAgent = new Agent({
+  name: 'MockAgent',
+  network: 'mock',
+  wallet: { privateKey: process.env.PRIVATE_KEY! },
 });
 ```
 
@@ -465,43 +435,40 @@ const mockClient = await ACTPClient.create({
 <TabItem value="py" label="Python">
 
 ```python
-import asyncio
+# Level 1: Standard API - Agent with lifecycle management
 import os
-from eth_account import Account
-from agirails import ACTPClient
+from agirails import Agent
 
-account = Account.from_key(os.environ["PRIVATE_KEY"])
+# Minimal (uses defaults)
+agent = Agent(
+    name='MyAgent',
+    network='testnet',
+    wallet={'private_key': os.environ['PRIVATE_KEY']},
+)
 
-async def init_clients():
-    # Minimal (uses defaults)
-    client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=account.address,
-        private_key=os.environ["PRIVATE_KEY"],
-    )
+# With custom RPC
+agent_with_rpc = Agent(
+    name='MyAgent',
+    network='testnet',
+    wallet={'private_key': os.environ['PRIVATE_KEY']},
+    rpc_url='https://base-sepolia.g.alchemy.com/v2/YOUR_KEY',
+)
 
-    # With custom RPC
-    client_with_rpc = await ACTPClient.create(
-        mode="testnet",
-        requester_address=account.address,
-        private_key=os.environ["PRIVATE_KEY"],
-        rpc_url="https://base-sepolia.g.alchemy.com/v2/YOUR_KEY",
-    )
-
-    # Mock mode (local development, no blockchain needed)
-    mock_client = await ACTPClient.create(
-        mode="mock",
-        requester_address=account.address,
-    )
-
-    return client, client_with_rpc, mock_client
+# Mock mode (local development, no blockchain needed)
+mock_agent = Agent(
+    name='MockAgent',
+    network='mock',
+    wallet={'private_key': os.environ['PRIVATE_KEY']},
+)
 ```
 
 </TabItem>
 </Tabs>
 
-:::info Read-Only Mode Not Supported in V1
-The SDK currently requires a signer for initialization. True read-only access (for querying transaction state without a private key) is planned for a future release. For now, use a throwaway private key if you only need to read data.
+:::tip Network Options
+- `'testnet'` - Base Sepolia (development)
+- `'mainnet'` - Base Mainnet (production, coming soon)
+- `'mock'` - Local development, no blockchain needed
 :::
 
 ---

@@ -78,6 +78,7 @@ The typical successful transaction follows this path:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
@@ -87,7 +88,7 @@ const client = await ACTPClient.create({
   privateKey: process.env.REQUESTER_PRIVATE_KEY
 });
 
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   provider: '0xProviderWalletAddress',
   requester: await client.getAddress(),
   amount: parseUnits('100', 6), // $100 USDC (6 decimals)
@@ -103,25 +104,26 @@ console.log('Transaction created:', txId);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os
+import time
+from agirails import ACTPClient, State
 
-from agirails_sdk import ACTPClient, Network, State
-
-client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
-    private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('REQUESTER_PRIVATE_KEY'),
 )
 
-tx_id = client.create_transaction(
-    provider="0xProviderWalletAddress",
-    requester=client.address,
-    amount=100_000_000,  # $100 USDC (6 decimals)
-    deadline=client.now() + 86400,  # 24 hours
-    dispute_window=7200,  # 2 hours (in seconds)
-    service_hash="0x" + "00" * 32,
-)
+tx_id = await client.advanced.create_transaction({
+    'provider': '0xProviderWalletAddress',
+    'requester': client.address,
+    'amount': 100_000_000,  # $100 USDC (6 decimals)
+    'deadline': int(time.time()) + 86400,  # 24 hours
+    'dispute_window': 7200,  # 2 hours (in seconds)
+})
 
-print("Transaction created:", tx_id)
+print('Transaction created:', tx_id)
 # State: INITIATED
 ```
 
@@ -155,14 +157,14 @@ print("Transaction created:", tx_id)
 
 ```typescript
 // Option A: Use convenience method (handles approval + linking)
-const escrowId = await client.standard.linkEscrow(txId);
+const escrowId = await client.advanced.linkEscrow(txId);
 console.log('Funded with escrow:', escrowId);
 // State: COMMITTED (automatic transition)
 
 // Option B: Manual flow
 const usdc = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, client.signer);
 await usdc.approve(ESCROW_VAULT_ADDRESS, parseUnits('100', 6));
-await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.advanced.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 // State: COMMITTED
 ```
 
@@ -170,26 +172,11 @@ await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 <TabItem value="py" label="Python">
 
 ```python
-import secrets
-
-# Option A: Use convenience method (handles approval + linking)
-escrow_id = client.fund_transaction(tx_id)
-print("Funded with escrow:", escrow_id)
+# Level 2: Advanced API - Direct protocol control
+# Link escrow (handles approval + linking)
+escrow_id = await client.advanced.link_escrow(tx_id)
+print('Funded with escrow:', escrow_id)
 # State: COMMITTED (automatic transition)
-
-# Option B: Manual flow
-client.usdc.functions.approve(
-    client.config.escrow_vault,
-    100_000_000,  # $100 USDC
-).transact({"from": client.address})
-
-manual_escrow_id = secrets.token_hex(32)
-client.link_escrow(
-    tx_id,
-    escrow_contract=client.config.escrow_vault,
-    escrow_id=manual_escrow_id,
-)
-# State: COMMITTED
 ```
 
 </TabItem>
@@ -217,7 +204,8 @@ client.link_escrow(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+// Level 2: Advanced API - Direct protocol control
+await client.advanced.transitionState(txId, State.IN_PROGRESS);
 console.log('Work started');
 // State: IN_PROGRESS
 ```
@@ -226,8 +214,9 @@ console.log('Work started');
 <TabItem value="py" label="Python">
 
 ```python
-client.transition_state(tx_id, State.IN_PROGRESS, "0x")
-print("Work started")
+# Level 2: Advanced API - Direct protocol control
+await client.advanced.transition_state(tx_id, State.IN_PROGRESS)
+print('Work started')
 # State: IN_PROGRESS
 ```
 
@@ -258,7 +247,7 @@ Even for sub-second API calls, the provider must call `transitionState(IN_PROGRE
 // Provider computes proof of delivery
 const deliveryProof = '0x'; // Or keccak256 hash of delivery data
 
-await client.runtime.transitionState(txId, State.DELIVERED, deliveryProof);
+await client.advanced.transitionState(txId, State.DELIVERED, deliveryProof);
 console.log('Work delivered, dispute window started');
 // State: DELIVERED
 // Dispute window: now + 2 hours
@@ -268,11 +257,9 @@ console.log('Work delivered, dispute window started');
 <TabItem value="py" label="Python">
 
 ```python
-# Provider computes proof of delivery
-delivery_proof = "0x"  # Or keccak256 hash of delivery data
-
-client.transition_state(tx_id, State.DELIVERED, delivery_proof)
-print("Work delivered, dispute window started")
+# Level 2: Advanced API - Direct protocol control
+await client.advanced.transition_state(tx_id, State.DELIVERED)
+print('Work delivered, dispute window started')
 # State: DELIVERED
 # Dispute window: now + 2 hours
 ```
@@ -301,13 +288,13 @@ The `proof` argument in `transitionState(DELIVERED)` is **not stored as delivery
 
 ```typescript
 // Option A: Requester settles immediately (skips dispute window)
-await requesterClient.kernel.transitionState(txId, State.SETTLED, '0x');
+await requesterClient.advanced.transitionState(txId, State.SETTLED, '0x');
 console.log('Settled! Payout triggered automatically.');
 // State: SETTLED (payout happens inside transitionState)
 
 // Option B: Provider settles after dispute window expires
 // (After dispute window, e.g., 1 hour minimum)
-await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+await providerClient.advanced.transitionState(txId, State.SETTLED, '0x');
 console.log('Dispute window expired, settled and paid');
 // State: SETTLED
 ```
@@ -316,15 +303,15 @@ console.log('Dispute window expired, settled and paid');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Option A: Requester settles immediately (skips dispute window)
-requester_client.transition_state(tx_id, State.SETTLED, "0x")
-print("Settled! Payout triggered automatically.")
+await requester_client.advanced.transition_state(tx_id, State.SETTLED)
+print('Settled! Payout triggered automatically.')
 # State: SETTLED (payout happens inside transition_state)
 
 # Option B: Provider settles after dispute window expires
-# (After dispute window, e.g., 1 hour minimum)
-provider_client.transition_state(tx_id, State.SETTLED, "0x")
-print("Dispute window expired, settled and paid")
+await provider_client.advanced.transition_state(tx_id, State.SETTLED)
+print('Dispute window expired, settled and paid')
 # State: SETTLED
 ```
 
@@ -357,18 +344,18 @@ For variable pricing, use the QUOTED state:
 
 ```typescript
 // Step 1: Requester creates transaction (estimated amount)
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   amount: parseUnits('100', 6), // Estimated
   // ... other params
 });
 // State: INITIATED
 
 // Step 2: Provider reviews and submits quote
-await client.runtime.transitionState(txId, State.QUOTED, '0x');
+await client.advanced.transitionState(txId, State.QUOTED, '0x');
 // State: QUOTED
 
 // Step 3: Requester reviews quote and funds
-await client.standard.linkEscrow(txId);
+await client.advanced.linkEscrow(txId);
 // State: COMMITTED
 ```
 
@@ -376,23 +363,25 @@ await client.standard.linkEscrow(txId);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import time
+
 # Step 1: Requester creates transaction (estimated amount)
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xProvider",
-    amount=100_000_000,  # Estimated
-    deadline=client.now() + 86400,
-    dispute_window=7200,
-    service_hash="0x" + "00" * 32,
-)
+tx_id = await client.advanced.create_transaction({
+    'requester': client.address,
+    'provider': '0xProvider',
+    'amount': 100_000_000,  # Estimated
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 7200,
+})
 # State: INITIATED
 
 # Step 2: Provider reviews and submits quote
-client.transition_state(tx_id, State.QUOTED, "0x")
+await client.advanced.transition_state(tx_id, State.QUOTED)
 # State: QUOTED
 
 # Step 3: Requester reviews quote and funds
-client.fund_transaction(tx_id)
+await client.advanced.link_escrow(tx_id)
 # State: COMMITTED
 ```
 
@@ -422,7 +411,7 @@ If requester contests delivery:
 
 ```typescript
 // Requester raises dispute (within dispute window)
-await requesterClient.kernel.transitionState(txId, State.DISPUTED, '0x');
+await requesterClient.advanced.transitionState(txId, State.DISPUTED, '0x');
 // State: DISPUTED
 
 // Off-chain: Admin reviews evidence from both parties
@@ -438,7 +427,7 @@ const resolutionProof = ethers.AbiCoder.defaultAbiCoder().encode(
     ethers.ZeroAddress     // mediator
   ]
 );
-await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
+await adminClient.advanced.transitionState(txId, State.SETTLED, resolutionProof);
 // State: SETTLED
 // Distribution: 30% requester, 70% provider
 ```
@@ -447,25 +436,18 @@ await adminClient.kernel.transitionState(txId, State.SETTLED, resolutionProof);
 <TabItem value="py" label="Python">
 
 ```python
-from web3 import Web3
-
+# Level 2: Advanced API - Direct protocol control
 # Requester raises dispute (within dispute window)
-requester_client.transition_state(tx_id, State.DISPUTED, "0x")
+await requester_client.advanced.transition_state(tx_id, State.DISPUTED)
 # State: DISPUTED
 
 # Off-chain: Admin reviews evidence from both parties
-
 # Admin resolves via transition_state with resolution proof
-resolution_proof = Web3().codec.encode(
-    ["uint256", "uint256", "uint256", "address"],
-    [
-        30_000_000,   # requesterAmount
-        70_000_000,   # providerAmount
-        0,            # mediatorAmount
-        Web3.to_checksum_address("0x0000000000000000000000000000000000000000"),
-    ],
-)
-admin_client.transition_state(tx_id, State.SETTLED, resolution_proof.hex())
+# (Admin-only function)
+await admin_client.advanced.resolve_dispute(tx_id, {
+    'requester_amount': 30_000_000,
+    'provider_amount': 70_000_000,
+})
 # State: SETTLED
 # Distribution: 30% requester, 70% provider
 ```
@@ -515,11 +497,11 @@ When the **requester** cancels after escrow is linked (COMMITTED or IN_PROGRESS)
 
 ```typescript
 // Example: Provider cancels voluntarily
-await providerClient.kernel.transitionState(txId, State.CANCELLED, '0x');
+await providerClient.advanced.transitionState(txId, State.CANCELLED, '0x');
 // Requester receives 100% refund
 
 // Example: Requester cancels after deadline
-await requesterClient.kernel.transitionState(txId, State.CANCELLED, '0x');
+await requesterClient.advanced.transitionState(txId, State.CANCELLED, '0x');
 // Requester receives 95% refund (5% to provider as penalty)
 ```
 
@@ -527,12 +509,13 @@ await requesterClient.kernel.transitionState(txId, State.CANCELLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Example: Provider cancels voluntarily
-provider_client.transition_state(tx_id, State.CANCELLED, "0x")
+await provider_client.advanced.transition_state(tx_id, State.CANCELLED)
 # Requester receives 100% refund
 
 # Example: Requester cancels after deadline
-requester_client.transition_state(tx_id, State.CANCELLED, "0x")
+await requester_client.advanced.transition_state(tx_id, State.CANCELLED)
 # Requester receives 95% refund (5% to provider as penalty)
 ```
 
@@ -606,28 +589,28 @@ For long-running work, release escrow incrementally:
 
 ```typescript
 // 1. Create and fund full amount
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   amount: parseUnits('1000', 6), // $1,000 total
   // ...
 });
-await client.standard.linkEscrow(txId);
+await client.advanced.linkEscrow(txId);
 // Escrow: $1,000
 
 // 2. Provider starts work
-await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.advanced.transitionState(txId, State.IN_PROGRESS, '0x');
 
 // 3. Release milestones as work progresses
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Provider receives: $247.50 ($250 - 1% fee)
 // Escrow remaining: $750
 
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Escrow remaining: $500
 
 // 4. Final delivery and settlement
-await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+await providerClient.advanced.transitionState(txId, State.DELIVERED, '0x');
 // Wait for dispute window...
-await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
+await providerClient.advanced.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $495 ($500 - 1% fee)
 ```
 
@@ -635,33 +618,35 @@ await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import time
+
 # 1. Create and fund full amount
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xProvider",
-    amount=1_000_000_000,  # $1,000 total
-    deadline=client.now() + 7 * 86400,
-    dispute_window=172800,
-    service_hash="0x" + "00" * 32,
-)
-client.fund_transaction(tx_id)
+tx_id = await client.advanced.create_transaction({
+    'requester': client.address,
+    'provider': '0xProvider',
+    'amount': 1_000_000_000,  # $1,000 total
+    'deadline': int(time.time()) + 7 * 86400,
+    'dispute_window': 172800,
+})
+await client.advanced.link_escrow(tx_id)
 # Escrow: $1,000
 
 # 2. Provider starts work
-client.transition_state(tx_id, State.IN_PROGRESS, "0x")
+await client.advanced.transition_state(tx_id, State.IN_PROGRESS)
 
 # 3. Release milestones as work progresses
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Provider receives: $247.50 ($250 - 1% fee)
 # Escrow remaining: $750
 
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Escrow remaining: $500
 
 # 4. Final delivery and settlement
-provider_client.transition_state(tx_id, State.DELIVERED, "0x")
+await provider_client.advanced.transition_state(tx_id, State.DELIVERED)
 # Wait for dispute window...
-provider_client.transition_state(tx_id, State.SETTLED, "0x")
+await provider_client.advanced.transition_state(tx_id, State.SETTLED)
 # Provider receives: $495 ($500 - 1% fee)
 ```
 
@@ -713,6 +698,7 @@ event EscrowReleased(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 client.events.on('StateTransitioned', (txId, from, to, by) => {
   console.log(`Transaction ${txId}: ${from} → ${to}`);
 });
@@ -722,15 +708,10 @@ client.events.on('StateTransitioned', (txId, from, to, by) => {
 <TabItem value="py" label="Python">
 
 ```python
-from web3 import Web3
-
-event_filter = client.runtime.events.StateTransitioned.create_filter(fromBlock="latest")
-for evt in event_filter.get_new_entries():
-    tx_id = Web3.to_hex(evt["args"]["transactionId"])
-    from_state = evt["args"]["fromState"]
-    to_state = evt["args"]["toState"]
-    triggered_by = evt["args"]["triggeredBy"]
-    print(f"Transaction {tx_id}: {from_state} → {to_state} (by {triggered_by})")
+# Level 2: Advanced API - Direct protocol control
+# Subscribe to state transition events
+async for event in client.advanced.events.state_transitioned():
+    print(f"Transaction {event.tx_id}: {event.from_state} → {event.to_state}")
 ```
 
 </TabItem>

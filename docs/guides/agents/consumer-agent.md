@@ -44,6 +44,7 @@ pip install agirails python-dotenv
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits, formatUnits } from 'ethers';
 import 'dotenv/config';
@@ -73,8 +74,9 @@ console.log(`Consumer: ${CONFIG.consumerAddress}`);
 <TabItem value="py" label="Python">
 
 ```python title="consumer.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time
-from agirails_sdk import ACTPClient, Network, State
+from agirails import ACTPClient, State
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -86,7 +88,8 @@ CONFIG = {
 }
 
 client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
+    mode='testnet',
+    requester_address=os.getenv("CONSUMER_ADDRESS"),
     private_key=os.getenv("PRIVATE_KEY"),
 )
 print("Consumer:", client.address)
@@ -103,6 +106,7 @@ print("Consumer:", client.address)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 interface ServiceRequest {
   provider: string;
   amount: bigint;
@@ -116,7 +120,7 @@ export async function requestService(req: ServiceRequest): Promise<string> {
   const deadline = req.deadline ?? now + CONFIG.defaultDeadlineBuffer;
   const disputeWindow = req.disputeWindow ?? CONFIG.defaultDisputeWindow;
 
-  const txId = await client.runtime.createTransaction({
+  const txId = await client.advanced.createTransaction({
     requester: CONFIG.consumerAddress,
     provider: req.provider,
     amount: req.amount,
@@ -134,6 +138,7 @@ export async function requestService(req: ServiceRequest): Promise<string> {
 <TabItem value="py" label="Python">
 
 ```python title="consumer.py"
+# Level 2: Advanced API - Direct protocol control
 def request_service(provider: str, amount: int, description: str | None = None) -> str:
     now = int(time.time())
     deadline = now + CONFIG["default_deadline_buffer"]
@@ -162,9 +167,10 @@ def request_service(provider: str, amount: int, description: str | None = None) 
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 export async function linkEscrowSafe(txId: string): Promise<void> {
-  const escrowId = await client.standard.linkEscrow(txId);
-  const tx = await client.runtime.getTransaction(txId);
+  const escrowId = await client.advanced.linkEscrow(txId);
+  const tx = await client.advanced.getTransaction(txId);
   console.log(`Escrow ${escrowId} funded; state=${State[tx.state]}`);
 }
 ```
@@ -173,10 +179,11 @@ export async function linkEscrowSafe(txId: string): Promise<void> {
 <TabItem value="py" label="Python">
 
 ```python title="consumer.py"
-def fund_transaction_safe(tx_id: str) -> str:
-    escrow_id = client.fund_transaction(tx_id)
-    tx = client.get_transaction(tx_id)
-    print(f"Escrow {escrow_id} funded; state={tx.state.name}")
+# Level 2: Advanced API - Direct protocol control
+def link_escrow_safe(tx_id: str) -> str:
+    escrow_id = client.advanced.link_escrow(tx_id)
+    tx = client.advanced.get_transaction(tx_id)
+    print(f"Escrow {escrow_id} linked; state={tx.state.name}")
     return escrow_id
 ```
 
@@ -191,11 +198,12 @@ def fund_transaction_safe(tx_id: str) -> str:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 export function watchDelivery(txId: string) {
   return client.events.watchTransaction(txId, async (state) => {
     console.log(`[${txId.substring(0, 8)}] -> ${State[state]}`);
     if (state === State.DELIVERED) {
-      const tx = await client.runtime.getTransaction(txId);
+      const tx = await client.advanced.getTransaction(txId);
       await handleDelivery(tx);
     }
   });
@@ -220,10 +228,11 @@ async function handleDelivery(tx: any) {
 <TabItem value="py" label="Python">
 
 ```python title="consumer.py"
+# Level 2: Advanced API - Direct protocol control
 from web3 import Web3
 
 def watch_delivery(tx_id: str, poll_interval=5):
-    filt = client.runtime.events.StateTransitioned.create_filter(
+    filt = client.advanced.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"txId": Web3.to_bytes(hexstr=tx_id)}
     )
     while True:
@@ -257,6 +266,7 @@ def handle_delivery(tx):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 async function acceptDelivery(txId: string, attestationUid: string) {
   await client.releaseEscrowWithVerification(txId, attestationUid);
   console.log(`Payment released for ${txId}`);
@@ -264,7 +274,7 @@ async function acceptDelivery(txId: string, attestationUid: string) {
 
 async function dispute(txId: string, reason: string) {
   // Encode reason off-chain; simple bytes placeholder here
-  await client.runtime.transitionState(txId, State.DISPUTED, '0x');
+  await client.advanced.transitionState(txId, State.DISPUTED, '0x');
   console.log(`Dispute raised for ${txId}: ${reason}`);
 }
 ```
@@ -273,6 +283,7 @@ async function dispute(txId: string, reason: string) {
 <TabItem value="py" label="Python">
 
 ```python title="consumer.py"
+# Level 2: Advanced API - Direct protocol control
 def accept_delivery(tx_id: str, attestation_uid: str | bytes):
     client.release_escrow_with_verification(tx_id, attestation_uid)
     print(f"Payment released for {tx_id}")
@@ -293,6 +304,7 @@ def dispute(tx_id: str, reason: str):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/run-consumer.ts"
+// Level 2: Advanced API - Direct protocol control
 import { parseUnits } from 'ethers';
 import { client, requestService, linkEscrowSafe, watchDelivery } from './consumer';
 
@@ -314,12 +326,13 @@ await new Promise(() => {});
 <TabItem value="py" label="Python">
 
 ```python title="run_consumer.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time
-from consumer import client, request_service, fund_transaction_safe, watch_delivery
+from consumer import client, request_service, link_escrow_safe, watch_delivery
 
 provider = os.getenv("PROVIDER_ADDRESS", client.address)  # demo/self
 tx_id = request_service(provider=provider, amount=1_000_000, description="demo job")
-fund_transaction_safe(tx_id)
+link_escrow_safe(tx_id)
 print("Consumer running... (Ctrl+C to exit)")
 watch_delivery(tx_id)
 ```

@@ -297,8 +297,10 @@ Day 10: Transaction settles
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // $100 transaction settles
-await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
+await client.advanced.transitionState(txId, State.SETTLED, '0x');
+// Payout happens inside SETTLED transition
 
 // Distribution:
 // Provider: $99.00
@@ -309,8 +311,11 @@ await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happe
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # $100 transaction settles
-client.transition_state(tx_id, State.SETTLED, b"\x00")
+await client.advanced.transition_state(tx_id, State.SETTLED, b'')
+# Payout happens inside SETTLED transition
+
 # Distribution:
 # Provider: $99.00
 # Platform: $1.00
@@ -325,18 +330,19 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // $1,000 transaction with milestones
 
 // Milestone 1: $250
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Fee: $2.50, Provider: $247.50
 
 // Milestone 2: $250
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6));
 // Fee: $2.50, Provider: $247.50
 
 // Final: $500
-await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
+await client.advanced.transitionState(txId, State.SETTLED, '0x');
 // Fee: $5.00, Provider: $495.00
 
 // TOTAL: Provider $990, Platform $10
@@ -346,18 +352,19 @@ await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happe
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # $1,000 transaction with milestones
 
 # Milestone 1: $250
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Fee: $2.50, Provider: $247.50
 
 # Milestone 2: $250
-client.release_milestone(tx_id, 250_000_000)
+await client.advanced.release_milestone(tx_id, 250_000_000)
 # Fee: $2.50, Provider: $247.50
 
 # Final: $500
-client.transition_state(tx_id, State.SETTLED, b"\x00")
+await client.advanced.transition_state(tx_id, State.SETTLED, b'')
 # Fee: $5.00, Provider: $495.00
 
 # TOTAL: Provider $990, Platform $10
@@ -372,6 +379,7 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // $100 transaction disputed
 // Resolution: 60% provider, 30% requester, 10% mediator
 
@@ -386,6 +394,7 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # $100 transaction disputed
 # Resolution: 60% provider, 30% requester, 10% mediator
 
@@ -405,6 +414,7 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // $500 canceled after deadline
 
 // Refund: $475 (no fee)
@@ -416,6 +426,7 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # $500 canceled after deadline
 
 # Refund: $475 (no fee)

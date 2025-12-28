@@ -44,6 +44,7 @@ pip install agirails python-dotenv
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/autonomous.ts"
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 import 'dotenv/config';
@@ -71,14 +72,16 @@ export const CONFIG = {
 <TabItem value="py" label="Python">
 
 ```python title="autonomous.py"
+# Level 2: Advanced API - Direct protocol control
 import os, time, json
-from agirails_sdk import ACTPClient, Network, ProofGenerator, State
+from agirails import ACTPClient, ProofGenerator, State
 from dotenv import load_dotenv
 
 load_dotenv()
 
 client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
+    mode='testnet',
+    requester_address=os.getenv("AGENT_ADDRESS"),
     private_key=os.getenv("PRIVATE_KEY"),
 )
 proof_gen = ProofGenerator()
@@ -103,15 +106,16 @@ CONFIG = {
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/provider-loop.ts"
+// Level 2: Advanced API - Direct protocol control
 import { client, CONFIG } from './autonomous';
 
 export function watchProviderJobs() {
   return client.events.onStateChanged(async (txId, _from, to) => {
     if (to !== State.COMMITTED) return;
-    const tx = await client.runtime.getTransaction(txId);
+    const tx = await client.advanced.getTransaction(txId);
     if (tx.amount < CONFIG.providerMin || tx.amount > CONFIG.providerMax) return;
 
-    await client.runtime.transitionState(txId, State.IN_PROGRESS);
+    await client.advanced.transitionState(txId, State.IN_PROGRESS);
 
     const result = await performWork(tx); // your business logic
     const proof = client.proofGenerator.generateDeliveryProof({
@@ -129,8 +133,8 @@ export function watchProviderJobs() {
       attUid = att.uid;
     }
 
-    await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
-    if (attUid) await client.runtime.anchorAttestation(txId, attUid);
+    await client.advanced.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+    if (attUid) await client.advanced.anchorAttestation(txId, attUid);
   });
 }
 
@@ -144,12 +148,13 @@ async function performWork(_tx: any) {
 <TabItem value="py" label="Python">
 
 ```python title="provider_loop.py"
+# Level 2: Advanced API - Direct protocol control
 import json, time
 from web3 import Web3
 from autonomous import client, proof_gen, CONFIG, State
 
 def watch_provider_jobs(poll_interval=5):
-    filt = client.runtime.events.StateTransitioned.create_filter(
+    filt = client.advanced.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
     )
     while True:
@@ -183,6 +188,7 @@ def perform_work(_tx):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer-loop.ts"
+// Level 2: Advanced API - Direct protocol control
 import { client, CONFIG } from './autonomous';
 import { parseUnits } from 'ethers';
 
@@ -190,7 +196,7 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
   if (amount > CONFIG.consumerMax) throw new Error('Amount exceeds consumer max');
   const now = Math.floor(Date.now() / 1000);
 
-  const txId = await client.runtime.createTransaction({
+  const txId = await client.advanced.createTransaction({
     requester: await client.getAddress(),
     provider,
     amount,
@@ -198,7 +204,7 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
     disputeWindow: CONFIG.defaultDispute
   });
 
-  await client.standard.linkEscrow(txId);
+  await client.advanced.linkEscrow(txId);
   watchDelivery(txId);
   return txId;
 }
@@ -206,14 +212,14 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
 function watchDelivery(txId: string) {
   client.events.watchTransaction(txId, async (state) => {
     if (state === State.DELIVERED) {
-      const tx = await client.runtime.getTransaction(txId);
+      const tx = await client.advanced.getTransaction(txId);
       const attUid = tx.attestationUID;
       if (attUid && attUid !== '0x' + '0'.repeat(64) && client.eas) {
         const ok = await client.eas.verifyDeliveryAttestation(txId, attUid);
         if (ok) await client.releaseEscrowWithVerification(txId, attUid);
       } else {
         // no attestation: manual decision or dispute
-        await client.runtime.transitionState(txId, State.SETTLED, '0x');
+        await client.advanced.transitionState(txId, State.SETTLED, '0x');
       }
     }
   });
@@ -224,6 +230,7 @@ function watchDelivery(txId: string) {
 <TabItem value="py" label="Python">
 
 ```python title="consumer_loop.py"
+# Level 2: Advanced API - Direct protocol control
 import time, os
 from web3 import Web3
 from autonomous import client, CONFIG, State
@@ -239,12 +246,12 @@ def request_subservice(provider: str, amount: int = 10_000_000):
         deadline=now + CONFIG["default_deadline"],
         dispute_window=CONFIG["default_dispute"],
     )
-    client.fund_transaction(tx_id)
+    client.advanced.link_escrow(tx_id)
     watch_delivery(tx_id)
     return tx_id
 
 def watch_delivery(tx_id: str, poll_interval=5):
-    filt = client.runtime.events.StateTransitioned.create_filter(
+    filt = client.advanced.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"txId": Web3.to_bytes(hexstr=tx_id)}
     )
     while True:
@@ -273,6 +280,7 @@ Use sub-services to enhance your delivery, then deliver upstream.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/orchestrator.ts"
+// Level 2: Advanced API - Direct protocol control
 import { requestSubservice } from './consumer-loop';
 import { client } from './autonomous';
 
@@ -287,7 +295,7 @@ export async function handleProviderJob(tx: any) {
     txId: tx.txId,
     deliverable: JSON.stringify({ upstream: 'done', subservice: subTxId })
   });
-  await client.runtime.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.advanced.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 }
 ```
 
@@ -295,6 +303,7 @@ export async function handleProviderJob(tx: any) {
 <TabItem value="py" label="Python">
 
 ```python title="orchestrator.py"
+# Level 2: Advanced API - Direct protocol control
 from consumer_loop import request_subservice
 from autonomous import client, proof_gen, State
 import json, os
@@ -321,6 +330,7 @@ def handle_provider_job(tx):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/run-autonomous.ts"
+// Level 2: Advanced API - Direct protocol control
 import { watchProviderJobs } from './provider-loop';
 import { requestSubservice } from './consumer-loop';
 
@@ -335,6 +345,7 @@ await new Promise(() => {});
 <TabItem value="py" label="Python">
 
 ```python title="run_autonomous.py"
+# Level 2: Advanced API - Direct protocol control
 import os
 from provider_loop import watch_provider_jobs
 from consumer_loop import request_subservice

@@ -298,6 +298,7 @@ You do **not** need to buy a governance token to use ACTP. Transactions are paid
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
@@ -308,7 +309,7 @@ const client = await ACTPClient.create({
 });
 
 // Requester: Create and fund transaction
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   requester: await client.getAddress(),
   provider: '0xProviderAddress',
   amount: parseUnits('10', 6), // $10 USDC
@@ -316,47 +317,47 @@ const txId = await client.runtime.createTransaction({
   disputeWindow: 7200
 });
 
-await client.standard.linkEscrow(txId);
+await client.advanced.linkEscrow(txId);
 
 // Provider: Deliver work
-await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
-await client.runtime.transitionState(txId, State.DELIVERED, '0x');
+await client.advanced.transitionState(txId, State.IN_PROGRESS);
+await client.advanced.transitionState(txId, State.DELIVERED);
 
 // Requester: Release payment
-await client.runtime.releaseEscrow(txId);
+await client.advanced.releaseEscrow(txId);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os
+from agirails import ACTPClient, State
 
-from agirails_sdk import ACTPClient, Network, State
-
-client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
-    private_key=os.getenv("PRIVATE_KEY"),
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('PRIVATE_KEY'),
 )
 
 # Requester: Create and fund transaction
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xProviderAddress",
-    amount=10_000_000,  # $10 USDC (6 decimals)
-    deadline=client.now() + 86400,
-    dispute_window=7200,
-    service_hash="0x" + "00" * 32,
-)
+tx_id = await client.advanced.create_transaction({
+    'requester': client.address,
+    'provider': '0xProviderAddress',
+    'amount': 10_000_000,  # $10 USDC (6 decimals)
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 7200,
+})
 
-client.fund_transaction(tx_id)
+await client.advanced.link_escrow(tx_id)
 
 # Provider: Deliver work
-client.transition_state(tx_id, State.IN_PROGRESS, "0x")
-client.transition_state(tx_id, State.DELIVERED, "0x")
+await client.advanced.transition_state(tx_id, State.IN_PROGRESS)
+await client.advanced.transition_state(tx_id, State.DELIVERED)
 
 # Requester: Release payment
-client.release_escrow(tx_id)
+await client.advanced.release_escrow(tx_id)
 ```
 
 </TabItem>
@@ -368,8 +369,9 @@ client.release_escrow(tx_id)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Agent A pays Agent B, then Agent C
-const txB = await client.runtime.createTransaction({
+const txB = await client.advanced.createTransaction({
   requester: agentA,
   provider: agentB,
   amount: parseUnits('10', 6),
@@ -377,7 +379,7 @@ const txB = await client.runtime.createTransaction({
   disputeWindow: 7200
 });
 
-const txC = await client.runtime.createTransaction({
+const txC = await client.advanced.createTransaction({
   requester: agentA,
   provider: agentC,
   amount: parseUnits('15', 6),
@@ -387,8 +389,8 @@ const txC = await client.runtime.createTransaction({
 
 // Fund both in parallel
 await Promise.all([
-  client.standard.linkEscrow(txB),
-  client.standard.linkEscrow(txC)
+  client.advanced.linkEscrow(txB),
+  client.advanced.linkEscrow(txC)
 ]);
 ```
 
@@ -396,34 +398,39 @@ await Promise.all([
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
+import asyncio
 import os
+from agirails import ACTPClient
 
-from agirails_sdk import ACTPClient, Network
-
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address='0xAgentA',
+    private_key=os.getenv('PRIVATE_KEY'),
+)
 
 # Agent A pays Agent B, then Agent C
-tx_b = client.create_transaction(
-    requester="0xAgentA",
-    provider="0xAgentB",
-    amount=10_000_000,  # $10 USDC
-    deadline=client.now() + 86400,
-    dispute_window=7200,
-    service_hash="0x" + "00" * 32,
-)
+tx_b = await client.advanced.create_transaction({
+    'requester': '0xAgentA',
+    'provider': '0xAgentB',
+    'amount': 10_000_000,  # $10 USDC
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 7200,
+})
 
-tx_c = client.create_transaction(
-    requester="0xAgentA",
-    provider="0xAgentC",
-    amount=15_000_000,  # $15 USDC
-    deadline=client.now() + 86400,
-    dispute_window=7200,
-    service_hash="0x" + "00" * 32,
-)
+tx_c = await client.advanced.create_transaction({
+    'requester': '0xAgentA',
+    'provider': '0xAgentC',
+    'amount': 15_000_000,  # $15 USDC
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 7200,
+})
 
-# Fund both sequentially (Python)
-client.fund_transaction(tx_b)
-client.fund_transaction(tx_c)
+# Fund both in parallel
+await asyncio.gather(
+    client.advanced.link_escrow(tx_b),
+    client.advanced.link_escrow(tx_c),
+)
 ```
 
 </TabItem>
@@ -435,8 +442,9 @@ client.fund_transaction(tx_c)
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Long-running task with partial releases
-const txId = await client.runtime.createTransaction({
+const txId = await client.advanced.createTransaction({
   requester: await client.getAddress(),
   provider: mlProvider,
   amount: parseUnits('1000', 6), // $1,000 total
@@ -444,40 +452,44 @@ const txId = await client.runtime.createTransaction({
   disputeWindow: 172800
 });
 
-await client.standard.linkEscrow(txId);
+await client.advanced.linkEscrow(txId);
 
 // Release milestones as work progresses
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6)); // 25%
-await client.runtime.releaseMilestone(txId, parseUnits('250', 6)); // 50%
-await client.runtime.releaseMilestone(txId, parseUnits('500', 6)); // 100%
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6)); // 25%
+await client.advanced.releaseMilestone(txId, parseUnits('250', 6)); // 50%
+await client.advanced.releaseMilestone(txId, parseUnits('500', 6)); // 100%
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import os
+import time
+from agirails import ACTPClient
 
-from agirails_sdk import ACTPClient, Network
-
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PRIVATE_KEY"))
-
-# Long-running task with partial releases
-tx_id = client.create_transaction(
-    requester=client.address,
-    provider="0xMlProvider",
-    amount=1_000_000_000,  # $1,000 total
-    deadline=client.now() + 7 * 86400,
-    dispute_window=172800,
-    service_hash="0x" + "00" * 32,
+client = await ACTPClient.create(
+    mode='testnet',
+    requester_address=os.getenv('WALLET_ADDRESS'),
+    private_key=os.getenv('PRIVATE_KEY'),
 )
 
-client.fund_transaction(tx_id)
+# Long-running task with partial releases
+tx_id = await client.advanced.create_transaction({
+    'requester': client.address,
+    'provider': '0xMlProvider',
+    'amount': 1_000_000_000,  # $1,000 total
+    'deadline': int(time.time()) + 7 * 86400,
+    'dispute_window': 172800,
+})
+
+await client.advanced.link_escrow(tx_id)
 
 # Release milestones as work progresses
-client.release_milestone(tx_id, 250_000_000)  # 25%
-client.release_milestone(tx_id, 250_000_000)  # 50%
-client.release_milestone(tx_id, 500_000_000)  # 100%
+await client.advanced.release_milestone(tx_id, 250_000_000)  # 25%
+await client.advanced.release_milestone(tx_id, 250_000_000)  # 50%
+await client.advanced.release_milestone(tx_id, 500_000_000)  # 100%
 ```
 
 </TabItem>

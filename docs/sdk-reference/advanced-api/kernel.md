@@ -29,7 +29,7 @@ The Kernel is accessed through ACTPClient:
 
 ```typescript
 const client = await ACTPClient.create({ mode: 'mock', requesterAddress: '0x...' });
-const kernel = client.runtime; // or client.advanced
+const kernel = client.advanced;
 ```
 
 ---
