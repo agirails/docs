@@ -185,27 +185,13 @@ QuoteBuilder enforces these rules:
 
 ## Quote Flow
 
-```
-┌──────────┐           ┌──────────┐
-│ Consumer │           │ Provider │
-└────┬─────┘           └────┬─────┘
-     │                      │
-     │  Request (AIP-1)     │
-     │─────────────────────>│
-     │                      │
-     │                      │ Build Quote
-     │                      │ Sign with EIP-712
-     │                      │
-     │  Quote (AIP-2)       │
-     │<─────────────────────│
-     │                      │
-     │ Verify Signature     │
-     │ Accept if valid      │
-     │                      │
-     │  Accept + Escrow     │
-     │─────────────────────>│
-     │                      │
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img
+    src="/img/diagrams/quote-flow.svg"
+    alt="Quote Flow Sequence Diagram"
+    style={{maxWidth: '500px', width: '100%'}}
+  />
+</div>
 
 ---
 
