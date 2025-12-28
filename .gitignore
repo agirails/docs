@@ -6,6 +6,13 @@ playground/node_modules/
 /build
 playground/dist/
 
+# Playground WIP (not ready for production)
+playground/src/components/playground/
+playground/src/hooks/
+playground/src/lib/methodExecutor.ts
+playground/src/lib/sdk.ts
+playground/src/pages/Level*.tsx
+
 # Generated files
 .docusaurus
 .cache-loader
@@ -36,4 +43,10 @@ test-*.js
 *_README*.md
 *_GUIDE*.md
 *_PLAN*.md
+*_IMPLEMENTATION.md
+*_COMPLETION.md
+.canvas-*.md
+CANVAS_*.md
+PHASE_*.md
+QUICKSTART_*.md
 youtube-video-ideas.md
