@@ -19,11 +19,13 @@ Complete API documentation for:
 
 The AGIRAILS SDK provides **three levels of abstraction** to match your needs:
 
-<img
-  src="/img/diagrams/three-tier-api.svg"
-  alt="Three-Tier API Architecture"
-  style={{maxWidth: '700px', width: '100%', margin: '2rem 0'}}
-/>
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img
+    src="/img/diagrams/three-tier-api.svg"
+    alt="Three-Tier API Architecture"
+    style={{maxWidth: '700px', width: '100%'}}
+  />
+</div>
 
 | Tier | API | Best For | Complexity |
 |------|-----|----------|------------|
@@ -106,13 +108,13 @@ await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 
 ## Quick Decision Tree
 
-```
-Do you need agent lifecycle management (start/stop/pause)?
-├── NO → Do you need fine-grained transaction control?
-│        ├── NO → Use Basic API (provide/request)
-│        └── YES → Use Advanced API (ACTPClient)
-└── YES → Use Standard API (Agent class)
-```
+<div style={{textAlign: 'center', margin: '2rem 0'}}>
+  <img
+    src="/img/diagrams/decision-tree.svg"
+    alt="API Decision Tree"
+    style={{maxWidth: '600px', width: '100%'}}
+  />
+</div>
 
 ---
 
