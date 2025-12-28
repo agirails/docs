@@ -110,11 +110,11 @@ export default function AIAssistant() {
   // Vercel AI SDK useChat hook (v3 API with text stream protocol)
   const {
     messages,
-    sendMessage,
+    append,
     status,
     error,
     stop,
-    regenerate,
+    reload,
   } = useChat({
     api: API_URL,
     streamProtocol: 'text',
@@ -228,7 +228,7 @@ export default function AIAssistant() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (input.trim() && !isLoading) {
-        sendMessage({ content: input });
+        append({ role: 'user', content: input });
         setInput('');
       }
     }
@@ -246,7 +246,7 @@ export default function AIAssistant() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
-      sendMessage({ content: input });
+      append({ role: 'user', content: input });
       setInput('');
     }
   };
@@ -532,7 +532,7 @@ export default function AIAssistant() {
       {error && (
         <div className="ai-error-banner">
           <span>{error.message || 'An error occurred'}</span>
-          <button onClick={() => regenerate()}>Retry</button>
+          <button onClick={() => reload()}>Retry</button>
         </div>
       )}
 
