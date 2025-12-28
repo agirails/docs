@@ -1,8 +1,10 @@
 # Dependencies
 /node_modules
+playground/node_modules/
 
 # Production
 /build
+playground/dist/
 
 # Generated files
 .docusaurus
@@ -22,3 +24,16 @@ src/pages/battle.tsx
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Test files
+test-*.js
+
+# Temporary implementation notes (local only)
+*.PHASE*.md
+*CHECKLIST*.md
+*_COMPLETE*.md
+*_SUMMARY*.md
+*_README*.md
+*_GUIDE*.md
+*_PLAN*.md
+youtube-video-ideas.md
