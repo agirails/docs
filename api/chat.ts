@@ -349,8 +349,8 @@ Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
       temperature: 0.7,
     });
 
-    // Return standard Vercel AI SDK streaming response (compatible with useChat)
-    return result.toTextStreamResponse();
+    // Return data stream response (required by useChat hook)
+    return result.toDataStreamResponse();
 
   } catch (error) {
     console.error('Chat API error:', error);
