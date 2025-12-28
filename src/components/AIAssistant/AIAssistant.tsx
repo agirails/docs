@@ -107,7 +107,7 @@ export default function AIAssistant() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Vercel AI SDK useChat hook (v3 API)
+  // Vercel AI SDK useChat hook (v3 API with text stream protocol)
   const {
     messages,
     sendMessage,
@@ -117,6 +117,7 @@ export default function AIAssistant() {
     regenerate,
   } = useChat({
     api: API_URL,
+    streamProtocol: 'text',
     initialMessages: [WELCOME_MESSAGE],
     body: {
       playgroundContext,

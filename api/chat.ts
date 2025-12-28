@@ -354,8 +354,8 @@ Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
       temperature: 0.7,
     });
 
-    // Return UI message stream response (required by useChat hook in AI SDK v6)
-    return result.toUIMessageStreamResponse();
+    // Return text stream response with streamProtocol: "text" on frontend
+    return result.toTextStreamResponse();
 
   } catch (error) {
     console.error('Chat API error:', error);
