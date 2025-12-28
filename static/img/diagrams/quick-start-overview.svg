@@ -10,7 +10,7 @@
   <text x="90" y="70" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="20">📦</text>
   <text x="90" y="92" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">1. Install</text>
   <text x="90" y="106" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">npm install @agirails/sdk</text>
-  <text x="90" y="120" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">pip install agirails-sdk</text>
+  <text x="90" y="120" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="8">pip install agirails</text>
   <text x="90" y="135" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="7">~30 sec</text>
 
   <!-- Arrow -->

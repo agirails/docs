@@ -10,7 +10,7 @@
   <text x="80" y="62" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="16">📦</text>
   <text x="80" y="82" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">1. Install SDK</text>
   <text x="80" y="93" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">npm install @agirails/sdk</text>
-  <text x="80" y="105" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">pip install agirails-sdk</text>
+  <text x="80" y="105" text-anchor="middle" fill="#7DD3FC" font-family="monospace" font-size="7">pip install agirails</text>
 
   <!-- Arrow 1 -->
   <line x1="145" y1="82" x2="155" y2="82" stroke="#4B5563" stroke-width="2"/>

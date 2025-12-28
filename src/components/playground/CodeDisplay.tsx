@@ -259,7 +259,7 @@ result = client.${methodId.replace(/([A-Z])/g, '_$1').toLowerCase()}(tx_id)`;
   const code = language === 'typescript' ? getTypeScriptCode() : getPythonCode();
   const installCmd = language === 'typescript'
     ? 'npm install @agirails/sdk'
-    : 'pip install agirails-sdk';
+    : 'pip install agirails';
 
   const highlightedLines = useMemo(() => highlightCode(code, language), [code, language]);
 

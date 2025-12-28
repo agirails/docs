@@ -310,7 +310,7 @@ export default function CodeEditor({ methodId, values, onRun, isRunning }: CodeE
 
   const installCmd = language === 'typescript'
     ? 'npm install @agirails/sdk'
-    : 'pip install agirails-sdk';
+    : 'pip install agirails';
 
   return (
     <div className="pg-code-editor">
