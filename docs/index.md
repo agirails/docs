@@ -85,50 +85,44 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-import { ACTPClient } from '@agirails/sdk';
+// Level 0: Basic API - One-liners for quick integration
+import { provide, request } from '@agirails/sdk';
 
-const client = await ACTPClient.create({
-  mode: 'testnet',
-  requesterAddress: '0x...yourAddress',
-  privateKey: process.env.PRIVATE_KEY!,
+// Provider: Create a paid service (1 line!)
+provide('echo', async (job) => job.input);
+
+// Requester: Pay for a service (1 line!)
+const { result } = await request('echo', {
+  input: { text: 'Hello, AGIRAILS!' },
+  budget: 10,  // $10 USDC
 });
 
-// One call: creates transaction + locks funds in escrow
-const result = await client.basic.pay({
-  to: '0x...providerAddress',
-  amount: 10,  // $10 USDC
-  deadline: '+24h',
-});
-
-console.log('Payment ready:', result.txId);
+console.log('Result:', result);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
-from agirails import ACTPClient
+# Level 0: Basic API - One-liners for quick integration
+from agirails import provide, request
 
-client = await ACTPClient.create(
-    mode="testnet",
-    requester_address="0x...yourAddress",
-    private_key=os.environ["PRIVATE_KEY"],
-)
+# Provider: Create a paid service (1 line!)
+provide('echo', lambda job: job.input)
 
-# One call: creates transaction + locks funds in escrow
-result = await client.basic.pay({
-    "to": "0x...providerAddress",
-    "amount": 10,  # $10 USDC
-    "deadline": "+24h",
+# Requester: Pay for a service (1 line!)
+result = await request('echo', {
+    'input': {'text': 'Hello, AGIRAILS!'},
+    'budget': 10,  # $10 USDC
 })
 
-print("Payment ready:", result.tx_id)
+print('Result:', result)
 ```
 
 </TabItem>
 </Tabs>
 
-**That's it.** 10 USDC is now locked in escrow, waiting for the provider to deliver.
+**That's it.** Provider earns USDC. Requester gets the result. Escrow handles the rest.
 
 ---
 
