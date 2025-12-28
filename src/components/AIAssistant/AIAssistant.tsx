@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useLayoutEffect, useState } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import { useLocation } from '@docusaurus/router';
 import { useChat } from '@ai-sdk/react';
+import { TextStreamChatTransport } from 'ai';
 import { Highlight, themes } from 'prism-react-renderer';
 import { getPlaygroundContext, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 
@@ -107,7 +108,13 @@ export default function AIAssistant() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Vercel AI SDK useChat hook (v3 API with text stream protocol)
+  // Create transport with memoization to avoid recreating on every render
+  const transport = useMemo(() => new TextStreamChatTransport({
+    api: API_URL,
+    body: { playgroundContext },
+  }), [playgroundContext]);
+
+  // Vercel AI SDK useChat hook (v6 API with text stream transport)
   const {
     messages,
     sendMessage,
@@ -116,12 +123,8 @@ export default function AIAssistant() {
     stop,
     regenerate,
   } = useChat({
-    api: API_URL,
-    streamProtocol: 'text',
-    initialMessages: [WELCOME_MESSAGE],
-    body: {
-      playgroundContext,
-    },
+    transport,
+    messages: [WELCOME_MESSAGE],
     onError: (err) => {
       console.error('Chat error:', err);
     },
