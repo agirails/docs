@@ -97,7 +97,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          to: '/simple-api',
+          to: '/playground',
           label: 'Playground',
           position: 'left',
         },

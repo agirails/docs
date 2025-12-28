@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" fill="none">
+  <!-- Background -->
+  <rect width="700" height="400" fill="#0a0a0a"/>
+
+  <!-- Title -->
+  <text x="350" y="30" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#ffffff" text-anchor="middle">AGIRAILS Claude Code Plugin Architecture</text>
+
+  <!-- Installation badge -->
+  <rect x="250" y="45" width="200" height="25" rx="12" fill="#1f2937"/>
+  <text x="350" y="62" font-family="monospace" font-size="11" fill="#a5b4fc" text-anchor="middle">/plugin install agirails</text>
+
+  <!-- Commands Section -->
+  <rect x="30" y="90" width="200" height="280" rx="8" fill="#1a1a2e" stroke="#22c55e" stroke-width="2"/>
+  <text x="130" y="115" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#86efac" text-anchor="middle">Commands (8)</text>
+  <text x="130" y="133" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Interactive workflows</text>
+
+  <rect x="45" y="150" width="170" height="25" rx="4" fill="#14532d"/>
+  <text x="130" y="167" font-family="monospace" font-size="10" fill="#bbf7d0" text-anchor="middle">/agirails:init</text>
+
+  <rect x="45" y="185" width="170" height="25" rx="4" fill="#14532d"/>
+  <text x="130" y="202" font-family="monospace" font-size="10" fill="#bbf7d0" text-anchor="middle">/agirails:pay</text>
+
+  <rect x="45" y="220" width="170" height="25" rx="4" fill="#14532d"/>
+  <text x="130" y="237" font-family="monospace" font-size="10" fill="#bbf7d0" text-anchor="middle">/agirails:status</text>
+
+  <rect x="45" y="255" width="170" height="25" rx="4" fill="#14532d"/>
+  <text x="130" y="272" font-family="monospace" font-size="10" fill="#bbf7d0" text-anchor="middle">/agirails:watch</text>
+
+  <text x="130" y="305" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">+ debug, states, example, upgrade</text>
+
+  <!-- Skills Section -->
+  <rect x="250" y="90" width="200" height="280" rx="8" fill="#1a1a2e" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="350" y="115" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#c4b5fd" text-anchor="middle">Skills (6)</text>
+  <text x="350" y="133" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Protocol knowledge</text>
+
+  <rect x="265" y="150" width="170" height="25" rx="4" fill="#4c1d95"/>
+  <text x="350" y="167" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#ddd6fe" text-anchor="middle">agirails-core</text>
+
+  <rect x="265" y="185" width="170" height="25" rx="4" fill="#4c1d95"/>
+  <text x="350" y="202" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#ddd6fe" text-anchor="middle">agirails-agent-building</text>
+
+  <rect x="265" y="220" width="170" height="25" rx="4" fill="#4c1d95"/>
+  <text x="350" y="237" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#ddd6fe" text-anchor="middle">agirails-patterns</text>
+
+  <rect x="265" y="255" width="170" height="25" rx="4" fill="#4c1d95"/>
+  <text x="350" y="272" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#ddd6fe" text-anchor="middle">agirails-security</text>
+
+  <text x="350" y="305" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">+ typescript, python</text>
+
+  <!-- Agents Section -->
+  <rect x="470" y="90" width="200" height="280" rx="8" fill="#1a1a2e" stroke="#f59e0b" stroke-width="2"/>
+  <text x="570" y="115" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fcd34d" text-anchor="middle">Agents (4)</text>
+  <text x="570" y="133" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Autonomous helpers</text>
+
+  <rect x="485" y="150" width="170" height="25" rx="4" fill="#78350f"/>
+  <text x="570" y="167" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#fde68a" text-anchor="middle">integration-wizard</text>
+
+  <rect x="485" y="185" width="170" height="25" rx="4" fill="#78350f"/>
+  <text x="570" y="202" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#fde68a" text-anchor="middle">testing-assistant</text>
+
+  <rect x="485" y="220" width="170" height="25" rx="4" fill="#78350f"/>
+  <text x="570" y="237" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#fde68a" text-anchor="middle">migration-helper</text>
+
+  <rect x="485" y="255" width="170" height="25" rx="4" fill="#78350f"/>
+  <text x="570" y="272" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#fde68a" text-anchor="middle">security-auditor</text>
+
+  <!-- Legend -->
+  <text x="350" y="385" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Commands: user-triggered | Skills: auto-loaded on topic | Agents: autonomous multi-step tasks</text>
+</svg>

@@ -19,7 +19,7 @@ By the end of this guide, you'll have:
 
 **Difficulty:** Beginner (no coding required)
 
-**Current Version:** v1.2.0 (AIP-7 ready)
+**Current Version:** v2.0.2
 :::
 
 ---

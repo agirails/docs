@@ -6,15 +6,12 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
  * Structure follows best practices from Stripe, Vercel, Twilio:
  * - Getting Started (immediate value)
  * - Core Concepts (understanding)
+ * - SDK Reference (comprehensive, modular)
+ * - Examples (runnable code)
  * - Guides (practical how-to)
- * - API Reference (comprehensive)
  * - Protocol Specs (deep technical)
- *
- * NOTE: Only existing pages are listed. As content is created,
- * uncomment the relevant items in each section.
  */
 const sidebars: SidebarsConfig = {
-  // Main documentation sidebar
   docsSidebar: [
     // Landing page
     {
@@ -51,14 +48,48 @@ const sidebars: SidebarsConfig = {
       ],
     },
 
-    // SDK Reference - Complete API Documentation
+    // SDK Reference - Modular API Documentation
     {
-      type: 'doc',
-      id: 'sdk-reference',
+      type: 'category',
       label: 'SDK Reference',
+      link: {
+        type: 'doc',
+        id: 'sdk-reference/index',
+      },
+      items: [
+        'sdk-reference/basic-api',
+        'sdk-reference/standard-api',
+        {
+          type: 'category',
+          label: 'Advanced API',
+          link: {
+            type: 'doc',
+            id: 'sdk-reference/advanced-api/index',
+          },
+          items: [
+            'sdk-reference/advanced-api/kernel',
+            'sdk-reference/advanced-api/escrow',
+            'sdk-reference/advanced-api/events',
+            'sdk-reference/advanced-api/eas',
+            'sdk-reference/advanced-api/quote',
+            'sdk-reference/advanced-api/proof-generator',
+            'sdk-reference/advanced-api/message-signer',
+          ],
+        },
+        'sdk-reference/registry',
+        'sdk-reference/utilities',
+        'sdk-reference/errors',
+      ],
     },
 
-    // Smart Contract Reference - Complete Contract Documentation
+    // Examples - Runnable Code
+    {
+      type: 'doc',
+      id: 'examples/index',
+      label: 'Examples',
+    },
+
+    // Smart Contract Reference
     {
       type: 'doc',
       id: 'contract-reference',
@@ -88,6 +119,7 @@ const sidebars: SidebarsConfig = {
           label: 'Integrations',
           items: [
             'guides/integrations/n8n',
+            'guides/integrations/claude-plugin',
             'guides/integrations/langchain',
             'guides/integrations/crewai',
           ],
@@ -119,36 +151,6 @@ const sidebars: SidebarsConfig = {
       label: 'Developer Responsibilities',
     },
   ],
-
-  // SDK Reference sidebar
-  // TODO: Uncomment when SDK docs are created
-  // sdkSidebar: [
-  //   {
-  //     type: 'doc',
-  //     id: 'sdk/index',
-  //     label: 'SDK Overview',
-  //   },
-  // ],
-
-  // Smart Contracts sidebar
-  // TODO: Uncomment when contract docs are created
-  // contractsSidebar: [
-  //   {
-  //     type: 'doc',
-  //     id: 'contracts/index',
-  //     label: 'Contracts Overview',
-  //   },
-  // ],
-
-  // Protocol Specifications (AIPs) sidebar
-  // TODO: Uncomment when AIP docs are created
-  // aipsSidebar: [
-  //   {
-  //     type: 'doc',
-  //     id: 'aips/index',
-  //     label: 'Protocol Specifications',
-  //   },
-  // ],
 };
 
 export default sidebars;

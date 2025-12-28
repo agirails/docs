@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" fill="none">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#0a0a0a"/>
+
+  <!-- Title -->
+  <text x="300" y="30" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#ffffff" text-anchor="middle">Agent Lifecycle (Standard API)</text>
+
+  <!-- States -->
+  <!-- Idle -->
+  <circle cx="80" cy="150" r="35" fill="#1f2937" stroke="#6b7280" stroke-width="2"/>
+  <text x="80" y="155" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#d1d5db" text-anchor="middle">Idle</text>
+
+  <!-- Running -->
+  <circle cx="220" cy="150" r="40" fill="#14532d" stroke="#22c55e" stroke-width="2"/>
+  <text x="220" y="145" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="500" fill="#86efac" text-anchor="middle">Running</text>
+  <text x="220" y="162" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#6ee7b7" text-anchor="middle">processing jobs</text>
+
+  <!-- Paused -->
+  <circle cx="380" cy="150" r="35" fill="#422006" stroke="#f59e0b" stroke-width="2"/>
+  <text x="380" y="155" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#fcd34d" text-anchor="middle">Paused</text>
+
+  <!-- Stopped -->
+  <circle cx="520" cy="150" r="35" fill="#450a0a" stroke="#ef4444" stroke-width="2"/>
+  <text x="520" y="155" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#fca5a5" text-anchor="middle">Stopped</text>
+
+  <!-- Arrows: Idle -> Running -->
+  <path d="M115 150 L175 150" stroke="#22c55e" stroke-width="2"/>
+  <polygon points="173,150 163,145 163,155" fill="#22c55e"/>
+  <text x="145" y="140" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#22c55e" text-anchor="middle">start()</text>
+
+  <!-- Arrows: Running -> Paused -->
+  <path d="M260 140 L340 140" stroke="#f59e0b" stroke-width="2"/>
+  <polygon points="338,140 328,135 328,145" fill="#f59e0b"/>
+  <text x="300" y="130" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#f59e0b" text-anchor="middle">pause()</text>
+
+  <!-- Arrows: Paused -> Running -->
+  <path d="M340 160 L260 160" stroke="#22c55e" stroke-width="2"/>
+  <polygon points="262,160 272,155 272,165" fill="#22c55e"/>
+  <text x="300" y="178" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#22c55e" text-anchor="middle">resume()</text>
+
+  <!-- Arrows: Running -> Stopped -->
+  <path d="M260 145 Q350 80 480 145" stroke="#ef4444" stroke-width="2"/>
+  <polygon points="478,143 468,135 465,147" fill="#ef4444"/>
+  <text x="370" y="90" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#ef4444" text-anchor="middle">stop()</text>
+
+  <!-- Arrows: Paused -> Stopped -->
+  <path d="M415 150 L480 150" stroke="#ef4444" stroke-width="2"/>
+  <polygon points="478,150 468,145 468,155" fill="#ef4444"/>
+  <text x="448" y="140" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#ef4444" text-anchor="middle">stop()</text>
+
+  <!-- Methods box -->
+  <rect x="100" y="220" width="400" height="60" rx="6" fill="#1a1a2e" stroke="#4b5563" stroke-width="1"/>
+  <text x="120" y="245" font-family="monospace" font-size="11" fill="#a5b4fc">agent.start()</text>
+  <text x="220" y="245" font-family="monospace" font-size="11" fill="#fcd34d">agent.pause()</text>
+  <text x="320" y="245" font-family="monospace" font-size="11" fill="#86efac">agent.resume()</text>
+  <text x="420" y="245" font-family="monospace" font-size="11" fill="#fca5a5">agent.stop()</text>
+  <text x="300" y="268" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle">Check state: agent.status | Events: agent.on('job:received', ...)</text>
+</svg>
