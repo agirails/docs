@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Building an Autonomous Agent
-description: One agent acting as both provider and consumer with TS/PY parity, fundTransaction flow, and attestation-verified settlement
+description: One agent acting as both provider and consumer with TS/PY parity, linkEscrow flow, and attestation-verified settlement
 ---
 
 import Tabs from '@theme/Tabs';
@@ -49,7 +49,8 @@ import { parseUnits } from 'ethers';
 import 'dotenv/config';
 
 export const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: process.env.AGENT_ADDRESS!,
   privateKey: process.env.PRIVATE_KEY!,
   eas: {
     contractAddress: '0x4200000000000000000000000000000000000021',
@@ -107,10 +108,10 @@ import { client, CONFIG } from './autonomous';
 export function watchProviderJobs() {
   return client.events.onStateChanged(async (txId, _from, to) => {
     if (to !== State.COMMITTED) return;
-    const tx = await client.kernel.getTransaction(txId);
+    const tx = await client.runtime.getTransaction(txId);
     if (tx.amount < CONFIG.providerMin || tx.amount > CONFIG.providerMax) return;
 
-    await client.kernel.transitionState(txId, State.IN_PROGRESS);
+    await client.runtime.transitionState(txId, State.IN_PROGRESS);
 
     const result = await performWork(tx); // your business logic
     const proof = client.proofGenerator.generateDeliveryProof({
@@ -128,8 +129,8 @@ export function watchProviderJobs() {
       attUid = att.uid;
     }
 
-    await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
-    if (attUid) await client.kernel.anchorAttestation(txId, attUid);
+    await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+    if (attUid) await client.runtime.anchorAttestation(txId, attUid);
   });
 }
 
@@ -148,7 +149,7 @@ from web3 import Web3
 from autonomous import client, proof_gen, CONFIG, State
 
 def watch_provider_jobs(poll_interval=5):
-    filt = client.kernel.events.StateTransitioned.create_filter(
+    filt = client.runtime.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
     )
     while True:
@@ -189,7 +190,7 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
   if (amount > CONFIG.consumerMax) throw new Error('Amount exceeds consumer max');
   const now = Math.floor(Date.now() / 1000);
 
-  const txId = await client.kernel.createTransaction({
+  const txId = await client.runtime.createTransaction({
     requester: await client.getAddress(),
     provider,
     amount,
@@ -197,7 +198,7 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
     disputeWindow: CONFIG.defaultDispute
   });
 
-  await client.fundTransaction(txId);
+  await client.standard.linkEscrow(txId);
   watchDelivery(txId);
   return txId;
 }
@@ -205,14 +206,14 @@ export async function requestSubservice(provider: string, amount = parseUnits('1
 function watchDelivery(txId: string) {
   client.events.watchTransaction(txId, async (state) => {
     if (state === State.DELIVERED) {
-      const tx = await client.kernel.getTransaction(txId);
+      const tx = await client.runtime.getTransaction(txId);
       const attUid = tx.attestationUID;
       if (attUid && attUid !== '0x' + '0'.repeat(64) && client.eas) {
         const ok = await client.eas.verifyDeliveryAttestation(txId, attUid);
         if (ok) await client.releaseEscrowWithVerification(txId, attUid);
       } else {
         // no attestation: manual decision or dispute
-        await client.kernel.transitionState(txId, State.SETTLED, '0x');
+        await client.runtime.transitionState(txId, State.SETTLED, '0x');
       }
     }
   });
@@ -243,7 +244,7 @@ def request_subservice(provider: str, amount: int = 10_000_000):
     return tx_id
 
 def watch_delivery(tx_id: str, poll_interval=5):
-    filt = client.kernel.events.StateTransitioned.create_filter(
+    filt = client.runtime.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"txId": Web3.to_bytes(hexstr=tx_id)}
     )
     while True:
@@ -286,7 +287,7 @@ export async function handleProviderJob(tx: any) {
     txId: tx.txId,
     deliverable: JSON.stringify({ upstream: 'done', subservice: subTxId })
   });
-  await client.kernel.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.runtime.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 }
 ```
 
@@ -352,7 +353,7 @@ while True:
 
 ## Production checklist
 
-- Watch for `State.COMMITTED` (fundTransaction) on provider side
+- Watch for `State.COMMITTED` (linkEscrow) on provider side
 - Deliver with AIP-4 proof; anchor attestation UID (TS can create, PY can anchor/verify)
 - On consumer side, verify `tx.attestationUID` / `tx.attestation_uid` before paying out
 - Respect deadlines/dispute windows; add timeouts and logging

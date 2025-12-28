@@ -90,39 +90,38 @@ Never commit private keys. Add `.env` to `.gitignore`.
 Create `agent.ts` (run as **requester**):
 
 ```typescript title="agent.ts"
-import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits, ethers, Wallet } from 'ethers';
+import { ACTPClient } from '@agirails/sdk';
+import { Wallet } from 'ethers';
 import 'dotenv/config';
 
 async function main() {
+  // Get addresses from private keys
+  const requesterWallet = new Wallet(process.env.REQUESTER_PRIVATE_KEY!);
+  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
+
   // Initialize requester client
   const requesterClient = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.REQUESTER_PRIVATE_KEY!
+    mode: 'testnet',
+    requesterAddress: requesterWallet.address,
+    privateKey: process.env.REQUESTER_PRIVATE_KEY!,
   });
 
-  // Get provider address from their private key
-  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
-  const providerAddress = providerWallet.address;
-
-  console.log('Requester:', await requesterClient.getAddress());
-  console.log('Provider:', providerAddress);
+  console.log('Requester:', requesterClient.getAddress());
+  console.log('Provider:', providerWallet.address);
 
   // Create transaction (requester != provider required by contract)
-  const txId = await requesterClient.kernel.createTransaction({
-    requester: await requesterClient.getAddress(),
-    provider: providerAddress,
-    amount: parseUnits('1', 6), // 1 USDC
-    deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+  const txId = await requesterClient.standard.createTransaction({
+    provider: providerWallet.address,
+    amount: 1,  // $1 USDC (SDK handles decimals)
+    deadline: '+24h',  // 24 hours from now
     disputeWindow: 3600, // 1 hour (contract minimum)
-    metadata: ethers.id('my-service-request') // Hash of service description
   });
 
   console.log('Transaction created:', txId);
 
   // Fund (approve USDC + link escrow)
-  const escrowId = await requesterClient.fundTransaction(txId);
-  console.log('Escrow funded:', escrowId);
+  await requesterClient.standard.linkEscrow(txId);
+  console.log('Escrow funded!');
 
   console.log('✅ Transaction created and funded!');
   console.log('Transaction ID (save this):', txId);
@@ -143,34 +142,48 @@ npx ts-node agent.ts
 Create `agent.py` (run as **requester**):
 
 ```python title="agent.py"
-import os, time
+import asyncio
+import os
 from dotenv import load_dotenv
-from agirails_sdk import ACTPClient, Network
+from eth_account import Account
+from agirails import ACTPClient
 
 load_dotenv()
 
-requester_client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("REQUESTER_PRIVATE_KEY"))
-provider_address = os.getenv("PROVIDER_ADDRESS")  # derive from provider PK if needed
+async def main():
+    # Get addresses from private keys
+    requester_account = Account.from_key(os.getenv("REQUESTER_PRIVATE_KEY"))
+    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
 
-print("Requester:", requester_client.address)
-print("Provider:", provider_address)
+    # Initialize requester client
+    requester_client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=requester_account.address,
+        private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
+    )
 
-amount = 1_000_000  # 1 USDC (6 decimals)
-deadline = int(time.time()) + 86400  # 24 hours
-dispute_window = 3600  # 1 hour
+    print("Requester:", requester_client.address)
+    print("Provider:", provider_account.address)
 
-tx_id = requester_client.create_transaction(
-    provider=provider_address,
-    requester=requester_client.address,
-    amount=amount,
-    deadline=deadline,
-    dispute_window=dispute_window,
-    service_hash="0x" + "00"*32,
-)
-escrow_id = requester_client.fund_transaction(tx_id)
+    # Create transaction (requester != provider required by contract)
+    tx_id = await requester_client.standard.create_transaction({
+        "provider": provider_account.address,
+        "amount": 1,  # $1 USDC (SDK handles decimals)
+        "deadline": "+24h",  # 24 hours from now
+        "dispute_window": 3600,  # 1 hour (contract minimum)
+    })
 
-print("✅ Transaction created! txId:", tx_id)
-print("✅ Escrow funded! Escrow ID:", escrow_id)
+    print("Transaction created:", tx_id)
+
+    # Fund (approve USDC + link escrow)
+    await requester_client.standard.link_escrow(tx_id)
+    print("Escrow funded!")
+
+    print("✅ Transaction created and funded!")
+    print("Transaction ID (save this):", tx_id)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 Run it:
@@ -202,24 +215,29 @@ The **provider** must perform these transitions using their own wallet:
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="provider-deliver.ts"
-import { ACTPClient, State } from '@agirails/sdk';
+import { ACTPClient } from '@agirails/sdk';
+import { Wallet } from 'ethers';
 import 'dotenv/config';
 
 async function deliver() {
+  // Get provider address from private key
+  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
+
   // Initialize PROVIDER client (not requester!)
   const providerClient = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.PROVIDER_PRIVATE_KEY!
+    mode: 'testnet',
+    requesterAddress: providerWallet.address,
+    privateKey: process.env.PROVIDER_PRIVATE_KEY!,
   });
 
   const txId = 'YOUR_TX_ID_FROM_STEP_3'; // Paste from Step 3
 
   // Provider transitions to IN_PROGRESS (required before DELIVERED)
-  await providerClient.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+  await providerClient.standard.transitionState(txId, 'IN_PROGRESS');
   console.log('In progress...');
 
   // Provider delivers
-  await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+  await providerClient.standard.transitionState(txId, 'DELIVERED');
   console.log('Delivered!');
 
   // Wait for dispute window (1 hour as set in Step 3)
@@ -227,9 +245,12 @@ async function deliver() {
   console.log('(In production, use event listeners instead of sleeping)');
   await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
 
-  // Provider requests settlement (admin/bot executes payout after dispute window)
-  await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
-  console.log('Settled state reached! (admin/bot will execute payout)');
+  // Release escrow after dispute window expires
+  const tx = await providerClient.standard.getTransaction(txId);
+  if (tx?.escrowId) {
+    await providerClient.standard.releaseEscrow(tx.escrowId);
+    console.log('Settlement complete! Funds released.');
+  }
 }
 
 deliver().catch(console.error);
@@ -239,96 +260,61 @@ deliver().catch(console.error);
 <TabItem value="py" label="Python">
 
 ```python title="provider_deliver.py"
+import asyncio
 import os
 import time
 from dotenv import load_dotenv
-from web3 import Web3
 from eth_account import Account
+from agirails import ACTPClient
 
 load_dotenv()
 
-# Network configuration
-RPC_URL = "https://sepolia.base.org"
-KERNEL_ADDRESS = "0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba"
+async def deliver():
+    # Get provider address from private key
+    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
 
-# State enum values (from contract)
-STATE_IN_PROGRESS = 3
-STATE_DELIVERED = 4
-STATE_SETTLED = 5
+    # Initialize PROVIDER client (not requester!)
+    provider_client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=provider_account.address,
+        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+    )
 
-# Initialize Web3
-w3 = Web3(Web3.HTTPProvider(RPC_URL))
+    tx_id = "YOUR_TX_ID_FROM_STEP_3"  # Paste from Step 3
 
-# Load provider account
-provider = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
+    # Provider transitions to IN_PROGRESS (required before DELIVERED)
+    await provider_client.standard.transition_state(tx_id, "IN_PROGRESS")
+    print("In progress...")
 
-# Transaction ID from Step 3
-TX_ID = "YOUR_TX_ID_FROM_STEP_3"  # bytes32
+    # Provider delivers
+    await provider_client.standard.transition_state(tx_id, "DELIVERED")
+    print("Delivered!")
 
-# Simplified ABI
-KERNEL_ABI = [
-    {
-        "name": "transitionState",
-        "type": "function",
-        "inputs": [
-            {"name": "txId", "type": "bytes32"},
-            {"name": "newState", "type": "uint8"},
-            {"name": "proof", "type": "bytes32"}
-        ]
-    }
-]
+    # Wait for dispute window (1 hour as set in Step 3)
+    print("Waiting for 1 hour dispute window to expire...")
+    print("(In production, use event listeners instead of sleeping)")
+    time.sleep(3660)  # 61 minutes
 
-kernel = w3.eth.contract(address=KERNEL_ADDRESS, abi=KERNEL_ABI)
+    # Release escrow after dispute window expires
+    tx = await provider_client.standard.get_transaction(tx_id)
+    if tx and tx.escrow_id:
+        await provider_client.standard.release_escrow(tx.escrow_id)
+        print("Settlement complete! Funds released.")
 
-def transition_state(tx_id: str, new_state: int, proof: bytes = b'\x00' * 32):
-    """Transition transaction to new state."""
-    tx = kernel.functions.transitionState(
-        bytes.fromhex(tx_id[2:]) if tx_id.startswith('0x') else bytes.fromhex(tx_id),
-        new_state,
-        proof
-    ).build_transaction({
-        'from': provider.address,
-        'nonce': w3.eth.get_transaction_count(provider.address),
-        'gas': 100000,
-        'gasPrice': w3.eth.gas_price
-    })
-
-    signed = provider.sign_transaction(tx)
-    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
-    w3.eth.wait_for_transaction_receipt(tx_hash)
-    return tx_hash.hex()
-
-# Transition to IN_PROGRESS
-print("Transitioning to IN_PROGRESS...")
-transition_state(TX_ID, STATE_IN_PROGRESS)
-print("In progress!")
-
-# Transition to DELIVERED
-print("Transitioning to DELIVERED...")
-transition_state(TX_ID, STATE_DELIVERED)
-print("Delivered!")
-
-# Wait for dispute window
-print("Waiting for 1 hour dispute window...")
-print("(In production, use event listeners instead)")
-time.sleep(3660)  # 61 minutes
-
-# Transition to SETTLED (admin/bot executes payout)
-print("Transitioning to SETTLED...")
-transition_state(TX_ID, STATE_SETTLED)
-print("Settled requested. Payout occurs after admin/bot execution.")
+if __name__ == "__main__":
+    asyncio.run(deliver())
 ```
 
 </TabItem>
 </Tabs>
 
 :::warning Provider-Only Transitions
-Only the **provider** can call `transitionState` for IN_PROGRESS, DELIVERED, and SETTLED. Using the requester's wallet will revert.
+Only the **provider** can call `standard.transitionState()` for IN_PROGRESS and DELIVERED. Using the requester's wallet will revert.
 :::
 
 :::warning State Transition Rules
 You **cannot** skip states. Required path:
-`COMMITTED → IN_PROGRESS → DELIVERED → (wait) → SETTLED (admin/bot executes payout)`
+`COMMITTED → IN_PROGRESS → DELIVERED → (wait for dispute window) → releaseEscrow()`
 :::
 
 ---
@@ -341,60 +327,64 @@ Complete end-to-end test with both requester and provider:
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript title="full-flow-test.ts"
-import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits, ethers } from 'ethers';
+import { ACTPClient } from '@agirails/sdk';
+import { Wallet } from 'ethers';
 import 'dotenv/config';
 
 async function testFullFlow() {
+  // Get addresses from private keys
+  const requesterWallet = new Wallet(process.env.REQUESTER_PRIVATE_KEY!);
+  const providerWallet = new Wallet(process.env.PROVIDER_PRIVATE_KEY!);
+
   // Initialize BOTH clients
   const requesterClient = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.REQUESTER_PRIVATE_KEY!
+    mode: 'testnet',
+    requesterAddress: requesterWallet.address,
+    privateKey: process.env.REQUESTER_PRIVATE_KEY!,
   });
 
   const providerClient = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.PROVIDER_PRIVATE_KEY!
+    mode: 'testnet',
+    requesterAddress: providerWallet.address,
+    privateKey: process.env.PROVIDER_PRIVATE_KEY!,
   });
 
-  const requesterAddress = await requesterClient.getAddress();
-  const providerAddress = await providerClient.getAddress();
-
-  console.log('Requester:', requesterAddress);
-  console.log('Provider:', providerAddress);
+  console.log('Requester:', requesterClient.getAddress());
+  console.log('Provider:', providerClient.getAddress());
 
   // 1. REQUESTER creates transaction
-  const txId = await requesterClient.kernel.createTransaction({
-    requester: requesterAddress,
-    provider: providerAddress,
-    amount: parseUnits('1', 6),
-    deadline: Math.floor(Date.now() / 1000) + 86400,
+  const txId = await requesterClient.standard.createTransaction({
+    provider: providerWallet.address,
+    amount: 1,  // $1 USDC
+    deadline: '+24h',
     disputeWindow: 3600, // 1 hour (contract minimum)
-    metadata: ethers.id('test-service')
   });
   console.log('1. Created:', txId);
 
   // 2. REQUESTER funds (approves USDC + links escrow)
-  const escrowId = await requesterClient.fundTransaction(txId);
-  console.log('2. Escrow funded:', escrowId);
+  await requesterClient.standard.linkEscrow(txId);
+  console.log('2. Escrow funded!');
 
   // 3. PROVIDER starts work
-  await providerClient.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+  await providerClient.standard.transitionState(txId, 'IN_PROGRESS');
   console.log('3. In progress (provider)');
 
   // 4. PROVIDER delivers
-  await providerClient.kernel.transitionState(txId, State.DELIVERED, '0x');
+  await providerClient.standard.transitionState(txId, 'DELIVERED');
   console.log('4. Delivered (provider)');
 
   // 5. Wait for dispute window (1 hour minimum)
   console.log('5. Waiting for 1 hour dispute window...');
   await new Promise(r => setTimeout(r, 3660000)); // 61 minutes
 
-  // 6. PROVIDER requests SETTLED (admin/bot executes payout)
-  await providerClient.kernel.transitionState(txId, State.SETTLED, '0x');
-  console.log('6. Settled state requested (admin/bot executes payout)');
+  // 6. Release escrow after dispute window expires
+  const tx = await requesterClient.standard.getTransaction(txId);
+  if (tx?.escrowId) {
+    await requesterClient.standard.releaseEscrow(tx.escrowId);
+    console.log('6. Settlement complete! Funds released.');
+  }
 
-  console.log(`\nProvider received ~0.99 USDC`);
+  console.log(`\nProvider received ~0.99 USDC (after 1% fee)`);
 }
 
 testFullFlow().catch(console.error);
@@ -410,56 +400,71 @@ npx ts-node full-flow-test.ts
 <TabItem value="py" label="Python">
 
 ```python title="full_flow_test.py"
-import os, time
+import asyncio
+import os
+import time
 from dotenv import load_dotenv
-from agirails_sdk import ACTPClient, Network, State
-from agirails_sdk.errors import ValidationError, TransactionError, RpcError
+from eth_account import Account
+from agirails import ACTPClient
 
 load_dotenv()
 
-def main():
-    requester = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("REQUESTER_PRIVATE_KEY"))
-    provider = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
+async def test_full_flow():
+    # Get addresses from private keys
+    requester_account = Account.from_key(os.getenv("REQUESTER_PRIVATE_KEY"))
+    provider_account = Account.from_key(os.getenv("PROVIDER_PRIVATE_KEY"))
 
-    print("Requester:", requester.address)
-    print("Provider:", provider.address)
-
-    # 1. Create
-    tx_id = requester.create_transaction(
-        requester=requester.address,
-        provider=provider.address,
-        amount=1_000_000,  # 1 USDC (6 decimals)
-        deadline=requester.now() + 86400,
-        dispute_window=3600,
-        service_hash="0x" + "00" * 32,
+    # Initialize BOTH clients
+    requester_client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=requester_account.address,
+        private_key=os.getenv("REQUESTER_PRIVATE_KEY"),
     )
+
+    provider_client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=provider_account.address,
+        private_key=os.getenv("PROVIDER_PRIVATE_KEY"),
+    )
+
+    print("Requester:", requester_client.address)
+    print("Provider:", provider_client.address)
+
+    # 1. REQUESTER creates transaction
+    tx_id = await requester_client.standard.create_transaction({
+        "provider": provider_account.address,
+        "amount": 1,  # $1 USDC
+        "deadline": "+24h",
+        "dispute_window": 3600,  # 1 hour (contract minimum)
+    })
     print("1. Created:", tx_id)
 
-    # 2. Fund (approve + link escrow)
-    escrow_id = requester.fund_transaction(tx_id)
-    print("2. Funded:", escrow_id)
+    # 2. REQUESTER funds (approves USDC + links escrow)
+    await requester_client.standard.link_escrow(tx_id)
+    print("2. Escrow funded!")
 
-    # 3. Provider starts work
-    provider.transition_state(tx_id, State.IN_PROGRESS)
+    # 3. PROVIDER starts work
+    await provider_client.standard.transition_state(tx_id, "IN_PROGRESS")
     print("3. In progress (provider)")
 
-    # 4. Provider delivers
-    provider.transition_state(tx_id, State.DELIVERED)
+    # 4. PROVIDER delivers
+    await provider_client.standard.transition_state(tx_id, "DELIVERED")
     print("4. Delivered (provider)")
 
-    # 5. Wait dispute window (short sleep for demo)
-    print("5. Waiting dispute window...")
-    time.sleep(5)
+    # 5. Wait for dispute window (1 hour minimum)
+    print("5. Waiting for 1 hour dispute window...")
+    time.sleep(3660)  # 61 minutes
 
-    # 6. Requester settles (with optional attestation UID if used)
-    try:
-        requester.release_escrow(tx_id)
-        print("6. Settled (payment released)")
-    except (ValidationError, TransactionError, RpcError) as e:
-        print("Settlement failed:", e)
+    # 6. Release escrow after dispute window expires
+    tx = await requester_client.standard.get_transaction(tx_id)
+    if tx and tx.escrow_id:
+        await requester_client.standard.release_escrow(tx.escrow_id)
+        print("6. Settlement complete! Funds released.")
+
+    print("\nProvider received ~0.99 USDC (after 1% fee)")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(test_full_flow())
 ```
 
 Run it:
@@ -510,10 +515,10 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 | Function | What It Does |
 |----------|--------------|
-| `createTransaction()` | Create new transaction |
-| `linkEscrow()` | Lock USDC in escrow |
-| `transitionState()` | Move to next state |
-| `transitionState(SETTLED)` | Trigger payout (admin/bot executes) |
+| `standard.createTransaction()` | Create new transaction |
+| `standard.linkEscrow()` | Lock USDC in escrow |
+| `standard.transitionState()` | Move to next state (IN_PROGRESS, DELIVERED) |
+| `standard.releaseEscrow()` | Release funds after dispute window expires |
 
 ### Transaction Parameters
 
@@ -535,10 +540,10 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | **"Insufficient funds"** | Get ETH from [faucet](https://portal.cdp.coinbase.com/products/faucet), mint USDC |
 | **"Invalid private key"** | Ensure key starts with `0x` and is 66 characters |
 | **"requester == provider"** | Contract requires different addresses. Use two wallets. |
-| **"Only provider can call"** | IN_PROGRESS, DELIVERED, SETTLED require provider's wallet (or admin/bot for settlement) |
-| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → SETTLED (admin/bot executes payout) |
-| **"Payout not received"** | Ensure SETTLED was requested and admin/bot executed payout; wait until dispute window expires. |
-| **"Dispute window active"** | Wait for dispute window to expire before settlement executes |
+| **"Only provider can call"** | IN_PROGRESS, DELIVERED require provider's wallet |
+| **"Invalid state transition"** | Can't skip states. Follow: COMMITTED → IN_PROGRESS → DELIVERED → releaseEscrow() |
+| **"Dispute window active"** | Wait for dispute window to expire before calling `releaseEscrow()` |
+| **"requesterAddress required"** | `ACTPClient.create()` requires `requesterAddress` parameter |
 
 ---
 

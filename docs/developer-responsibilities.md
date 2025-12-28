@@ -226,7 +226,7 @@ Before mainnet deployment:
 
 ```typescript
 // ❌ This will cause issues
-const tx = await client.kernel.createTransaction({
+const tx = await client.runtime.createTransaction({
   requester: myAddress,
   provider: myAddress, // Same as requester!
   ...
@@ -264,13 +264,13 @@ tx = client.create_transaction(
 
 ```typescript
 // ❌ Proceeding before confirmation
-const txId = await client.kernel.createTransaction({...});
-await client.kernel.transitionState(txId, State.DELIVERED); // Might fail!
+const txId = await client.runtime.createTransaction({...});
+await client.runtime.transitionState(txId, State.DELIVERED); // Might fail!
 
 // ✅ Wait for transaction confirmation
-const tx = await client.kernel.createTransaction({...});
+const tx = await client.runtime.createTransaction({...});
 await tx.wait(); // Wait for block
-await client.kernel.transitionState(txId, State.DELIVERED);
+await client.runtime.transitionState(txId, State.DELIVERED);
 ```
 
 </TabItem>
@@ -299,12 +299,12 @@ client.transition_state(tx_receipt.tx_id, State.DELIVERED)
 
 ```typescript
 // ❌ Can't skip from COMMITTED to DELIVERED
-await client.kernel.transitionState(txId, State.DELIVERED);
+await client.runtime.transitionState(txId, State.DELIVERED);
 // Error: Invalid state transition
 
 // ✅ Must go through IN_PROGRESS first (or handle in your logic)
-await client.kernel.transitionState(txId, State.IN_PROGRESS);
-await client.kernel.transitionState(txId, State.DELIVERED);
+await client.runtime.transitionState(txId, State.IN_PROGRESS);
+await client.runtime.transitionState(txId, State.DELIVERED);
 ```
 
 </TabItem>
@@ -332,11 +332,11 @@ client.transition_state(tx_id, State.DELIVERED)
 
 ```typescript
 // ❌ Funding manually without approval
-await client.kernel.linkEscrow(txId, escrowVault, escrowId); // will revert if no allowance
+await client.runtime.linkEscrow(txId, escrowVault, escrowId); // will revert if no allowance
 
-// ✅ Use fundTransaction to approve + link escrow in one call
-const txId = await client.kernel.createTransaction({...});
-const escrowId = await client.fundTransaction(txId);
+// ✅ Use standard.linkEscrow() to approve + link escrow in one call
+const txId = await client.runtime.createTransaction({...});
+const escrowId = await client.standard.linkEscrow(txId);
 ```
 
 </TabItem>
@@ -361,14 +361,14 @@ escrow_id = client.fund_transaction(tx_id)
 
 ```typescript
 // ❌ Creating transaction with deadline too tight
-const tx = await client.kernel.createTransaction({
+const tx = await client.runtime.createTransaction({
   deadline: Math.floor(Date.now() / 1000) + 60, // Only 1 minute!
   ...
 });
 // If processing takes 2 minutes, transaction expires
 
 // ✅ Allow reasonable time
-const tx = await client.kernel.createTransaction({
+const tx = await client.runtime.createTransaction({
   deadline: Math.floor(Date.now() / 1000) + 86400, // 24 hours
   ...
 });
@@ -404,14 +404,14 @@ tx_id = client.create_transaction(
 
 ```typescript
 // ❌ Delivering without proof
-await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+await client.runtime.transitionState(txId, State.DELIVERED, '0x');
 // No proof = weak position in disputes
 
 // ✅ Always create and anchor proof
 const result = await performService();
 const proofHash = await client.proofs.hashContent(JSON.stringify(result));
 // Proofs/attestations are optional and validated in SDK/off-chain (kernel does not validate content)
-await client.kernel.transitionState(txId, State.DELIVERED, proofHash);
+await client.runtime.transitionState(txId, State.DELIVERED, proofHash);
 ```
 
 </TabItem>

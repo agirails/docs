@@ -298,7 +298,7 @@ Day 10: Transaction settles
 
 ```typescript
 // $100 transaction settles
-await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
+await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
 
 // Distribution:
 // Provider: $99.00
@@ -328,15 +328,15 @@ client.transition_state(tx_id, State.SETTLED, b"\x00")
 // $1,000 transaction with milestones
 
 // Milestone 1: $250
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Fee: $2.50, Provider: $247.50
 
 // Milestone 2: $250
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Fee: $2.50, Provider: $247.50
 
 // Final: $500
-await client.kernel.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
+await client.runtime.transitionState(txId, State.SETTLED, '0x'); // Payout happens inside SETTLED transition
 // Fee: $5.00, Provider: $495.00
 
 // TOTAL: Provider $990, Platform $10

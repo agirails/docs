@@ -96,7 +96,8 @@ async function main() {
   }
 
   const client = await ACTPClient.create({
-    network: 'base-sepolia',
+    mode: 'testnet',
+    requesterAddress: wallet.address,
     privateKey: privateKey
   });
 
@@ -258,7 +259,8 @@ async function main() {
   const privateKey = await getPrivateKey();
 
   const client = await ACTPClient.create({
-    network: 'base-sepolia',
+    mode: 'testnet',
+    requesterAddress: wallet.address,
     privateKey: privateKey
   });
 

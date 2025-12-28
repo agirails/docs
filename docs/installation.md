@@ -191,19 +191,39 @@ console.log('Minted 1000 USDC');
 <TabItem value="py" label="Python">
 
 ```python title="mint_usdc.py"
+import asyncio
 import os
 from dotenv import load_dotenv
-from agirails_sdk import ACTPClient, Network
+from eth_account import Account
+from web3 import Web3
 
 load_dotenv()
 
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
-usdc = client.usdc
-tx = usdc.functions.mint(client.address, 1_000 * 1_000_000).build_transaction(
-    client._tx_meta(gas=120_000)
-)
-receipt = client._build_and_send(tx)
-print("Minted 1000 USDC", receipt["transactionHash"].hex())
+async def mint_usdc():
+    w3 = Web3(Web3.HTTPProvider("https://sepolia.base.org"))
+    account = Account.from_key(os.environ["PRIVATE_KEY"])
+
+    usdc = w3.eth.contract(
+        address="0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb",
+        abi=[{"name": "mint", "type": "function", "inputs": [
+            {"name": "to", "type": "address"},
+            {"name": "amount", "type": "uint256"}
+        ]}]
+    )
+
+    tx = usdc.functions.mint(account.address, 1_000 * 1_000_000).build_transaction({
+        "from": account.address,
+        "nonce": w3.eth.get_transaction_count(account.address),
+        "gas": 120_000,
+        "gasPrice": w3.eth.gas_price,
+    })
+    signed = account.sign_transaction(tx)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+    w3.eth.wait_for_transaction_receipt(tx_hash)
+    print("Minted 1000 USDC:", tx_hash.hex())
+
+if __name__ == "__main__":
+    asyncio.run(mint_usdc())
 ```
 
 </TabItem>
@@ -223,24 +243,27 @@ Test your setup:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="verify-setup.ts"
-import { ACTPClient } from '@agirails/sdk';
-import { ethers, formatEther, formatUnits } from 'ethers';
+import { ACTPClient, getNetwork } from '@agirails/sdk';
+import { ethers, formatEther, formatUnits, Wallet } from 'ethers';
 import 'dotenv/config';
 
 async function verify() {
+  const wallet = new Wallet(process.env.PRIVATE_KEY!);
+  const networkConfig = getNetwork('base-sepolia');
+  const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
+
   const client = await ACTPClient.create({
-    network: 'base-sepolia',
-    privateKey: process.env.PRIVATE_KEY!
+    mode: 'testnet',
+    requesterAddress: wallet.address,
+    privateKey: process.env.PRIVATE_KEY!,
   });
 
-  const address = await client.getAddress();
-  const config = client.getNetworkConfig();
-  const provider = client.getProvider();
+  const address = client.getAddress();
 
   // Check balances
   const ethBalance = await provider.getBalance(address);
   const usdcContract = new ethers.Contract(
-    config.contracts.usdc,
+    networkConfig.contracts.usdc,
     ['function balanceOf(address) view returns (uint256)'],
     provider
   );
@@ -248,8 +271,8 @@ async function verify() {
 
   console.log('✓ Wallet:', address);
   console.log('✓ Network: Base Sepolia');
-  console.log('✓ ACTPKernel:', config.contracts.actpKernel);
-  console.log('✓ EscrowVault:', config.contracts.escrowVault);
+  console.log('✓ ACTPKernel:', networkConfig.contracts.actpKernel);
+  console.log('✓ EscrowVault:', networkConfig.contracts.escrowVault);
   console.log('✓ ETH balance:', formatEther(ethBalance), 'ETH');
   console.log('✓ USDC balance:', formatUnits(usdcBalance, 6), 'USDC');
   console.log('\n✅ Setup verified!');
@@ -265,25 +288,48 @@ verify().catch(e => {
 <TabItem value="py" label="Python">
 
 ```python title="verify_setup.py"
+import asyncio
 import os
 from dotenv import load_dotenv
-from agirails_sdk import ACTPClient, Network
+from eth_account import Account
+from web3 import Web3
+from agirails import ACTPClient
 
 load_dotenv()
 
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
-usdc = client.usdc
+async def verify():
+    account = Account.from_key(os.environ["PRIVATE_KEY"])
+    w3 = Web3(Web3.HTTPProvider("https://sepolia.base.org"))
 
-eth_balance = client.w3.eth.get_balance(client.address)
-usdc_balance = usdc.functions.balanceOf(client.address).call()
+    client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=account.address,
+        private_key=os.environ["PRIVATE_KEY"],
+    )
 
-print("✓ Wallet:", client.address)
-print("✓ Network: Base Sepolia")
-print("✓ ACTPKernel:", client.config.actp_kernel)
-print("✓ EscrowVault:", client.config.escrow_vault)
-print("✓ ETH balance:", client.w3.from_wei(eth_balance, 'ether'), "ETH")
-print("✓ USDC balance:", usdc_balance / 1_000_000, "USDC")
-print("\n✅ Setup verified!")
+    # Contract addresses for Base Sepolia
+    actp_kernel = "0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba"
+    escrow_vault = "0x921edE340770db5DB6059B5B866be987d1b7311F"
+    usdc_address = "0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb"
+
+    usdc = w3.eth.contract(
+        address=usdc_address,
+        abi=[{"name": "balanceOf", "type": "function", "inputs": [{"name": "account", "type": "address"}], "outputs": [{"type": "uint256"}]}]
+    )
+
+    eth_balance = w3.eth.get_balance(client.address)
+    usdc_balance = usdc.functions.balanceOf(client.address).call()
+
+    print("✓ Wallet:", client.address)
+    print("✓ Network: Base Sepolia")
+    print("✓ ACTPKernel:", actp_kernel)
+    print("✓ EscrowVault:", escrow_vault)
+    print("✓ ETH balance:", w3.from_wei(eth_balance, "ether"), "ETH")
+    print("✓ USDC balance:", usdc_balance / 1_000_000, "USDC")
+    print("\n✅ Setup verified!")
+
+if __name__ == "__main__":
+    asyncio.run(verify())
 ```
 
 </TabItem>
@@ -341,7 +387,7 @@ Base Mainnet contracts will be deployed after testnet validation. Use Base Sepol
 | **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
 :::caution SDK Will Throw Error
-Using `network: 'base-mainnet'` will fail until contracts are deployed. Zero addresses are intentional to prevent accidental mainnet usage.
+Using `mode: 'mainnet'` will fail until contracts are deployed. Zero addresses are intentional to prevent accidental mainnet usage.
 :::
 
 ---
@@ -389,24 +435,29 @@ Using `network: 'base-mainnet'` will fail until contracts are deployed. Zero add
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
+import { Wallet } from 'ethers';
+
+const wallet = new Wallet(process.env.PRIVATE_KEY!);
 
 // Minimal (uses defaults)
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY!
+  mode: 'testnet',
+  requesterAddress: wallet.address,
+  privateKey: process.env.PRIVATE_KEY!,
 });
 
 // With custom RPC
-const client = await ACTPClient.create({
-  network: 'base-sepolia',
+const clientWithRpc = await ACTPClient.create({
+  mode: 'testnet',
+  requesterAddress: wallet.address,
   privateKey: process.env.PRIVATE_KEY!,
-  rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/YOUR_KEY'
+  rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/YOUR_KEY',
 });
 
-// With external signer (e.g., from wallet connection)
-const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  signer: externalSigner // ethers.Signer from wallet
+// Mock mode (local development, no blockchain needed)
+const mockClient = await ACTPClient.create({
+  mode: 'mock',
+  requesterAddress: wallet.address,
 });
 ```
 
@@ -414,21 +465,36 @@ const client = await ACTPClient.create({
 <TabItem value="py" label="Python">
 
 ```python
-from agirails_sdk import ACTPClient, Network
+import asyncio
 import os
+from eth_account import Account
+from agirails import ACTPClient
 
-# Minimal
-client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
-    private_key=os.environ["PRIVATE_KEY"],
-)
+account = Account.from_key(os.environ["PRIVATE_KEY"])
 
-# With custom RPC
-client = ACTPClient(
-    network=Network.BASE_SEPOLIA,
-    private_key=os.environ["PRIVATE_KEY"],
-    rpc_url="https://base-sepolia.g.alchemy.com/v2/YOUR_KEY",
-)
+async def init_clients():
+    # Minimal (uses defaults)
+    client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=account.address,
+        private_key=os.environ["PRIVATE_KEY"],
+    )
+
+    # With custom RPC
+    client_with_rpc = await ACTPClient.create(
+        mode="testnet",
+        requester_address=account.address,
+        private_key=os.environ["PRIVATE_KEY"],
+        rpc_url="https://base-sepolia.g.alchemy.com/v2/YOUR_KEY",
+    )
+
+    # Mock mode (local development, no blockchain needed)
+    mock_client = await ACTPClient.create(
+        mode="mock",
+        requester_address=account.address,
+    )
+
+    return client, client_with_rpc, mock_client
 ```
 
 </TabItem>

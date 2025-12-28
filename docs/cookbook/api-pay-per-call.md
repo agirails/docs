@@ -83,7 +83,8 @@ app.use(express.json());
 
 // Initialize AGIRAILS client
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: process.env.ADDRESS!,
   privateKey: process.env.PROVIDER_PRIVATE_KEY!
 });
 
@@ -106,7 +107,7 @@ async function verifyPayment(req: any, res: any, next: any) {
 
   try {
     // Fetch transaction details
-    const tx = await client.kernel.getTransaction(txId);
+    const tx = await client.runtime.getTransaction(txId);
 
     // Verify we're the provider
     if (tx.provider.toLowerCase() !== PROVIDER_ADDRESS.toLowerCase()) {
@@ -167,7 +168,7 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
   try {
     // Mark as IN_PROGRESS if not already
     if (tx.state === State.COMMITTED) {
-      await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+      await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
     }
 
     // ===========================================
@@ -183,7 +184,7 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
     });
 
     // Deliver with encoded proof
-    await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+    await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 
     // Return result to consumer
     res.json({
@@ -215,7 +216,8 @@ app.post('/api/generate', verifyPayment, async (req, res) => {
 app.get('/api/pricing', (req, res) => {
   res.json({
     provider: PROVIDER_ADDRESS,
-    network: 'base-sepolia',
+    mode: 'testnet',
+  requesterAddress: process.env.ADDRESS!,
     pricing: {
       perCall: formatUnits(PRICE_PER_CALL, 6) + ' USDC',
       currency: 'USDC',
@@ -285,7 +287,7 @@ def verify_payment():
         }), 402
 
     try:
-        tx = client.kernel.get_transaction(tx_id)
+        tx = client.runtime.get_transaction(tx_id)
 
         # Verify we're the provider
         if tx.provider.lower() != PROVIDER_ADDRESS.lower():
@@ -336,7 +338,7 @@ def generate():
     try:
         # Mark as IN_PROGRESS
         if tx.state == State.COMMITTED:
-            client.kernel.transition_state(tx_id, State.IN_PROGRESS)
+            client.runtime.transition_state(tx_id, State.IN_PROGRESS)
 
         # YOUR SERVICE LOGIC HERE
         result = generate_content(prompt)
@@ -348,7 +350,7 @@ def generate():
         )
 
         # Deliver with proof
-        client.kernel.transition_state(tx_id, State.DELIVERED, proof=proof_gen.encode_proof(proof))
+        client.runtime.transition_state(tx_id, State.DELIVERED, proof=proof_gen.encode_proof(proof))
 
         return jsonify({
             "success": True,
@@ -425,7 +427,8 @@ import { parseUnits } from 'ethers';
 async function callPaidAPI(prompt: string): Promise<string> {
   // Initialize client
   const client = await ACTPClient.create({
-    network: 'base-sepolia',
+    mode: 'testnet',
+  requesterAddress: process.env.ADDRESS!,
     privateKey: process.env.CONSUMER_PRIVATE_KEY!
   });
 
@@ -435,7 +438,7 @@ async function callPaidAPI(prompt: string): Promise<string> {
 
   // Step 1: Create transaction
   console.log('Creating payment transaction...');
-  const txId = await client.kernel.createTransaction({
+  const txId = await client.runtime.createTransaction({
     requester: myAddress,
     provider: API_PROVIDER,
     amount: parseUnits('0.10', 6), // $0.10
@@ -446,8 +449,8 @@ async function callPaidAPI(prompt: string): Promise<string> {
   console.log(`Transaction created: ${txId}`);
 
   // Step 2: Fund escrow (approve + link in one call)
-  console.log('Funding transaction via fundTransaction...');
-  const escrowId = await client.fundTransaction(txId);
+  console.log('Funding transaction via linkEscrow...');
+  const escrowId = await client.standard.linkEscrow(txId);
   console.log(`Transaction funded - USDC locked in escrow (escrowId ${escrowId})`);
 
   // Step 3: Call the API with transaction ID
@@ -501,7 +504,7 @@ async def call_paid_api(prompt: str) -> str:
 
     # Step 1: Create transaction
     print("Creating payment transaction...")
-    tx_id = client.kernel.create_transaction(
+    tx_id = client.runtime.create_transaction(
         requester=my_address,
         provider=API_PROVIDER,
         amount=100_000,  # $0.10 USDC
@@ -553,7 +556,7 @@ if __name__ == "__main__":
 | Step | Consumer | Provider | SDK Method |
 |------|----------|----------|-----------|
 | **1. Discover** | GET `/api/pricing` | Serve pricing info | None |
-| **2. Pre-fund** | Create + fund escrow | - | `createTransaction()`, `fundTransaction()` |
+| **2. Pre-fund** | Create + fund escrow | - | `createTransaction()`, `linkEscrow()` |
 | **3. Call** | POST with `X-AGIRAILS-TX-ID` | Verify middleware | `kernel.getTransaction()` |
 | **4. Serve** | - | Process request | Your logic |
 | **5. Deliver** | - | Mark delivered (optional proof hash) | `transitionState(DELIVERED)` |
@@ -738,7 +741,7 @@ await call_api(tx_id2)
 ```typescript
 try {
   const result = await yourService(input);
-  await client.kernel.transitionState(txId, State.DELIVERED, proof);
+  await client.runtime.transitionState(txId, State.DELIVERED, proof);
   return result;
 } catch (error) {
   // DON'T deliver - let consumer cancel or retry
@@ -752,7 +755,7 @@ try {
 ```python
 try:
     result = await your_service(input)
-    await client.kernel.transition_state(tx_id, State.DELIVERED, proof)
+    await client.runtime.transition_state(tx_id, State.DELIVERED, proof)
     return result
 except Exception as error:
     # DON'T deliver - let consumer cancel or retry
@@ -840,7 +843,7 @@ For high-frequency, low-value calls, use a credit system:
 
 ```typescript
 // Consumer: Prepay for 100 calls
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   amount: parseUnits('10', 6), // $10 for 100 calls at $0.10
   // ...
 });
@@ -858,7 +861,7 @@ app.post('/api/generate', async (req, res) => {
 
   if (remainingCalls === 0) {
     // Final call - settle the transaction
-    await client.kernel.transitionState(txId, State.DELIVERED, proof);
+    await client.runtime.transitionState(txId, State.DELIVERED, proof);
   }
 });
 ```
@@ -868,7 +871,7 @@ app.post('/api/generate', async (req, res) => {
 
 ```python
 # Consumer: Prepay for 100 calls
-tx_id = client.kernel.create_transaction(
+tx_id = client.runtime.create_transaction(
     amount=10_000_000,  # $10 for 100 calls at $0.10
     # ...
 )
@@ -888,7 +891,7 @@ def generate():
 
     if remaining_calls == 0:
         # Final call - settle the transaction
-        client.kernel.transition_state(tx_id, State.DELIVERED, proof)
+        client.runtime.transition_state(tx_id, State.DELIVERED, proof)
 
     return jsonify({"result": result})
 ```

@@ -86,27 +86,29 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
-import { parseUnits, id } from 'ethers';
+import { Wallet } from 'ethers';
 import 'dotenv/config';
+
+// Get address from private key
+const wallet = new Wallet(process.env.PRIVATE_KEY!);
 
 // Initialize client (requester)
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY!
+  mode: 'testnet',
+  requesterAddress: wallet.address,
+  privateKey: process.env.PRIVATE_KEY!,
 });
 
 // Create transaction
-const txId = await client.kernel.createTransaction({
-  requester: await client.getAddress(),
+const txId = await client.standard.createTransaction({
   provider: '0x...providerAddress',
-  amount: parseUnits('10', 6),
-  deadline: Math.floor(Date.now() / 1000) + 86400,
-  disputeWindow: 7200,
-  metadata: id('data-analysis-service')
+  amount: 10,  // $10 USDC (SDK handles decimals)
+  deadline: '+24h',
+  disputeWindow: 7200,  // 2 hours
 });
 
 // Fund (approve USDC + link escrow)
-await client.fundTransaction(txId);
+await client.standard.linkEscrow(txId);
 console.log('Payment ready:', txId);
 ```
 
@@ -114,27 +116,39 @@ console.log('Payment ready:', txId);
 <TabItem value="py" label="Python">
 
 ```python
-import os, time
+import asyncio
+import os
 from dotenv import load_dotenv
-from agirails_sdk import ACTPClient, Network
+from eth_account import Account
+from agirails import ACTPClient
 
 load_dotenv()
 
-# Initialize requester client
-client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.environ["PRIVATE_KEY"])
+async def main():
+    # Get address from private key
+    account = Account.from_key(os.environ["PRIVATE_KEY"])
 
-# Create transaction (requester != provider required by contract)
-tx_id = client.create_transaction(
-    provider="0x...providerAddress",   # Provider wallet
-    requester=client.address,          # Requester = signer
-    amount=10 * 1_000_000,             # 10 USDC (6 decimals)
-    deadline=int(time.time()) + 86400, # 24 hours
-    dispute_window=7200,               # 2 hours
-    service_hash="0x" + "00"*32,       # Replace with service hash if needed
-)
+    # Initialize client (requester)
+    client = await ACTPClient.create(
+        mode="testnet",
+        requester_address=account.address,
+        private_key=os.environ["PRIVATE_KEY"],
+    )
 
-escrow_id = client.fund_transaction(tx_id)  # Approve + link escrow
-print("Payment ready:", tx_id, "escrow:", escrow_id)
+    # Create transaction
+    tx_id = await client.standard.create_transaction({
+        "provider": "0x...providerAddress",
+        "amount": 10,  # $10 USDC (SDK handles decimals)
+        "deadline": "+24h",
+        "dispute_window": 7200,  # 2 hours
+    })
+
+    # Fund (approve USDC + link escrow)
+    await client.standard.link_escrow(tx_id)
+    print("Payment ready:", tx_id)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 </TabItem>

@@ -123,7 +123,7 @@ client.w3.eth.wait_for_transaction_receipt(tx_hash)
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
 
 // Link escrow (auto-transitions to COMMITTED)
-await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 ```
 
 </TabItem>
@@ -189,7 +189,7 @@ When transaction settles, funds are released by transitioning to SETTLED state:
 ```typescript
 // releaseEscrow() is called INTERNALLY when transitioning to SETTLED state
 // Users should call transitionState() instead:
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
+await client.runtime.transitionState(txId, State.SETTLED, '0x');
 // This internally triggers releaseEscrow() if all conditions are met
 ```
 
@@ -294,22 +294,22 @@ contract EscrowVault is ReentrancyGuard {
 
 ```typescript
 // 1. Create transaction
-const txId = await client.kernel.createTransaction({...});
+const txId = await client.runtime.createTransaction({...});
 
 // 2. Fund escrow
 const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
 await usdcContract.approve(ESCROW_VAULT_ADDRESS, amount);
 
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
-await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 // Escrow: $100, State: COMMITTED
 
 // 3. Provider delivers
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
-await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.runtime.transitionState(txId, State.DELIVERED, '0x');
 
 // 4. Settle transaction (internally releases escrow)
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
+await client.runtime.transitionState(txId, State.SETTLED, '0x');
 // Provider receives: $99, Platform: $1
 ```
 
@@ -358,25 +358,25 @@ client.transition_state(tx_id, State.SETTLED, "0x")
 
 ```typescript
 // 1. Create and fund $1,000 transaction
-const txId = await client.kernel.createTransaction({...});
+const txId = await client.runtime.createTransaction({...});
 
 const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
 await usdcContract.approve(ESCROW_VAULT_ADDRESS, parseUnits('1000', 6));
 
 const escrowId = ethers.id(`escrow-${txId}-${Date.now()}`);
-await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 // Escrow: $1,000
 
 // 2. Release milestone 1
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $750
 
 // 3. Release milestone 2
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Provider: $247.50, Escrow remaining: $500
 
 // 4. Final settlement
-await client.kernel.transitionState(txId, State.SETTLED, '0x');
+await client.runtime.transitionState(txId, State.SETTLED, '0x');
 // Provider: $495, Total received: $990
 ```
 
@@ -428,7 +428,7 @@ client.transition_state(tx_id, State.SETTLED, "0x")
 
 ```typescript
 // Requester cancels after deadline
-await client.kernel.transitionState(txId, State.CANCELLED, '0x');
+await client.runtime.transitionState(txId, State.CANCELLED, '0x');
 
 // Distribution:
 // Requester refund: $475 (95%)
@@ -579,7 +579,7 @@ client.events.on('EscrowCreated', (escrowId, requester, provider, amount) => {
 ```python
 from web3 import Web3
 
-event_filter = client.kernel.events.EscrowCreated.create_filter(fromBlock="latest")
+event_filter = client.runtime.events.EscrowCreated.create_filter(fromBlock="latest")
 for evt in event_filter.get_new_entries():
     escrow_id = Web3.to_hex(evt["args"]["escrowId"])
     amount = evt["args"]["amount"]

@@ -144,7 +144,7 @@ Pay for each AI API call automatically.
       "name": "Fund Transaction",
       "type": "@agirails/n8n-nodes-agirails.agirails",
       "parameters": {
-        "operation": "fundTransaction",
+        "operation": "linkEscrow",
         "txId": "={{ $json.txId }}",
         "amount": "={{ $json.amount }}"
       },
@@ -219,7 +219,7 @@ Buy data on a schedule and store it.
 **2. AGIRAILS - Create & Fund**
 - Provider: Data provider address
 - Amount: Based on data size/type
-- Fund escrow (approve + link in one call; uses `fundTransaction`)
+- Fund escrow (approve + link in one call; uses `linkEscrow`)
 
 **3. HTTP Request - Fetch Data**
 - URL: Data provider API

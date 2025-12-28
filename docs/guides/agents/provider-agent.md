@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Production-ready provider agents that **discover funded jobs**, **deliver with proofs/attestations**, and **settle automatically**. Examples are provided in both **TypeScript and Python**.
 
 :::info What You'll Learn
-- Watch for **funded jobs** (State.COMMITTED after `fundTransaction`)
+- Watch for **funded jobs** (State.COMMITTED after `linkEscrow`)
 - Evaluate + accept jobs safely
 - Deliver with **AIP-4 proof** and optional **EAS attestation**
 - Anchor attestation UID on-chain so requesters can verify (`tx.attestationUID`)
@@ -48,7 +48,7 @@ pip install agirails-sdk python-dotenv
 
 | Responsibility | Key Calls | Notes |
 | --- | --- | --- |
-| Job discovery | `events.onStateChanged` (TS) / event filters (PY) | Listen for `COMMITTED` (consumer called `fundTransaction`) |
+| Job discovery | `events.onStateChanged` (TS) / event filters (PY) | Listen for `COMMITTED` (consumer called `linkEscrow`) |
 | Evaluation | `kernel.getTransaction` | Check amount, deadline, service type |
 | Work execution | your business logic | Move to `IN_PROGRESS` before work |
 | Delivery + proof | `proofGenerator.encodeProof` + `transitionState(DELIVERED)` | Optional: EAS attestation + `anchorAttestation` |
@@ -68,7 +68,8 @@ import { keccak256, parseUnits, toUtf8Bytes } from 'ethers';
 import 'dotenv/config';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: process.env.PROVIDER_ADDRESS!,
   privateKey: process.env.PROVIDER_PRIVATE_KEY!,
   // Optional AIP-7 registry (uses network defaults if deployed)
   agentRegistry: true,
@@ -133,7 +134,7 @@ CONFIG = {
 </Tabs>
 
 :::tip Funding detection
-Consumers now call `fundTransaction()`. Watch for **State.COMMITTED** (escrow funded) rather than INITIATED/QUOTED.
+Consumers now call `linkEscrow()`. Watch for **State.COMMITTED** (escrow funded) rather than INITIATED/QUOTED.
 :::
 
 ---
@@ -188,7 +189,7 @@ function watchFundedJobs() {
   return client.events.onStateChanged(async (txId, _from, to) => {
     if (to !== State.COMMITTED) return;
 
-    const tx = await client.kernel.getTransaction(txId);
+    const tx = await client.runtime.getTransaction(txId);
     if (tx.provider.toLowerCase() !== CONFIG.providerAddress.toLowerCase()) return;
 
     await evaluateJob(tx);
@@ -203,7 +204,7 @@ function watchFundedJobs() {
 from web3 import Web3
 
 def watch_funded_jobs(poll_interval=5):
-    event = client.kernel.events.StateTransitioned.create_filter(
+    event = client.runtime.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
     )
     while True:
@@ -226,7 +227,7 @@ def watch_funded_jobs(poll_interval=5):
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-async function evaluateJob(tx: Awaited<ReturnType<typeof client.kernel.getTransaction>>) {
+async function evaluateJob(tx: Awaited<ReturnType<typeof client.runtime.getTransaction>>) {
   const timeRemaining = tx.deadline - Math.floor(Date.now() / 1000);
   if (tx.amount < CONFIG.minAmount || tx.amount > CONFIG.maxAmount) return;
   if (timeRemaining < 300) return; // <5 min left
@@ -270,7 +271,7 @@ def evaluate_job(tx):
 
 ```typescript
 async function executeJob(tx: any) {
-  await client.kernel.transitionState(tx.txId, State.IN_PROGRESS);
+  await client.runtime.transitionState(tx.txId, State.IN_PROGRESS);
 
   const result = await performWork(tx); // your service logic
   const proof = client.proofGenerator.generateDeliveryProof({
@@ -288,9 +289,9 @@ async function executeJob(tx: any) {
     attestationUid = att.uid;
   }
 
-  await client.kernel.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.runtime.transitionState(tx.txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
   if (attestationUid) {
-    await client.kernel.anchorAttestation(tx.txId, attestationUid);
+    await client.runtime.anchorAttestation(tx.txId, attestationUid);
   }
 
   monitorSettlement(tx, attestationUid);
@@ -351,9 +352,9 @@ function monitorSettlement(tx: any, attestationUid?: string) {
   });
 
   setTimeout(async () => {
-    const latest = await client.kernel.getTransaction(tx.txId);
+    const latest = await client.runtime.getTransaction(tx.txId);
     if (latest.state === State.DELIVERED) {
-      await client.kernel.transitionState(tx.txId, State.SETTLED, attestationUid || '0x');
+      await client.runtime.transitionState(tx.txId, State.SETTLED, attestationUid || '0x');
     }
   }, (tx.disputeWindow + 60) * 1000);
 }
@@ -393,14 +394,15 @@ def monitor_settlement(tx, attestation_uid=None):
 import { ACTPClient, State } from '@agirails/sdk';
 import 'dotenv/config';
 
-const client = await ACTPClient.create({ network: 'base-sepolia', privateKey: process.env.PROVIDER_PRIVATE_KEY! });
+const client = await ACTPClient.create({ mode: 'testnet',
+  requesterAddress: process.env.PROVIDER_ADDRESS!, privateKey: process.env.PROVIDER_PRIVATE_KEY! });
 
 client.events.onStateChanged(async (txId, _from, to) => {
   if (to !== State.COMMITTED) return;
-  const tx = await client.kernel.getTransaction(txId);
-  await client.kernel.transitionState(txId, State.IN_PROGRESS);
+  const tx = await client.runtime.getTransaction(txId);
+  await client.runtime.transitionState(txId, State.IN_PROGRESS);
   const proof = client.proofGenerator.generateDeliveryProof({ txId, deliverable: '{"status":"ok"}' });
-  await client.kernel.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
+  await client.runtime.transitionState(txId, State.DELIVERED, client.proofGenerator.encodeProof(proof));
 });
 
 console.log('Provider running... (Ctrl+C to exit)');
@@ -419,7 +421,7 @@ load_dotenv()
 client = ACTPClient(network=Network.BASE_SEPOLIA, private_key=os.getenv("PROVIDER_PRIVATE_KEY"))
 proof_gen = ProofGenerator()
 
-filt = client.kernel.events.StateTransitioned.create_filter(
+filt = client.runtime.events.StateTransitioned.create_filter(
     fromBlock="latest", argument_filters={"toState": State.COMMITTED.value}
 )
 print("Provider running... (Ctrl+C to exit)")
@@ -440,7 +442,7 @@ while True:
 
 ## Production checklist
 
-- Use `State.COMMITTED` listeners (fundTransaction) for job intake
+- Use `State.COMMITTED` listeners (linkEscrow) for job intake
 - Validate amount/deadline/service hash before work
 - Move to `IN_PROGRESS` before execution; log progress
 - Deliver with encoded proof; anchor attestation UID so consumers can verify (`tx.attestationUID`)

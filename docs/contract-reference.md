@@ -338,7 +338,7 @@ cast call 0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba \
 ```
 
 **See Also:**
-- [SDK: client.kernel.getTransaction()](/sdk-reference#gettransaction)
+- [SDK: client.runtime.getTransaction()](/sdk-reference/advanced-api/kernel#gettransaction)
 
 ---
 
@@ -580,7 +580,7 @@ cast send 0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba \
 
 **See Also:**
 - [linkEscrow()](#linkescrow) - Next step to commit funds
-- [SDK: client.kernel.createTransaction()](/sdk-reference#createtransaction)
+- [SDK: client.runtime.createTransaction()](/sdk-reference/advanced-api/kernel#createtransaction)
 
 ---
 
@@ -640,7 +640,7 @@ contract MyAgent {
     address public escrowVault = 0x921edE340770db5DB6059B5B866be987d1b7311F;
     IERC20 public usdc = IERC20(0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb);
 
-    function fundTransaction(bytes32 txId) external {
+    function linkTransactionEscrow(bytes32 txId) external {
         // 1. Get transaction details
         IACTPKernel.TransactionView memory tx = kernel.getTransaction(txId);
 
@@ -718,7 +718,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 **See Also:**
 - [EscrowVault.createEscrow()](#createescrow) - Internal call made by linkEscrow
-- [SDK: client.fundTransaction()](/sdk-reference#fundtransaction)
+- [SDK: client.standard.linkEscrow()](/sdk-reference/advanced-api/kernel#linkescrow)
 
 ---
 
@@ -897,7 +897,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 **See Also:**
 - [State Machine](#state-machine) - Valid transitions
-- [SDK: client.kernel.transitionState()](/sdk-reference#transitionstate)
+- [SDK: client.runtime.transitionState()](/sdk-reference/advanced-api/kernel#transitionstate)
 
 ---
 
@@ -1230,7 +1230,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 **See Also:**
 - [EAS Documentation](https://docs.attest.sh/)
-- [SDK: client.eas.attestDeliveryProof()](/sdk-reference#attestdeliveryproof)
+- [SDK: client.eas.attestDeliveryProof()](/sdk-reference/advanced-api/eas#attestdeliveryproof)
 
 ---
 

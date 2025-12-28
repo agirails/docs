@@ -164,7 +164,7 @@ class BudgetCoordinator {
   ): Promise<SpendingResponse> {
     try {
       // Create transaction on behalf of requester
-      const txId = await this.client.kernel.createTransaction({
+      const txId = await this.client.runtime.createTransaction({
         requester: await this.client.getAddress(), // Coordinator pays
         provider: request.provider,
         amount: request.amount,
@@ -174,7 +174,7 @@ class BudgetCoordinator {
       });
 
       // Fund escrow (approve + link)
-      await this.client.fundTransaction(txId);
+      await this.client.standard.linkEscrow(txId);
 
       // Record spending
       this.spending.push({
@@ -399,7 +399,7 @@ class BudgetCoordinator:
     def _execute_spending(self, request: SpendingRequest, agent: AgentConfig) -> SpendingResponse:
         try:
             # Create transaction
-            tx_id = self.client.kernel.create_transaction(
+            tx_id = self.client.runtime.create_transaction(
                 requester=self.client.address,
                 provider=request.provider,
                 amount=request.amount,
@@ -585,7 +585,8 @@ class BudgetedAgent:
 async function main() {
   // Initialize coordinator with treasury wallet
   const coordinatorClient = await ACTPClient.create({
-    network: 'base-sepolia',
+    mode: 'testnet',
+    requesterAddress: process.env.TREASURY_ADDRESS!,
     privateKey: process.env.TREASURY_PRIVATE_KEY!
   });
 
@@ -1065,14 +1066,14 @@ class BudgetCoordinator:
 
 ```typescript
 try {
-  const txId = await this.client.kernel.createTransaction({...});
+  const txId = await this.client.runtime.createTransaction({...});
 
   try {
     await this.client.escrow.fund(txId);
   } catch (fundError) {
     // Transaction created but not funded - CANCEL IT
     console.error('Funding failed, cancelling transaction');
-    await this.client.kernel.transitionState(txId, State.CANCELLED, '0x');
+    await this.client.runtime.transitionState(txId, State.CANCELLED, '0x');
     throw fundError;
   }
 
@@ -1089,14 +1090,14 @@ try {
 
 ```python
 try:
-    tx_id = self.client.kernel.create_transaction(...)
+    tx_id = self.client.runtime.create_transaction(...)
 
     try:
         self.client.escrow.fund(tx_id)
     except Exception as fund_error:
         # Transaction created but not funded - CANCEL IT
         print("Funding failed, cancelling transaction")
-        self.client.kernel.transition_state(tx_id, State.CANCELLED, "0x")
+        self.client.runtime.transition_state(tx_id, State.CANCELLED, "0x")
         raise fund_error
 
     # Only record if fully successful

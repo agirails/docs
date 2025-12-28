@@ -82,11 +82,12 @@ import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: wallet.address,
   privateKey: process.env.REQUESTER_PRIVATE_KEY
 });
 
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   provider: '0xProviderWalletAddress',
   requester: await client.getAddress(),
   amount: parseUnits('100', 6), // $100 USDC (6 decimals)
@@ -154,14 +155,14 @@ print("Transaction created:", tx_id)
 
 ```typescript
 // Option A: Use convenience method (handles approval + linking)
-const escrowId = await client.fundTransaction(txId);
+const escrowId = await client.standard.linkEscrow(txId);
 console.log('Funded with escrow:', escrowId);
 // State: COMMITTED (automatic transition)
 
 // Option B: Manual flow
 const usdc = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, client.signer);
 await usdc.approve(ESCROW_VAULT_ADDRESS, parseUnits('100', 6));
-await client.kernel.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
+await client.runtime.linkEscrow(txId, ESCROW_VAULT_ADDRESS, escrowId);
 // State: COMMITTED
 ```
 
@@ -216,7 +217,7 @@ client.link_escrow(
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
 console.log('Work started');
 // State: IN_PROGRESS
 ```
@@ -257,7 +258,7 @@ Even for sub-second API calls, the provider must call `transitionState(IN_PROGRE
 // Provider computes proof of delivery
 const deliveryProof = '0x'; // Or keccak256 hash of delivery data
 
-await client.kernel.transitionState(txId, State.DELIVERED, deliveryProof);
+await client.runtime.transitionState(txId, State.DELIVERED, deliveryProof);
 console.log('Work delivered, dispute window started');
 // State: DELIVERED
 // Dispute window: now + 2 hours
@@ -356,18 +357,18 @@ For variable pricing, use the QUOTED state:
 
 ```typescript
 // Step 1: Requester creates transaction (estimated amount)
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   amount: parseUnits('100', 6), // Estimated
   // ... other params
 });
 // State: INITIATED
 
 // Step 2: Provider reviews and submits quote
-await client.kernel.transitionState(txId, State.QUOTED, '0x');
+await client.runtime.transitionState(txId, State.QUOTED, '0x');
 // State: QUOTED
 
 // Step 3: Requester reviews quote and funds
-await client.fundTransaction(txId);
+await client.standard.linkEscrow(txId);
 // State: COMMITTED
 ```
 
@@ -605,22 +606,22 @@ For long-running work, release escrow incrementally:
 
 ```typescript
 // 1. Create and fund full amount
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   amount: parseUnits('1000', 6), // $1,000 total
   // ...
 });
-await client.fundTransaction(txId);
+await client.standard.linkEscrow(txId);
 // Escrow: $1,000
 
 // 2. Provider starts work
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
 
 // 3. Release milestones as work progresses
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Provider receives: $247.50 ($250 - 1% fee)
 // Escrow remaining: $750
 
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6));
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6));
 // Escrow remaining: $500
 
 // 4. Final delivery and settlement
@@ -723,7 +724,7 @@ client.events.on('StateTransitioned', (txId, from, to, by) => {
 ```python
 from web3 import Web3
 
-event_filter = client.kernel.events.StateTransitioned.create_filter(fromBlock="latest")
+event_filter = client.runtime.events.StateTransitioned.create_filter(fromBlock="latest")
 for evt in event_filter.get_new_entries():
     tx_id = Web3.to_hex(evt["args"]["transactionId"])
     from_state = evt["args"]["fromState"]

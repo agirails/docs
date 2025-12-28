@@ -51,8 +51,8 @@ import { parseUnits } from 'ethers';
 const amount = parseUnits('100', 6); // USDC has 6 decimals
 await client.escrow.approveToken(USDC_ADDRESS, amount);
 
-// Now link escrow via Kernel
-await client.kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
+// Now link escrow via standard API
+await client.standard.linkEscrow(txId);
 ```
 
 </TabItem>
@@ -63,8 +63,8 @@ await client.kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 amount = 100 * 10**6  # USDC has 6 decimals
 await client.escrow.approve_token(USDC_ADDRESS, amount)
 
-# Now link escrow via Kernel
-await client.kernel.link_escrow(tx_id, escrow_vault_address, escrow_id)
+# Now link escrow via standard API
+await client.standard.link_escrow(tx_id)
 ```
 
 </TabItem>

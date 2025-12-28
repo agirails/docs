@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Building a Consumer Agent
-description: Production-ready consumer agents with TS + PY SDK parity, fundTransaction flow, and attestation-verified settlement
+description: Production-ready consumer agents with TS + PY SDK parity, linkEscrow flow, and attestation-verified settlement
 ---
 
 import Tabs from '@theme/Tabs';
@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Consumer agents that create transactions, fund escrow, monitor delivery, verify proofs/attestations, and settle safely. Examples are provided in both **TypeScript and Python**.
 
 :::info What You'll Learn
-- Create and fund transactions (escrow) with `fundTransaction`
+- Create and fund transactions (escrow) with `linkEscrow`
 - Monitor provider progress and delivery
 - Verify delivery via EAS attestation (`tx.attestationUID`)
 - Release payment or dispute within the window
@@ -56,7 +56,8 @@ const CONFIG = {
 };
 
 export const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: process.env.CONSUMER_ADDRESS!,
   privateKey: process.env.PRIVATE_KEY!,
   eas: {
     contractAddress: '0x4200000000000000000000000000000000000021',
@@ -115,7 +116,7 @@ export async function requestService(req: ServiceRequest): Promise<string> {
   const deadline = req.deadline ?? now + CONFIG.defaultDeadlineBuffer;
   const disputeWindow = req.disputeWindow ?? CONFIG.defaultDisputeWindow;
 
-  const txId = await client.kernel.createTransaction({
+  const txId = await client.runtime.createTransaction({
     requester: CONFIG.consumerAddress,
     provider: req.provider,
     amount: req.amount,
@@ -161,9 +162,9 @@ def request_service(provider: str, amount: int, description: str | None = None) 
 <TabItem value="ts" label="TypeScript">
 
 ```typescript title="src/consumer.ts"
-export async function fundTransactionSafe(txId: string): Promise<void> {
-  const escrowId = await client.fundTransaction(txId);
-  const tx = await client.kernel.getTransaction(txId);
+export async function linkEscrowSafe(txId: string): Promise<void> {
+  const escrowId = await client.standard.linkEscrow(txId);
+  const tx = await client.runtime.getTransaction(txId);
   console.log(`Escrow ${escrowId} funded; state=${State[tx.state]}`);
 }
 ```
@@ -194,7 +195,7 @@ export function watchDelivery(txId: string) {
   return client.events.watchTransaction(txId, async (state) => {
     console.log(`[${txId.substring(0, 8)}] -> ${State[state]}`);
     if (state === State.DELIVERED) {
-      const tx = await client.kernel.getTransaction(txId);
+      const tx = await client.runtime.getTransaction(txId);
       await handleDelivery(tx);
     }
   });
@@ -222,7 +223,7 @@ async function handleDelivery(tx: any) {
 from web3 import Web3
 
 def watch_delivery(tx_id: str, poll_interval=5):
-    filt = client.kernel.events.StateTransitioned.create_filter(
+    filt = client.runtime.events.StateTransitioned.create_filter(
         fromBlock="latest", argument_filters={"txId": Web3.to_bytes(hexstr=tx_id)}
     )
     while True:
@@ -263,7 +264,7 @@ async function acceptDelivery(txId: string, attestationUid: string) {
 
 async function dispute(txId: string, reason: string) {
   // Encode reason off-chain; simple bytes placeholder here
-  await client.kernel.transitionState(txId, State.DISPUTED, '0x');
+  await client.runtime.transitionState(txId, State.DISPUTED, '0x');
   console.log(`Dispute raised for ${txId}: ${reason}`);
 }
 ```
@@ -293,7 +294,7 @@ def dispute(tx_id: str, reason: str):
 
 ```typescript title="src/run-consumer.ts"
 import { parseUnits } from 'ethers';
-import { client, requestService, fundTransactionSafe, watchDelivery } from './consumer';
+import { client, requestService, linkEscrowSafe, watchDelivery } from './consumer';
 
 const provider = process.env.PROVIDER_ADDRESS!;
 
@@ -303,7 +304,7 @@ const txId = await requestService({
   description: 'demo job'
 });
 
-await fundTransactionSafe(txId);
+await linkEscrowSafe(txId);
 watchDelivery(txId);
 console.log('Consumer running... (Ctrl+C to exit)');
 await new Promise(() => {});
@@ -330,7 +331,7 @@ watch_delivery(tx_id)
 
 ## Checklist (production)
 
-- Use `fundTransaction` (escrow funded = State.COMMITTED)
+- Use `linkEscrow` (escrow funded = State.COMMITTED)
 - Verify attestation UID from `tx.attestationUID` (TS) / `tx.attestation_uid` (PY)
 - Use `releaseEscrowWithVerification` (TS) or `release_escrow_with_verification` (PY) for payout
 - Dispute within `disputeWindow` if verification fails

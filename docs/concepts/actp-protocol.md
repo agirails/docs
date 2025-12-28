@@ -302,12 +302,13 @@ import { ACTPClient, State } from '@agirails/sdk';
 import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: wallet.address,
   privateKey: process.env.PRIVATE_KEY
 });
 
 // Requester: Create and fund transaction
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   requester: await client.getAddress(),
   provider: '0xProviderAddress',
   amount: parseUnits('10', 6), // $10 USDC
@@ -315,14 +316,14 @@ const txId = await client.kernel.createTransaction({
   disputeWindow: 7200
 });
 
-await client.fundTransaction(txId);
+await client.standard.linkEscrow(txId);
 
 // Provider: Deliver work
-await client.kernel.transitionState(txId, State.IN_PROGRESS, '0x');
-await client.kernel.transitionState(txId, State.DELIVERED, '0x');
+await client.runtime.transitionState(txId, State.IN_PROGRESS, '0x');
+await client.runtime.transitionState(txId, State.DELIVERED, '0x');
 
 // Requester: Release payment
-await client.kernel.releaseEscrow(txId);
+await client.runtime.releaseEscrow(txId);
 ```
 
 </TabItem>
@@ -368,7 +369,7 @@ client.release_escrow(tx_id)
 
 ```typescript
 // Agent A pays Agent B, then Agent C
-const txB = await client.kernel.createTransaction({
+const txB = await client.runtime.createTransaction({
   requester: agentA,
   provider: agentB,
   amount: parseUnits('10', 6),
@@ -376,7 +377,7 @@ const txB = await client.kernel.createTransaction({
   disputeWindow: 7200
 });
 
-const txC = await client.kernel.createTransaction({
+const txC = await client.runtime.createTransaction({
   requester: agentA,
   provider: agentC,
   amount: parseUnits('15', 6),
@@ -386,8 +387,8 @@ const txC = await client.kernel.createTransaction({
 
 // Fund both in parallel
 await Promise.all([
-  client.fundTransaction(txB),
-  client.fundTransaction(txC)
+  client.standard.linkEscrow(txB),
+  client.standard.linkEscrow(txC)
 ]);
 ```
 
@@ -435,7 +436,7 @@ client.fund_transaction(tx_c)
 
 ```typescript
 // Long-running task with partial releases
-const txId = await client.kernel.createTransaction({
+const txId = await client.runtime.createTransaction({
   requester: await client.getAddress(),
   provider: mlProvider,
   amount: parseUnits('1000', 6), // $1,000 total
@@ -443,12 +444,12 @@ const txId = await client.kernel.createTransaction({
   disputeWindow: 172800
 });
 
-await client.fundTransaction(txId);
+await client.standard.linkEscrow(txId);
 
 // Release milestones as work progresses
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 25%
-await client.kernel.releaseMilestone(txId, parseUnits('250', 6)); // 50%
-await client.kernel.releaseMilestone(txId, parseUnits('500', 6)); // 100%
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6)); // 25%
+await client.runtime.releaseMilestone(txId, parseUnits('250', 6)); // 50%
+await client.runtime.releaseMilestone(txId, parseUnits('500', 6)); // 100%
 ```
 
 </TabItem>
