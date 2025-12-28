@@ -86,75 +86,49 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
 
 ```typescript
 import { ACTPClient } from '@agirails/sdk';
-import { Wallet } from 'ethers';
-import 'dotenv/config';
 
-// Get address from private key
-const wallet = new Wallet(process.env.PRIVATE_KEY!);
-
-// Initialize client (requester)
 const client = await ACTPClient.create({
   mode: 'testnet',
-  requesterAddress: wallet.address,
+  requesterAddress: '0x...yourAddress',
   privateKey: process.env.PRIVATE_KEY!,
 });
 
-// Create transaction
-const txId = await client.standard.createTransaction({
-  provider: '0x...providerAddress',
-  amount: 10,  // $10 USDC (SDK handles decimals)
+// One call: creates transaction + locks funds in escrow
+const result = await client.basic.pay({
+  to: '0x...providerAddress',
+  amount: 10,  // $10 USDC
   deadline: '+24h',
-  disputeWindow: 7200,  // 2 hours
 });
 
-// Fund (approve USDC + link escrow)
-await client.standard.linkEscrow(txId);
-console.log('Payment ready:', txId);
+console.log('Payment ready:', result.txId);
 ```
 
 </TabItem>
 <TabItem value="py" label="Python">
 
 ```python
-import asyncio
-import os
-from dotenv import load_dotenv
-from eth_account import Account
 from agirails import ACTPClient
 
-load_dotenv()
+client = await ACTPClient.create(
+    mode="testnet",
+    requester_address="0x...yourAddress",
+    private_key=os.environ["PRIVATE_KEY"],
+)
 
-async def main():
-    # Get address from private key
-    account = Account.from_key(os.environ["PRIVATE_KEY"])
+# One call: creates transaction + locks funds in escrow
+result = await client.basic.pay({
+    "to": "0x...providerAddress",
+    "amount": 10,  # $10 USDC
+    "deadline": "+24h",
+})
 
-    # Initialize client (requester)
-    client = await ACTPClient.create(
-        mode="testnet",
-        requester_address=account.address,
-        private_key=os.environ["PRIVATE_KEY"],
-    )
-
-    # Create transaction
-    tx_id = await client.standard.create_transaction({
-        "provider": "0x...providerAddress",
-        "amount": 10,  # $10 USDC (SDK handles decimals)
-        "deadline": "+24h",
-        "dispute_window": 7200,  # 2 hours
-    })
-
-    # Fund (approve USDC + link escrow)
-    await client.standard.link_escrow(tx_id)
-    print("Payment ready:", tx_id)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+print("Payment ready:", result.tx_id)
 ```
 
 </TabItem>
 </Tabs>
 
-**That's it.** 10 USDC is now locked and waiting for the provider to deliver (settlement executed by admin/bot after delivery and dispute window rules).
+**That's it.** 10 USDC is now locked in escrow, waiting for the provider to deliver.
 
 ---
 
