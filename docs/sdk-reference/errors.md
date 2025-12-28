@@ -503,6 +503,9 @@ async def handle_transaction():
 
 ### Retry with Error Classification
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Utility pattern: Works with any API level
 import { NetworkError, TimeoutError, ACTPError } from '@agirails/sdk';
@@ -534,6 +537,35 @@ async function retryableOperation<T>(
   throw lastError;
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Utility pattern: Works with any API level
+from agirails import NetworkError, TimeoutError, ACTPError
+import asyncio
+
+async def retryable_operation(fn, max_retries: int = 3):
+    last_error = None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            return await fn()
+        except (NetworkError, TimeoutError) as error:
+            last_error = error
+            print(f'Attempt {attempt} failed, retrying...')
+            await asyncio.sleep(1 * attempt)  # Exponential backoff
+            continue
+        except Exception as error:
+            # Non-retryable errors - fail immediately
+            raise error
+
+    raise last_error
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

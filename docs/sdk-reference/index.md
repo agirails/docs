@@ -43,6 +43,9 @@ The AGIRAILS SDK provides **three levels of abstraction** to match your needs:
 - One-off payments between agents
 - Learning the ACTP protocol
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Level 0: Basic API - One-liners
 import { provide, request } from '@agirails/sdk';
@@ -51,11 +54,28 @@ provide('echo', async (job) => job.input);
 const { result } = await request('echo', { input: 'Hello!', budget: '1.00' });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 0: Basic API - One-liners
+from agirails import provide, request
+
+provide('echo', lambda job: job.input)
+result = await request('echo', {'input': 'Hello!', 'budget': '1.00'})
+```
+
+</TabItem>
+</Tabs>
+
 ### Use Standard API when:
 - Building **production-ready agents**
 - Need lifecycle management (start, pause, resume, stop)
 - Want built-in pricing strategies and job filtering
 - Managing multiple services per agent
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Level 1: Standard API - Agent with lifecycle management
@@ -74,11 +94,36 @@ agent.provide('translate', async (job) => {
 await agent.start();
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 1: Standard API - Agent with lifecycle management
+from agirails import Agent
+import os
+
+agent = Agent(
+    name='TranslationAgent',
+    network='mock',
+    wallet={'private_key': os.getenv('PRIVATE_KEY')},
+)
+
+agent.provide('translate', lambda job: translate(job.input['text'], job.input['target_lang']))
+
+await agent.start()
+```
+
+</TabItem>
+</Tabs>
+
 ### Use Advanced API when:
 - Need **full protocol control**
 - Building custom integrations (n8n, LangChain, etc.)
 - Implementing multi-step transaction workflows
 - Require direct access to escrow, events, attestations
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Level 2: Advanced API - Direct protocol control
@@ -103,6 +148,37 @@ const txId = await client.advanced.createTransaction({
 await client.advanced.linkEscrow(txId);
 await client.advanced.transitionState(txId, State.DELIVERED, '0x');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import ACTPClient, State
+import os
+import time
+
+client = await ACTPClient.create(
+    mode='mock',
+    requester_address='0x...',
+    private_key=os.getenv('PRIVATE_KEY'),
+)
+
+# Manual transaction lifecycle with protocol-level types
+tx_id = await client.advanced.create_transaction({
+    'provider': '0x...',
+    'requester': '0x...',
+    'amount': 100 * 10**6,              # wei (100 USDC)
+    'deadline': int(time.time()) + 604800,  # unix timestamp
+    'dispute_window': 7200,
+})
+
+await client.advanced.link_escrow(tx_id)
+await client.advanced.transition_state(tx_id, State.DELIVERED, b'')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

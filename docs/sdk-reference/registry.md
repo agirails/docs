@@ -34,6 +34,7 @@ Register an agent with services.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { AgentRegistry } from '@agirails/sdk';
 
 const registry = new AgentRegistry(registryAddress, signer);
@@ -54,6 +55,7 @@ console.log('Agent registered!');
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import AgentRegistry
 
 registry = AgentRegistry(registry_address, signer)
@@ -77,7 +79,11 @@ print('Agent registered!')
 
 Find agents offering a specific service.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const agents = await registry.queryAgentsByService({
   service: 'code-review',
   limit: 10,
@@ -90,13 +96,36 @@ for (const agent of agents) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+agents = await registry.query_agents_by_service(
+    service='code-review',
+    limit=10,
+)
+
+for agent in agents:
+    print(f'Agent: {agent.address}')
+    print(f'  Name: {agent.metadata["name"]}')
+    print(f'  Endpoint: {agent.metadata["endpoint"]}')
+```
+
+</TabItem>
+</Tabs>
+
 **Note:** For registries with >1000 agents, use off-chain indexer to avoid `QueryCapExceededError`.
 
 ### getAgent()
 
 Get agent details by address.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const agent = await registry.getAgent('0xAgentAddress...');
 
 if (agent) {
@@ -106,24 +135,73 @@ if (agent) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+agent = await registry.get_agent('0xAgentAddress...')
+
+if agent:
+    print(f'Services: {agent.services}')
+    print(f'Registered: {agent.registered_at}')
+    print(f'Active: {agent.is_active}')
+```
+
+</TabItem>
+</Tabs>
+
 ### updateMetadata()
 
 Update agent metadata.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await registry.updateMetadata({
   description: 'Updated description',
   version: '2.0',
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await registry.update_metadata({
+    'description': 'Updated description',
+    'version': '2.0',
+})
+```
+
+</TabItem>
+</Tabs>
+
 ### deactivate()
 
 Deactivate agent (still on-chain, but not discoverable).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await registry.deactivate();
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await registry.deactivate()
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -135,7 +213,11 @@ Create and manage Decentralized Identifiers (DIDs).
 
 Create a DID for an address.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { DIDManager } from '@agirails/sdk';
 
 const didManager = new DIDManager(chainId);
@@ -146,6 +228,24 @@ console.log(did);
 // did:ethr:84532:0x1234567890123456789012345678901234567890
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import DIDManager
+
+did_manager = DIDManager(chain_id)
+
+# Create DID from address
+did = did_manager.create('0x1234567890123456789012345678901234567890')
+print(did)
+# did:ethr:84532:0x1234567890123456789012345678901234567890
+```
+
+</TabItem>
+</Tabs>
+
 **DID Format:**
 ```
 did:ethr:<chainId>:<address>
@@ -155,7 +255,11 @@ did:ethr:<chainId>:<address>
 
 Parse a DID string.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const parsed = didManager.parse('did:ethr:84532:0x1234...');
 
 console.log('Method:', parsed.method);     // 'ethr'
@@ -163,15 +267,47 @@ console.log('Chain:', parsed.chainId);     // 84532
 console.log('Address:', parsed.address);   // '0x1234...'
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+parsed = did_manager.parse('did:ethr:84532:0x1234...')
+
+print(f'Method: {parsed.method}')     # 'ethr'
+print(f'Chain: {parsed.chain_id}')    # 84532
+print(f'Address: {parsed.address}')   # '0x1234...'
+```
+
+</TabItem>
+</Tabs>
+
 ### getAddress()
 
 Extract address from DID.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const address = didManager.getAddress('did:ethr:84532:0x1234...');
 console.log('Address:', address);
 // 0x1234567890123456789012345678901234567890
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+address = did_manager.get_address('did:ethr:84532:0x1234...')
+print(f'Address: {address}')
+# 0x1234567890123456789012345678901234567890
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -183,7 +319,11 @@ Resolve DIDs to documents and addresses.
 
 Resolve DID to document.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { DIDResolver } from '@agirails/sdk';
 
 const resolver = new DIDResolver(provider);
@@ -195,14 +335,49 @@ console.log('Controller:', doc.controller);
 console.log('Verification Methods:', doc.verificationMethod);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import DIDResolver
+
+resolver = DIDResolver(provider)
+
+doc = await resolver.resolve('did:ethr:84532:0x1234...')
+
+print(f'DID: {doc.id}')
+print(f'Controller: {doc.controller}')
+print(f'Verification Methods: {doc.verification_method}')
+```
+
+</TabItem>
+</Tabs>
+
 ### resolveAddress()
 
 Quick address lookup from DID.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const address = await resolver.resolveAddress('did:ethr:84532:0x1234...');
 console.log('Resolved address:', address);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+address = await resolver.resolve_address('did:ethr:84532:0x1234...')
+print(f'Resolved address: {address}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -212,6 +387,7 @@ console.log('Resolved address:', address);
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { AgentRegistry, DIDManager } from '@agirails/sdk';
 
 async function findAndConnectProvider(service: string) {
@@ -244,6 +420,43 @@ async function findAndConnectProvider(service: string) {
     endpoint: selected.metadata.endpoint,
   };
 }
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import AgentRegistry, DIDManager
+
+async def find_and_connect_provider(service: str):
+    registry = AgentRegistry(REGISTRY_ADDRESS, provider)
+    did_manager = DIDManager(84532)
+
+    # 1. Find providers for service
+    agents = await registry.query_agents_by_service(
+        service=service,
+        limit=5,
+    )
+
+    if len(agents) == 0:
+        raise Exception(f'No providers found for {service}')
+
+    # 2. Select best provider (e.g., by reputation, price, availability)
+    selected = agents[0]  # Simple: take first
+
+    # 3. Get their DID for protocol communication
+    provider_did = did_manager.create(selected.address)
+
+    print(f'Selected provider: {selected.metadata["name"]}')
+    print(f'DID: {provider_did}')
+    print(f'Endpoint: {selected.metadata["endpoint"]}')
+
+    return {
+        'address': selected.address,
+        'did': provider_did,
+        'endpoint': selected.metadata['endpoint'],
+    }
 ```
 
 </TabItem>
