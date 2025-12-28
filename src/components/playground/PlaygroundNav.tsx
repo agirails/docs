@@ -34,7 +34,7 @@ const CanvasIcon = () => (
 );
 
 interface PlaygroundNavProps {
-  currentLevel: 'simple-api' | 'standard-api' | 'advanced-api' | 'canvas' | 'arena';
+  currentLevel: 'simple-api' | 'standard-api' | 'advanced-api' | 'canvas';
 }
 
 export default function PlaygroundNav({ currentLevel }: PlaygroundNavProps) {

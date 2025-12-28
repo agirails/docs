@@ -22,7 +22,7 @@ const eventColors: Record<string, string> = {
   BalanceChanged: 'var(--pg-text-muted)',
 };
 
-const eventIcons = {
+const eventIcons: Record<string, JSX.Element> = {
   TransactionCreated: (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="10"/>
@@ -60,7 +60,7 @@ const eventIcons = {
       <line x1="12" y1="16" x2="12" y2="8"/>
     </svg>
   ),
-} satisfies Record<string, unknown>;
+};
 
 function formatTimestamp(timestamp: number): string {
   const date = new Date(timestamp);

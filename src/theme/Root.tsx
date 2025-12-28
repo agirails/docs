@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import '../components/AIAssistant/AIAssistant.css';
 
@@ -7,6 +7,17 @@ interface RootProps {
 }
 
 export default function Root({ children }: RootProps): JSX.Element {
+  // Suppress benign ResizeObserver errors (common with animations/real-time updates)
+  useEffect(() => {
+    const handler = (e: ErrorEvent) => {
+      if (e.message?.includes('ResizeObserver loop')) {
+        e.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener('error', handler);
+    return () => window.removeEventListener('error', handler);
+  }, []);
+
   return (
     <>
       {children}
