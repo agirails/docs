@@ -24,9 +24,11 @@ let didConfigureMonaco = false;
 export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPanelProps) {
   const [code, setCode] = useState('');
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+  const [saveState, setSaveState] = useState<'saved' | 'unsaved' | 'saving'>('saved');
   const editorRef = useRef<any>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveIndicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const codeRef = useRef('');
   const pendingSaveRef = useRef<{ agentId: string; code: string } | null>(null);
 
@@ -34,11 +36,25 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
   const onCodeChangeRef = useRef(onCodeChange);
   onCodeChangeRef.current = onCodeChange;
 
-  const flushPendingSave = useCallback(() => {
+  const flushPendingSave = useCallback((showSavedIndicator = true) => {
     const pending = pendingSaveRef.current;
     if (!pending) return;
+
+    setSaveState('saving');
     onCodeChangeRef.current(pending.agentId, pending.code);
     pendingSaveRef.current = null;
+
+    if (showSavedIndicator) {
+      // Brief "saving" then "saved" indicator
+      if (saveIndicatorTimerRef.current) {
+        clearTimeout(saveIndicatorTimerRef.current);
+      }
+      saveIndicatorTimerRef.current = setTimeout(() => {
+        setSaveState('saved');
+      }, 100);
+    } else {
+      setSaveState('saved');
+    }
   }, []); // No dependencies - uses refs
 
   // Track previous agent id to detect when editor closes
@@ -111,6 +127,9 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
       setCode(newCode);
       codeRef.current = newCode;
 
+      // Mark as unsaved immediately
+      setSaveState('unsaved');
+
       // Debounce state updates (300ms)
       if (!agent) return;
 
@@ -120,7 +139,7 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
         pendingSaveRef.current &&
         pendingSaveRef.current.agentId !== agent.id
       ) {
-        flushPendingSave();
+        flushPendingSave(false);
       }
 
       if (debounceTimerRef.current) {
@@ -130,7 +149,7 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
 
       pendingSaveRef.current = { agentId: agent.id, code: newCode };
       debounceTimerRef.current = setTimeout(() => {
-        flushPendingSave();
+        flushPendingSave(true);
         debounceTimerRef.current = null;
       }, 300);
     },
@@ -146,14 +165,43 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
       }
 
       // Flush last edit if user closes quickly (< debounce window)
-      flushPendingSave();
+      flushPendingSave(false);
 
       if (copiedTimerRef.current) {
         clearTimeout(copiedTimerRef.current);
         copiedTimerRef.current = null;
       }
+
+      if (saveIndicatorTimerRef.current) {
+        clearTimeout(saveIndicatorTimerRef.current);
+        saveIndicatorTimerRef.current = null;
+      }
     };
   }, [flushPendingSave]);
+
+  // Explicit save handler (immediate, bypasses debounce)
+  const handleSave = useCallback(() => {
+    // Cancel any pending debounce
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    // If there's a pending save, flush it
+    if (pendingSaveRef.current) {
+      flushPendingSave(true);
+    } else if (agent) {
+      // No pending save, but save current code anyway
+      setSaveState('saving');
+      onCodeChangeRef.current(agent.id, codeRef.current);
+      if (saveIndicatorTimerRef.current) {
+        clearTimeout(saveIndicatorTimerRef.current);
+      }
+      saveIndicatorTimerRef.current = setTimeout(() => {
+        setSaveState('saved');
+      }, 100);
+    }
+  }, [agent, flushPendingSave]);
 
   // Copy code to clipboard
   const handleCopy = async () => {
@@ -228,8 +276,40 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
         <div className="cv-code-editor__actions">
           <div className="cv-code-editor__actions-left">
             <span className="cv-code-editor__language-tag">JavaScript</span>
+            {/* Save status indicator */}
+            <span className={`cv-code-editor__save-status cv-code-editor__save-status--${saveState}`}>
+              {saveState === 'unsaved' && (
+                <>
+                  <span className="cv-code-editor__unsaved-dot" />
+                  Unsaved
+                </>
+              )}
+              {saveState === 'saving' && 'Saving...'}
+              {saveState === 'saved' && (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Saved
+                </>
+              )}
+            </span>
           </div>
           <div className="cv-code-editor__actions-right">
+            {/* Prominent Save button */}
+            <button
+              onClick={handleSave}
+              className={`cv-code-action-btn cv-save-btn ${saveState === 'unsaved' ? 'cv-save-btn--unsaved' : ''}`}
+              title="Save code (Ctrl+S)"
+              aria-label="Save code"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              Save
+            </button>
             <button
               onClick={handleFormat}
               className="cv-code-action-btn"
@@ -287,6 +367,12 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
             // Stop all keyboard events from propagating to ReactFlow/Canvas
             // This ensures space, arrows, and other keys work in the editor
             e.stopPropagation();
+
+            // Handle Ctrl+S / Cmd+S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+              e.preventDefault();
+              handleSave();
+            }
           }}
           onKeyUp={(e) => {
             e.stopPropagation();

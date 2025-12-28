@@ -1279,6 +1279,84 @@
   min-width: 70px;
 }
 
+/* Save Button */
+.cv-save-btn {
+  min-width: 70px;
+  background: var(--cv-primary);
+  border-color: var(--cv-primary);
+  color: var(--cv-bg);
+}
+
+.cv-save-btn:hover {
+  background: var(--cv-primary-hover, #00e5c4);
+  border-color: var(--cv-primary-hover, #00e5c4);
+  color: var(--cv-bg);
+}
+
+.cv-save-btn--unsaved {
+  background: var(--cv-warning, #f59e0b);
+  border-color: var(--cv-warning, #f59e0b);
+  animation: cv-pulse-save 1.5s infinite;
+}
+
+.cv-save-btn--unsaved:hover {
+  background: var(--cv-warning-hover, #d97706);
+  border-color: var(--cv-warning-hover, #d97706);
+}
+
+@keyframes cv-pulse-save {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Save Status Indicator */
+.cv-code-editor__save-status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-family: var(--cv-font-mono);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.cv-code-editor__save-status--saved {
+  color: var(--cv-success);
+  opacity: 0.8;
+}
+
+.cv-code-editor__save-status--saving {
+  color: var(--cv-text-muted);
+  opacity: 0.8;
+}
+
+.cv-code-editor__save-status--unsaved {
+  color: var(--cv-warning, #f59e0b);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.cv-code-editor__unsaved-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cv-warning, #f59e0b);
+  animation: cv-blink 1s infinite;
+}
+
+@keyframes cv-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
 .cv-code-editor__body {
   flex: 1;
   overflow: hidden;
