@@ -97,8 +97,8 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          to: '/playground',
-          label: 'Playground',
+          to: '/canvas',
+          label: 'Canvas',
           position: 'left',
         },
         // TODO: Uncomment when pages exist
