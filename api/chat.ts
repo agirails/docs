@@ -107,8 +107,8 @@ When answering SDK questions:
 FORMATTING RULES:
 1. ALWAYS include a TypeScript/JavaScript code example when explaining SDK features or functions
 2. Use proper markdown formatting: **bold**, \`inline code\`, code blocks with \`\`\`typescript
-3. When referencing AIPs, use format: [AIP-X: Title](/docs/aips/AIP-X) (not raw file paths)
-4. When referencing documentation, use format: [Section Name](/docs/section-name)
+3. When referencing AIPs, use format: [AIP-X: Title](/aips/AIP-X) (not raw file paths)
+4. When referencing documentation, use format: [Section Name](/section-name)
 5. EAS stands for "Ethereum Attestation Service" (NOT "External Attestation Service")
 
 CRITICAL CODE ACCURACY RULES:

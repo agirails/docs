@@ -1,15 +1,14 @@
 /**
  * AGIRAILS Documentation Indexing Script
  *
- * This script indexes documentation, SDK 2.0 source code, AIPs, and contract interfaces
- * into Upstash Vector for the AI Assistant's RAG (Retrieval Augmented Generation) system.
+ * This script indexes documentation, SDK source code (JS + Python), Claude plugin,
+ * AIPs, and contract interfaces into Upstash Vector for the AI Assistant's RAG system.
  *
  * Indexed content:
  *   - /docs/*.mdx - Documentation (concepts, guides)
- *   - /sdk-js/src/level0/* - Basic API (provide/request)
- *   - /sdk-js/src/level1/* - Standard API (Agent class)
- *   - /sdk-js/src/ACTPClient.ts - Advanced API
- *   - /sdk-js/src/adapters/* - Basic/Standard adapters
+ *   - /sdk-js/src/* - TypeScript SDK (all levels)
+ *   - /python-sdk-v2/* - Python SDK
+ *   - /claude-plugin/* - Claude MCP plugin
  *   - /Protocol/aips/*.md - AGIRAILS Improvement Proposals
  *   - /Protocol/actp-kernel/src/interfaces/*.sol - Contract interfaces
  *
@@ -33,7 +32,9 @@ config({ path: '.env.local' });
 const CONFIG = {
   // Directories to index
   docsDir: './docs',
-  sdkDir: '../SDK and Runtime/sdk-js/src',
+  sdkJsDir: '../SDK and Runtime/sdk-js/src',
+  pythonSdkDir: '../SDK and Runtime/python-sdk-v2',
+  claudePluginDir: '../SDK and Runtime/claude-plugin',
   aipsDir: '../Protocol/aips',
   contractsDir: '../Protocol/actp-kernel/src/interfaces',
 
@@ -44,19 +45,11 @@ const CONFIG = {
   // File patterns
   docPatterns: ['.md', '.mdx'],
   codePatterns: ['.ts', '.tsx'],
+  pythonPatterns: ['.py'],
   solidityPatterns: ['.sol'],
 
   // Files/directories to skip
-  skipFiles: ['node_modules', '.git', 'build', 'dist', '.docusaurus'],
-
-  // SDK 2.0 key folders/files to index (prioritized content)
-  sdkKeyPaths: [
-    'level0',           // Basic API: provide(), request()
-    'level1',           // Standard API: Agent class
-    'adapters',         // BasicAdapter, StandardAdapter
-    'ACTPClient.ts',    // Advanced API
-    'index.ts',         // Main exports
-  ],
+  skipFiles: ['node_modules', '.git', 'build', 'dist', '.docusaurus', '__pycache__', '.pytest_cache', 'venv', '.venv', 'examples'],
 };
 
 // Upstash Vector index (initialized lazily in main)
@@ -242,40 +235,31 @@ async function processDocFiles(docsDir: string): Promise<DocumentChunk[]> {
 }
 
 /**
- * Check if file is in a key SDK path (level0, level1, adapters, etc.)
+ * Check if file should be skipped (test files, etc.)
  */
-function isKeySDKFile(filePath: string, sdkDir: string): boolean {
-  const relativePath = path.relative(sdkDir, filePath);
-
-  // Skip test files
-  if (relativePath.includes('.test.') || relativePath.includes('.spec.')) {
-    return false;
-  }
-
-  // Check if file is in key paths
-  return CONFIG.sdkKeyPaths.some(keyPath => {
-    if (keyPath.endsWith('.ts')) {
-      // Exact file match
-      return relativePath === keyPath;
-    }
-    // Directory match
-    return relativePath.startsWith(keyPath + path.sep) || relativePath.startsWith(keyPath + '/');
-  });
+function shouldSkipFile(filePath: string): boolean {
+  const fileName = path.basename(filePath);
+  return (
+    fileName.includes('.test.') ||
+    fileName.includes('.spec.') ||
+    fileName.includes('_test.') ||
+    fileName.startsWith('test_')
+  );
 }
 
 /**
- * Process SDK 2.0 code files
+ * Process TypeScript SDK code files
  */
 async function processCodeFiles(sdkDir: string): Promise<DocumentChunk[]> {
   const chunks: DocumentChunk[] = [];
   const files = findFiles(sdkDir, CONFIG.codePatterns);
 
-  console.log(`Found ${files.length} code files in SDK`);
+  console.log(`Found ${files.length} TypeScript files in SDK`);
 
   let processedCount = 0;
   for (const filePath of files) {
-    // Only process key SDK files
-    if (!isKeySDKFile(filePath, sdkDir)) {
+    // Skip test files
+    if (shouldSkipFile(filePath)) {
       continue;
     }
 
@@ -289,18 +273,18 @@ async function processCodeFiles(sdkDir: string): Promise<DocumentChunk[]> {
       const relativePath = path.relative(sdkDir, filePath);
 
       // Determine API level for better context
-      let apiLevel = 'sdk';
-      if (relativePath.startsWith('level0')) apiLevel = 'sdk/level0-basic';
-      else if (relativePath.startsWith('level1')) apiLevel = 'sdk/level1-standard';
-      else if (relativePath.startsWith('adapters')) apiLevel = 'sdk/adapters';
-      else if (fileName === 'ACTPClient.ts') apiLevel = 'sdk/level2-advanced';
+      let apiLevel = 'sdk-js';
+      if (relativePath.startsWith('level0')) apiLevel = 'sdk-js/level0-basic';
+      else if (relativePath.startsWith('level1')) apiLevel = 'sdk-js/level1-standard';
+      else if (relativePath.startsWith('adapters')) apiLevel = 'sdk-js/adapters';
+      else if (fileName === 'ACTPClient.ts') apiLevel = 'sdk-js/level2-advanced';
 
       // Use smaller chunks for code
       const textChunks = chunkText(cleanedContent, 1500, 100);
 
       for (let i = 0; i < textChunks.length; i++) {
         chunks.push({
-          id: `code-${relativePath}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
+          id: `ts-${relativePath}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
           content: textChunks[i],
           metadata: {
             source: `${apiLevel}/${relativePath}`,
@@ -317,7 +301,156 @@ async function processCodeFiles(sdkDir: string): Promise<DocumentChunk[]> {
     }
   }
 
-  console.log(`  Total SDK files processed: ${processedCount}`);
+  console.log(`  Total TypeScript SDK files processed: ${processedCount}`);
+  return chunks;
+}
+
+/**
+ * Clean Python code for indexing
+ */
+function cleanPython(content: string, filePath: string): string {
+  const fileName = path.basename(filePath);
+
+  let cleaned = `# Python File: ${fileName}\n\n`;
+
+  // Keep docstrings and comments (they're valuable)
+  // Remove import statements that add noise
+  cleaned += content
+    .replace(/^from\s+.*$/gm, '')
+    .replace(/^import\s+.*$/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  return cleaned;
+}
+
+/**
+ * Process Python SDK files
+ */
+async function processPythonFiles(pythonDir: string): Promise<DocumentChunk[]> {
+  const chunks: DocumentChunk[] = [];
+  const files = findFiles(pythonDir, CONFIG.pythonPatterns);
+
+  console.log(`Found ${files.length} Python files`);
+
+  let processedCount = 0;
+  for (const filePath of files) {
+    // Skip test files
+    if (shouldSkipFile(filePath)) {
+      continue;
+    }
+
+    const fileName = path.basename(filePath);
+
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const cleanedContent = cleanPython(content, filePath);
+
+      const relativePath = path.relative(pythonDir, filePath);
+
+      // Use smaller chunks for code
+      const textChunks = chunkText(cleanedContent, 1500, 100);
+
+      for (let i = 0; i < textChunks.length; i++) {
+        chunks.push({
+          id: `py-${relativePath}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
+          content: textChunks[i],
+          metadata: {
+            source: `sdk-python/${relativePath}`,
+            type: 'code',
+            title: fileName,
+          },
+        });
+      }
+
+      processedCount++;
+      console.log(`  Processed: ${relativePath} (${textChunks.length} chunks)`);
+    } catch (error) {
+      console.error(`  Error processing ${filePath}:`, error);
+    }
+  }
+
+  console.log(`  Total Python SDK files processed: ${processedCount}`);
+  return chunks;
+}
+
+/**
+ * Process Claude plugin files (mixed TypeScript + Markdown)
+ */
+async function processClaudePluginFiles(pluginDir: string): Promise<DocumentChunk[]> {
+  const chunks: DocumentChunk[] = [];
+
+  // Process TypeScript files
+  const tsFiles = findFiles(pluginDir, CONFIG.codePatterns);
+  // Process Markdown files
+  const mdFiles = findFiles(pluginDir, CONFIG.docPatterns);
+
+  console.log(`Found ${tsFiles.length} TypeScript and ${mdFiles.length} Markdown files in Claude plugin`);
+
+  let processedCount = 0;
+
+  // Process TypeScript files
+  for (const filePath of tsFiles) {
+    if (shouldSkipFile(filePath)) continue;
+
+    const fileName = path.basename(filePath);
+
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const cleanedContent = cleanCode(content, filePath);
+      const relativePath = path.relative(pluginDir, filePath);
+      const textChunks = chunkText(cleanedContent, 1500, 100);
+
+      for (let i = 0; i < textChunks.length; i++) {
+        chunks.push({
+          id: `claude-plugin-${relativePath}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
+          content: textChunks[i],
+          metadata: {
+            source: `claude-plugin/${relativePath}`,
+            type: 'code',
+            title: fileName,
+          },
+        });
+      }
+
+      processedCount++;
+      console.log(`  Processed: ${relativePath} (${textChunks.length} chunks)`);
+    } catch (error) {
+      console.error(`  Error processing ${filePath}:`, error);
+    }
+  }
+
+  // Process Markdown files
+  for (const filePath of mdFiles) {
+    const fileName = path.basename(filePath);
+
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const cleanedContent = cleanMarkdown(content);
+      const title = extractTitle(content, filePath);
+      const relativePath = path.relative(pluginDir, filePath);
+      const textChunks = chunkText(cleanedContent);
+
+      for (let i = 0; i < textChunks.length; i++) {
+        chunks.push({
+          id: `claude-plugin-md-${relativePath}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
+          content: textChunks[i],
+          metadata: {
+            source: `claude-plugin/${relativePath}`,
+            type: 'documentation',
+            title,
+          },
+        });
+      }
+
+      processedCount++;
+      console.log(`  Processed: ${relativePath} (${textChunks.length} chunks)`);
+    } catch (error) {
+      console.error(`  Error processing ${filePath}:`, error);
+    }
+  }
+
+  console.log(`  Total Claude plugin files processed: ${processedCount}`);
   return chunks;
 }
 
@@ -459,11 +592,13 @@ async function uploadChunks(chunks: DocumentChunk[]): Promise<void> {
  */
 async function main() {
   console.log('='.repeat(60));
-  console.log('AGIRAILS Documentation Indexer v2.0');
+  console.log('AGIRAILS Documentation Indexer v3.0');
   console.log('='.repeat(60));
   console.log('\nIndexing:');
   console.log('  - Documentation (concepts, guides)');
-  console.log('  - SDK 2.0 (Level 0, Level 1, Level 2, Adapters)');
+  console.log('  - TypeScript SDK (Level 0, Level 1, Level 2, Adapters)');
+  console.log('  - Python SDK (full parity)');
+  console.log('  - Claude Plugin (MCP integration)');
   console.log('  - AIPs (AGIRAILS Improvement Proposals)');
   console.log('  - Contract Interfaces (Solidity)');
 
@@ -488,33 +623,45 @@ async function main() {
   const docChunks = await processDocFiles(CONFIG.docsDir);
   allChunks.push(...docChunks);
 
-  // Process SDK 2.0 code
-  console.log('\n2. Processing SDK 2.0 code files...');
-  const codeChunks = await processCodeFiles(CONFIG.sdkDir);
-  allChunks.push(...codeChunks);
+  // Process TypeScript SDK
+  console.log('\n2. Processing TypeScript SDK files...');
+  const tsChunks = await processCodeFiles(CONFIG.sdkJsDir);
+  allChunks.push(...tsChunks);
+
+  // Process Python SDK
+  console.log('\n3. Processing Python SDK files...');
+  const pyChunks = await processPythonFiles(CONFIG.pythonSdkDir);
+  allChunks.push(...pyChunks);
+
+  // Process Claude Plugin
+  console.log('\n4. Processing Claude Plugin files...');
+  const pluginChunks = await processClaudePluginFiles(CONFIG.claudePluginDir);
+  allChunks.push(...pluginChunks);
 
   // Process AIPs
-  console.log('\n3. Processing AIP files...');
+  console.log('\n5. Processing AIP files...');
   const aipChunks = await processAIPFiles(CONFIG.aipsDir);
   allChunks.push(...aipChunks);
 
   // Process Solidity interfaces
-  console.log('\n4. Processing Solidity interface files...');
+  console.log('\n6. Processing Solidity interface files...');
   const solChunks = await processContractFiles(CONFIG.contractsDir);
   allChunks.push(...solChunks);
 
   // Summary
   console.log('\n' + '='.repeat(60));
   console.log('Summary:');
-  console.log(`  Documentation chunks: ${docChunks.length}`);
-  console.log(`  SDK 2.0 code chunks:  ${codeChunks.length}`);
-  console.log(`  AIP chunks:           ${aipChunks.length}`);
-  console.log(`  Solidity chunks:      ${solChunks.length}`);
+  console.log(`  Documentation chunks:   ${docChunks.length}`);
+  console.log(`  TypeScript SDK chunks:  ${tsChunks.length}`);
+  console.log(`  Python SDK chunks:      ${pyChunks.length}`);
+  console.log(`  Claude Plugin chunks:   ${pluginChunks.length}`);
+  console.log(`  AIP chunks:             ${aipChunks.length}`);
+  console.log(`  Solidity chunks:        ${solChunks.length}`);
   console.log(`  ${'─'.repeat(28)}`);
-  console.log(`  Total chunks:         ${allChunks.length}`);
+  console.log(`  Total chunks:           ${allChunks.length}`);
 
   // Upload to Upstash
-  console.log('\n5. Uploading to Upstash Vector...');
+  console.log('\n7. Uploading to Upstash Vector...');
   await uploadChunks(allChunks);
 
   console.log('\n' + '='.repeat(60));
