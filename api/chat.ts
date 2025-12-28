@@ -338,14 +338,19 @@ ${context}
 ---
 Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
 
+    // Filter out messages with undefined/empty content (can happen during streaming)
+    const validMessages = messages
+      .filter((m: any) => m.content !== undefined && m.content !== null && m.content !== '')
+      .map((m: any) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
     // Stream the response using Vercel AI SDK
     const result = streamText({
       model: groq('llama-3.3-70b-versatile'),
       system: fullSystemPrompt,
-      messages: messages.map((m: any) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: validMessages,
       temperature: 0.7,
     });
 
