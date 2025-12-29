@@ -102,7 +102,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          to: '/playground',
+          to: '/simple-api',
           label: 'Playground',
           position: 'left',
         },
