@@ -1646,6 +1646,49 @@
   color: var(--cv-text-muted);
 }
 
+/* Empty State */
+.cv-scenario-gallery__empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.cv-scenario-gallery__empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.cv-scenario-gallery__empty-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cv-text);
+}
+
+.cv-scenario-gallery__empty-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cv-text-muted);
+}
+
+.cv-scenario-gallery__empty-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cv-primary);
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cv-scenario-gallery__empty-link:hover {
+  color: var(--cv-primary-hover);
+}
+
 /* Detail View */
 .cv-scenario-gallery__detail-content {
   padding: 1.5rem;

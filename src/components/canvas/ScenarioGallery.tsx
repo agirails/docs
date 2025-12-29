@@ -179,33 +179,43 @@ export function ScenarioGallery({
         </div>
 
         <div className="cv-scenario-gallery__grid">
-          {filteredScenarios.map(scenario => (
-            <div
-              key={scenario.id}
-              className="cv-scenario-gallery__card"
-              onClick={() => handleSelectScenario(scenario)}
-            >
-              <div className="cv-scenario-gallery__card-icon">
-                {scenario.icon}
-              </div>
-              <div className="cv-scenario-gallery__card-content">
-                <h3 className="cv-scenario-gallery__card-title">
-                  {scenario.name}
-                </h3>
-                <p className="cv-scenario-gallery__card-description">
-                  {scenario.description}
-                </p>
-                <div className="cv-scenario-gallery__card-meta">
-                  <span className={`cv-scenario-gallery__difficulty cv-scenario-gallery__difficulty--${scenario.difficulty}`}>
-                    {scenario.difficulty}
-                  </span>
-                  <span className="cv-scenario-gallery__duration">
-                    {scenario.durationMinutes} min
-                  </span>
+          {filteredScenarios.length === 0 ? (
+            <div className="cv-scenario-gallery__empty">
+              <span className="cv-scenario-gallery__empty-icon">🚀</span>
+              <p className="cv-scenario-gallery__empty-title">Advanced scenarios coming soon</p>
+              <p className="cv-scenario-gallery__empty-hint">
+                Try <button className="cv-scenario-gallery__empty-link" onClick={() => setFilter('intermediate')}>Intermediate</button> to explore complex patterns
+              </p>
+            </div>
+          ) : (
+            filteredScenarios.map(scenario => (
+              <div
+                key={scenario.id}
+                className="cv-scenario-gallery__card"
+                onClick={() => handleSelectScenario(scenario)}
+              >
+                <div className="cv-scenario-gallery__card-icon">
+                  {scenario.icon}
+                </div>
+                <div className="cv-scenario-gallery__card-content">
+                  <h3 className="cv-scenario-gallery__card-title">
+                    {scenario.name}
+                  </h3>
+                  <p className="cv-scenario-gallery__card-description">
+                    {scenario.description}
+                  </p>
+                  <div className="cv-scenario-gallery__card-meta">
+                    <span className={`cv-scenario-gallery__difficulty cv-scenario-gallery__difficulty--${scenario.difficulty}`}>
+                      {scenario.difficulty}
+                    </span>
+                    <span className="cv-scenario-gallery__duration">
+                      {scenario.durationMinutes} min
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="cv-scenario-gallery__footer">
