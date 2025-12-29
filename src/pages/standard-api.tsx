@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import CodeBlock from '@theme/CodeBlock';
 import Header from '../components/playground/Header';
 import WalletModal from '../components/playground/WalletModal';
+import { StandardApiWelcome } from '../components/playground/StandardApiWelcome';
 import { WalletState } from '../types/playground';
 import {
   calculatePrice as calculatePriceLevel1,
@@ -78,6 +79,22 @@ export default function StandardApiPage(): JSX.Element {
   });
   const simulationRef = useRef<number | null>(null);
   const jobProcessingRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // Welcome screen (first-time visitor)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return localStorage.getItem('agirails-standard-api-welcome') !== '1';
+    } catch {
+      return true;
+    }
+  });
+
+  const handleDismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem('agirails-standard-api-welcome', '1');
+    } catch {}
+  }, []);
 
   // Wallet modal
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -338,6 +355,10 @@ await agent.start();`;
             onClose={() => setShowWalletModal(false)}
             onConnect={() => { setIsConnected(true); setShowWalletModal(false); }}
           />
+
+          {showWelcome && (
+            <StandardApiWelcome onDismiss={handleDismissWelcome} />
+          )}
 
           {/* Main Content */}
           <div className="pg-layout">

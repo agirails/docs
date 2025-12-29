@@ -1,12 +1,29 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Layout from '@theme/Layout';
 import Header from '../components/playground/Header';
 import WalletModal from '../components/playground/WalletModal';
+import { AdvancedApiWelcome } from '../components/playground/AdvancedApiWelcome';
 import AgentBattle from '../components/battle/AgentBattle';
 import { WalletState } from '../types/playground';
 import '../components/playground/playground.css';
 
 export default function AdvancedApiPage(): JSX.Element {
+  // Welcome screen (first-time visitor)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return localStorage.getItem('agirails-advanced-api-welcome') !== '1';
+    } catch {
+      return true;
+    }
+  });
+
+  const handleDismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem('agirails-advanced-api-welcome', '1');
+    } catch {}
+  }, []);
+
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -43,6 +60,10 @@ export default function AdvancedApiPage(): JSX.Element {
             onClose={() => setShowWalletModal(false)}
             onConnect={() => { setIsConnected(true); setShowWalletModal(false); }}
           />
+
+          {showWelcome && (
+            <AdvancedApiWelcome onDismiss={handleDismissWelcome} />
+          )}
 
           {/* Orientation for first-time users */}
           <div style={{ textAlign: 'center', padding: '1rem 0 0.5rem', maxWidth: '600px', margin: '0 auto' }}>

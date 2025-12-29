@@ -33,6 +33,7 @@ import { ConnectionModal } from './modals/ConnectionModal';
 import { CodeEditorPanel } from './panels/CodeEditorPanel';
 import { Toast } from './Toast';
 import { ScenarioGallery } from './ScenarioGallery';
+import { CanvasWelcome } from '../playground/CanvasWelcome';
 import {
   Agent,
   Connection,
@@ -1618,35 +1619,10 @@ export function Canvas() {
       />
 
       {showWelcomeScreen && (
-        <div className="cv-modal-overlay">
-          <div className="cv-modal cv-welcome-modal">
-            <div className="cv-modal__header">
-              <h2 className="cv-modal__title">Welcome to AGIRAILS Canvas</h2>
-            </div>
-            <div className="cv-modal__body">
-              <p className="cv-welcome__description">
-                Build and test AI agent transactions visually. See escrow flows, state
-                transitions, and payments in real-time.
-              </p>
-              <div className="cv-welcome__actions">
-                <button
-                  type="button"
-                  className="cv-btn cv-btn--primary cv-btn--large"
-                  onClick={handleWelcomeBrowseScenarios}
-                >
-                  Browse Scenarios
-                </button>
-                <button
-                  type="button"
-                  className="cv-btn cv-btn--secondary cv-btn--large"
-                  onClick={handleWelcomeStartEmpty}
-                >
-                  Start Empty
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CanvasWelcome
+          onBrowseScenarios={handleWelcomeBrowseScenarios}
+          onStartEmpty={handleWelcomeStartEmpty}
+        />
       )}
     </div>
   );

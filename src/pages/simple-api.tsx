@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import CodeBlock from '@theme/CodeBlock';
 import Header from '../components/playground/Header';
 import WalletModal from '../components/playground/WalletModal';
+import { SimpleApiWelcome } from '../components/playground/SimpleApiWelcome';
 import { useACTPClient } from '../hooks/useACTPClient';
 import { resetExecutor } from '../lib/methodExecutor';
 import { provide, request, type RequestStatus } from '../lib/sdkLevel0';
@@ -24,6 +25,22 @@ export default function PlaygroundPage(): JSX.Element {
   const [txId, setTxId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+
+  // Welcome screen for first-time visitors
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return localStorage.getItem('agirails-simple-api-welcome') !== '1';
+    } catch {
+      return true;
+    }
+  });
+
+  const handleDismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem('agirails-simple-api-welcome', '1');
+    } catch {}
+  }, []);
 
   // Simple API (Level 1) inputs for code generation
   const [serviceName, setServiceName] = useState('translate');
@@ -236,6 +253,9 @@ provider.on('payment:received', (amount) => {
             onClose={() => setShowWalletModal(false)}
             onConnect={() => setShowWalletModal(false)}
           />
+
+          {/* Welcome screen for first-time visitors */}
+          {showWelcome && <SimpleApiWelcome onDismiss={handleDismissWelcome} />}
 
           {/* Main Content */}
           <div className="pg-main" style={{ maxWidth: '1200px', margin: '0 auto' }}>
