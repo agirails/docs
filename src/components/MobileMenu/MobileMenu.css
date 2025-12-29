@@ -1,0 +1,105 @@
+/* Mobile Menu Component */
+
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+.mobile-menu-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background: #0A0A0A;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.25s ease;
+  border-left: 1px solid #1F1F1F;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #1F1F1F;
+}
+
+.mobile-menu-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.mobile-menu-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #888888;
+  transition: all 0.2s;
+}
+
+.mobile-menu-close:hover {
+  background: #1F1F1F;
+  color: #ffffff;
+}
+
+.mobile-menu-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.mobile-menu-link {
+  display: block;
+  padding: 1rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.mobile-menu-link:hover {
+  background: rgba(0, 228, 228, 0.1);
+  color: #00E4E4;
+  text-decoration: none;
+}
+
+.mobile-menu-link.active {
+  background: rgba(0, 228, 228, 0.15);
+  color: #00E4E4;
+  border-left: 3px solid #00E4E4;
+  padding-left: calc(1.25rem - 3px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Hide default Docusaurus sidebar on mobile when our menu is shown */
+@media (max-width: 996px) {
+  .navbar-sidebar {
+    display: none !important;
+  }
+}

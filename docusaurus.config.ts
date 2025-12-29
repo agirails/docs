@@ -11,6 +11,11 @@ const config: Config = {
     v4: true,
   },
 
+  // Suppress MetaMask auto-connect errors (extension behavior, not our code)
+  clientModules: [
+    './src/lib/suppressWalletErrors.ts',
+  ],
+
   // Production URL
   url: 'https://docs.agirails.io',
   baseUrl: '/',
@@ -97,8 +102,8 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          to: '/canvas',
-          label: 'Canvas',
+          to: '/playground',
+          label: 'Playground',
           position: 'left',
         },
         // TODO: Uncomment when pages exist
