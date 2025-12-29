@@ -228,7 +228,7 @@ export default function StandardApiPage(): JSX.Element {
 
 const agent = new Agent({
   name: '${config.name}',
-  network: 'mock',
+  network: 'mock', // simulated, no real funds
   behavior: {
     autoAccept: ${config.autoAccept},
     concurrency: ${config.concurrency},
@@ -239,17 +239,17 @@ agent.provide({
   name: 'translate',
   pricing: {
     cost: {
-      base: ${config.pricing.baseCost.toFixed(2)},
+      base: ${config.pricing.baseCost.toFixed(2)}, // USDC
       perUnit: {
         unit: '${config.pricing.unitType}',
-        rate: ${config.pricing.perUnitCost.toFixed(4)}
+        rate: ${config.pricing.perUnitCost.toFixed(4)} // USDC per unit
       },
     },
-    margin: ${(config.pricing.marginPercent / 100).toFixed(2)},
+    margin: ${(config.pricing.marginPercent / 100).toFixed(2)}, // profit margin (0-1)
   },
   filter: {
-    minBudget: ${config.filter.minBudget.toFixed(2)},
-    maxBudget: ${config.filter.maxBudget.toFixed(2)},
+    minBudget: ${config.filter.minBudget.toFixed(2)}, // USDC
+    maxBudget: ${config.filter.maxBudget.toFixed(2)}, // USDC
   },
 }, async (job, ctx) => {
   ctx.progress(50, 'Translating...');

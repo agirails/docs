@@ -11,6 +11,9 @@ import { sdk, initializeSDK, type TransactionState } from './sdk';
 import type { SDKEvent } from './sdk';
 import { z } from 'zod';
 
+// Helper for realistic delays in mock mode
+const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+
 /**
  * Match real SDK Level0 RequestStatus shape (sdk-js):
  * state is lowercase, progress/message optional.
@@ -188,9 +191,15 @@ export async function request<T = any>(
       metadata: JSON.stringify({ service: validated, input: options.input }),
     });
 
+    // Simulate tx creation latency
+    await delay(400);
+
     // Link escrow (auto transitions to COMMITTED in mock)
     emitProgress('COMMITTED', 25, 'Linking escrow');
     await sdk.linkEscrow(txId);
+
+    // Simulate escrow linking latency
+    await delay(350);
 
     // Provider starts work
     emitProgress('IN_PROGRESS', 55, 'Provider working');
@@ -235,9 +244,15 @@ export async function request<T = any>(
       result = { ok: true, echo: options.input };
     }
 
+    // Simulate provider processing time
+    await delay(500);
+
     // Deliver + settle
     emitProgress('DELIVERED', 85, 'Delivering result');
     await sdk.transitionState(txId, 'DELIVERED');
+
+    // Simulate delivery confirmation latency
+    await delay(400);
 
     emitProgress('SETTLED', 100, 'Releasing escrow');
     await sdk.releaseEscrow(txId);
@@ -258,4 +273,5 @@ export async function request<T = any>(
     unsubscribe();
   }
 }
+
 

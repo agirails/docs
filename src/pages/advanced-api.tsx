@@ -44,6 +44,14 @@ export default function AdvancedApiPage(): JSX.Element {
             onConnect={() => { setIsConnected(true); setShowWalletModal(false); }}
           />
 
+          {/* Orientation for first-time users */}
+          <div style={{ textAlign: 'center', padding: '1rem 0 0.5rem', maxWidth: '600px', margin: '0 auto' }}>
+            <p style={{ color: 'var(--pg-text-muted)', fontSize: '0.85rem', margin: 0 }}>
+              Simulate both sides of an ACTP transaction.<br />
+              Start by creating a transaction on the <strong style={{ color: 'var(--pg-text)' }}>Requester panel</strong> (left).
+            </p>
+          </div>
+
           <AgentBattle hideHeader />
         </div>
       </main>

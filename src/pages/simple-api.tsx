@@ -52,9 +52,9 @@ const { result } = await request('${serviceName}', {
     from: 'en',
     to: 'de'
   },
-  budget: ${Number.isFinite(budget) ? budget : 10},
-  network: '${network}',
-  provider: ${providerStrategy === 'specific' ? `'${providerAddress || '0x...'}'` : `'${providerStrategy}'`},
+  budget: ${Number.isFinite(budget) ? budget : 10}, // USDC
+  network: '${network}', // mock = simulated, no real funds
+  provider: ${providerStrategy === 'specific' ? `'${providerAddress || '0x...'}'` : `'${providerStrategy}'`}, // 'any' = first available provider
   onProgress: (status) => {
     console.log(\`\${status.state}: \${status.progress}%\`);
   }
@@ -68,9 +68,9 @@ const provider = provide('${serviceName}', async (job) => {
   const translated = await translateText(text, from, to);
   return { translated };
 }, {
-  network: '${network}',
-  filter: { minBudget: ${minBudget.toFixed(2)}, maxBudget: ${maxBudget.toFixed(2)} },
-  autoAccept: ${autoAccept},
+  network: '${network}', // mock = simulated, no real funds
+  filter: { minBudget: ${minBudget.toFixed(2)}, maxBudget: ${maxBudget.toFixed(2)} }, // USDC
+  autoAccept: ${autoAccept}, // auto-accept jobs matching filter
 });
 
 provider.on('payment:received', (amount) => {
@@ -311,7 +311,7 @@ provider.on('payment:received', (amount) => {
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginBottom: '0.5rem', opacity: 0.5 }}>
                       <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
-                    <span style={{ fontSize: '0.75rem' }}>Click Run Demo</span>
+                    <span style={{ fontSize: '0.75rem' }}>Runs a simulated transaction. No wallet required.</span>
                   </div>
                 ) : (
                   <>
