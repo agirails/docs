@@ -9,7 +9,7 @@ description: Add payment capabilities to your LangChain agents
 Add payment capabilities to your LangChain agents. Enable AI chains to pay for services, data, and compute.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/langchain-integration.svg" alt="LangChain + AGIRAILS Integration" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../../img/diagrams/langchain-integration.svg" alt="LangChain + AGIRAILS Integration" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -51,7 +51,7 @@ pip install langchain langchain-openai agirails python-dotenv
 ## Tool Architecture
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/langchain-tool-architecture.svg" alt="AGIRAILS Payment Tool Architecture" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../../img/diagrams/langchain-tool-architecture.svg" alt="AGIRAILS Payment Tool Architecture" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 The `AGIRAILSPaymentTool` extends LangChain's `BaseTool` and provides core actions:
@@ -220,7 +220,7 @@ class AGIRAILSRegistryTool(BaseTool):
 A complete example that pays for research data and synthesizes it using the SDK-based tool.
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/langchain-paid-research.svg" alt="Paid Research Chain Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../../img/diagrams/langchain-paid-research.svg" alt="Paid Research Chain Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ```python

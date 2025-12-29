@@ -79,6 +79,9 @@ class ACTPError extends Error {
 
 Thrown when account doesn't have enough USDC.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Level 1: Standard API - Agent with lifecycle management
 try {
@@ -91,6 +94,23 @@ try {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 1: Standard API - Agent with lifecycle management
+from agirails import InsufficientFundsError
+
+try:
+    await client.standard.create_transaction(...)
+except InsufficientFundsError as e:
+    print(f"Required: {e.details['required']}")
+    print(f"Available: {e.details['available']}")
+```
+
+</TabItem>
+</Tabs>
+
 | Property | Description |
 |----------|-------------|
 | `code` | `'INSUFFICIENT_FUNDS'` |
@@ -100,6 +120,9 @@ try {
 ### TransactionNotFoundError
 
 Thrown when transaction ID doesn't exist.
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Level 1: Standard API - Agent with lifecycle management
@@ -111,6 +134,22 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 1: Standard API - Agent with lifecycle management
+from agirails import TransactionNotFoundError
+
+try:
+    await client.standard.get_transaction(tx_id)
+except TransactionNotFoundError as e:
+    print(f"Transaction not found: {e.details['txId']}")
+```
+
+</TabItem>
+</Tabs>
 
 | Property | Description |
 |----------|-------------|
@@ -131,6 +170,9 @@ Thrown when trying to act on an expired transaction.
 
 Thrown when attempting an invalid state transition.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Level 2: Advanced API - Direct protocol control
 try {
@@ -143,6 +185,24 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import InvalidStateTransitionError, State
+
+try:
+    await client.advanced.transition_state(tx_id, State.SETTLED, b'')
+except InvalidStateTransitionError as e:
+    print(f"From: {e.details['from']}")
+    print(f"To: {e.details['to']}")
+    print(f"Valid: {e.details['validTransitions']}")
+```
+
+</TabItem>
+</Tabs>
 
 | Property | Description |
 |----------|-------------|
@@ -201,6 +261,9 @@ Base class for input validation errors.
 
 Thrown for invalid Ethereum addresses.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Level 1: Standard API - Agent with lifecycle management
 import { InvalidAddressError } from '@agirails/sdk';
@@ -216,6 +279,25 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 1: Standard API - Agent with lifecycle management
+from agirails import InvalidAddressError
+
+try:
+    await client.standard.create_transaction({
+        'provider': 'not-an-address',
+        'amount': '100',
+    })
+except InvalidAddressError:
+    print('Invalid address provided')
+```
+
+</TabItem>
+</Tabs>
 
 ### InvalidAmountError
 
@@ -233,6 +315,9 @@ Thrown for invalid IPFS Content IDs.
 
 Thrown when no provider offers the requested service.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Level 0: Basic API - One-liners
 import { request, NoProviderFoundError } from '@agirails/sdk';
@@ -246,6 +331,23 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 0: Basic API - One-liners
+from agirails import request, NoProviderFoundError
+
+try:
+    await request('unknown-service', {'input': 'test', 'budget': '1.00'})
+except NoProviderFoundError as e:
+    print(f"Service not found: {e.details['service']}")
+    print(f"Available: {e.details['availableProviders']}")
+```
+
+</TabItem>
+</Tabs>
 
 | Property | Description |
 |----------|-------------|
@@ -344,6 +446,9 @@ Base class for storage-related errors.
 
 Thrown when registry is too large for on-chain queries.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 // Registry utility - standalone component
 import { QueryCapExceededError } from '@agirails/sdk';
@@ -359,6 +464,25 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Registry utility - standalone component
+from agirails import QueryCapExceededError
+
+try:
+    agents = await registry.query_agents_by_service(...)
+except QueryCapExceededError as e:
+    print(f"Registry size: {e.details['registrySize']}")
+    print(f"Max allowed: {e.details['maxQueryAgents']}")
+    print(f"Solution: {e.details['solution']}")
+    # Switch to off-chain indexer
+```
+
+</TabItem>
+</Tabs>
 
 | Property | Description |
 |----------|-------------|

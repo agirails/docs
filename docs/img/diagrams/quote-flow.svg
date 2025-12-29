@@ -19,9 +19,6 @@
     </marker>
   </defs>
 
-  <!-- Background -->
-  <rect width="500" height="380" fill="#0f0f1a"/>
-
   <!-- Consumer Actor -->
   <rect class="actor-box" x="60" y="20" width="100" height="40"/>
   <text class="text" x="110" y="46" text-anchor="middle">Consumer</text>

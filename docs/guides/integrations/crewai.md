@@ -9,7 +9,7 @@ description: Build payment-enabled AI crews with CrewAI and AGIRAILS
 Build AI crews where agents can pay each other and external services.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/crewai-integration.svg" alt="CrewAI + AGIRAILS Integration" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../../img/diagrams/crewai-integration.svg" alt="CrewAI + AGIRAILS Integration" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -246,7 +246,7 @@ print(result)
 ### Pattern 1: Hierarchical Budget Control
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/crewai-hierarchical.svg" alt="Hierarchical Budget Control" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../../img/diagrams/crewai-hierarchical.svg" alt="Hierarchical Budget Control" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 All payments flow through a central Treasury agent:
@@ -275,7 +275,7 @@ worker = Agent(
 ### Pattern 2: Delegated Budgets
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/crewai-delegated.svg" alt="Delegated Budgets" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../../img/diagrams/crewai-delegated.svg" alt="Delegated Budgets" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 Each agent gets their own budget allocation:
@@ -313,7 +313,7 @@ analyst_budget = DelegatedBudgetTool("analyst", budget=10.0)
 ### Pattern 3: Pay-Per-Task Marketplace
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/crewai-marketplace.svg" alt="Pay-Per-Task Marketplace" style={{maxWidth: '750px', height: 'auto'}} />
+  <img src="../../img/diagrams/crewai-marketplace.svg" alt="Pay-Per-Task Marketplace" style={{maxWidth: '750px', height: 'auto'}} />
 </div>
 
 Agents post and claim tasks with bounties:

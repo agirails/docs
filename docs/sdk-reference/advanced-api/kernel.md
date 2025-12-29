@@ -27,10 +27,26 @@ ACTPKernel is the core smart contract wrapper that manages:
 
 The Kernel is accessed through ACTPClient:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const client = await ACTPClient.create({ mode: 'mock', requesterAddress: '0x...' });
 const kernel = client.advanced;
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+client = await ACTPClient.create(mode='mock', requester_address='0x...')
+kernel = client.advanced
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -44,6 +60,7 @@ Create a new ACTP transaction.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const txId = await kernel.createTransaction({
   provider: '0x2222222222222222222222222222222222222222',
   requester: '0x1111111111111111111111111111111111111111',
@@ -60,6 +77,7 @@ console.log('Created transaction:', txId);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 import time
 
 tx_id = await kernel.create_transaction({
@@ -95,7 +113,11 @@ print(f'Created transaction: {tx_id}')
 
 Get transaction details by ID.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const tx = await kernel.getTransaction(txId);
 
 console.log('State:', tx.state);
@@ -106,9 +128,33 @@ console.log('Created:', new Date(tx.createdAt * 1000));
 console.log('Deadline:', new Date(tx.deadline * 1000));
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from datetime import datetime
+
+tx = await kernel.get_transaction(tx_id)
+
+print(f'State: {tx.state}')
+print(f'Amount: {tx.amount}')
+print(f'Provider: {tx.provider}')
+print(f'Requester: {tx.requester}')
+print(f'Created: {datetime.fromtimestamp(tx.created_at)}')
+print(f'Deadline: {datetime.fromtimestamp(tx.deadline)}')
+```
+
+</TabItem>
+</Tabs>
+
 **Returns:** `Promise<Transaction | null>`
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface Transaction {
   txId: string;
   requester: string;
@@ -128,19 +174,64 @@ interface Transaction {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class Transaction(TypedDict):
+    tx_id: str
+    requester: str
+    provider: str
+    amount: int
+    state: State
+    created_at: int
+    updated_at: int
+    deadline: int
+    dispute_window: int
+    escrow_contract: str
+    escrow_id: str
+    service_hash: str
+    attestation_uid: str
+    metadata: str
+    platform_fee_bps_locked: int
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### transitionState()
 
 Transition transaction to a new state.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Provider signals work started
 await kernel.transitionState(txId, State.IN_PROGRESS);
 
 // Provider delivers work
 await kernel.transitionState(txId, State.DELIVERED);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Provider signals work started
+await kernel.transition_state(tx_id, State.IN_PROGRESS)
+
+# Provider delivers work
+await kernel.transition_state(tx_id, State.DELIVERED)
+```
+
+</TabItem>
+</Tabs>
 
 **Valid Transitions:**
 
@@ -160,13 +251,32 @@ await kernel.transitionState(txId, State.DELIVERED);
 
 Link escrow to transaction (automatically transitions to COMMITTED).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Approve USDC first
 await client.escrow.approveToken(USDC_ADDRESS, amount);
 
 // Link escrow - auto-transitions to COMMITTED
 await kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Approve USDC first
+await client.escrow.approve_token(USDC_ADDRESS, amount)
+
+# Link escrow - auto-transitions to COMMITTED
+await kernel.link_escrow(tx_id, escrow_vault_address, escrow_id)
+```
+
+</TabItem>
+</Tabs>
 
 **Parameters:**
 
@@ -182,10 +292,26 @@ await kernel.linkEscrow(txId, escrowVaultAddress, escrowId);
 
 Anchor EAS attestation UID to transaction.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // After creating attestation via EASHelper
 await kernel.anchorAttestation(txId, attestationUID);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# After creating attestation via EASHelper
+await kernel.anchor_attestation(tx_id, attestation_uid)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -193,9 +319,24 @@ await kernel.anchorAttestation(txId, attestationUID);
 
 Release escrowed funds to provider (after dispute window).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await kernel.releaseEscrow(txId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await kernel.release_escrow(tx_id)
+```
+
+</TabItem>
+</Tabs>
 
 **Requirements:**
 - Transaction must be in DELIVERED state
@@ -208,9 +349,24 @@ await kernel.releaseEscrow(txId);
 
 Raise a dispute on a delivered transaction.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await kernel.raiseDispute(txId, disputeProof);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await kernel.raise_dispute(tx_id, dispute_proof)
+```
+
+</TabItem>
+</Tabs>
 
 **Parameters:**
 
@@ -225,13 +381,32 @@ await kernel.raiseDispute(txId, disputeProof);
 
 Resolve a dispute (mediator only).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await kernel.resolveDispute(txId, {
   decision: DisputeResolution.PROVIDER_WINS,
   requesterAmount: '0',
   providerAmount: '100000000',
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await kernel.resolve_dispute(tx_id, {
+    'decision': DisputeResolution.PROVIDER_WINS,
+    'requester_amount': '0',
+    'provider_amount': '100000000',
+})
+```
+
+</TabItem>
+</Tabs>
 
 **Resolution Options:**
 
@@ -247,10 +422,26 @@ await kernel.resolveDispute(txId, {
 
 Cancel transaction before delivery.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Requester cancels (refunds escrow if linked)
 await kernel.cancelTransaction(txId);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Requester cancels (refunds escrow if linked)
+await kernel.cancel_transaction(tx_id)
+```
+
+</TabItem>
+</Tabs>
 
 **Requirements:**
 - Must be before DELIVERED state
@@ -276,7 +467,11 @@ ACTPKernel uses operation-specific gas buffers:
 
 ## Error Handling
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import {
   TransactionNotFoundError,
   InvalidStateTransitionError,
@@ -293,6 +488,28 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import (
+    TransactionNotFoundError,
+    InvalidStateTransitionError,
+    DeadlineExpiredError,
+)
+
+try:
+    await kernel.transition_state(tx_id, State.DELIVERED)
+except InvalidStateTransitionError as error:
+    print(f'From: {error.details["from"]}')
+    print(f'To: {error.details["to"]}')
+    print(f'Valid: {error.details["valid_transitions"]}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

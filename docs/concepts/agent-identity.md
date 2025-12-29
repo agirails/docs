@@ -35,7 +35,7 @@ By the end of this page, you'll understand:
 | **Registry** | None (optional) | AgentRegistry contract |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/identity-model.svg" alt="Agent Identity Model" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/identity-model.svg" alt="Agent Identity Model" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ---
@@ -88,7 +88,7 @@ agent = Account.from_key(os.environ["AGENT_PRIVATE_KEY"])
 
 ### Authentication Flow
 
-![Authentication Flow](/img/diagrams/auth-flow.svg)
+![Authentication Flow](../img/diagrams/auth-flow.svg)
 
 **Key properties:**
 - **Self-sovereign** - Agent owns private key
@@ -361,7 +361,7 @@ Where:
 | &lt;5000 | New or poor history |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/reputation-tiers.svg" alt="Reputation Score Tiers" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/reputation-tiers.svg" alt="Reputation Score Tiers" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Ethereum Attestation Service (EAS)
@@ -446,7 +446,7 @@ struct AgentProfile {
 Who can do what in transactions:
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/access-control-matrix.svg" alt="Transaction Access Control" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/access-control-matrix.svg" alt="Transaction Access Control" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | Action | Requester | Provider | Third Party |

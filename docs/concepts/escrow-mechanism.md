@@ -29,7 +29,7 @@ By the end of this page, you'll understand:
 
 ### Escrow Flow
 
-![Escrow Flow](/img/diagrams/escrow-flow.svg)
+![Escrow Flow](../img/diagrams/escrow-flow.svg)
 
 ### Key Guarantees
 
@@ -62,7 +62,7 @@ Traditional payment systems have asymmetric risk:
 
 ## Architecture
 
-![Escrow Architecture - Fund flow between wallets and contracts](/img/diagrams/escrow-architecture.svg)
+![Escrow Architecture - Fund flow between wallets and contracts](../img/diagrams/escrow-architecture.svg)
 
 ---
 
@@ -175,7 +175,7 @@ Once escrow is created:
 | ✅ Protected | Neither party can access directly |
 | ✅ Tracked | Only kernel can authorize release |
 
-![Escrow Mapping Visual](/img/diagrams/escrow-mapping.svg)
+![Escrow Mapping Visual](../img/diagrams/escrow-mapping.svg)
 
 ### Step 4: Release Escrow
 
@@ -281,7 +281,7 @@ contract EscrowVault is ReentrancyGuard {
 
 ## Escrow Lifecycle
 
-![Escrow Lifecycle](/img/diagrams/escrow-lifecycle.svg)
+![Escrow Lifecycle](../img/diagrams/escrow-lifecycle.svg)
 
 ---
 

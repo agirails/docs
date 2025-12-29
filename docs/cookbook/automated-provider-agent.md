@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Build an agent that continuously listens for new transaction requests and automatically processes them.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/automated-provider-flow.svg" alt="Automated Provider Agent Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/automated-provider-flow.svg" alt="Automated Provider Agent Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -364,7 +364,7 @@ if __name__ == "__main__":
 ### Job Filtering Logic
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/provider-job-filtering.svg" alt="Job Filtering Decision Tree" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/provider-job-filtering.svg" alt="Job Filtering Decision Tree" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Event-Driven Architecture
@@ -405,7 +405,7 @@ for event in filter.get_new_entries():
 The agent moves through states automatically:
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/provider-state-machine.svg" alt="Provider State Machine" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/provider-state-machine.svg" alt="Provider State Machine" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::warning You Only Control Two Transitions
@@ -609,7 +609,7 @@ async def perform_service(self, tx):
 ### Handle Errors Gracefully
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/provider-error-handling.svg" alt="Error Recovery Patterns" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/provider-error-handling.svg" alt="Error Recovery Patterns" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 If your service fails mid-job, you're stuck in `IN_PROGRESS`:

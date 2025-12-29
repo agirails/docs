@@ -39,7 +39,7 @@ Before diving into the guides, make sure you've completed:
 ## Recommended Learning Path
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/learning-path.svg" alt="Recommended Learning Path" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/learning-path.svg" alt="Recommended Learning Path" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 <div style={{textAlign: 'center', marginBottom: '1rem'}}>

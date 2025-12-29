@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Monetize your API by charging per call. No subscriptions, no invoices - just instant micropayments.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/api-pay-per-call-flow.svg" alt="API Pay-Per-Call Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/api-pay-per-call-flow.svg" alt="API Pay-Per-Call Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -407,7 +407,7 @@ if __name__ == "__main__":
 ### Consumer Side (Calling the API)
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/api-consumer-flow.svg" alt="Consumer Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/api-consumer-flow.svg" alt="Consumer Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::tip Agent Discovery (AIP-7)
@@ -584,7 +584,7 @@ Consumer creates and funds transaction BEFORE calling API. USDC is locked in esc
 ### Verification
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/api-verification-middleware.svg" alt="Verification Middleware Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/api-verification-middleware.svg" alt="Verification Middleware Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 API middleware verifies:
@@ -605,7 +605,7 @@ On successful API response:
 ## Pricing Strategies
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/api-pricing-strategies.svg" alt="Pricing Strategies" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/api-pricing-strategies.svg" alt="Pricing Strategies" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Flat Rate

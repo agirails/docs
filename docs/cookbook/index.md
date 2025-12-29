@@ -9,7 +9,7 @@ description: Production-ready recipes for common AGIRAILS patterns
 Production-ready recipes for common patterns. Copy, paste, customize, ship.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/cookbook-overview.svg" alt="Cookbook Recipe Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/cookbook-overview.svg" alt="Cookbook Recipe Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::tip Philosophy
@@ -101,7 +101,7 @@ Connect AGIRAILS with popular platforms.
 ## When to Use What
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/cookbook-when-to-use.svg" alt="When to Use What" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/cookbook-when-to-use.svg" alt="When to Use What" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::info Prerequisites

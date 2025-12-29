@@ -85,7 +85,11 @@ await client.advanced.link_escrow(tx_id)
 
 Get escrow details by ID.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const escrow = await client.escrow.getEscrow(escrowId);
 
 console.log('Requester:', escrow.requester);
@@ -95,9 +99,30 @@ console.log('Remaining:', escrow.remaining);
 console.log('Released:', escrow.released);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+escrow = await client.escrow.get_escrow(escrow_id)
+
+print(f'Requester: {escrow.requester}')
+print(f'Provider: {escrow.provider}')
+print(f'Amount: {escrow.amount}')
+print(f'Remaining: {escrow.remaining}')
+print(f'Released: {escrow.released}')
+```
+
+</TabItem>
+</Tabs>
+
 **Returns:**
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface Escrow {
   escrowId: string;
   requester: string;
@@ -109,16 +134,50 @@ interface Escrow {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class Escrow(TypedDict):
+    escrow_id: str
+    requester: str
+    provider: str
+    amount: int
+    remaining: int
+    released: bool
+    created_at: int
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### getRemaining()
 
 Get remaining balance in escrow.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const remaining = await client.escrow.getRemaining(escrowId);
 console.log('Remaining in escrow:', remaining, 'wei');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+remaining = await client.escrow.get_remaining(escrow_id)
+print(f'Remaining in escrow: {remaining} wei')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -126,10 +185,26 @@ console.log('Remaining in escrow:', remaining, 'wei');
 
 Get the EscrowVault contract address.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const vaultAddress = client.escrow.getAddress();
 console.log('EscrowVault:', vaultAddress);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+vault_address = client.escrow.get_address()
+print(f'EscrowVault: {vault_address}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

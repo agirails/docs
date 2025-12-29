@@ -25,12 +25,29 @@ EASHelper enables:
 
 ## Configuration
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface EASConfig {
   contractAddress: string;        // EAS contract address
   deliveryProofSchemaId: string;  // Schema UID for delivery proofs
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class EASConfig(TypedDict):
+    contract_address: str          # EAS contract address
+    delivery_proof_schema_id: str  # Schema UID for delivery proofs
+```
+
+</TabItem>
+</Tabs>
 
 **Network Addresses:**
 
@@ -51,6 +68,7 @@ Create an on-chain attestation for a delivery proof.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ProofGenerator, EASHelper } from '@agirails/sdk';
 
 // Generate delivery proof
@@ -87,6 +105,7 @@ await kernel.anchorAttestation(txId, attestation.uid);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import ProofGenerator, EASHelper
 
 # Generate delivery proof
@@ -114,6 +133,9 @@ attestation = await eas.attest_delivery_proof(
 )
 
 print(f'Attestation UID: {attestation.uid}')
+
+# Anchor to kernel
+await kernel.anchor_attestation(tx_id, attestation.uid)
 ```
 
 </TabItem>
@@ -143,7 +165,11 @@ interface AttestationResponse {
 
 Verify an attestation's validity.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const isValid = await eas.verifyAttestation(attestationUID, {
   expectedTxId: txId,
   expectedProvider: providerAddress,
@@ -155,6 +181,26 @@ if (isValid) {
   console.log('Invalid attestation');
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+is_valid = await eas.verify_attestation(
+    attestation_uid,
+    expected_tx_id=tx_id,
+    expected_provider=provider_address,
+)
+
+if is_valid:
+    print('Attestation verified!')
+else:
+    print('Invalid attestation')
+```
+
+</TabItem>
+</Tabs>
 
 **Verification checks:**
 - Attestation exists on-chain
@@ -169,10 +215,26 @@ if (isValid) {
 
 Revoke a previously issued attestation.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const txHash = await eas.revokeAttestation(attestationUID);
 console.log('Revocation tx:', txHash);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+tx_hash = await eas.revoke_attestation(attestation_uid)
+print(f'Revocation tx: {tx_hash}')
+```
+
+</TabItem>
+</Tabs>
 
 **Use cases:**
 - Dispute resolution (invalidate delivery)
@@ -185,7 +247,11 @@ console.log('Revocation tx:', txHash);
 
 Fetch attestation details from chain.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const attestation = await eas.getAttestation(attestationUID);
 
 console.log('Schema:', attestation.schema);
@@ -194,6 +260,23 @@ console.log('Attester:', attestation.attester);
 console.log('Revoked:', attestation.revoked);
 console.log('Time:', new Date(attestation.time * 1000));
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+attestation = await eas.get_attestation(attestation_uid)
+
+print(f'Schema: {attestation.schema}')
+print(f'Recipient: {attestation.recipient}')
+print(f'Attester: {attestation.attester}')
+print(f'Revoked: {attestation.revoked}')
+print(f'Time: {attestation.time}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -218,7 +301,11 @@ string mimeType       // Content MIME type
 
 EASHelper tracks used attestations to prevent replay:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { FileBasedUsedAttestationTracker } from '@agirails/sdk';
 
 // Use file-based tracker for persistence
@@ -226,6 +313,22 @@ const tracker = new FileBasedUsedAttestationTracker('.actp/attestations');
 
 const eas = new EASHelper(signer, config, tracker);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import FileBasedUsedAttestationTracker
+
+# Use file-based tracker for persistence
+tracker = FileBasedUsedAttestationTracker('.actp/attestations')
+
+eas = EASHelper(signer, config, tracker)
+```
+
+</TabItem>
+</Tabs>
 
 **Warning:** Default in-memory tracker loses state on restart. Use file-based tracker in production.
 
@@ -243,6 +346,7 @@ Constructor validates schema UID format:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import {
   ACTPClient,
   ProofGenerator,
@@ -285,6 +389,53 @@ async function deliverWithAttestation(txId: string, result: string) {
 
   console.log('Delivery complete with on-chain proof!');
 }
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import ACTPClient, ProofGenerator, EASHelper, State
+import os
+
+async def deliver_with_attestation(tx_id: str, result: str):
+    client = await ACTPClient.create(
+        mode='testnet',
+        private_key=os.environ['PRIVATE_KEY'],
+    )
+
+    # 1. Generate proof
+    proof_gen = ProofGenerator()
+    proof = proof_gen.generate_delivery_proof(
+        tx_id=tx_id,
+        deliverable=result,
+        metadata={
+            'mimeType': 'application/json',
+        },
+    )
+
+    # 2. Create EAS attestation
+    eas = EASHelper(
+        client.signer,
+        config={
+            'contract_address': EAS_ADDRESS,
+            'delivery_proof_schema_id': SCHEMA_ID,
+        }
+    )
+
+    tx = await client.advanced.get_transaction(tx_id)
+    attestation = await eas.attest_delivery_proof(proof, tx.requester)
+
+    print(f'Created attestation: {attestation.uid}')
+
+    # 3. Anchor attestation to transaction
+    await client.advanced.anchor_attestation(tx_id, attestation.uid)
+
+    # 4. Transition to DELIVERED
+    await client.advanced.transition_state(tx_id, State.DELIVERED)
+
+    print('Delivery complete with on-chain proof!')
 ```
 
 </TabItem>

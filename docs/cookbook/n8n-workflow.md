@@ -9,7 +9,7 @@ description: Build no-code AI agent payment workflows with n8n
 Build payment-enabled AI workflows without writing code using n8n.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/n8n-workflow.svg" alt="n8n Workflow Integration" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-workflow.svg" alt="n8n Workflow Integration" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -78,7 +78,7 @@ Pay for each AI API call automatically.
 ### Workflow
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-recipe-1.svg" alt="Recipe 1 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-recipe-1.svg" alt="Recipe 1 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Nodes Configuration
@@ -208,7 +208,7 @@ Buy data on a schedule and store it.
 ### Workflow
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-recipe-2.svg" alt="Recipe 2 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-recipe-2.svg" alt="Recipe 2 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Nodes Configuration
@@ -238,7 +238,7 @@ Let team members trigger payments via Slack.
 ### Workflow
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-recipe-3.svg" alt="Recipe 3 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-recipe-3.svg" alt="Recipe 3 Workflow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Slack Command Setup
@@ -408,7 +408,7 @@ Use n8n's built-in retry:
 Before operations, verify state:
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-state-check.svg" alt="State Check Flow" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-state-check.svg" alt="State Check Flow" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 Switch node conditions:
@@ -421,7 +421,7 @@ Switch node conditions:
 Add error handler workflow:
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-error-handler.svg" alt="Error Handler Flow" style={{maxWidth: '420px', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-error-handler.svg" alt="Error Handler Flow" style={{maxWidth: '420px', height: 'auto'}} />
 </div>
 
 ---
@@ -440,7 +440,7 @@ Add error handler workflow:
 Always log txIds for debugging:
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-log-txid.svg" alt="Log Transaction IDs" style={{maxWidth: '540px', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-log-txid.svg" alt="Log Transaction IDs" style={{maxWidth: '540px', height: 'auto'}} />
 </div>
 
 ### 3. Idempotency
@@ -460,7 +460,7 @@ if (existingTx) {
 Don't spam the blockchain:
 
 <div style={{textAlign: 'center', margin: '1rem 0'}}>
-  <img src="/img/diagrams/n8n-rate-limit.svg" alt="Rate Limiting Flow" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../img/diagrams/n8n-rate-limit.svg" alt="Rate Limiting Flow" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 ---

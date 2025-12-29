@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Coordinate multiple AI agents that share a common budget pool with spending limits and approval workflows.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/multi-agent-budget.svg" alt="Multi-Agent Budget Architecture" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/multi-agent-budget.svg" alt="Multi-Agent Budget Architecture" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -779,7 +779,7 @@ All funds live in the coordinator's wallet:
 ### Four-Level Authorization
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/authorization-flow.svg" alt="Authorization Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/authorization-flow.svg" alt="Authorization Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Spending Records
@@ -824,7 +824,7 @@ Every transaction is recorded for auditing:
 ### Role-Based Limits
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/role-based-limits.svg" alt="Role-Based Spending Limits" style={{maxWidth: '600px', height: 'auto'}} />
+  <img src="../img/diagrams/role-based-limits.svg" alt="Role-Based Spending Limits" style={{maxWidth: '600px', height: 'auto'}} />
 </div>
 
 <Tabs>
@@ -946,7 +946,7 @@ class BudgetCoordinator:
 ### Spending Categories
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/spending-categories.svg" alt="Spending Categories" style={{maxWidth: '550px', height: 'auto'}} />
+  <img src="../img/diagrams/spending-categories.svg" alt="Spending Categories" style={{maxWidth: '550px', height: 'auto'}} />
 </div>
 
 <Tabs>

@@ -33,6 +33,7 @@ Watch for state changes on a specific transaction.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Start watching
 const cleanup = client.events.watchTransaction(txId, (newState) => {
   console.log('State changed to:', State[newState]);
@@ -55,6 +56,7 @@ cleanup();
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 def on_state_change(new_state):
     print(f'State changed to: {new_state}')
 
@@ -86,7 +88,11 @@ cleanup()
 
 Wait for a transaction to reach a specific state.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 try {
   // Wait up to 60 seconds for DELIVERED state
   await client.events.waitForState(txId, State.DELIVERED, 60000);
@@ -95,6 +101,22 @@ try {
   console.log('Timeout waiting for delivery');
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+try:
+    # Wait up to 60 seconds for DELIVERED state
+    await client.events.wait_for_state(tx_id, State.DELIVERED, 60000)
+    print('Transaction delivered!')
+except TimeoutError:
+    print('Timeout waiting for delivery')
+```
+
+</TabItem>
+</Tabs>
 
 **Parameters:**
 
@@ -114,6 +136,7 @@ Get all transactions for an address.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Get transactions where address is requester
 const asRequester = await client.events.getTransactionHistory(
   myAddress,
@@ -139,6 +162,7 @@ for (const tx of asRequester) {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 # Get transactions where address is requester
 as_requester = await client.events.get_transaction_history(
     my_address,
@@ -153,6 +177,10 @@ as_provider = await client.events.get_transaction_history(
 
 print(f'{len(as_requester)} transactions as requester')
 print(f'{len(as_provider)} transactions as provider')
+
+# Display each transaction
+for tx in as_requester:
+    print(f'{tx.tx_id}: {tx.state} - ${tx.amount / 10**6}')
 ```
 
 </TabItem>
@@ -166,7 +194,11 @@ print(f'{len(as_provider)} transactions as provider')
 
 Subscribe to new transaction creation events.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Subscribe to all new transactions
 const cleanup = client.events.onTransactionCreated((event) => {
   console.log('New transaction!');
@@ -180,13 +212,39 @@ const cleanup = client.events.onTransactionCreated((event) => {
 cleanup();
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Subscribe to all new transactions
+def on_transaction(event):
+    print('New transaction!')
+    print(f'  ID: {event.tx_id}')
+    print(f'  Requester: {event.requester}')
+    print(f'  Provider: {event.provider}')
+    print(f'  Amount: {event.amount}')
+
+cleanup = client.events.on_transaction_created(on_transaction)
+
+# Later: Unsubscribe
+cleanup()
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### onEscrowCreated()
 
 Subscribe to escrow creation events.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const cleanup = client.events.onEscrowCreated((event) => {
   console.log('Escrow created!');
   console.log('  Escrow ID:', event.escrowId);
@@ -194,17 +252,51 @@ const cleanup = client.events.onEscrowCreated((event) => {
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+def on_escrow(event):
+    print('Escrow created!')
+    print(f'  Escrow ID: {event.escrow_id}')
+    print(f'  Amount: {event.amount}')
+
+cleanup = client.events.on_escrow_created(on_escrow)
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### onStateTransitioned()
 
 Subscribe to all state transitions.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const cleanup = client.events.onStateTransitioned((event) => {
   console.log(`${event.txId}: ${State[event.from]} → ${State[event.to]}`);
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+def on_transition(event):
+    print(f'{event.tx_id}: {event.from_state} → {event.to_state}')
+
+cleanup = client.events.on_state_transitioned(on_transition)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -214,7 +306,11 @@ const cleanup = client.events.onStateTransitioned((event) => {
 
 Emitted when a new transaction is created.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface TransactionCreatedEvent {
   txId: string;
   requester: string;
@@ -224,11 +320,31 @@ interface TransactionCreatedEvent {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class TransactionCreatedEvent(TypedDict):
+    tx_id: str
+    requester: str
+    provider: str
+    amount: int
+    service_hash: Optional[str]
+```
+
+</TabItem>
+</Tabs>
+
 ### StateTransitioned
 
 Emitted when transaction state changes.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface StateTransitionedEvent {
   txId: string;
   from: State;
@@ -236,11 +352,29 @@ interface StateTransitionedEvent {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class StateTransitionedEvent(TypedDict):
+    tx_id: str
+    from_state: State
+    to_state: State
+```
+
+</TabItem>
+</Tabs>
+
 ### EscrowCreated
 
 Emitted when escrow is linked.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface EscrowCreatedEvent {
   escrowId: string;
   txId: string;
@@ -250,11 +384,31 @@ interface EscrowCreatedEvent {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class EscrowCreatedEvent(TypedDict):
+    escrow_id: str
+    tx_id: str
+    amount: int
+    requester: str
+    provider: str
+```
+
+</TabItem>
+</Tabs>
+
 ### EscrowReleased
 
 Emitted when escrow funds are released.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface EscrowReleasedEvent {
   escrowId: string;
   txId: string;
@@ -262,6 +416,21 @@ interface EscrowReleasedEvent {
   feeAmount: bigint;
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class EscrowReleasedEvent(TypedDict):
+    escrow_id: str
+    tx_id: str
+    provider_amount: int
+    fee_amount: int
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

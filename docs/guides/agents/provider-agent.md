@@ -43,7 +43,7 @@ pip install agirails python-dotenv
 ## Architecture (AIP-7 aligned)
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/provider-architecture.svg" alt="Provider Agent Architecture" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../../img/diagrams/provider-architecture.svg" alt="Provider Agent Architecture" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | Responsibility | Key Calls | Notes |

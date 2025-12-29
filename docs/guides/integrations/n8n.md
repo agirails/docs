@@ -44,7 +44,7 @@ Before starting, ensure you have:
 The ACTP n8n node enables visual workflow automation for AI agent payments:
 
 <img
-  src="/img/diagrams/n8n-architecture.svg"
+  src="../../img/diagrams/n8n-architecture.svg"
   alt="n8n Architecture Overview"
   style={{maxWidth: '880px', width: '100%'}}
 />
@@ -126,7 +126,7 @@ Let's create a simple workflow that locks funds in escrow.
 ### Create the Workflow
 
 <img
-  src="/img/diagrams/n8n-quickstart-workflow.svg"
+  src="../../img/diagrams/n8n-quickstart-workflow.svg"
   alt="Quick Start Workflow"
   style={{maxWidth: '780px', width: '100%'}}
 />
@@ -293,7 +293,7 @@ This section walks through building **two connected workflows** - a Requester pa
 ### Overview
 
 <img
-  src="/img/diagrams/n8n-translation-flow.svg"
+  src="../../img/diagrams/n8n-translation-flow.svg"
   alt="AI Translation Service Flow"
   style={{maxWidth: '880px', width: '100%'}}
 />
@@ -341,7 +341,7 @@ Both workflows communicate via HTTP webhooks with standardized payloads.
 This workflow pays for AI translation services.
 
 <img
-  src="/img/diagrams/n8n-requester-workflow.svg"
+  src="../../img/diagrams/n8n-requester-workflow.svg"
   alt="Requester Workflow"
   style={{maxWidth: '820px', width: '100%'}}
 />
@@ -410,7 +410,7 @@ curl -X POST https://your-n8n.com/webhook/translation-request \
 This workflow delivers AI translation and gets paid.
 
 <img
-  src="/img/diagrams/n8n-provider-workflow.svg"
+  src="../../img/diagrams/n8n-provider-workflow.svg"
   alt="Provider Workflow"
   style={{maxWidth: '780px', width: '100%'}}
 />
@@ -510,7 +510,7 @@ Update the HTTP request nodes with your ngrok URLs.
 Chain multiple AI services with sequential payments:
 
 <img
-  src="/img/diagrams/n8n-multi-agent-pipeline.svg"
+  src="../../img/diagrams/n8n-multi-agent-pipeline.svg"
   alt="Multi-Agent Pipeline"
   style={{maxWidth: '820px', width: '100%'}}
 />
@@ -520,7 +520,7 @@ Chain multiple AI services with sequential payments:
 If you can't receive webhooks, poll for state changes:
 
 <img
-  src="/img/diagrams/n8n-polling-pattern.svg"
+  src="../../img/diagrams/n8n-polling-pattern.svg"
   alt="Polling Pattern"
   style={{maxWidth: '780px', width: '100%'}}
 />
@@ -530,7 +530,7 @@ If you can't receive webhooks, poll for state changes:
 Cancel transactions that exceed deadline:
 
 <img
-  src="/img/diagrams/n8n-timeout-pattern.svg"
+  src="../../img/diagrams/n8n-timeout-pattern.svg"
   alt="Timeout Pattern"
   style={{maxWidth: '680px', width: '100%'}}
 />
@@ -540,7 +540,7 @@ Cancel transactions that exceed deadline:
 Look up providers from a registry:
 
 <img
-  src="/img/diagrams/n8n-service-discovery-pattern.svg"
+  src="../../img/diagrams/n8n-service-discovery-pattern.svg"
   alt="Service Discovery Pattern"
   style={{maxWidth: '650px', width: '100%'}}
 />

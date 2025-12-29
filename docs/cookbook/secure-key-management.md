@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Protect your private keys in production. Because one leaked key = total loss.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/secure-key-management.svg" alt="Secure Key Management Tiers" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/secure-key-management.svg" alt="Secure Key Management Tiers" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | | |
@@ -634,7 +634,7 @@ def main():
 ## Key Rotation Strategy
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/key-rotation-flow.svg" alt="Key Rotation Process" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/key-rotation-flow.svg" alt="Key Rotation Process" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Why Rotate?
@@ -740,7 +740,7 @@ class RotatingKeyManager:
 ## Multi-Signature Setup
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/multisig-setup.svg" alt="Multi-Signature Setup" style={{maxWidth: '550px', height: 'auto'}} />
+  <img src="../img/diagrams/multisig-setup.svg" alt="Multi-Signature Setup" style={{maxWidth: '550px', height: 'auto'}} />
 </div>
 
 For high-value operations, require multiple keys.
@@ -889,7 +889,7 @@ class MultiSigCoordinator:
 ## Common Mistakes
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/key-security-mistakes.svg" alt="Common Security Mistakes" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/key-security-mistakes.svg" alt="Common Security Mistakes" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### 1. Logging Sensitive Data

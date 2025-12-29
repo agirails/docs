@@ -21,7 +21,7 @@ The AGIRAILS SDK provides **three levels of abstraction** to match your needs:
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img
-    src="/img/diagrams/three-tier-api.svg"
+    src="../img/diagrams/three-tier-api.svg"
     alt="Three-Tier API Architecture"
     style={{maxWidth: '700px', width: '100%'}}
   />
@@ -186,7 +186,7 @@ await client.advanced.transition_state(tx_id, State.DELIVERED, b'')
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img
-    src="/img/diagrams/decision-tree.svg"
+    src="../img/diagrams/decision-tree.svg"
     alt="API Decision Tree"
     style={{maxWidth: '600px', width: '100%'}}
   />

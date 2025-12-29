@@ -146,7 +146,11 @@ ACTPClient provides three access levels:
 
 High-level, opinionated API for simple use cases.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 0: Basic API - Simple one-liners
 // Create and fund a payment in one call
 const result = await client.basic.pay({
   to: '0xProvider...',
@@ -161,13 +165,38 @@ if (status.canComplete) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 0: Basic API - Simple one-liners
+# Create and fund a payment in one call
+result = await client.basic.pay({
+    'to': '0xProvider...',
+    'amount': '100',
+    'deadline': '+24h',
+})
+
+# Check status with action hints
+status = await client.basic.check_status(result.tx_id)
+if status.can_complete:
+    print('Provider can deliver now')
+```
+
+</TabItem>
+</Tabs>
+
 See [Basic API](../basic-api) for full documentation.
 
 ### client.standard
 
 Balanced API with explicit lifecycle control.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 1: Standard API - Lifecycle control
 // Create transaction (INITIATED state)
 const txId = await client.standard.createTransaction({
   provider: '0xProvider...',
@@ -192,9 +221,44 @@ const tx = await client.standard.getTransaction(txId);
 console.log('State:', tx?.state);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 1: Standard API - Lifecycle control
+# Create transaction (INITIATED state)
+tx_id = await client.standard.create_transaction({
+    'provider': '0xProvider...',
+    'amount': '100',
+    'deadline': '+7d',
+})
+
+# Link escrow (auto-transitions to COMMITTED)
+escrow_id = await client.standard.link_escrow(tx_id)
+
+# Transition state
+await client.standard.transition_state(tx_id, 'DELIVERED')
+
+# Release escrow after dispute window
+await client.standard.release_escrow(escrow_id, {
+    'tx_id': tx_id,
+    'attestation_uid': '0x...',
+})
+
+# Get transaction details
+tx = await client.standard.get_transaction(tx_id)
+print(f'State: {tx["state"]}')
+```
+
+</TabItem>
+</Tabs>
+
 ### client.advanced
 
 Direct protocol access for full control with protocol-level types (wei strings, unix timestamps).
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 // Level 2: Advanced API - Direct protocol control
@@ -233,6 +297,49 @@ if ('mintTokens' in client.advanced) {
   await client.advanced.mintTokens('0x...', '1000000000'); // 1000 USDC
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import ACTPClient, State
+import os
+import time
+
+client = await ACTPClient.create({
+    'mode': 'mock',
+    'requester_address': '0x...',
+    'private_key': os.environ['PRIVATE_KEY'],
+})
+
+# Create transaction with protocol-level types
+tx_id = await client.advanced.create_transaction({
+    'provider': '0x...',
+    'requester': '0x...',
+    'amount': '100000000',  # Wei (6 decimals for USDC)
+    'deadline': int(time.time()) + 86400,
+    'dispute_window': 172800,
+})
+
+# Get transaction
+tx = await client.advanced.get_transaction(tx_id)
+
+# State transitions
+await client.advanced.link_escrow(tx_id)
+await client.advanced.transition_state(tx_id, State.DELIVERED, b'')
+
+# Time control (mock only)
+if hasattr(client.advanced, 'time'):
+    client.advanced.time.advance(3600)  # Advance 1 hour
+
+# Token minting (mock only)
+if hasattr(client.advanced, 'mint_tokens'):
+    await client.advanced.mint_tokens('0x...', '1000000000')  # 1000 USDC
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -281,16 +388,36 @@ CANCELLED  CANCELLED  CANCELLED   CANCELLED      DISPUTED → SETTLED
 
 Get the client's wallet address.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const address = client.getAddress();
 console.log('My address:', address);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+address = client.get_address()
+print(f'My address: {address}')
+```
+
+</TabItem>
+</Tabs>
 
 ### mintTokens() (Mock only)
 
 Mint test USDC tokens.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Mint 1000 USDC to yourself
 await client.mintTokens(client.getAddress(), '1000000000');
 
@@ -298,23 +425,70 @@ await client.mintTokens(client.getAddress(), '1000000000');
 await client.mintTokens('0x...', '500000000');
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Mint 1000 USDC to yourself
+await client.mint_tokens(client.get_address(), '1000000000')
+
+# Mint to another address
+await client.mint_tokens('0x...', '500000000')
+```
+
+</TabItem>
+</Tabs>
+
 ### getBalance()
 
 Get USDC balance.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const balance = await client.getBalance(client.getAddress());
 console.log('Balance:', balance); // Wei (6 decimals)
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+balance = await client.get_balance(client.get_address())
+print(f'Balance: {balance}')  # Wei (6 decimals)
+```
+
+</TabItem>
+</Tabs>
 
 ### reset() (Mock only)
 
 Reset mock state to initial values.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 await client.reset();
 console.log('State reset to defaults');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+await client.reset()
+print('State reset to defaults')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -322,7 +496,11 @@ console.log('State reset to defaults');
 
 The SDK provides typed errors for precise handling:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import {
   ACTPError,
   InsufficientFundsError,
@@ -348,6 +526,35 @@ try {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import (
+    ACTPError,
+    InsufficientFundsError,
+    TransactionNotFoundError,
+    InvalidStateTransitionError,
+    DeadlineExpiredError,
+    ValidationError,
+)
+
+try:
+    await client.standard.create_transaction({ ... })
+except InsufficientFundsError as e:
+    print(f'Need more USDC: {e.required}, have: {e.available}')
+except ValidationError as e:
+    print(f'Invalid input: {e.field} - {e.message}')
+except DeadlineExpiredError as e:
+    print(f'Transaction expired at: {e.deadline}')
+except ACTPError as e:
+    print(f'ACTP error: {e.code} - {e.message}')
+```
+
+</TabItem>
+</Tabs>
 
 See [Errors](../errors) for complete error hierarchy.
 

@@ -27,7 +27,7 @@ By the end of this page, you'll understand:
 
 The AI agent economy is emerging rapidly, but it lacks neutral infrastructure:
 
-![Agent Economy Comparison - Today's fragmented state vs Tomorrow with ACTP](/img/diagrams/agent-economy-comparison.svg)
+![Agent Economy Comparison - Today's fragmented state vs Tomorrow with ACTP](../img/diagrams/agent-economy-comparison.svg)
 
 | Problem | Today's Reality | Impact |
 |---------|----------------|--------|
@@ -48,7 +48,7 @@ The AI agent economy is emerging rapidly, but it lacks neutral infrastructure:
 
 ACTP provides the "missing layer" - think of it as **HTTP for agent commerce**:
 
-![ACTP Stack - Three-layer architecture from agents to blockchain](/img/diagrams/actp-stack.svg)
+![ACTP Stack - Three-layer architecture from agents to blockchain](../img/diagrams/actp-stack.svg)
 
 | Layer | HTTP (Web) | ACTP (Agent Commerce) |
 |-------|-----------|----------------------|
@@ -64,7 +64,7 @@ Just as HTTP doesn't care if you're using Chrome, Firefox, or Safari, **ACTP doe
 
 ## How ACTP Works: The 30-Second Version
 
-![ACTP Sequence - Complete transaction flow from creation to settlement](/img/diagrams/actp-sequence.svg)
+![ACTP Sequence - Complete transaction flow from creation to settlement](../img/diagrams/actp-sequence.svg)
 
 **Key Insight**: The protocol is a **state machine enforced by smart contracts**. Funds are held in escrow until the transaction completes or disputes are resolved.
 
@@ -116,7 +116,7 @@ Traditional payment systems (Stripe, PayPal) were designed for humans clicking b
 
 Neither requester nor provider has special privileges - the protocol enforces symmetry.
 
-![Bilateral Fairness - Balanced protections for both parties](/img/diagrams/bilateral-fairness.svg)
+![Bilateral Fairness - Balanced protections for both parties](../img/diagrams/bilateral-fairness.svg)
 
 **Example scenarios:**
 - **Requester creates but doesn't fund** → Provider can cancel after deadline
@@ -144,7 +144,7 @@ Payments are in **USDC** (USD Coin), not volatile tokens.
 
 ACTP supports optional attestations via **Ethereum Attestation Service (EAS)**.
 
-![Verifiable Reputation - Attestation flow](/img/diagrams/verifiable-reputation.svg)
+![Verifiable Reputation - Attestation flow](../img/diagrams/verifiable-reputation.svg)
 
 :::caution V1 Limitations
 In V1, `anchorAttestation()` is **optional** and accepts any bytes32 without on-chain validation. There is no deployed reputation registry. The SDK provides off-chain verification helpers, but on-chain proof validation is planned for V2.

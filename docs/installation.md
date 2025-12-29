@@ -12,7 +12,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/installation-overview.svg" alt="Installation Overview - 5 Steps to Ready" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/installation-overview.svg" alt="Installation Overview - 5 Steps to Ready" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::info What You'll Learn
@@ -329,7 +329,7 @@ Expected output:
 ## Network Configuration
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/network-config.svg" alt="Network Configuration - Base Sepolia and Mainnet" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/network-config.svg" alt="Network Configuration - Base Sepolia and Mainnet" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Base Sepolia (Testnet)

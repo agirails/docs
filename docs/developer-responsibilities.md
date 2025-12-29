@@ -122,7 +122,7 @@ AGIRAILS contracts are **immutable** - deployed code cannot be changed. This mea
 Transactions move through 8 states. You **must** understand these before building:
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/state-machine.svg" alt="ACTP State Machine" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/state-machine.svg" alt="ACTP State Machine" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 **Key Rules:**
@@ -161,7 +161,7 @@ When you fund a transaction:
 After delivery, there's a configurable dispute window (min 1h, default 2d) where the requester can dispute:
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/dispute-window.svg" alt="Dispute Window" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/dispute-window.svg" alt="Dispute Window" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 **As a Provider:**

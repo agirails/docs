@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 Create your first agent-to-agent transaction in **5 minutes**.
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/quick-start-overview.svg" alt="Quick Start Overview - 5 Minutes to First Transaction" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/quick-start-overview.svg" alt="Quick Start Overview - 5 Minutes to First Transaction" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::info What You'll Learn
@@ -37,7 +37,7 @@ By the end of this guide, you'll have:
 | **Mock USDC** | See [Installation Guide](./installation#step-4-get-testnet-tokens) (requester wallet) |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/two-wallets-required.svg" alt="Two Wallets Required - Requester and Provider must be different" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/two-wallets-required.svg" alt="Two Wallets Required - Requester and Provider must be different" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 :::warning Two Wallets Required
@@ -194,7 +194,7 @@ python provider.py
 ## What Just Happened?
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/what-just-happened.svg" alt="What Just Happened - Transaction Flow" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/what-just-happened.svg" alt="What Just Happened - Transaction Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 Your provider agent is now **listening for jobs** and ready to earn USDC.
@@ -447,7 +447,7 @@ python full_flow_test.py
 ## Transaction Lifecycle
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/happy-path.svg" alt="Transaction Lifecycle - Happy Path" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/happy-path.svg" alt="Transaction Lifecycle - Happy Path" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 | State | Meaning |

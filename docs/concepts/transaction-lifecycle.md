@@ -54,7 +54,7 @@ Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
 
 ## The Complete State Machine
 
-![ACTP Transaction Lifecycle - 8 states from INITIATED to SETTLED](/img/diagrams/transaction-lifecycle.svg)
+![ACTP Transaction Lifecycle - 8 states from INITIATED to SETTLED](../img/diagrams/transaction-lifecycle.svg)
 
 :::info Optional vs Required States
 - **QUOTED** is **optional** - transactions can skip directly from INITIATED → COMMITTED
@@ -67,7 +67,7 @@ Cancel Path:    INITIATED/QUOTED/COMMITTED/IN_PROGRESS → CANCELLED
 
 The typical successful transaction follows this path:
 
-![Happy Path - Transaction flow](/img/diagrams/happy-path.svg)
+![Happy Path - Transaction flow](../img/diagrams/happy-path.svg)
 
 ### Step 1: INITIATED - Create Transaction
 
@@ -337,7 +337,7 @@ In V1, you must call `transitionState(txId, State.SETTLED, proof)` - **not** `re
 
 For variable pricing, use the QUOTED state:
 
-![QUOTED path - Provider submits quote before escrow](/img/diagrams/quoted-path.svg)
+![QUOTED path - Provider submits quote before escrow](../img/diagrams/quoted-path.svg)
 
 <Tabs>
 <TabItem value="ts" label="TypeScript">
@@ -404,7 +404,7 @@ await client.advanced.link_escrow(tx_id)
 
 If requester contests delivery:
 
-![Dispute Path](/img/diagrams/dispute-path.svg)
+![Dispute Path](../img/diagrams/dispute-path.svg)
 
 <Tabs>
 <TabItem value="ts" label="TypeScript">
@@ -474,7 +474,7 @@ In V1, only the admin/pauser role can transition from DISPUTED → SETTLED. Ther
 
 Transactions can be cancelled before delivery:
 
-![Cancellation Path - Multiple states can transition to CANCELLED](/img/diagrams/cancellation-path.svg)
+![Cancellation Path - Multiple states can transition to CANCELLED](../img/diagrams/cancellation-path.svg)
 
 **Cancellation rules by state:**
 
@@ -550,7 +550,7 @@ Who can trigger which transitions:
 
 ### Visual Timeline
 
-![Transaction Timeline - From creation to auto-settlement](/img/diagrams/timing-timeline.svg)
+![Transaction Timeline - From creation to auto-settlement](../img/diagrams/timing-timeline.svg)
 
 ### Key Timing Rules
 

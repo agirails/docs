@@ -27,7 +27,11 @@ QuoteBuilder provides:
 
 Per AIP-2 specification:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 interface QuoteMessage {
   type: 'agirails.quote.v1';
   version: '1.0.0';
@@ -53,6 +57,33 @@ interface QuoteMessage {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+class QuoteMessage(TypedDict):
+    type: str             # 'agirails.quote.v1'
+    version: str          # '1.0.0'
+    tx_id: str            # Transaction ID (bytes32)
+    provider: str         # Provider DID
+    consumer: str         # Consumer DID
+    quoted_amount: str    # Provider's quoted price
+    original_amount: str  # Consumer's original offer
+    max_price: str        # Consumer's maximum
+    currency: str         # "USDC"
+    decimals: int         # 6 for USDC
+    quoted_at: int        # Unix timestamp
+    expires_at: int       # Expiration timestamp
+    justification: Optional[dict]  # Price justification
+    chain_id: int
+    nonce: int
+    signature: str        # EIP-712 signature
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ## Methods
@@ -65,6 +96,7 @@ Build and sign a price quote.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { QuoteBuilder, NonceManager } from '@agirails/sdk';
 
 const nonceManager = new NonceManager('.actp/nonces');
@@ -95,6 +127,7 @@ console.log('Signature:', quote.signature);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import QuoteBuilder, NonceManager
 import time
 
@@ -146,7 +179,11 @@ print(f'Quote signature: {quote.signature}')
 
 Verify a quote signature.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const isValid = await quoteBuilder.verify(quote);
 
 if (isValid) {
@@ -156,16 +193,48 @@ if (isValid) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+is_valid = await quote_builder.verify(quote)
+
+if is_valid:
+    print('Quote signature is valid')
+else:
+    print('Invalid signature - reject quote')
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### hash()
 
 Get the canonical hash of a quote (for storage/lookup).
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const quoteHash = quoteBuilder.hash(quote);
 console.log('Quote hash:', quoteHash);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+quote_hash = quote_builder.hash(quote)
+print(f'Quote hash: {quote_hash}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -187,9 +256,9 @@ QuoteBuilder enforces these rules:
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img
-    src="/img/diagrams/quote-flow.svg"
+    src="../../img/diagrams/quote-flow.svg"
     alt="Quote Flow Sequence Diagram"
-    style={{maxWidth: '500px', width: '100%'}}
+    style={{maxWidth: '600px', width: '100%'}}
   />
 </div>
 
@@ -201,6 +270,7 @@ QuoteBuilder enforces these rules:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { QuoteBuilder, NonceManager } from '@agirails/sdk';
 
 class PricingService {
@@ -249,6 +319,47 @@ class PricingService {
 ```
 
 </TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+from agirails import QuoteBuilder, NonceManager
+
+class PricingService:
+    def __init__(self, signer, state_dir: str):
+        nonce_manager = NonceManager(state_dir)
+        self.quote_builder = QuoteBuilder(signer, nonce_manager)
+
+    async def generate_quote(self, request: dict):
+        # Calculate price based on complexity
+        base_price = int(request['original_amount'])
+        multipliers = {'low': 1, 'medium': 2, 'high': 3}
+        quoted_amount = base_price * multipliers[request['complexity']]
+
+        # Ensure within max price
+        max_price = int(request['max_price'])
+        final_amount = min(quoted_amount, max_price)
+
+        # Build signed quote
+        quote = await self.quote_builder.build({
+            'tx_id': request['tx_id'],
+            'provider': 'did:ethr:84532:0x...',
+            'consumer': request['consumer'],
+            'quoted_amount': str(final_amount),
+            'original_amount': request['original_amount'],
+            'max_price': request['max_price'],
+            'justification': {
+                'reason': f"{request['complexity']} complexity task",
+                'estimated_time': 600 if request['complexity'] == 'high' else 120,
+            },
+            'chain_id': 84532,
+            'kernel_address': KERNEL_ADDRESS,
+        })
+
+        return quote
+```
+
+</TabItem>
 </Tabs>
 
 ---
@@ -257,7 +368,11 @@ class PricingService {
 
 QuoteBuilder uses these EIP-712 types:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const AIP2QuoteTypes = {
   PriceQuote: [
     { name: 'txId', type: 'bytes32' },
@@ -276,6 +391,33 @@ const AIP2QuoteTypes = {
   ],
 };
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+AIP2_QUOTE_TYPES = {
+    'PriceQuote': [
+        {'name': 'txId', 'type': 'bytes32'},
+        {'name': 'provider', 'type': 'string'},
+        {'name': 'consumer', 'type': 'string'},
+        {'name': 'quotedAmount', 'type': 'string'},
+        {'name': 'originalAmount', 'type': 'string'},
+        {'name': 'maxPrice', 'type': 'string'},
+        {'name': 'currency', 'type': 'string'},
+        {'name': 'decimals', 'type': 'uint8'},
+        {'name': 'quotedAt', 'type': 'uint256'},
+        {'name': 'expiresAt', 'type': 'uint256'},
+        {'name': 'justificationHash', 'type': 'bytes32'},
+        {'name': 'chainId', 'type': 'uint256'},
+        {'name': 'nonce', 'type': 'uint256'},
+    ],
+}
+```
+
+</TabItem>
+</Tabs>
 
 ---
 

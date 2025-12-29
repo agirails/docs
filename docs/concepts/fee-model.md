@@ -121,7 +121,7 @@ No tiers, no hidden costs, no surprises.
 | Wire Transfer | $25.00 |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/fee-comparison.svg" alt="Fee Comparison: $100 Transaction" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/fee-comparison.svg" alt="Fee Comparison: $100 Transaction" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### No Tiers
@@ -142,7 +142,7 @@ Prevents **dust spam attacks**:
 The minimum forces meaningful capital commitment.
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/fee-curve.svg" alt="Fee Curve: Minimum vs Percentage" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/fee-curve.svg" alt="Fee Curve: Minimum vs Percentage" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Why Separate Minimum Fee?
@@ -281,14 +281,14 @@ Day 10: Transaction settles
 
 ## Fee Distribution
 
-![Fee Distribution](/img/diagrams/fee-distribution.svg)
+![Fee Distribution](../img/diagrams/fee-distribution.svg)
 
 ---
 
 ## Fee Scenarios
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
-  <img src="/img/diagrams/fee-scenarios.svg" alt="When Are Fees Charged?" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/fee-scenarios.svg" alt="When Are Fees Charged?" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ### Scenario 1: Simple Settlement

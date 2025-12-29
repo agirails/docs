@@ -25,7 +25,7 @@ AGIRAILS provides three API levels, each with its own examples:
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img
-    src="/img/diagrams/three-tier-api.svg"
+    src="../img/diagrams/three-tier-api.svg"
     alt="Three-Tier API Architecture"
     style={{maxWidth: '700px', width: '100%'}}
   />

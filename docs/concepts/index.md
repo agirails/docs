@@ -13,7 +13,7 @@ This section explains the fundamental concepts that power the protocol.
 ## Quick Overview
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/actp-overview.svg" alt="ACTP Transaction Flow Overview" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="../img/diagrams/actp-overview.svg" alt="ACTP Transaction Flow Overview" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 ## What You'll Learn

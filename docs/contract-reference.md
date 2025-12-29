@@ -92,7 +92,7 @@ AGIRAILS contracts are currently testnet-only. Mainnet deployment scheduled for 
 
 ## Architecture Overview
 
-![Contract Architecture](/img/diagrams/contract-architecture.svg)
+![Contract Architecture](./img/diagrams/contract-architecture.svg)
 
 **Key Design Principles:**
 
@@ -137,7 +137,7 @@ enum State {
 ### State Transition Diagram
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
-  <img src="/img/diagrams/state-transitions.svg" alt="ACTP State Transition Diagram" style={{maxWidth: '100%', height: 'auto'}} />
+  <img src="./img/diagrams/state-transitions.svg" alt="ACTP State Transition Diagram" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
 **Key Rules:**

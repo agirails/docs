@@ -33,6 +33,7 @@ Hash deliverable content using Keccak256.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import { ProofGenerator } from '@agirails/sdk';
 
 const proofGen = new ProofGenerator();
@@ -51,6 +52,7 @@ console.log('Buffer hash:', hash2);
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import ProofGenerator
 
 proof_gen = ProofGenerator()
@@ -76,7 +78,11 @@ print(f'Buffer hash: {hash2}')
 
 Generate a complete delivery proof per AIP-4.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const proof = proofGen.generateDeliveryProof({
   txId: '0x1234...', // Transaction ID
   deliverable: 'Your AI-generated content here',
@@ -100,6 +106,38 @@ console.log('Proof:', proof);
 //   }
 // }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+proof = proof_gen.generate_delivery_proof(
+    tx_id='0x1234...',  # Transaction ID
+    deliverable='Your AI-generated content here',
+    delivery_url='ipfs://QmHash...',  # Optional: permanent storage URL
+    metadata={
+        'mimeType': 'application/json',
+        # Note: size is computed automatically
+    },
+)
+
+print(f'Proof: {proof}')
+# {
+#   'type': 'delivery.proof',
+#   'tx_id': '0x1234...',
+#   'content_hash': '0xabc...',
+#   'timestamp': 1703779200000,
+#   'delivery_url': 'ipfs://QmHash...',
+#   'metadata': {
+#     'size': 35,
+#     'mimeType': 'application/json'
+#   }
+# }
+```
+
+</TabItem>
+</Tabs>
 
 **Parameters:**
 
@@ -133,7 +171,11 @@ interface DeliveryProof {
 
 Verify deliverable content matches expected hash.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const deliverable = 'Content from provider';
 const expectedHash = '0xabc123...';
 
@@ -146,19 +188,57 @@ if (isValid) {
 }
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+deliverable = 'Content from provider'
+expected_hash = '0xabc123...'
+
+is_valid = proof_gen.verify_deliverable(deliverable, expected_hash)
+
+if is_valid:
+    print('Content matches proof!')
+else:
+    print('Content tampered or wrong!')
+```
+
+</TabItem>
+</Tabs>
+
 ---
 
 ### hashFromUrl()
 
 Fetch content from URL and generate hash. Includes SSRF protection.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // Hash content from IPFS
 const hash = await proofGen.hashFromUrl('https://ipfs.io/ipfs/QmHash...');
 
 // Hash content from Arweave
 const hash2 = await proofGen.hashFromUrl('https://arweave.net/TxId...');
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# Hash content from IPFS
+hash = await proof_gen.hash_from_url('https://ipfs.io/ipfs/QmHash...')
+
+# Hash content from Arweave
+hash2 = await proof_gen.hash_from_url('https://arweave.net/TxId...')
+```
+
+</TabItem>
+</Tabs>
 
 **Security features:**
 - HTTPS-only by default
@@ -172,10 +252,26 @@ const hash2 = await proofGen.hashFromUrl('https://arweave.net/TxId...');
 
 Encode proof for on-chain submission.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const encoded = proofGen.encodeProof(proof);
 // Returns ABI-encoded bytes for smart contract
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+encoded = proof_gen.encode_proof(proof)
+# Returns ABI-encoded bytes for smart contract
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -183,12 +279,30 @@ const encoded = proofGen.encodeProof(proof);
 
 Decode proof from on-chain data.
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const decoded = proofGen.decodeProof(encodedData);
 console.log('Decoded txId:', decoded.txId);
 console.log('Decoded hash:', decoded.contentHash);
 console.log('Decoded time:', decoded.timestamp);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+decoded = proof_gen.decode_proof(encoded_data)
+print(f'Decoded txId: {decoded.tx_id}')
+print(f'Decoded hash: {decoded.content_hash}')
+print(f'Decoded time: {decoded.timestamp}')
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -196,7 +310,11 @@ console.log('Decoded time:', decoded.timestamp);
 
 Configure URL fetching security:
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 const proofGen = new ProofGenerator({
   allowedProtocols: ['https:'],      // HTTPS only (default)
   allowLocalhost: false,             // Block localhost
@@ -209,15 +327,54 @@ const proofGen = new ProofGenerator({
 });
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+proof_gen = ProofGenerator(
+    allowed_protocols=['https:'],      # HTTPS only (default)
+    allow_localhost=False,             # Block localhost
+    max_size=10 * 1024 * 1024,         # 10MB limit
+    timeout=30000,                     # 30 second timeout
+    blocked_hosts=[
+        'metadata.google.internal',    # Cloud metadata
+        '169.254.169.254',             # AWS/GCP metadata
+    ],
+)
+```
+
+</TabItem>
+</Tabs>
+
 **Development mode:**
 
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 // For local testing, allow HTTP and localhost
 const devProofGen = new ProofGenerator({
   allowedProtocols: ['https:', 'http:'],
   allowLocalhost: true,
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Level 2: Advanced API - Direct protocol control
+# For local testing, allow HTTP and localhost
+dev_proof_gen = ProofGenerator(
+    allowed_protocols=['https:', 'http:'],
+    allow_localhost=True,
+)
+```
+
+</TabItem>
+</Tabs>
 
 ---
 
@@ -227,6 +384,7 @@ const devProofGen = new ProofGenerator({
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
+// Level 2: Advanced API - Direct protocol control
 import {
   ACTPClient,
   ProofGenerator,
@@ -277,7 +435,9 @@ async function deliver(txId: string, result: string) {
 <TabItem value="py" label="Python">
 
 ```python
+# Level 2: Advanced API - Direct protocol control
 from agirails import ACTPClient, ProofGenerator, State
+import os
 
 async def deliver(tx_id: str, result: str):
     client = await ACTPClient.create(
