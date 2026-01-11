@@ -1270,10 +1270,25 @@
   -webkit-backface-visibility: hidden;
 }
 
+/* When NOT flipped: front determines height, back is absolute */
+.flip-card-front {
+  position: relative;
+}
+
 .flip-card-back {
   position: absolute;
   inset: 0;
   transform: rotateY(180deg);
+}
+
+/* When flipped: back determines height, front is absolute */
+.flip-card.flipped .flip-card-front {
+  position: absolute;
+  inset: 0;
+}
+
+.flip-card.flipped .flip-card-back {
+  position: relative;
 }
 
 .flip-card .battle-card {
