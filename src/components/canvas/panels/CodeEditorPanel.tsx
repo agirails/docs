@@ -423,6 +423,12 @@ export function CodeEditorPanel({ agent, onCodeChange, onClose }: CodeEditorPane
               {code.length}
             </span>
           </div>
+          <div className="cv-code-editor__disclaimer">
+            Sandbox runtime (ctx.*) for learning. For production SDK, see{' '}
+            <a href="/docs/sdk/quick-start" target="_blank" rel="noopener noreferrer">
+              SDK docs
+            </a>
+          </div>
         </div>
       </div>
     </>

@@ -225,6 +225,10 @@ export function ScenarioGallery({
           <button className="cv-btn cv-btn--secondary" onClick={onDismiss}>
             Start Empty
           </button>
+          <p className="cv-scenario-gallery__disclaimer">
+            Canvas uses a sandbox runtime (ctx.*) for learning.
+            For production code, see the <a href="/docs/sdk/quick-start" target="_blank" rel="noopener noreferrer">SDK documentation</a>.
+          </p>
         </div>
       </div>
     </div>
