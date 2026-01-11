@@ -87,10 +87,12 @@ describe('AgentBattle', () => {
       expect(stepIndicators.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('shows Requester Agent title on FlipCard', () => {
+    it('shows Requester Agent title', () => {
       render(<AgentBattle />);
 
-      expect(screen.getByText('Requester Agent')).toBeInTheDocument();
+      // Requester Agent appears in both sticky header and FlipCard
+      const requesterTitles = screen.getAllByText('Requester Agent');
+      expect(requesterTitles.length).toBeGreaterThanOrEqual(1);
     });
   });
 

@@ -441,6 +441,26 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
       <div className="battle-main">
         {/* Requester Panel */}
         <div className="battle-panel requester" style={{ width: `${leftWidth}%` }}>
+          {/* Sticky Wallet Header */}
+          <div className="battle-wallet-header">
+            <div className="battle-card requester-card">
+              <div className="battle-card-header">
+                <UserIcon />
+                <span className="requester-text">Requester Agent</span>
+              </div>
+              <div className="battle-card-body">
+                <div className="battle-wallet-address-full">
+                  <WalletIcon />
+                  <code>{requesterWallet.address}</code>
+                </div>
+                <div className="battle-balances">
+                  <span className="eth-balance">{requesterWallet.ethBalance}</span>
+                  <span className="usdc-balance">{requesterWallet.usdcBalance}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="battle-panel-scroll">
             {/* Transaction Status (only shown after creation) */}
             {transaction && (
@@ -477,20 +497,6 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
                 step="Step 1"
                 frontContent={
                   <>
-                    {/* Wallet Info */}
-                    <div className="battle-wallet-info">
-                      <div className="battle-wallet-address-full">
-                        <WalletIcon />
-                        <code>{requesterWallet.address}</code>
-                      </div>
-                      <div className="battle-balances">
-                        <span className="eth-balance">{requesterWallet.ethBalance}</span>
-                        <span className="usdc-balance">{requesterWallet.usdcBalance}</span>
-                      </div>
-                    </div>
-
-                    <div className="battle-form-divider" />
-
                     {/* Form Fields */}
                     <div className="battle-form-group">
                       <label>Send To (Provider)</label>
@@ -1025,8 +1031,8 @@ console.log('Transaction cancelled');
 
         {/* Provider Panel */}
         <div className="battle-panel provider" style={{ width: `${rightWidth}%` }}>
-          <div className="battle-panel-scroll">
-            {/* Wallet Card */}
+          {/* Sticky Wallet Header */}
+          <div className="battle-wallet-header">
             <div className="battle-card provider-card">
               <div className="battle-card-header">
                 <BotIcon />
@@ -1043,7 +1049,9 @@ console.log('Transaction cancelled');
                 </div>
               </div>
             </div>
+          </div>
 
+          <div className="battle-panel-scroll">
             {/* Incoming Request */}
             {transaction && (
               <div className="battle-card dashed">
