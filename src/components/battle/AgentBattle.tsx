@@ -1057,9 +1057,9 @@ console.log('Transaction cancelled');
                 <span className="provider-text">Provider Agent</span>
               </div>
               <div className="battle-card-body">
-                <div className="battle-wallet-address">
+                <div className="battle-wallet-address-full">
                   <WalletIcon />
-                  <code>{providerWallet.address.slice(0, 6)}...{providerWallet.address.slice(-4)}</code>
+                  <code>{formData.providerAddress}</code>
                 </div>
                 <div className="battle-balances">
                   <span className="eth-balance">{providerWallet.ethBalance}</span>
