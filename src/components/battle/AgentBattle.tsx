@@ -495,14 +495,15 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
 
                     {/* Form Fields */}
                     <div className="battle-form-group">
-                      <label>Provider Address</label>
+                      <label>Send To (Provider)</label>
                       <input
                         type="text"
                         className="pg-input"
                         value={formData.providerAddress}
                         onChange={(e) => setFormData({ ...formData, providerAddress: e.target.value })}
-                        placeholder="0x..."
+                        placeholder="Provider's wallet address (0x...)"
                       />
+                      <span className="battle-form-hint">The wallet that will receive payment</span>
                     </div>
                     <div className="battle-form-group">
                       <label>Amount (USDC)</label>
@@ -663,8 +664,8 @@ console.log('Escrow linked successfully');
               />
             )}
 
-            {/* Accept Quote - Requester Step 2 (alternative) */}
-            {canAcceptQuote && (
+            {/* Accept Quote - Requester Step 2 (alternative) - Only show when NO active negotiation */}
+            {canAcceptQuote && !negotiation.isActive && (
               <FlipCard
                 isFlipped={acceptQuoteFlipped}
                 onFlip={() => setAcceptQuoteFlipped(!acceptQuoteFlipped)}

@@ -253,7 +253,7 @@ describe('AgentBattle', () => {
       const { container } = render(<AgentBattle />);
 
       // Find provider address input
-      const providerInput = screen.getByPlaceholderText('0x...');
+      const providerInput = screen.getByPlaceholderText("Provider's wallet address (0x...)");
       fireEvent.change(providerInput, { target: { value: '0xNewProviderAddress1234567890abcdef12' } });
 
       // The code should now show the new provider
@@ -268,7 +268,7 @@ describe('AgentBattle', () => {
     it('renders provider address input', () => {
       render(<AgentBattle />);
 
-      expect(screen.getByPlaceholderText('0x...')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Provider's wallet address (0x...)")).toBeInTheDocument();
     });
 
     it('renders amount input', () => {
