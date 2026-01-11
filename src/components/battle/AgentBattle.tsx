@@ -208,8 +208,6 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
   const [startWorkFlipped, setStartWorkFlipped] = useState(false);
   const [deliverFlipped, setDeliverFlipped] = useState(false);
 
-  // USDC approval state for Link Escrow
-  const [usdcApproved, setUsdcApproved] = useState(false);
 
   // Build playground context for AI Assistant
   const playgroundContext = useMemo((): PlaygroundContext => {
@@ -602,25 +600,14 @@ console.log('Transaction created:', txId);
                 frontContent={
                   <>
                     <div className="battle-form-group">
-                      <label>Transaction Amount</label>
+                      <label>Amount to Lock</label>
                       <div className="battle-info-value">{transaction?.amount} USDC</div>
-                    </div>
-                    <div className="battle-form-group">
-                      <label className="battle-checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={usdcApproved}
-                          onChange={(e) => setUsdcApproved(e.target.checked)}
-                          className="battle-checkbox"
-                        />
-                        <span>USDC Token Approved</span>
-                      </label>
-                      <span className="battle-form-hint">Approve the kernel contract to spend your USDC</span>
+                      <span className="battle-form-hint">Funds will be held in escrow until work is delivered</span>
                     </div>
                     <button
                       className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
                       onClick={() => dispatch({ type: 'LINK_ESCROW' })}
-                      disabled={!canPerformAction || !usdcApproved}
+                      disabled={!canPerformAction}
                     >
                       <CheckCircleIcon />
                       Link Escrow & Commit
@@ -654,7 +641,7 @@ console.log('Escrow linked successfully');
                     <button
                       className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
                       onClick={() => dispatch({ type: 'LINK_ESCROW' })}
-                      disabled={!canPerformAction || !usdcApproved}
+                      disabled={!canPerformAction}
                     >
                       <CheckCircleIcon />
                       Link Escrow & Commit
@@ -675,20 +662,9 @@ console.log('Escrow linked successfully');
                 frontContent={
                   <>
                     <div className="battle-form-group">
-                      <label>Provider's Quote</label>
+                      <label>Provider Accepted Your Offer</label>
                       <div className="battle-info-value highlight">{transaction?.amount} USDC</div>
-                    </div>
-                    <div className="battle-form-group">
-                      <label className="battle-checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={usdcApproved}
-                          onChange={(e) => setUsdcApproved(e.target.checked)}
-                          className="battle-checkbox"
-                        />
-                        <span>USDC Token Approved</span>
-                      </label>
-                      <span className="battle-form-hint">Accept quote and fund escrow</span>
+                      <span className="battle-form-hint">Confirm to lock funds in escrow</span>
                     </div>
                     <button
                       className={`battle-btn primary full-width ${alternatePulse ? 'pulsing' : 'dimmed'}`}
@@ -696,7 +672,7 @@ console.log('Escrow linked successfully');
                       disabled={!canPerformAction}
                     >
                       <CheckCircleIcon />
-                      Accept Quote ({transaction?.amount} USDC)
+                      Confirm & Fund Escrow ({transaction?.amount} USDC)
                     </button>
                   </>
                 }
