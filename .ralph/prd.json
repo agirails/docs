@@ -23,7 +23,7 @@
       "task": "Refactor Create Transaction step to use new FlipCard",
       "details": "Migrate existing Create Transaction step in AgentBattle.tsx to use the new FlipCard component. Front side: existing form (provider, amount, deadline, disputeWindow, metadata). Back side: CodeDisplay with SDK code showing client.kernel.createTransaction() call. Ensure code updates dynamically when form values change. Test flip animation works correctly.",
       "category": "feature",
-      "passes": false
+      "passes": true
     },
     {
       "id": 3,

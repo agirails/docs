@@ -180,6 +180,7 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
     deadlineHours: '24',
     disputeWindowHours: '2',
     disputeReason: '',
+    disputeEvidence: '',
     quoteAmount: '50',
     deliveryProof: 'ipfs://QmX7b2J8k9H3z4L5M6N7P8Q9R0S1T2U3V4W5X6Y7Z8A9B0C',
   });
@@ -192,6 +193,14 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
 
   // Flip card states
   const [createTxFlipped, setCreateTxFlipped] = useState(false);
+  const [linkEscrowFlipped, setLinkEscrowFlipped] = useState(false);
+  const [acceptQuoteFlipped, setAcceptQuoteFlipped] = useState(false);
+  const [releaseEscrowFlipped, setReleaseEscrowFlipped] = useState(false);
+  const [raiseDisputeFlipped, setRaiseDisputeFlipped] = useState(false);
+  const [cancelFlipped, setCancelFlipped] = useState(false);
+
+  // USDC approval state for Link Escrow
+  const [usdcApproved, setUsdcApproved] = useState(false);
 
   // Build playground context for AI Assistant
   const playgroundContext = useMemo((): PlaygroundContext => {
@@ -572,68 +581,352 @@ console.log('Transaction created:', txId);
               />
             )}
 
-            {/* Action Buttons */}
-            <div className="battle-actions">
-              {canLinkEscrow && (
-                <button
-                  className={`battle-btn primary ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
-                  onClick={() => dispatch({ type: 'LINK_ESCROW' })}
-                  disabled={!canPerformAction}
-                >
-                  <CheckCircleIcon />
-                  Link Escrow & Commit
-                </button>
-              )}
-              {canAcceptQuote && (
-                <button
-                  className={`battle-btn primary ${alternatePulse ? 'pulsing' : 'dimmed'}`}
-                  onClick={() => dispatch({ type: 'ACCEPT_QUOTE' })}
-                  disabled={!canPerformAction}
-                >
-                  <CheckCircleIcon />
-                  Accept Quote ({transaction?.amount} USDC)
-                </button>
-              )}
-              {canReleaseEscrow && (
-                <button
-                  className={`battle-btn success ${alternatePulse ? 'pulsing' : 'dimmed'}`}
-                  onClick={() => dispatch({ type: 'RELEASE_ESCROW' })}
-                  disabled={!canPerformAction}
-                >
-                  <CheckCircleIcon />
-                  Release Escrow
-                </button>
-              )}
-              {canRaiseDispute && (
-                <div className="battle-dispute-form">
-                  <input
-                    type="text"
-                    className="pg-input"
-                    placeholder="Reason for dispute..."
-                    value={formData.disputeReason}
-                    onChange={(e) => setFormData({ ...formData, disputeReason: e.target.value })}
-                  />
-                  <button
-                    className={`battle-btn danger full-width ${!alternatePulse ? 'pulsing' : 'dimmed'}`}
-                    onClick={() => dispatch({ type: 'RAISE_DISPUTE', payload: { reason: formData.disputeReason || 'Work not as described' } })}
-                    disabled={!canPerformAction}
-                  >
-                    <AlertTriangleIcon />
-                    Raise Dispute
-                  </button>
-                </div>
-              )}
-              {canCancel && (
-                <button
-                  className={`battle-btn outline-danger ${transaction?.state === 'QUOTED' ? (!alternatePulse ? 'pulsing' : 'dimmed') : 'dimmed'}`}
-                  onClick={() => dispatch({ type: 'CANCEL' })}
-                  disabled={!canPerformAction}
-                >
-                  <XCircleIcon />
-                  Cancel Transaction
-                </button>
-              )}
-            </div>
+            {/* Link Escrow - Requester Step 2 */}
+            {canLinkEscrow && (
+              <FlipCard
+                isFlipped={linkEscrowFlipped}
+                onFlip={() => setLinkEscrowFlipped(!linkEscrowFlipped)}
+                variant="requester"
+                title="Requester Agent"
+                step="Step 2"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Transaction Amount</label>
+                      <div className="battle-info-value">{transaction?.amount} USDC</div>
+                    </div>
+                    <div className="battle-form-group">
+                      <label className="battle-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={usdcApproved}
+                          onChange={(e) => setUsdcApproved(e.target.checked)}
+                          className="battle-checkbox"
+                        />
+                        <span>USDC Token Approved</span>
+                      </label>
+                      <span className="battle-form-hint">Approve the kernel contract to spend your USDC</span>
+                    </div>
+                    <button
+                      className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'LINK_ESCROW' })}
+                      disabled={!canPerformAction || !usdcApproved}
+                    >
+                      <CheckCircleIcon />
+                      Link Escrow & Commit
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Approve USDC and link escrow to transaction"
+                      code={`import { ACTPClient } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Step 1: Approve USDC spending
+await client.escrow.approveToken(
+  parseUnits('${transaction?.amount || '0'}', 6)
+);
+
+// Step 2: Link escrow to transaction
+await client.escrow.linkEscrow('${formatTxHash(transaction?.id)}');
+
+console.log('Escrow linked successfully');
+// State: INITIATED → COMMITTED`}
+                    />
+                    <button
+                      className={`battle-btn primary full-width ${activePanel === 'requester' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'LINK_ESCROW' })}
+                      disabled={!canPerformAction || !usdcApproved}
+                    >
+                      <CheckCircleIcon />
+                      Link Escrow & Commit
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Accept Quote - Requester Step 2 (alternative) */}
+            {canAcceptQuote && (
+              <FlipCard
+                isFlipped={acceptQuoteFlipped}
+                onFlip={() => setAcceptQuoteFlipped(!acceptQuoteFlipped)}
+                variant="requester"
+                title="Requester Agent"
+                step="Step 2"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Provider's Quote</label>
+                      <div className="battle-info-value highlight">{transaction?.amount} USDC</div>
+                    </div>
+                    <div className="battle-form-group">
+                      <label className="battle-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={usdcApproved}
+                          onChange={(e) => setUsdcApproved(e.target.checked)}
+                          className="battle-checkbox"
+                        />
+                        <span>USDC Token Approved</span>
+                      </label>
+                      <span className="battle-form-hint">Accept quote and fund escrow</span>
+                    </div>
+                    <button
+                      className={`battle-btn primary full-width ${alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'ACCEPT_QUOTE' })}
+                      disabled={!canPerformAction}
+                    >
+                      <CheckCircleIcon />
+                      Accept Quote ({transaction?.amount} USDC)
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Accept provider's quote and fund escrow"
+                      code={`import { ACTPClient } from '@agirails/sdk';
+import { parseUnits } from 'ethers';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Step 1: Approve USDC spending
+await client.escrow.approveToken(
+  parseUnits('${transaction?.amount || '0'}', 6)
+);
+
+// Step 2: Accept quote and link escrow
+await client.escrow.linkEscrow('${formatTxHash(transaction?.id)}');
+
+console.log('Quote accepted, escrow funded');
+// State: QUOTED → COMMITTED`}
+                    />
+                    <button
+                      className={`battle-btn primary full-width ${alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'ACCEPT_QUOTE' })}
+                      disabled={!canPerformAction}
+                    >
+                      <CheckCircleIcon />
+                      Accept Quote ({transaction?.amount} USDC)
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Release Escrow - Requester Step 4 */}
+            {canReleaseEscrow && (
+              <FlipCard
+                isFlipped={releaseEscrowFlipped}
+                onFlip={() => setReleaseEscrowFlipped(!releaseEscrowFlipped)}
+                variant="requester"
+                title="Requester Agent"
+                step="Step 4"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Delivery Status</label>
+                      <div className="battle-info-value success">Work Delivered ✓</div>
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Amount to Release</label>
+                      <div className="battle-info-value">{transaction?.amount} USDC</div>
+                    </div>
+                    <button
+                      className={`battle-btn success full-width ${alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'RELEASE_ESCROW' })}
+                      disabled={!canPerformAction}
+                    >
+                      <CheckCircleIcon />
+                      Release Escrow
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Release escrowed funds to provider"
+                      code={`import { ACTPClient } from '@agirails/sdk';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Release escrow to provider
+await client.escrow.releaseEscrow(
+  '${formatTxHash(transaction?.id)}'
+);
+
+console.log('Escrow released to provider');
+// State: DELIVERED → SETTLED`}
+                    />
+                    <button
+                      className={`battle-btn success full-width ${alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'RELEASE_ESCROW' })}
+                      disabled={!canPerformAction}
+                    >
+                      <CheckCircleIcon />
+                      Release Escrow
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Raise Dispute - Requester Step 4 (alternative) */}
+            {canRaiseDispute && (
+              <FlipCard
+                isFlipped={raiseDisputeFlipped}
+                onFlip={() => setRaiseDisputeFlipped(!raiseDisputeFlipped)}
+                variant="requester"
+                title="Requester Agent"
+                step="Step 4"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Dispute Reason</label>
+                      <input
+                        type="text"
+                        className="pg-input"
+                        placeholder="e.g., Work not as described"
+                        value={formData.disputeReason}
+                        onChange={(e) => setFormData({ ...formData, disputeReason: e.target.value })}
+                      />
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Evidence (optional)</label>
+                      <input
+                        type="text"
+                        className="pg-input"
+                        placeholder="ipfs://... or description"
+                        value={formData.disputeEvidence}
+                        onChange={(e) => setFormData({ ...formData, disputeEvidence: e.target.value })}
+                      />
+                    </div>
+                    <button
+                      className={`battle-btn danger full-width ${!alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'RAISE_DISPUTE', payload: { reason: formData.disputeReason || 'Work not as described' } })}
+                      disabled={!canPerformAction}
+                    >
+                      <AlertTriangleIcon />
+                      Raise Dispute
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Raise a dispute against delivery"
+                      code={`import { ACTPClient } from '@agirails/sdk';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Raise dispute with reason and evidence
+await client.kernel.raiseDispute(
+  '${formatTxHash(transaction?.id)}',
+  '${formData.disputeReason || 'Work not as described'}',
+  '${formData.disputeEvidence || ''}'
+);
+
+console.log('Dispute raised, awaiting resolution');
+// State: DELIVERED → DISPUTED`}
+                    />
+                    <button
+                      className={`battle-btn danger full-width ${!alternatePulse ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'RAISE_DISPUTE', payload: { reason: formData.disputeReason || 'Work not as described' } })}
+                      disabled={!canPerformAction}
+                    >
+                      <AlertTriangleIcon />
+                      Raise Dispute
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Cancel Transaction - Requester */}
+            {canCancel && (
+              <FlipCard
+                isFlipped={cancelFlipped}
+                onFlip={() => setCancelFlipped(!cancelFlipped)}
+                variant="requester"
+                title="Requester Agent"
+                step={transaction?.state === 'INITIATED' ? 'Step 2' : transaction?.state === 'QUOTED' ? 'Step 2' : 'Step 3'}
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Current State</label>
+                      <div className="battle-info-value">{transaction?.state}</div>
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Refund Amount</label>
+                      <div className="battle-info-value">{transaction?.escrowLinked ? transaction?.amount : '0'} USDC</div>
+                      <span className="battle-form-hint">
+                        {transaction?.escrowLinked ? 'Escrowed funds will be returned' : 'No funds locked yet'}
+                      </span>
+                    </div>
+                    <button
+                      className={`battle-btn outline-danger full-width ${transaction?.state === 'QUOTED' ? (!alternatePulse ? 'pulsing' : 'dimmed') : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'CANCEL' })}
+                      disabled={!canPerformAction}
+                    >
+                      <XCircleIcon />
+                      Cancel Transaction
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Cancel the transaction"
+                      code={`import { ACTPClient, State } from '@agirails/sdk';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Cancel transaction (before DELIVERED state)
+await client.kernel.transitionState(
+  '${formatTxHash(transaction?.id)}',
+  State.CANCELLED
+);
+
+console.log('Transaction cancelled');
+// State: ${transaction?.state} → CANCELLED`}
+                    />
+                    <button
+                      className={`battle-btn outline-danger full-width ${transaction?.state === 'QUOTED' ? (!alternatePulse ? 'pulsing' : 'dimmed') : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'CANCEL' })}
+                      disabled={!canPerformAction}
+                    >
+                      <XCircleIcon />
+                      Cancel Transaction
+                    </button>
+                  </>
+                }
+              />
+            )}
           </div>
         </div>
 
