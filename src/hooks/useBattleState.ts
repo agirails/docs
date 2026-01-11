@@ -179,9 +179,13 @@ export function useBattleState() {
         await simulateDelay(600);
 
         const maxRounds = action.payload.maxRounds || 3;
+        const originalAmount = state.transaction?.amount || '0';
+        const quotedAmount = action.payload.amount;
+        const isNegotiationNeeded = quotedAmount !== originalAmount;
+
         const initialOffer: NegotiationOffer = {
           id: `offer-1`,
-          amount: action.payload.amount,
+          amount: quotedAmount,
           from: 'provider',
           timestamp: Date.now(),
           round: 1,
@@ -190,7 +194,7 @@ export function useBattleState() {
 
         updateTransaction({
           state: 'QUOTED',
-          amount: action.payload.amount,
+          amount: quotedAmount,
         });
 
         setState(prev => ({
@@ -198,18 +202,20 @@ export function useBattleState() {
           negotiation: {
             currentRound: 1,
             maxRounds,
-            history: [initialOffer],
-            currentOffer: initialOffer,
+            history: isNegotiationNeeded ? [initialOffer] : [],
+            currentOffer: isNegotiationNeeded ? initialOffer : null,
             whoseTurn: 'requester',
-            isActive: true,
+            isActive: isNegotiationNeeded,
           },
         }));
 
         addTimelineEvent({
           type: 'action',
           actor: 'provider',
-          title: 'Quote Submitted',
-          description: `Provider quoted ${action.payload.amount} USDC (max ${maxRounds} rounds)`,
+          title: isNegotiationNeeded ? 'Quote Submitted' : 'Quote Accepted',
+          description: isNegotiationNeeded
+            ? `Provider quoted ${quotedAmount} USDC (max ${maxRounds} rounds)`
+            : `Provider accepted the offered ${quotedAmount} USDC`,
           txHash,
           fromState: state.transaction?.state,
           toState: 'QUOTED',
