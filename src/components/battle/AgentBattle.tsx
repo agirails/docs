@@ -728,6 +728,7 @@ console.log('Quote accepted, escrow funded');
                 disabled={!canPerformAction}
                 onCounterOffer={(amount) => dispatch({ type: 'COUNTER_OFFER', payload: { amount } })}
                 onAccept={() => dispatch({ type: 'ACCEPT_QUOTE' })}
+                txId={transaction?.id}
               />
             )}
 
@@ -1191,6 +1192,7 @@ console.log('Quote submitted: ${formData.quoteAmount} USDC');
                 disabled={!canPerformAction}
                 onCounterOffer={(amount) => dispatch({ type: 'PROVIDER_COUNTER', payload: { amount } })}
                 onAccept={() => dispatch({ type: 'ACCEPT_QUOTE' })}
+                txId={transaction?.id}
               />
             )}
 

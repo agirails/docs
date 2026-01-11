@@ -1601,6 +1601,45 @@
   color: var(--pg-text);
 }
 
+/* Negotiation Header Right Side (warning + code toggle) */
+.negotiation-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.negotiation-panel .battle-flip-toggle {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pg-secondary);
+  border: 1px solid var(--pg-border);
+  border-radius: 6px;
+  color: var(--pg-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.negotiation-panel .battle-flip-toggle:hover {
+  background: var(--pg-bg);
+  border-color: var(--pg-primary);
+  color: var(--pg-primary);
+}
+
+.negotiation-code-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.negotiation-code-view .battle-code-display {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
   .battle-main {
