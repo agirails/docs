@@ -1429,3 +1429,191 @@ Checking previous task artifacts:
 
 ### Ultra-Think Decision: **APPROVED**
 
+
+### ✅ TASK COMPLETED
+
+- **Iterations**: 1
+- **Completed at**: 2026-01-11T13:01:30+01:00
+
+
+---
+
+## Task 4: Add Provider flip cards (Submit Quote, Start Work, Deliver)
+
+_Timestamp: 2026-01-11T13:01:32+01:00_
+
+**Category**: feature
+**Is Final**: false
+
+Task definition:
+```json
+{
+  "id": 4,
+  "task": "Add Provider flip cards (Submit Quote, Start Work, Deliver)",
+  "details": "Create 3 flip cards for Provider steps: 1) Submit Quote - form with quote amount + maxRounds input (1-5), shows transitionState(txId, State.QUOTED, encodedAmount) code. 2) Start Work - optional workPlanUrl input, shows transitionState(txId, State.IN_PROGRESS) code. 3) Deliver Work - form with proof (IPFS hash) + summary, shows transitionState(txId, State.DELIVERED, encodedProof) + optional anchorAttestation code. All cards use FlipCard component with 'provider' variant.",
+  "category": "feature",
+  "passes": false
+}
+```
+
+### feature-dev (Iteration 1) Output
+
+```
+## Summary
+
+I have successfully implemented all 3 Provider flip cards in the AgentBattle component:
+
+### Files Modified
+- `/Users/damir/Cursor/AGIRails MVP/AGIRAILS/docs-site/src/components/battle/AgentBattle.tsx`
+
+### Changes Made
+
+1. **Added flip card state variables** (lines 203-205):
+   - `submitQuoteFlipped`
+   - `startWorkFlipped`
+   - `deliverFlipped`
+
+2. **Added form data fields** (lines 185-188):
+   - `maxRounds: '3'`
+   - `workPlanUrl: ''`
+   - `deliverySummary: 'Translation completed with 99.5% accuracy'`
+
+3. **Submit Quote FlipCard** (lines 1101-1185):
+   - Front: Quote amount + maxRounds (1-5) inputs
+   - Back: Shows `transitionState(txId, State.QUOTED, encodedQuote)` with AbiCoder encoding
+
+4. **Start Work FlipCard** (lines 1187-1254):
+   - Front: Optional workPlanUrl input + status indicator
+   - Back: Shows `transitionState(txId, State.IN_PROGRESS)` code
+
+5. **Deliver Work FlipCard** (lines 1256-1346):
+   - Front: Delivery proof (IPFS hash) + delivery summary inputs
+   - Back: Shows `transitionState(txId, State.DELIVERED, encodedProof)` + optional `anchorAttestation` code
+
+All cards use `variant="provider"` for purple styling and consistent FlipCard patterns matching the existing Requester cards.
+
+<ralph>COMPLETE</ralph>
+```
+
+
+### Quality Checks: PASSED
+
+
+
+### ultra-think Review (Iteration 1) Output
+
+```
+Now let me compile my final review summary:
+
+---
+
+## Review Summary
+
+**Task 4**: Add Provider flip cards (Submit Quote, Start Work, Deliver)
+**Files Changed**: `src/components/battle/AgentBattle.tsx`
+
+### Security: PASS
+- No XSS vulnerabilities (React escapes content, prism-react-renderer uses React components)
+- No `dangerouslySetInnerHTML` or `eval`
+- No hardcoded secrets (example addresses are placeholder demo data, not real keys)
+- `process.env.PRIVATE_KEY` is shown in generated code samples, not exposed in actual code
+- Input handling is consistent with existing codebase patterns
+
+### Best Practices: PASS
+- ✅ `.gitignore` exists and covers: node_modules, build, coverage, .env.local
+- ✅ No `any` types in TypeScript (verified via grep)
+- ✅ No `eslint-disable` or `@ts-ignore` 
+- ✅ No console.log debugging artifacts (all console.log are in code sample strings)
+- ✅ No commented-out code blocks
+- ✅ No TODO/FIXME comments
+
+### Code Quality: PASS
+- FlipCard component used correctly with 'provider' variant
+- Step indicators properly numbered (Step 1, 2, 3)
+- Form fields properly bound to state
+- Button states properly reflect transaction state
+- Code patterns exactly match Task 3 (Requester cards) implementation
+- Consistent use of BattleCodeDisplay component
+
+### Edge Cases Verified:
+- Empty inputs → handled via placeholder and default values ✓
+- Special characters in inputs → code is demonstration only, React escapes ✓
+- Button disabled states → properly controlled by `canPerformAction` ✓
+- Form state updates → properly use spread operator ✓
+
+### Tests: PARTIAL PASS (49% coverage on AgentBattle.tsx)
+- **83 tests pass** across 3 test files
+- FlipCard component: **100% coverage** ✓
+- BattleCodeDisplay component: **100% coverage** ✓
+- AgentBattle component: **49% coverage** (below 90% threshold)
+
+---
+
+## Issues Found
+
+### HIGH
+
+1. **Missing Tests for Provider Flip Cards**: No tests exist for the new Provider functionality
+   - File: `src/components/battle/AgentBattle.test.tsx`
+   - Current tests only cover Requester flow (Create Transaction)
+   - Missing coverage: Submit Quote, Start Work, Deliver Work flip cards
+   - **Impact**: Provider flip card behavior is untested
+
+   **Required tests**:
+   - Test Provider cards render when `canQuote`, `canStartWork`, `canDeliver` are true
+   - Test flip animation behavior for each Provider card
+   - Test dynamic code generation for Provider operations (Submit Quote with maxRounds, Deliver with proof)
+   - Test form input binding for `maxRounds`, `workPlanUrl`, `deliverySummary`
+
+### MEDIUM (non-blocking but should fix)
+
+1. **Coverage below 90%**: AgentBattle.tsx has only 49% coverage
+   - This is a complex component and the coverage was already low before Task 4
+   - However, the new Provider card code specifically has NO test coverage
+   - Lines 1098-1346 (Task 4 changes) are in the uncovered range
+
+---
+
+The implementation follows the exact same patterns as Task 3 (which was approved) and uses FlipCard/BattleCodeDisplay correctly. However, **the absence of any tests for the new Provider flip cards is a significant gap**.
+
+<ralph-review>NEEDS_WORK</ralph-review>
+
+**Reason**: No tests for the new Provider flip cards (Submit Quote, Start Work, Deliver Work). While the code implementation is solid and follows established patterns, shipping untested UI functionality violates the testing requirements. Tests must be added for:
+1. Provider flip card rendering conditions
+2. Form input binding for new fields (`maxRounds`, `workPlanUrl`, `deliverySummary`)
+3. Dynamic code generation including the new form values
+4. Flip animation behavior for Provider cards
+```
+
+
+### Ultra-Think Decision: **NEEDS_WORK**
+
+#### Issues Found:
+
+## Issues Found
+
+### HIGH
+
+1. **Missing Tests for Provider Flip Cards**: No tests exist for the new Provider functionality
+   - File: `src/components/battle/AgentBattle.test.tsx`
+   - Current tests only cover Requester flow (Create Transaction)
+   - Missing coverage: Submit Quote, Start Work, Deliver Work flip cards
+   - **Impact**: Provider flip card behavior is untested
+
+   **Required tests**:
+   - Test Provider cards render when `canQuote`, `canStartWork`, `canDeliver` are true
+   - Test flip animation behavior for each Provider card
+   - Test dynamic code generation for Provider operations (Submit Quote with maxRounds, Deliver with proof)
+   - Test form input binding for `maxRounds`, `workPlanUrl`, `deliverySummary`
+
+### MEDIUM (non-blocking but should fix)
+
+1. **Coverage below 90%**: AgentBattle.tsx has only 49% coverage
+   - This is a complex component and the coverage was already low before Task 4
+   - However, the new Provider card code specifically has NO test coverage
+   - Lines 1098-1346 (Task 4 changes) are in the uncovered range
+
+---
+
+The implementation follows the exact same patterns as Task 3 (which was approved) and uses FlipCard/BattleCodeDisplay correctly. However, **the absence of any tests for the new Provider flip cards is a significant gap**.
+

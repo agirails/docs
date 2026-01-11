@@ -324,3 +324,452 @@ describe('AgentBattle', () => {
     });
   });
 });
+
+// Helper to create mock state with specific transaction state
+const createMockBattleState = (transactionState: string | null, overrides = {}) => ({
+  useBattleState: () => ({
+    state: {
+      requesterWallet: {
+        address: '0x1234567890abcdef1234567890abcdef12345678',
+        label: 'Requester Agent',
+        ethBalance: '0.5 ETH',
+        usdcBalance: '1,000.00 USDC',
+        role: 'requester',
+      },
+      providerWallet: {
+        address: '0xabcdef1234567890abcdef1234567890abcdef12',
+        label: 'Provider Agent',
+        ethBalance: '0.25 ETH',
+        usdcBalance: '500.00 USDC',
+        role: 'provider',
+      },
+      transaction: transactionState ? {
+        id: '0xabc123def456',
+        state: transactionState,
+        amount: '100',
+        deadline: '2025-01-15T12:00:00Z',
+        disputeReason: transactionState === 'DISPUTED' ? 'Work not matching requirements' : undefined,
+        ...overrides,
+      } : null,
+      timeline: [],
+      isSimulating: false,
+    },
+    dispatch: vi.fn(),
+    canPerformAction: true,
+  }),
+});
+
+describe('AgentBattle - Provider Flip Cards', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Submit Quote FlipCard (canQuote)', () => {
+    beforeEach(() => {
+      // Reset module to apply new mock
+      vi.resetModules();
+    });
+
+    it('renders Submit Quote card when transaction is INITIATED', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // Submit Quote appears twice: front and back of flip card
+      const submitQuoteButtons = screen.getAllByText('Submit Quote');
+      expect(submitQuoteButtons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('Submit Quote card has provider-card styling', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      // Provider cards should have provider-card class
+      const providerCards = container.querySelectorAll('.provider-card');
+      expect(providerCards.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders quote amount input field', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Your Quote (USDC)')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Amount')).toBeInTheDocument();
+    });
+
+    it('renders max rounds input field', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Max Rounds (1-5)')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('3')).toBeInTheDocument();
+      expect(screen.getByText('Maximum revision rounds included in quote')).toBeInTheDocument();
+    });
+
+    it('code updates when quote amount changes', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const quoteInput = screen.getByPlaceholderText('Amount');
+      fireEvent.change(quoteInput, { target: { value: '150' } });
+
+      await waitFor(() => {
+        const codeContainers = container.querySelectorAll('.battle-code-container');
+        const hasUpdatedCode = Array.from(codeContainers).some(
+          el => el.textContent?.includes("parseUnits('150', 6)")
+        );
+        expect(hasUpdatedCode).toBe(true);
+      });
+    });
+
+    it('code updates when max rounds changes', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const maxRoundsInput = screen.getByPlaceholderText('3');
+      fireEvent.change(maxRoundsInput, { target: { value: '5' } });
+
+      await waitFor(() => {
+        const codeContainers = container.querySelectorAll('.battle-code-container');
+        const hasUpdatedCode = Array.from(codeContainers).some(
+          el => el.textContent?.includes(', 5]')
+        );
+        expect(hasUpdatedCode).toBe(true);
+      });
+    });
+
+    it('Submit Quote flip card has flip controls', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      // Verify the provider flip card exists with proper structure
+      const flipCards = container.querySelectorAll('.flip-card');
+      expect(flipCards.length).toBeGreaterThanOrEqual(1);
+
+      // Verify there are flip controls (show code / show form buttons)
+      const showCodeButtons = container.querySelectorAll('[title="Show code"]');
+      const showFormButtons = container.querySelectorAll('[title="Show form"]');
+      expect(showCodeButtons.length).toBeGreaterThanOrEqual(1);
+      expect(showFormButtons.length).toBeGreaterThanOrEqual(1);
+
+      // Verify provider card styling exists
+      const providerCards = container.querySelectorAll('.provider-card');
+      expect(providerCards.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('shows transitionState code with State.QUOTED', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const codeContainers = container.querySelectorAll('.battle-code-container');
+      const hasQuotedState = Array.from(codeContainers).some(
+        el => el.textContent?.includes('State.QUOTED')
+      );
+      expect(hasQuotedState).toBe(true);
+    });
+  });
+
+  describe('Start Work FlipCard (canStartWork)', () => {
+    beforeEach(() => {
+      vi.resetModules();
+    });
+
+    it('renders Start Work card when transaction is COMMITTED', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // Start Work appears twice: front and back of flip card
+      const startWorkButtons = screen.getAllByText('Start Work');
+      expect(startWorkButtons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('Start Work card has provider-card styling', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const providerCards = container.querySelectorAll('.provider-card');
+      expect(providerCards.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders work plan URL input field', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Work Plan URL (optional)')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('https://notion.so/...')).toBeInTheDocument();
+    });
+
+    it('renders Ready to begin work status', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Ready to begin work')).toBeInTheDocument();
+    });
+
+    it('shows transitionState code with State.IN_PROGRESS', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const codeContainers = container.querySelectorAll('.battle-code-container');
+      const hasInProgressState = Array.from(codeContainers).some(
+        el => el.textContent?.includes('State.IN_PROGRESS')
+      );
+      expect(hasInProgressState).toBe(true);
+    });
+
+    it('Start Work flip card toggles correctly', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const flipCards = container.querySelectorAll('.flip-card');
+      const providerFlipCard = Array.from(flipCards).find(card =>
+        card.querySelector('.provider-card')
+      );
+
+      expect(providerFlipCard).not.toHaveClass('flipped');
+
+      const showCodeButtons = screen.getAllByTitle('Show code');
+      if (showCodeButtons.length > 1) {
+        fireEvent.click(showCodeButtons[1]);
+
+        await waitFor(() => {
+          expect(providerFlipCard).toHaveClass('flipped');
+        });
+      }
+    });
+
+    it('form field for workPlanUrl updates correctly', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      const workPlanInput = screen.getByPlaceholderText('https://notion.so/...');
+      fireEvent.change(workPlanInput, { target: { value: 'https://notion.so/my-work-plan' } });
+
+      expect(workPlanInput).toHaveValue('https://notion.so/my-work-plan');
+    });
+  });
+
+  describe('Deliver Work FlipCard (canDeliver)', () => {
+    beforeEach(() => {
+      vi.resetModules();
+    });
+
+    it('renders Deliver Work card when transaction is IN_PROGRESS', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // Deliver Work appears twice: front and back of flip card
+      const deliverButtons = screen.getAllByText('Deliver Work');
+      expect(deliverButtons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('Deliver Work card has provider-card styling', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const providerCards = container.querySelectorAll('.provider-card');
+      expect(providerCards.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders delivery proof input field', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Delivery Proof (IPFS hash)')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('ipfs://QmX7b2...')).toBeInTheDocument();
+    });
+
+    it('renders delivery summary textarea', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getByText('Delivery Summary')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Brief summary of completed work...')).toBeInTheDocument();
+    });
+
+    it('code updates when delivery proof changes', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const proofInput = screen.getByPlaceholderText('ipfs://QmX7b2...');
+      fireEvent.change(proofInput, { target: { value: 'ipfs://QmTestHash123' } });
+
+      await waitFor(() => {
+        const codeContainers = container.querySelectorAll('.battle-code-container');
+        const hasUpdatedCode = Array.from(codeContainers).some(
+          el => el.textContent?.includes('ipfs://QmTestHash123')
+        );
+        expect(hasUpdatedCode).toBe(true);
+      });
+    });
+
+    it('code updates when delivery summary changes', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const summaryInput = screen.getByPlaceholderText('Brief summary of completed work...');
+      fireEvent.change(summaryInput, { target: { value: 'Completed the feature as requested' } });
+
+      await waitFor(() => {
+        const codeContainers = container.querySelectorAll('.battle-code-container');
+        const hasUpdatedCode = Array.from(codeContainers).some(
+          el => el.textContent?.includes('Completed the feature as requested')
+        );
+        expect(hasUpdatedCode).toBe(true);
+      });
+    });
+
+    it('shows transitionState code with State.DELIVERED', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const codeContainers = container.querySelectorAll('.battle-code-container');
+      const hasDeliveredState = Array.from(codeContainers).some(
+        el => el.textContent?.includes('State.DELIVERED')
+      );
+      expect(hasDeliveredState).toBe(true);
+    });
+
+    it('shows anchorAttestation code for verifiable proof', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const codeContainers = container.querySelectorAll('.battle-code-container');
+      const hasAttestationCode = Array.from(codeContainers).some(
+        el => el.textContent?.includes('anchorAttestation')
+      );
+      expect(hasAttestationCode).toBe(true);
+    });
+
+    it('Deliver Work flip card toggles correctly', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      const { container } = render(<AgentBattle />);
+
+      const flipCards = container.querySelectorAll('.flip-card');
+      const providerFlipCard = Array.from(flipCards).find(card =>
+        card.querySelector('.provider-card')
+      );
+
+      expect(providerFlipCard).not.toHaveClass('flipped');
+
+      const showCodeButtons = screen.getAllByTitle('Show code');
+      if (showCodeButtons.length > 1) {
+        fireEvent.click(showCodeButtons[1]);
+
+        await waitFor(() => {
+          expect(providerFlipCard).toHaveClass('flipped');
+        });
+      }
+    });
+
+    it('Deliver button becomes disabled when proof is cleared', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // Find the delivery proof input and clear it
+      const proofInput = screen.getByPlaceholderText('ipfs://QmX7b2...');
+      fireEvent.change(proofInput, { target: { value: '' } });
+
+      await waitFor(() => {
+        const deliverButtons = screen.getAllByText('Deliver Work');
+        const frontDeliverButton = deliverButtons[0];
+        expect(frontDeliverButton).toBeDisabled();
+      });
+    });
+
+    it('Deliver button is enabled with default proof value', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // By default, proof has a value so button should be enabled
+      const deliverButtons = screen.getAllByText('Deliver Work');
+      const frontDeliverButton = deliverButtons[0];
+      expect(frontDeliverButton).not.toBeDisabled();
+    });
+  });
+
+  describe('Provider cards accessibility', () => {
+    beforeEach(() => {
+      vi.resetModules();
+    });
+
+    it('Submit Quote card has proper step indicator', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      // Provider Step 1 for Submit Quote
+      expect(screen.getAllByText('Step 1').length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('Start Work card has proper step indicator', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getAllByText('Step 2').length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('Deliver Work card has proper step indicator', async () => {
+      vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
+
+      const { default: AgentBattle } = await import('./AgentBattle');
+      render(<AgentBattle />);
+
+      expect(screen.getAllByText('Step 3').length).toBeGreaterThanOrEqual(1);
+    });
+  });
+});

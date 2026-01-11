@@ -30,7 +30,7 @@
       "task": "Add Requester flip cards (Link Escrow, Accept Quote, Release, Dispute, Cancel)",
       "details": "Create 5 flip cards for Requester steps: 1) Link Escrow - shows approveToken + linkEscrow code, checkbox for USDC approval. 2) Accept Quote - shows quote amount, same escrow linking code. 3) Release Escrow - shows releaseEscrow(txId) code. 4) Raise Dispute - form with reason/evidence fields, shows raiseDispute(txId, reason, evidence) code. 5) Cancel - shows transitionState(txId, State.CANCELLED) code. All cards use FlipCard component with 'requester' variant.",
       "category": "feature",
-      "passes": false
+      "passes": true
     },
     {
       "id": 4,

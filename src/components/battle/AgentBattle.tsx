@@ -182,7 +182,10 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
     disputeReason: '',
     disputeEvidence: '',
     quoteAmount: '50',
+    maxRounds: '3',
+    workPlanUrl: '',
     deliveryProof: 'ipfs://QmX7b2J8k9H3z4L5M6N7P8Q9R0S1T2U3V4W5X6Y7Z8A9B0C',
+    deliverySummary: 'Translation completed with 99.5% accuracy',
   });
 
   // Resizable panel states
@@ -198,6 +201,11 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
   const [releaseEscrowFlipped, setReleaseEscrowFlipped] = useState(false);
   const [raiseDisputeFlipped, setRaiseDisputeFlipped] = useState(false);
   const [cancelFlipped, setCancelFlipped] = useState(false);
+
+  // Provider flip card states
+  const [submitQuoteFlipped, setSubmitQuoteFlipped] = useState(false);
+  const [startWorkFlipped, setStartWorkFlipped] = useState(false);
+  const [deliverFlipped, setDeliverFlipped] = useState(false);
 
   // USDC approval state for Link Escrow
   const [usdcApproved, setUsdcApproved] = useState(false);
@@ -1090,50 +1098,171 @@ console.log('Transaction cancelled');
               </div>
             )}
 
-            {/* Quote Form */}
+            {/* Submit Quote - Provider Step 1 */}
             {canQuote && (
-              <div className="battle-card">
-                <div className="battle-card-header">
-                  <span>Submit Quote (Optional)</span>
-                </div>
-                <div className="battle-card-body">
-                  <div className="battle-form-group">
-                    <label>Your Price (USDC)</label>
-                    <input
-                      type="number"
-                      className="pg-input"
-                      value={formData.quoteAmount}
-                      onChange={(e) => setFormData({ ...formData, quoteAmount: e.target.value })}
-                      placeholder="Amount"
+              <FlipCard
+                isFlipped={submitQuoteFlipped}
+                onFlip={() => setSubmitQuoteFlipped(!submitQuoteFlipped)}
+                variant="provider"
+                title="Provider Agent"
+                step="Step 1"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Your Quote (USDC)</label>
+                      <input
+                        type="number"
+                        className="pg-input"
+                        value={formData.quoteAmount}
+                        onChange={(e) => setFormData({ ...formData, quoteAmount: e.target.value })}
+                        placeholder="Amount"
+                      />
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Max Rounds (1-5)</label>
+                      <input
+                        type="number"
+                        className="pg-input"
+                        min="1"
+                        max="5"
+                        value={formData.maxRounds}
+                        onChange={(e) => setFormData({ ...formData, maxRounds: e.target.value })}
+                        placeholder="3"
+                      />
+                      <span className="battle-form-hint">Maximum revision rounds included in quote</span>
+                    </div>
+                    <button
+                      className={`battle-btn outline full-width ${activePanel === 'provider' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'QUOTE', payload: { amount: formData.quoteAmount } })}
+                      disabled={!canPerformAction}
+                    >
+                      <SendIcon />
+                      Submit Quote
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Submit a quote for the requested work"
+                      code={`import { ACTPClient, State } from '@agirails/sdk';
+import { parseUnits, AbiCoder } from 'ethers';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Encode quote amount and max rounds
+const abiCoder = new AbiCoder();
+const encodedQuote = abiCoder.encode(
+  ['uint256', 'uint8'],
+  [parseUnits('${formData.quoteAmount}', 6), ${formData.maxRounds}]
+);
+
+// Transition to QUOTED state with encoded data
+await client.kernel.transitionState(
+  '${formatTxHash(transaction?.id)}',
+  State.QUOTED,
+  encodedQuote
+);
+
+console.log('Quote submitted: ${formData.quoteAmount} USDC');
+// State: INITIATED → QUOTED`}
                     />
-                  </div>
-                  <button
-                    className={`battle-btn outline full-width ${activePanel === 'provider' ? 'pulsing' : 'dimmed'}`}
-                    onClick={() => dispatch({ type: 'QUOTE', payload: { amount: formData.quoteAmount } })}
-                    disabled={!canPerformAction}
-                  >
-                    Submit Quote
-                  </button>
-                </div>
-              </div>
+                    <button
+                      className={`battle-btn outline full-width ${activePanel === 'provider' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'QUOTE', payload: { amount: formData.quoteAmount } })}
+                      disabled={!canPerformAction}
+                    >
+                      <SendIcon />
+                      Submit Quote
+                    </button>
+                  </>
+                }
+              />
             )}
 
-            {/* Action Buttons */}
-            <div className="battle-actions">
-              {canStartWork && (
-                <button
-                  className={`battle-btn warning ${transaction?.state === 'COMMITTED' ? 'pulsing' : 'dimmed'}`}
-                  onClick={() => dispatch({ type: 'START_WORK' })}
-                  disabled={!canPerformAction}
-                >
-                  <PlayIcon />
-                  Start Work
-                </button>
-              )}
+            {/* Start Work - Provider Step 2 */}
+            {canStartWork && (
+              <FlipCard
+                isFlipped={startWorkFlipped}
+                onFlip={() => setStartWorkFlipped(!startWorkFlipped)}
+                variant="provider"
+                title="Provider Agent"
+                step="Step 2"
+                frontContent={
+                  <>
+                    <div className="battle-form-group">
+                      <label>Work Plan URL (optional)</label>
+                      <input
+                        type="text"
+                        className="pg-input"
+                        value={formData.workPlanUrl}
+                        onChange={(e) => setFormData({ ...formData, workPlanUrl: e.target.value })}
+                        placeholder="https://notion.so/..."
+                      />
+                      <span className="battle-form-hint">Share your work plan or timeline with requester</span>
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Status</label>
+                      <div className="battle-info-value">Ready to begin work</div>
+                    </div>
+                    <button
+                      className={`battle-btn warning full-width ${transaction?.state === 'COMMITTED' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'START_WORK' })}
+                      disabled={!canPerformAction}
+                    >
+                      <PlayIcon />
+                      Start Work
+                    </button>
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Signal that work has started"
+                      code={`import { ACTPClient, State } from '@agirails/sdk';
 
-              {canDeliver && (
-                <div className="battle-card">
-                  <div className="battle-card-body">
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Transition to IN_PROGRESS state
+await client.kernel.transitionState(
+  '${formatTxHash(transaction?.id)}',
+  State.IN_PROGRESS
+);
+
+console.log('Work started on transaction');
+// State: COMMITTED → IN_PROGRESS`}
+                    />
+                    <button
+                      className={`battle-btn warning full-width ${transaction?.state === 'COMMITTED' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'START_WORK' })}
+                      disabled={!canPerformAction}
+                    >
+                      <PlayIcon />
+                      Start Work
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Deliver Work - Provider Step 3 */}
+            {canDeliver && (
+              <FlipCard
+                isFlipped={deliverFlipped}
+                onFlip={() => setDeliverFlipped(!deliverFlipped)}
+                variant="provider"
+                title="Provider Agent"
+                step="Step 3"
+                frontContent={
+                  <>
                     <div className="battle-form-group">
                       <label>Delivery Proof (IPFS hash)</label>
                       <input
@@ -1141,7 +1270,17 @@ console.log('Transaction cancelled');
                         className="pg-input mono"
                         value={formData.deliveryProof}
                         onChange={(e) => setFormData({ ...formData, deliveryProof: e.target.value })}
-                        placeholder="ipfs://..."
+                        placeholder="ipfs://QmX7b2..."
+                      />
+                      <span className="battle-form-hint">IPFS hash of the delivered work</span>
+                    </div>
+                    <div className="battle-form-group">
+                      <label>Delivery Summary</label>
+                      <textarea
+                        className="pg-input pg-textarea"
+                        value={formData.deliverySummary}
+                        onChange={(e) => setFormData({ ...formData, deliverySummary: e.target.value })}
+                        placeholder="Brief summary of completed work..."
                       />
                     </div>
                     <button
@@ -1152,9 +1291,62 @@ console.log('Transaction cancelled');
                       <PackageIcon />
                       Deliver Work
                     </button>
-                  </div>
-                </div>
-              )}
+                  </>
+                }
+                backContent={
+                  <>
+                    <BattleCodeDisplay
+                      language="typescript"
+                      comment="// Deliver work with proof and optional attestation"
+                      code={`import { ACTPClient, State } from '@agirails/sdk';
+import { AbiCoder } from 'ethers';
+
+const client = await ACTPClient.create({
+  network: 'base-sepolia',
+  privateKey: process.env.PRIVATE_KEY,
+});
+
+// Encode delivery proof
+const abiCoder = new AbiCoder();
+const encodedProof = abiCoder.encode(
+  ['string'],
+  ['${formData.deliveryProof}']
+);
+
+// Transition to DELIVERED state
+await client.kernel.transitionState(
+  '${formatTxHash(transaction?.id)}',
+  State.DELIVERED,
+  encodedProof
+);
+
+// Optional: Anchor attestation for verifiable proof
+await client.proofs.anchorAttestation(
+  '${formatTxHash(transaction?.id)}',
+  {
+    proof: '${formData.deliveryProof}',
+    summary: '${formData.deliverySummary}'
+  }
+);
+
+console.log('Work delivered successfully');
+// State: IN_PROGRESS → DELIVERED`}
+                    />
+                    <button
+                      className={`battle-btn success full-width ${transaction?.state === 'IN_PROGRESS' ? 'pulsing' : 'dimmed'}`}
+                      onClick={() => dispatch({ type: 'DELIVER', payload: { proof: formData.deliveryProof } })}
+                      disabled={!canPerformAction || !formData.deliveryProof}
+                    >
+                      <PackageIcon />
+                      Deliver Work
+                    </button>
+                  </>
+                }
+              />
+            )}
+
+            {/* Status Messages */}
+            <div className="battle-actions">
 
               {transaction?.state === 'QUOTED' && (
                 <div className="battle-status-box muted">
