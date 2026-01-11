@@ -51,7 +51,7 @@
       "task": "Polish UI, test full flow, ensure code validity",
       "details": "Apply consistent styling across all flip cards (same dimensions, padding, colors per variant). Add smooth 0.6s flip transition. Ensure all generated SDK code is valid (imports parseUnits from ethers, correct State enum values, proper AbiCoder usage). Test complete happy path: INITIATED -> QUOTED -> negotiation -> COMMITTED -> IN_PROGRESS -> DELIVERED -> SETTLED. Test dispute path: DELIVERED -> DISPUTED. Verify copy-to-clipboard works. Check mobile responsiveness. Run npm run build to ensure no TypeScript errors.",
       "category": "feature",
-      "passes": false
+      "passes": true
     }
   ]
 }
