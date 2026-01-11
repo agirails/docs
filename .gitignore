@@ -35,6 +35,9 @@ yarn-error.log*
 # Test files
 test-*.js
 
+# Test coverage
+/coverage
+
 # Temporary implementation notes (local only)
 *.PHASE*.md
 *CHECKLIST*.md

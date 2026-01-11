@@ -1,0 +1,57 @@
+{
+  "project": "advanced-api-playground",
+  "description": "Overhaul Advanced API Playground with flip cards, syntax-highlighted code, full negotiation flow, and consistent design",
+  "version": "2.0.0",
+  "qualityThresholds": {
+    "coverage": 0,
+    "requiredFiles": [
+      "src/components/battle/FlipCard.tsx",
+      "src/components/battle/BattleCodeDisplay.tsx",
+      "src/components/battle/AgentBattle.tsx"
+    ]
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Create FlipCard and CodeDisplay components",
+      "details": "Create reusable FlipCard component with 3D CSS transform animation (perspective: 1000px, rotateY(180deg), backface-visibility: hidden). Create CodeDisplay component with Prism.js syntax highlighting for TypeScript. Include copy-to-clipboard button. FlipCard props: frontContent, backContent, isFlipped, onFlip, variant ('requester'|'provider'), title, step. CodeDisplay props: code, language, onCopy, comment. Add CSS in battle.css with .flip-card, .flip-card-inner, .flip-card-front, .flip-card-back classes.",
+      "category": "feature",
+      "passes": false
+    },
+    {
+      "id": 2,
+      "task": "Refactor Create Transaction step to use new FlipCard",
+      "details": "Migrate existing Create Transaction step in AgentBattle.tsx to use the new FlipCard component. Front side: existing form (provider, amount, deadline, disputeWindow, metadata). Back side: CodeDisplay with SDK code showing client.kernel.createTransaction() call. Ensure code updates dynamically when form values change. Test flip animation works correctly.",
+      "category": "feature",
+      "passes": false
+    },
+    {
+      "id": 3,
+      "task": "Add Requester flip cards (Link Escrow, Accept Quote, Release, Dispute, Cancel)",
+      "details": "Create 5 flip cards for Requester steps: 1) Link Escrow - shows approveToken + linkEscrow code, checkbox for USDC approval. 2) Accept Quote - shows quote amount, same escrow linking code. 3) Release Escrow - shows releaseEscrow(txId) code. 4) Raise Dispute - form with reason/evidence fields, shows raiseDispute(txId, reason, evidence) code. 5) Cancel - shows transitionState(txId, State.CANCELLED) code. All cards use FlipCard component with 'requester' variant.",
+      "category": "feature",
+      "passes": false
+    },
+    {
+      "id": 4,
+      "task": "Add Provider flip cards (Submit Quote, Start Work, Deliver)",
+      "details": "Create 3 flip cards for Provider steps: 1) Submit Quote - form with quote amount + maxRounds input (1-5), shows transitionState(txId, State.QUOTED, encodedAmount) code. 2) Start Work - optional workPlanUrl input, shows transitionState(txId, State.IN_PROGRESS) code. 3) Deliver Work - form with proof (IPFS hash) + summary, shows transitionState(txId, State.DELIVERED, encodedProof) + optional anchorAttestation code. All cards use FlipCard component with 'provider' variant.",
+      "category": "feature",
+      "passes": false
+    },
+    {
+      "id": 5,
+      "task": "Implement negotiation flow with counter-offers and max rounds",
+      "details": "Extend useBattleState hook with negotiation state: { currentRound, maxRounds, history: NegotiationOffer[], currentOffer, whoseTurn }. Add NegotiationPanel component showing: round indicator 'Round X/Y', quote history with amounts and timestamps, counter-offer button for requester (UI-only, stores in state), accept/counter buttons for provider. When maxRounds reached, requester must accept or cancel (disable counter button). Display negotiation history in both Requester and Provider columns.",
+      "category": "feature",
+      "passes": false
+    },
+    {
+      "id": 6,
+      "task": "Polish UI, test full flow, ensure code validity",
+      "details": "Apply consistent styling across all flip cards (same dimensions, padding, colors per variant). Add smooth 0.6s flip transition. Ensure all generated SDK code is valid (imports parseUnits from ethers, correct State enum values, proper AbiCoder usage). Test complete happy path: INITIATED -> QUOTED -> negotiation -> COMMITTED -> IN_PROGRESS -> DELIVERED -> SETTLED. Test dispute path: DELIVERED -> DISPUTED. Verify copy-to-clipboard works. Check mobile responsiveness. Run npm run build to ensure no TypeScript errors.",
+      "category": "feature",
+      "passes": false
+    }
+  ]
+}

@@ -22,3 +22,8 @@ devlog:
   label: Dev Log
   description: Weekly progress updates and building in public
   permalink: /devlog
+
+developer-experience:
+  label: Developer Experience
+  description: SDK improvements, documentation, and developer tools
+  permalink: /developer-experience
