@@ -1363,6 +1363,215 @@
   white-space: pre;
 }
 
+/* ===== NEGOTIATION PANEL ===== */
+.negotiation-panel {
+  background: rgba(20, 20, 25, 0.8);
+  border: 1px solid var(--pg-border);
+  border-radius: 10px;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.negotiation-panel[data-variant="requester"] {
+  border-color: rgba(0, 82, 255, 0.3);
+}
+
+.negotiation-panel[data-variant="provider"] {
+  border-color: rgba(147, 51, 234, 0.3);
+}
+
+.negotiation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--pg-border);
+}
+
+.negotiation-round {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pg-text);
+}
+
+.negotiation-round svg {
+  color: var(--pg-primary);
+}
+
+.negotiation-warning {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--pg-warning);
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 145, 0, 0.1);
+  border-radius: 4px;
+}
+
+.negotiation-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.negotiation-offer {
+  display: flex;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  background: var(--pg-secondary);
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+}
+
+.negotiation-offer.requester {
+  border-left-color: #60A5FA;
+}
+
+.negotiation-offer.provider {
+  border-left-color: #A78BFA;
+}
+
+.negotiation-offer[data-type="initial"] {
+  background: rgba(0, 228, 228, 0.05);
+}
+
+.negotiation-offer-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.negotiation-offer.requester .negotiation-offer-icon {
+  background: rgba(0, 82, 255, 0.15);
+  color: #60A5FA;
+}
+
+.negotiation-offer.provider .negotiation-offer-icon {
+  background: rgba(147, 51, 234, 0.15);
+  color: #A78BFA;
+}
+
+.negotiation-offer-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.negotiation-offer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.negotiation-offer-from {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--pg-text);
+}
+
+.negotiation-offer-type {
+  font-size: 0.5625rem;
+  padding: 0.125rem 0.375rem;
+  background: rgba(0, 228, 228, 0.1);
+  color: var(--pg-primary);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.negotiation-offer-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--pg-text);
+  font-family: var(--pg-font-mono);
+}
+
+.negotiation-offer-time {
+  font-size: 0.625rem;
+  color: var(--pg-text-muted);
+  font-family: var(--pg-font-mono);
+  margin-top: 0.25rem;
+}
+
+.negotiation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--pg-border);
+}
+
+.negotiation-current {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--pg-text-muted);
+  padding: 0.375rem 0.5rem;
+  background: var(--pg-secondary);
+  border-radius: 6px;
+}
+
+.negotiation-current strong {
+  color: var(--pg-primary);
+  font-family: var(--pg-font-mono);
+}
+
+.negotiation-counter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.negotiation-input {
+  flex: 1;
+}
+
+.negotiation-hint {
+  font-size: 0.6875rem;
+  color: var(--pg-warning);
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+  padding: 0.375rem;
+  background: rgba(255, 145, 0, 0.1);
+  border-radius: 4px;
+}
+
+.negotiation-waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: var(--pg-secondary);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--pg-text-muted);
+  font-style: italic;
+}
+
+.battle-btn.outline-secondary {
+  background: transparent;
+  border: 1px solid var(--pg-border);
+  color: var(--pg-text-muted);
+  white-space: nowrap;
+}
+
+.battle-btn.outline-secondary:hover:not(:disabled) {
+  background: var(--pg-secondary);
+  border-color: var(--pg-text-muted);
+  color: var(--pg-text);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
   .battle-main {

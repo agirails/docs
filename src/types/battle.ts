@@ -1,5 +1,24 @@
 // Agent Battle Types
 
+// Negotiation types
+export interface NegotiationOffer {
+  id: string;
+  amount: string;
+  from: 'requester' | 'provider';
+  timestamp: number;
+  round: number;
+  type: 'initial' | 'counter';
+}
+
+export interface NegotiationState {
+  currentRound: number;
+  maxRounds: number;
+  history: NegotiationOffer[];
+  currentOffer: NegotiationOffer | null;
+  whoseTurn: 'requester' | 'provider';
+  isActive: boolean;
+}
+
 export type TransactionState =
   | 'NONE'
   | 'INITIATED'
@@ -52,13 +71,16 @@ export interface BattleState {
   transaction: BattleTransaction | null;
   timeline: TimelineEvent[];
   isSimulating: boolean;
+  negotiation: NegotiationState;
 }
 
 export type BattleAction =
   | { type: 'CREATE_TRANSACTION'; payload: { amount: string; description: string; deadline: number; disputeWindow: number } }
   | { type: 'LINK_ESCROW' }
-  | { type: 'QUOTE'; payload: { amount: string } }
+  | { type: 'QUOTE'; payload: { amount: string; maxRounds?: number } }
   | { type: 'ACCEPT_QUOTE' }
+  | { type: 'COUNTER_OFFER'; payload: { amount: string } }
+  | { type: 'PROVIDER_COUNTER'; payload: { amount: string } }
   | { type: 'START_WORK' }
   | { type: 'DELIVER'; payload: { proof: string } }
   | { type: 'RELEASE_ESCROW' }

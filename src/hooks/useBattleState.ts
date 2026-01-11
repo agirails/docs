@@ -5,6 +5,8 @@ import {
   BattleTransaction,
   TimelineEvent,
   BattleWallet,
+  NegotiationState,
+  NegotiationOffer,
 } from '../types/battle';
 
 function generateWalletAddress(): string {
@@ -46,12 +48,22 @@ function createInitialWallets(): { requester: BattleWallet; provider: BattleWall
 
 const initialWallets = createInitialWallets();
 
+const initialNegotiation: NegotiationState = {
+  currentRound: 0,
+  maxRounds: 3,
+  history: [],
+  currentOffer: null,
+  whoseTurn: 'provider',
+  isActive: false,
+};
+
 const initialState: BattleState = {
   requesterWallet: initialWallets.requester,
   providerWallet: initialWallets.provider,
   transaction: null,
   timeline: [],
   isSimulating: false,
+  negotiation: initialNegotiation,
 };
 
 export function useBattleState() {
@@ -166,16 +178,38 @@ export function useBattleState() {
       case 'QUOTE': {
         await simulateDelay(600);
 
+        const maxRounds = action.payload.maxRounds || 3;
+        const initialOffer: NegotiationOffer = {
+          id: `offer-1`,
+          amount: action.payload.amount,
+          from: 'provider',
+          timestamp: Date.now(),
+          round: 1,
+          type: 'initial',
+        };
+
         updateTransaction({
           state: 'QUOTED',
           amount: action.payload.amount,
         });
 
+        setState(prev => ({
+          ...prev,
+          negotiation: {
+            currentRound: 1,
+            maxRounds,
+            history: [initialOffer],
+            currentOffer: initialOffer,
+            whoseTurn: 'requester',
+            isActive: true,
+          },
+        }));
+
         addTimelineEvent({
           type: 'action',
           actor: 'provider',
           title: 'Quote Submitted',
-          description: `Provider quoted ${action.payload.amount} USDC for the work`,
+          description: `Provider quoted ${action.payload.amount} USDC (max ${maxRounds} rounds)`,
           txHash,
           fromState: state.transaction?.state,
           toState: 'QUOTED',
@@ -191,14 +225,99 @@ export function useBattleState() {
           state: 'COMMITTED',
         });
 
+        // End negotiation
+        setState(prev => ({
+          ...prev,
+          negotiation: {
+            ...prev.negotiation,
+            isActive: false,
+          },
+        }));
+
         addTimelineEvent({
           type: 'state_change',
           actor: 'requester',
           title: 'Quote Accepted',
-          description: 'Requester accepted the quote, escrow funded',
+          description: `Requester accepted ${state.transaction?.amount} USDC after ${state.negotiation.currentRound} round(s)`,
           txHash,
           fromState: 'QUOTED',
           toState: 'COMMITTED',
+        });
+        break;
+      }
+
+      case 'COUNTER_OFFER': {
+        await simulateDelay(400);
+
+        const newRound = state.negotiation.currentRound + 1;
+        const counterOffer: NegotiationOffer = {
+          id: `offer-${state.negotiation.history.length + 1}`,
+          amount: action.payload.amount,
+          from: 'requester',
+          timestamp: Date.now(),
+          round: newRound,
+          type: 'counter',
+        };
+
+        updateTransaction({
+          amount: action.payload.amount,
+        });
+
+        setState(prev => ({
+          ...prev,
+          negotiation: {
+            ...prev.negotiation,
+            currentRound: newRound,
+            history: [...prev.negotiation.history, counterOffer],
+            currentOffer: counterOffer,
+            whoseTurn: 'provider',
+          },
+        }));
+
+        addTimelineEvent({
+          type: 'action',
+          actor: 'requester',
+          title: 'Counter Offer',
+          description: `Requester countered with ${action.payload.amount} USDC (round ${newRound}/${state.negotiation.maxRounds})`,
+          txHash,
+        });
+        break;
+      }
+
+      case 'PROVIDER_COUNTER': {
+        await simulateDelay(400);
+
+        const newRound = state.negotiation.currentRound + 1;
+        const providerCounter: NegotiationOffer = {
+          id: `offer-${state.negotiation.history.length + 1}`,
+          amount: action.payload.amount,
+          from: 'provider',
+          timestamp: Date.now(),
+          round: newRound,
+          type: 'counter',
+        };
+
+        updateTransaction({
+          amount: action.payload.amount,
+        });
+
+        setState(prev => ({
+          ...prev,
+          negotiation: {
+            ...prev.negotiation,
+            currentRound: newRound,
+            history: [...prev.negotiation.history, providerCounter],
+            currentOffer: providerCounter,
+            whoseTurn: 'requester',
+          },
+        }));
+
+        addTimelineEvent({
+          type: 'action',
+          actor: 'provider',
+          title: 'Counter Offer',
+          description: `Provider countered with ${action.payload.amount} USDC (round ${newRound}/${state.negotiation.maxRounds})`,
+          txHash,
         });
         break;
       }
@@ -366,6 +485,7 @@ export function useBattleState() {
           transaction: null,
           timeline: [],
           isSimulating: false,
+          negotiation: initialNegotiation,
         });
         break;
       }

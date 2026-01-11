@@ -4,6 +4,7 @@ import { STATE_COLORS, STATE_DESCRIPTIONS, TransactionState } from '../../types/
 import { usePlaygroundContext, PlaygroundContext } from '../../hooks/usePlaygroundContext';
 import FlipCard from './FlipCard';
 import BattleCodeDisplay from './BattleCodeDisplay';
+import NegotiationPanel from './NegotiationPanel';
 import './battle.css';
 
 // Icons as SVG components
@@ -169,7 +170,7 @@ interface AgentBattleProps {
 
 export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
   const { state, dispatch, canPerformAction } = useBattleState();
-  const { requesterWallet, providerWallet, transaction, timeline, isSimulating } = state;
+  const { requesterWallet, providerWallet, transaction, timeline, isSimulating, negotiation } = state;
   const timelineRef = useRef<HTMLDivElement>(null);
 
   // Form states
@@ -735,6 +736,18 @@ console.log('Quote accepted, escrow funded');
               />
             )}
 
+            {/* Negotiation Panel - Requester Side */}
+            {negotiation.isActive && transaction?.state === 'QUOTED' && (
+              <NegotiationPanel
+                negotiation={negotiation}
+                variant="requester"
+                currentAmount={transaction?.amount || '0'}
+                disabled={!canPerformAction}
+                onCounterOffer={(amount) => dispatch({ type: 'COUNTER_OFFER', payload: { amount } })}
+                onAccept={() => dispatch({ type: 'ACCEPT_QUOTE' })}
+              />
+            )}
+
             {/* Release Escrow - Requester Step 4 */}
             {canReleaseEscrow && (
               <FlipCard
@@ -1181,6 +1194,18 @@ console.log('Quote submitted: ${formData.quoteAmount} USDC');
                     </button>
                   </>
                 }
+              />
+            )}
+
+            {/* Negotiation Panel - Provider Side */}
+            {negotiation.isActive && transaction?.state === 'QUOTED' && (
+              <NegotiationPanel
+                negotiation={negotiation}
+                variant="provider"
+                currentAmount={transaction?.amount || '0'}
+                disabled={!canPerformAction}
+                onCounterOffer={(amount) => dispatch({ type: 'PROVIDER_COUNTER', payload: { amount } })}
+                onAccept={() => dispatch({ type: 'ACCEPT_QUOTE' })}
               />
             )}
 
