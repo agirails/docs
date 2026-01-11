@@ -16,7 +16,7 @@
       "task": "Create FlipCard and CodeDisplay components",
       "details": "Create reusable FlipCard component with 3D CSS transform animation (perspective: 1000px, rotateY(180deg), backface-visibility: hidden). Create CodeDisplay component with Prism.js syntax highlighting for TypeScript. Include copy-to-clipboard button. FlipCard props: frontContent, backContent, isFlipped, onFlip, variant ('requester'|'provider'), title, step. CodeDisplay props: code, language, onCopy, comment. Add CSS in battle.css with .flip-card, .flip-card-inner, .flip-card-front, .flip-card-back classes.",
       "category": "feature",
-      "passes": false
+      "passes": true
     },
     {
       "id": 2,
