@@ -27,13 +27,16 @@ export default function PlaygroundPage(): JSX.Element {
   const [currentStep, setCurrentStep] = useState(0);
 
   // Welcome screen for first-time visitors
-  const [showWelcome, setShowWelcome] = useState(() => {
+  // Start with false to avoid SSR flash, check localStorage after mount
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
     try {
-      return localStorage.getItem('agirails-simple-api-welcome') !== '1';
-    } catch {
-      return true;
-    }
-  });
+      if (localStorage.getItem('agirails-simple-api-welcome') !== '1') {
+        setShowWelcome(true);
+      }
+    } catch {}
+  }, []);
 
   const handleDismissWelcome = useCallback(() => {
     setShowWelcome(false);

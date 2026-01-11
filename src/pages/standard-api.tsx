@@ -81,13 +81,16 @@ export default function StandardApiPage(): JSX.Element {
   const jobProcessingRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   // Welcome screen (first-time visitor)
-  const [showWelcome, setShowWelcome] = useState(() => {
+  // Start with false to avoid SSR flash, check localStorage after mount
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
     try {
-      return localStorage.getItem('agirails-standard-api-welcome') !== '1';
-    } catch {
-      return true;
-    }
-  });
+      if (localStorage.getItem('agirails-standard-api-welcome') !== '1') {
+        setShowWelcome(true);
+      }
+    } catch {}
+  }, []);
 
   const handleDismissWelcome = useCallback(() => {
     setShowWelcome(false);

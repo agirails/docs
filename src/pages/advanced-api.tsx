@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import Header from '../components/playground/Header';
 import WalletModal from '../components/playground/WalletModal';
@@ -9,13 +9,16 @@ import '../components/playground/playground.css';
 
 export default function AdvancedApiPage(): JSX.Element {
   // Welcome screen (first-time visitor)
-  const [showWelcome, setShowWelcome] = useState(() => {
+  // Start with false to avoid SSR flash, check localStorage after mount
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
     try {
-      return localStorage.getItem('agirails-advanced-api-welcome') !== '1';
-    } catch {
-      return true;
-    }
-  });
+      if (localStorage.getItem('agirails-advanced-api-welcome') !== '1') {
+        setShowWelcome(true);
+      }
+    } catch {}
+  }, []);
 
   const handleDismissWelcome = useCallback(() => {
     setShowWelcome(false);
