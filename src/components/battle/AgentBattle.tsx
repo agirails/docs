@@ -564,19 +564,21 @@ export default function AgentBattle({ hideHeader = false }: AgentBattleProps) {
                       language="typescript"
                       comment="// Create a new ACTP transaction"
                       code={`import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-const txId = await client.kernel.createTransaction({
+// Standard API - user-friendly inputs
+const txId = await client.standard.createTransaction({
   provider: '${formData.providerAddress}',
-  amount: parseUnits('${formData.amount}', 6),
-  deadline: Math.floor(Date.now() / 1000) + ${Number(formData.deadlineHours) * 3600},
+  amount: '${formData.amount}',
+  deadline: '+${formData.deadlineHours}h',
   disputeWindow: ${Number(formData.disputeWindowHours) * 3600},
-  metadata: '${formData.description}',
+  serviceDescription: '${formData.description}',
 });
 
 console.log('Transaction created:', txId);
@@ -624,24 +626,22 @@ console.log('Transaction created:', txId);
                   <>
                     <BattleCodeDisplay
                       language="typescript"
-                      comment="// Approve USDC and link escrow to transaction"
+                      comment="// Link escrow and lock funds"
                       code={`import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Step 1: Approve USDC spending
-await client.escrow.approveToken(
-  parseUnits('${transaction?.amount || '0'}', 6)
+// Link escrow - SDK handles USDC approval internally
+const escrowId = await client.standard.linkEscrow(
+  '${formatTxHash(transaction?.id)}'
 );
 
-// Step 2: Link escrow to transaction
-await client.escrow.linkEscrow('${formatTxHash(transaction?.id)}');
-
-console.log('Escrow linked successfully');
+console.log('Escrow linked:', escrowId);
 // State: INITIATED → COMMITTED`}
                     />
                     <button
@@ -688,22 +688,21 @@ console.log('Escrow linked successfully');
                       language="typescript"
                       comment="// Accept provider's quote and fund escrow"
                       code={`import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Step 1: Approve USDC spending
-await client.escrow.approveToken(
-  parseUnits('${transaction?.amount || '0'}', 6)
+// Accept quote by linking escrow at quoted price
+// SDK handles USDC approval internally
+const escrowId = await client.standard.linkEscrow(
+  '${formatTxHash(transaction?.id)}'
 );
 
-// Step 2: Accept quote and link escrow
-await client.escrow.linkEscrow('${formatTxHash(transaction?.id)}');
-
-console.log('Quote accepted, escrow funded');
+console.log('Quote accepted, escrow funded:', escrowId);
 // State: QUOTED → COMMITTED`}
                     />
                     <button
@@ -768,13 +767,17 @@ console.log('Quote accepted, escrow funded');
                       code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Release escrow to provider
-await client.escrow.releaseEscrow(
-  '${formatTxHash(transaction?.id)}'
+// Release escrow after dispute window expires
+// Requires EAS attestation in testnet/mainnet
+await client.standard.releaseEscrow(
+  '${formatTxHash(transaction?.id)}',
+  { txId: '${formatTxHash(transaction?.id)}', attestationUID: '0x...' }
 );
 
 console.log('Escrow released to provider');
@@ -841,16 +844,21 @@ console.log('Escrow released to provider');
                       code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Raise dispute with reason and evidence
-await client.kernel.raiseDispute(
+// Transition to DISPUTED state
+// Dispute reason stored off-chain per AIP-2
+await client.standard.transitionState(
   '${formatTxHash(transaction?.id)}',
-  '${formData.disputeReason || 'Work not as described'}',
-  '${formData.disputeEvidence || ''}'
+  'DISPUTED'
 );
+
+// Off-chain: Submit dispute details via XMTP/HTTP
+// { reason: '${formData.disputeReason || 'Work not as described'}' }
 
 console.log('Dispute raised, awaiting resolution');
 // State: DELIVERED → DISPUTED`}
@@ -904,20 +912,23 @@ console.log('Dispute raised, awaiting resolution');
                     <BattleCodeDisplay
                       language="typescript"
                       comment="// Cancel the transaction"
-                      code={`import { ACTPClient, State } from '@agirails/sdk';
+                      code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Cancel transaction (before DELIVERED state)
-await client.kernel.transitionState(
+// Cancel transaction (only before DELIVERED state)
+// Escrowed funds returned to requester
+await client.standard.transitionState(
   '${formatTxHash(transaction?.id)}',
-  State.CANCELLED
+  'CANCELLED'
 );
 
-console.log('Transaction cancelled');
+console.log('Transaction cancelled, funds returned');
 // State: ${transaction?.state} → CANCELLED`}
                     />
                     <button
@@ -1145,27 +1156,24 @@ console.log('Transaction cancelled');
                     <BattleCodeDisplay
                       language="typescript"
                       comment="// Submit a quote for the requested work"
-                      code={`import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits, AbiCoder } from 'ethers';
+                      code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY,
+  mode: 'testnet',
+  requesterAddress: '0xProviderAddress',
+  privateKey: process.env.PROVIDER_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Encode quote amount and max rounds
-const abiCoder = new AbiCoder();
-const encodedQuote = abiCoder.encode(
-  ['uint256', 'uint8'],
-  [parseUnits('${formData.quoteAmount}', 6), ${formData.maxRounds}]
+// AIP-2: Quote submitted via state transition
+// Quote details (amount, terms) sent off-chain via XMTP/HTTP
+await client.standard.transitionState(
+  '${formatTxHash(transaction?.id)}',
+  'QUOTED'
 );
 
-// Transition to QUOTED state with encoded data
-await client.kernel.transitionState(
-  '${formatTxHash(transaction?.id)}',
-  State.QUOTED,
-  encodedQuote
-);
+// Off-chain quote message per AIP-2:
+// { amount: '${formData.quoteAmount}', maxRounds: ${formData.maxRounds} }
 
 console.log('Quote submitted: ${formData.quoteAmount} USDC');
 // State: INITIATED → QUOTED`}
@@ -1236,17 +1244,19 @@ console.log('Quote submitted: ${formData.quoteAmount} USDC');
                     <BattleCodeDisplay
                       language="typescript"
                       comment="// Signal that work has started"
-                      code={`import { ACTPClient, State } from '@agirails/sdk';
+                      code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY,
+  mode: 'testnet',
+  requesterAddress: '0xProviderAddress',
+  privateKey: process.env.PROVIDER_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Transition to IN_PROGRESS state
-await client.kernel.transitionState(
+// Transition to IN_PROGRESS state (optional)
+await client.standard.transitionState(
   '${formatTxHash(transaction?.id)}',
-  State.IN_PROGRESS
+  'IN_PROGRESS'
 );
 
 console.log('Work started on transaction');
@@ -1309,40 +1319,32 @@ console.log('Work started on transaction');
                   <>
                     <BattleCodeDisplay
                       language="typescript"
-                      comment="// Deliver work with proof and optional attestation"
-                      code={`import { ACTPClient, State } from '@agirails/sdk';
-import { AbiCoder } from 'ethers';
+                      comment="// Deliver work with proof"
+                      code={`import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY,
+  mode: 'testnet',
+  requesterAddress: '0xProviderAddress',
+  privateKey: process.env.PROVIDER_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Encode delivery proof
-const abiCoder = new AbiCoder();
-const encodedProof = abiCoder.encode(
-  ['string'],
-  ['${formData.deliveryProof}']
-);
-
 // Transition to DELIVERED state
-await client.kernel.transitionState(
+// Proof stored off-chain, referenced via hash
+await client.standard.transitionState(
   '${formatTxHash(transaction?.id)}',
-  State.DELIVERED,
-  encodedProof
+  'DELIVERED'
 );
 
-// Optional: Anchor attestation for verifiable proof
-await client.proofs.anchorAttestation(
-  '${formatTxHash(transaction?.id)}',
-  {
-    proof: '${formData.deliveryProof}',
-    summary: '${formData.deliverySummary}'
-  }
-);
+// AIP-4: Delivery proof sent via XMTP/HTTP
+// {
+//   proof: '${formData.deliveryProof}',
+//   summary: '${formData.deliverySummary}'
+// }
 
 console.log('Work delivered successfully');
-// State: IN_PROGRESS → DELIVERED`}
+// State: IN_PROGRESS → DELIVERED
+// Dispute window starts now`}
                     />
                     <button
                       className={`battle-btn success full-width ${transaction?.state === 'IN_PROGRESS' ? 'pulsing' : 'dimmed'}`}

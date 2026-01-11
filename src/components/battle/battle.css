@@ -1635,9 +1635,9 @@
   gap: 0.75rem;
 }
 
+/* Allow code to expand naturally - no height limit */
 .negotiation-code-view .battle-code-display {
-  max-height: 300px;
-  overflow-y: auto;
+  /* No max-height - let panel expand to fit code */
 }
 
 /* ===== RESPONSIVE ===== */

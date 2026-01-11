@@ -188,9 +188,9 @@ describe('AgentBattle', () => {
     it('code includes default amount', () => {
       const { container } = render(<AgentBattle />);
 
-      // Default amount is 50
+      // Default amount is 50 - new SDK uses string format
       const codeContent = getCodeContent(container);
-      expect(codeContent).toContain("parseUnits('50', 6)");
+      expect(codeContent).toContain("amount: '50'");
     });
 
     it('code updates when form amount changes', async () => {
@@ -200,10 +200,10 @@ describe('AgentBattle', () => {
       const amountInput = screen.getByPlaceholderText('100');
       fireEvent.change(amountInput, { target: { value: '75' } });
 
-      // The code should now show the new amount
+      // The code should now show the new amount - new SDK uses string format
       await waitFor(() => {
         const codeContent = getCodeContent(container);
-        expect(codeContent).toContain("parseUnits('75', 6)");
+        expect(codeContent).toContain("amount: '75'");
       });
     });
 
@@ -215,10 +215,10 @@ describe('AgentBattle', () => {
       const deadlineInput = deadlineInputs[0];
       fireEvent.change(deadlineInput, { target: { value: '48' } });
 
-      // The code should now show the new deadline (48 hours = 172800 seconds)
+      // The code should now show the new deadline - new SDK uses user-friendly format
       await waitFor(() => {
         const codeContent = getCodeContent(container);
-        expect(codeContent).toContain('+ 172800');
+        expect(codeContent).toContain("deadline: '+48h'");
       });
     });
 
@@ -244,10 +244,10 @@ describe('AgentBattle', () => {
       const descriptionInput = screen.getByPlaceholderText('Describe the work...');
       fireEvent.change(descriptionInput, { target: { value: 'Custom task description' } });
 
-      // The code should now show the new metadata
+      // The code should now show the new serviceDescription - new SDK field name
       await waitFor(() => {
         const codeContent = getCodeContent(container);
-        expect(codeContent).toContain("metadata: 'Custom task description'");
+        expect(codeContent).toContain("serviceDescription: 'Custom task description'");
       });
     });
 
@@ -442,8 +442,9 @@ describe('AgentBattle - Provider Flip Cards', () => {
 
       await waitFor(() => {
         const codeContainers = container.querySelectorAll('.battle-code-container');
+        // New SDK uses off-chain quote message format
         const hasUpdatedCode = Array.from(codeContainers).some(
-          el => el.textContent?.includes("parseUnits('150', 6)")
+          el => el.textContent?.includes("amount: '150'")
         );
         expect(hasUpdatedCode).toBe(true);
       });
@@ -460,8 +461,9 @@ describe('AgentBattle - Provider Flip Cards', () => {
 
       await waitFor(() => {
         const codeContainers = container.querySelectorAll('.battle-code-container');
+        // New SDK uses off-chain quote message with maxRounds
         const hasUpdatedCode = Array.from(codeContainers).some(
-          el => el.textContent?.includes(', 5]')
+          el => el.textContent?.includes('maxRounds: 5')
         );
         expect(hasUpdatedCode).toBe(true);
       });
@@ -488,7 +490,7 @@ describe('AgentBattle - Provider Flip Cards', () => {
       expect(providerCards.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('shows transitionState code with State.QUOTED', async () => {
+    it('shows transitionState code with QUOTED state', async () => {
       vi.doMock('../../hooks/useBattleState', () => createMockBattleState('INITIATED'));
 
       const { default: AgentBattle } = await import('./AgentBattle');
@@ -496,7 +498,7 @@ describe('AgentBattle - Provider Flip Cards', () => {
 
       const codeContainers = container.querySelectorAll('.battle-code-container');
       const hasQuotedState = Array.from(codeContainers).some(
-        el => el.textContent?.includes('State.QUOTED')
+        el => el.textContent?.includes("'QUOTED'")
       );
       expect(hasQuotedState).toBe(true);
     });
@@ -547,7 +549,7 @@ describe('AgentBattle - Provider Flip Cards', () => {
       expect(screen.getByText('Ready to begin work')).toBeInTheDocument();
     });
 
-    it('shows transitionState code with State.IN_PROGRESS', async () => {
+    it('shows transitionState code with IN_PROGRESS state', async () => {
       vi.doMock('../../hooks/useBattleState', () => createMockBattleState('COMMITTED'));
 
       const { default: AgentBattle } = await import('./AgentBattle');
@@ -555,7 +557,7 @@ describe('AgentBattle - Provider Flip Cards', () => {
 
       const codeContainers = container.querySelectorAll('.battle-code-container');
       const hasInProgressState = Array.from(codeContainers).some(
-        el => el.textContent?.includes('State.IN_PROGRESS')
+        el => el.textContent?.includes("'IN_PROGRESS'")
       );
       expect(hasInProgressState).toBe(true);
     });
@@ -678,7 +680,7 @@ describe('AgentBattle - Provider Flip Cards', () => {
       });
     });
 
-    it('shows transitionState code with State.DELIVERED', async () => {
+    it('shows transitionState code with DELIVERED state', async () => {
       vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
 
       const { default: AgentBattle } = await import('./AgentBattle');
@@ -686,22 +688,22 @@ describe('AgentBattle - Provider Flip Cards', () => {
 
       const codeContainers = container.querySelectorAll('.battle-code-container');
       const hasDeliveredState = Array.from(codeContainers).some(
-        el => el.textContent?.includes('State.DELIVERED')
+        el => el.textContent?.includes("'DELIVERED'")
       );
       expect(hasDeliveredState).toBe(true);
     });
 
-    it('shows anchorAttestation code for verifiable proof', async () => {
+    it('shows AIP-4 delivery comment for verifiable proof', async () => {
       vi.doMock('../../hooks/useBattleState', () => createMockBattleState('IN_PROGRESS'));
 
       const { default: AgentBattle } = await import('./AgentBattle');
       const { container } = render(<AgentBattle />);
 
       const codeContainers = container.querySelectorAll('.battle-code-container');
-      const hasAttestationCode = Array.from(codeContainers).some(
-        el => el.textContent?.includes('anchorAttestation')
+      const hasDeliveryComment = Array.from(codeContainers).some(
+        el => el.textContent?.includes('AIP-4')
       );
-      expect(hasAttestationCode).toBe(true);
+      expect(hasDeliveryComment).toBe(true);
     });
 
     it('Deliver Work flip card toggles correctly', async () => {

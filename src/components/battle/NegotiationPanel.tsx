@@ -110,49 +110,47 @@ export default function NegotiationPanel({
   const getCode = () => {
     if (variant === 'requester') {
       return `import { ACTPClient } from '@agirails/sdk';
-import { parseUnits } from 'ethers';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
+  mode: 'testnet',
+  requesterAddress: '0xYourAddress',
   privateKey: process.env.PRIVATE_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Negotiation is UI-only simulation
-// Counter-offers are tracked in application state
-// No on-chain transaction until acceptance
+// AIP-2: Quote Request & Negotiation
+// Negotiation happens off-chain (XMTP/HTTP)
+// Counter-offers exchanged via encrypted messaging
+// Only final agreement anchored on-chain
 
-// When accepting the negotiated amount:
-await client.escrow.approveToken(
-  parseUnits('${currentAmount}', 6)
+// Accept negotiated amount - SDK handles approval
+const escrowId = await client.standard.linkEscrow(
+  '${formatTxHash(txId)}'
 );
-await client.escrow.linkEscrow('${formatTxHash(txId)}');
 
 console.log('Accepted offer: ${currentAmount} USDC');
 // State: QUOTED → COMMITTED`;
     } else {
-      return `import { ACTPClient, State } from '@agirails/sdk';
-import { parseUnits, AbiCoder } from 'ethers';
+      return `import { ACTPClient } from '@agirails/sdk';
 
 const client = await ACTPClient.create({
-  network: 'base-sepolia',
-  privateKey: process.env.PRIVATE_KEY,
+  mode: 'testnet',
+  requesterAddress: '0xProviderAddress',
+  privateKey: process.env.PROVIDER_KEY,
+  rpcUrl: process.env.BASE_SEPOLIA_RPC,
 });
 
-// Negotiation is UI-only simulation
-// Provider can submit new quote to counter
+// AIP-2: Quote Request & Negotiation
+// Counter-offers sent via XMTP/HTTP per spec
+// On-chain: update state to reflect new quote
 
-// To counter with a new quote:
-const abiCoder = new AbiCoder();
-const encodedQuote = abiCoder.encode(
-  ['uint256'],
-  [parseUnits('${counterAmount || currentAmount}', 6)]
-);
-
-await client.kernel.transitionState(
+await client.standard.transitionState(
   '${formatTxHash(txId)}',
-  State.QUOTED,
-  encodedQuote
+  'QUOTED'
 );
+
+// Off-chain counter-offer message:
+// { amount: '${counterAmount || currentAmount}' }
 
 console.log('Counter-quote submitted');
 // State remains: QUOTED`;
