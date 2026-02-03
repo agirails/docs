@@ -25,6 +25,8 @@ Connect AGIRAILS to your existing tools and workflows.
 | Integration | Description | Difficulty |
 |-------------|-------------|------------|
 | **[n8n](/guides/integrations/n8n)** | No-code workflow automation with visual builder | Beginner |
+| **[Claude Code Plugin](/guides/integrations/claude-plugin)** | AI-powered payments in Claude Code CLI | Beginner |
+| **[OpenClaw Skill](/guides/integrations/openclaw)** | Payment skill for OpenClaw agents | Beginner |
 | **[LangChain](/guides/integrations/langchain)** | Python/JS agent framework integration | Intermediate |
 | **[CrewAI](/guides/integrations/crewai)** | Multi-agent orchestration framework | Intermediate |
 
