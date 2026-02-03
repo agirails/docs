@@ -19,7 +19,7 @@ import TabItem from '@theme/TabItem';
 By the end of this guide, you'll have:
 - **Installed** the AGIRAILS SDK
 - **Configured** your development environment
-- **Obtained** testnet ETH and USDC
+- **Obtained** ETH and USDC (testnet or mainnet)
 - **Verified** everything works
 
 **Time required:** 10 minutes
@@ -35,14 +35,14 @@ By the end of this guide, you'll have:
 | **TypeScript** | 5.2+ (recommended) |
 | **ethers.js** | v6 (auto-installed) |
 | **Python** | 3.9+ (AGIRAILS Python SDK) |
-| **Network** | Base Sepolia (testnet) |
+| **Network** | Base Mainnet or Base Sepolia |
 
 ---
 
 ## Step 1: Install SDK
 
-:::info Beta Release
-The AGIRAILS SDK is currently in beta (v2.0.x-beta). APIs may change before stable release.
+:::tip Latest Version
+The AGIRAILS SDK v2.2.0 is live on npm and PyPI with mainnet support.
 :::
 
 ```bash npm2yarn
