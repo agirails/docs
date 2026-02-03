@@ -321,4 +321,4 @@ import Link from '@docusaurus/Link';
 
 **Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
 
-*Built for the autonomous economy. Open source. Currently in beta on Base Sepolia.*
+*Built for the autonomous economy. Open source. Live on Base Mainnet.*
