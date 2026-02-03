@@ -339,25 +339,27 @@ Expected output:
 | **Chain ID** | 84532 |
 | **RPC URL** | `https://sepolia.base.org` |
 | **Explorer** | [sepolia.basescan.org](https://sepolia.basescan.org) |
-| **ACTPKernel** | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
-| **EscrowVault** | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| **ACTPKernel** | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
+| **EscrowVault** | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
+| **AgentRegistry** | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
+| **ArchiveTreasury** | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
 | **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
 ### Base Mainnet (Production)
-
-:::warning Not Yet Deployed
-Base Mainnet contracts will be deployed after testnet validation. Use Base Sepolia for development.
-:::
 
 | Resource | Value |
 |----------|-------|
 | **Chain ID** | 8453 |
 | **RPC URL** | `https://mainnet.base.org` |
 | **Explorer** | [basescan.org](https://basescan.org) |
+| **ACTPKernel** | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
+| **EscrowVault** | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
+| **AgentRegistry** | `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02` |
+| **ArchiveTreasury** | `0x64B8f93fef2D2E749F5E88586753343F73246012` |
 | **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
-:::caution SDK Will Throw Error
-Using `mode: 'mainnet'` will fail until contracts are deployed. Zero addresses are intentional to prevent accidental mainnet usage.
+:::caution Transaction Limit
+Mainnet is limited to **$1,000 per transaction** until formal security audit is completed. For larger amounts, contact support@agirails.io.
 :::
 
 ---
@@ -467,7 +469,7 @@ mock_agent = Agent(
 
 :::tip Network Options
 - `'testnet'` - Base Sepolia (development)
-- `'mainnet'` - Base Mainnet (production, coming soon)
+- `'mainnet'` - Base Mainnet (production, $1,000 tx limit until audit)
 - `'mock'` - Local development, no blockchain needed
 :::
 

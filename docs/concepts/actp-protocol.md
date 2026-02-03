@@ -140,17 +140,17 @@ Payments are in **USDC** (USD Coin), not volatile tokens.
 - **Available on Base L2** - Low fees ($0.001)
 :::
 
-### 4. Verifiable Reputation <span style={{fontSize: '0.7rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>PLANNED</span>
+### 4. Verifiable Reputation <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span>
 
-ACTP supports optional attestations via **Ethereum Attestation Service (EAS)**.
+ACTP supports optional attestations via **Ethereum Attestation Service (EAS)** and on-chain reputation via **AgentRegistry**.
 
 ![Verifiable Reputation - Attestation flow](../img/diagrams/verifiable-reputation.svg)
 
-:::caution V1 Limitations
-In V1, `anchorAttestation()` is **optional** and accepts any bytes32 without on-chain validation. There is no deployed reputation registry. The SDK provides off-chain verification helpers, but on-chain proof validation is planned for V2.
+:::info AgentRegistry Deployed
+The AgentRegistry contract is live on both mainnet and testnet. Agents can register profiles, track service types, and build reputation scores based on settlement history.
 :::
 
-**Planned use cases (V2+):**
+**Use cases:**
 - Agents query provider reputation before transacting
 - Insurance protocols price premiums based on attestation history
 - Mediators specialize in specific dispute types
@@ -180,7 +180,7 @@ The 1% fee is the **default**. Platform fee is admin-adjustable up to 5% maximum
 | **Settlement Time** | 2 seconds | 2-7 days |
 | **Fees** | 1% default (5% max) | 2.9% + $0.30 |
 | **Disputes** | Admin-resolved (V1), smart contract planned (V2) | Manual review |
-| **Reputation** | Optional attestations (V1), on-chain registry planned (V2) | Internal (Radar) |
+| **Reputation** | On-chain AgentRegistry + EAS attestations | Internal (Radar) |
 | **Trust Model** | Escrow + dispute window | Trust Stripe |
 | **Access** | Permissionless | KYC/KYB required |
 
@@ -194,7 +194,7 @@ The 1% fee is the **default**. Platform fee is admin-adjustable up to 5% maximum
 | **Price Stability** | ✅ USDC ($1.00) | ❌ Volatile |
 | **Escrow** | ✅ Built-in | ❌ Manual |
 | **Disputes** | ✅ Admin-resolved with timelock | ❌ Off-chain |
-| **Reputation** | 🟡 Optional attestations (V1) | ❌ None |
+| **Reputation** | ✅ On-chain AgentRegistry | ❌ None |
 | **Refunds** | ✅ Programmatic (before delivery) | ❌ Irreversible |
 
 **Use ACTP when**: Multi-step transactions, need escrow, want stable pricing
@@ -228,19 +228,20 @@ ACTP is implemented through three layers:
 
 | Contract | Purpose | Address (Base Sepolia) |
 |----------|---------|------------------------|
-| **ACTPKernel** | State machine, lifecycle management | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
-| **EscrowVault** | Holds USDC during transactions | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| **ACTPKernel** | State machine, lifecycle management | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
+| **EscrowVault** | Holds USDC during transactions | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
+| **AgentRegistry** | Agent profiles, service types, reputation | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
+| **ArchiveTreasury** | Archive funding + Arweave anchoring | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
 | **Mock USDC** | Test token for development | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
-| **AgentRegistry** (AIP-7) | Agent profiles, service types, reputation | Not deployed (planned Q1 2025) |
-| **ArchiveTreasury** (AIP-7) | Archive funding + Arweave anchoring | Not deployed (planned Q1 2025) |
 
 ### Layer 2: Developer Tools (SDK)
 
 | Tool | Language | Install |
 |------|----------|---------|
 | **TypeScript SDK** | TypeScript/JavaScript | `npm install @agirails/sdk` |
+| **Python SDK** | Python | `pip install agirails` |
 | **n8n Node** | No-code | `npm install n8n-nodes-actp` |
-| **REST API** | Any | Coming Q1 2025 |
+| **REST API** | Any | Coming soon |
 
 ### Layer 3: Protocol Specification
 

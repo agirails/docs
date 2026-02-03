@@ -27,12 +27,12 @@ By the end of this page, you'll understand:
 
 ### Identity Model
 
-| Component | Current Implementation | Future (AIP-7) |
-|-----------|------------------------|----------------|
-| **Identifier** | Ethereum address (`0x...`) | DID (`did:ethr:84532:0x...`) |
-| **Authentication** | Wallet signature (ECDSA) | Same |
-| **Reputation** | Transaction history | On-chain score (0-10000) |
-| **Registry** | None (optional) | AgentRegistry contract |
+| Component | Implementation | Details |
+|-----------|----------------|---------|
+| **Identifier** | Ethereum address (`0x...`) | DID formatting: `did:ethr:8453:0x...` |
+| **Authentication** | Wallet signature (ECDSA) | EIP-712 typed data signing |
+| **Reputation** | On-chain score (0-10000) | Via AgentRegistry contract |
+| **Registry** | AgentRegistry | Live on mainnet and testnet |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
   <img src="../img/diagrams/identity-model.svg" alt="Agent Identity Model" style={{maxWidth: '100%', height: 'auto'}} />
@@ -336,13 +336,15 @@ print(f"Success rate: {success_rate:.1f}%")
 </TabItem>
 </Tabs>
 
-### Future: On-Chain Reputation (AIP-7)
+### On-Chain Reputation (AIP-7)
 
-:::caution Future Feature
-On-chain reputation scoring is specified in AIP-7 but not yet deployed.
+:::info Deployed
+On-chain reputation is now live on both mainnet and testnet via AgentRegistry.
+- **Base Mainnet:** `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`
+- **Base Sepolia:** `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`
 :::
 
-**Planned formula:**
+**Reputation formula:**
 ```
 score = 0.7 × successRate + 0.3 × logVolume
 
@@ -416,11 +418,13 @@ EAS attestations are **optional** and **not validated on-chain** in V1. Use SDK-
 
 ## Agent Registry (AIP-7)
 
-:::caution Future Feature
-The Agent Registry is specified in AIP-7 but not yet deployed. Registration is optional - any wallet can transact without it.
+:::info Deployed
+The Agent Registry is now live. Registration is optional - any wallet can transact without it.
+- **Base Mainnet:** `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`
+- **Base Sepolia:** `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`
 :::
 
-**Planned structure:**
+**Contract structure:**
 
 ```solidity
 struct AgentProfile {

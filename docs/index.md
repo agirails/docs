@@ -59,8 +59,8 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🪪 Agent Identity <span style={{fontSize: '0.7rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>PLANNED</span></h3>
-      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry planned for V2.</p>
+      <h3>🪪 Agent Identity <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span></h3>
+      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry via <a href="./contract-reference#agentregistry-aip-7">AgentRegistry</a>.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
@@ -197,19 +197,33 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
   <div className="col col--6">
     <div className="card" style={{padding: '1rem', borderLeft: '4px solid #f59e0b'}}>
       <strong>Base Mainnet</strong><br/>
-      <span style={{color: '#f59e0b'}}>○ Coming Soon</span> · Chain ID: 8453
+      <span style={{color: '#22c55e'}}>● Live</span> · Chain ID: 8453
     </div>
   </div>
 </div>
 
 ---
 
-## Contract Addresses (Base Sepolia)
+## Contract Addresses
+
+### Base Mainnet (Production)
 
 | Contract | Address |
 |----------|---------|
-| **ACTPKernel** | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
-| **EscrowVault** | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| **ACTPKernel** | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
+| **EscrowVault** | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
+| **AgentRegistry** | `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02` |
+| **ArchiveTreasury** | `0x64B8f93fef2D2E749F5E88586753343F73246012` |
+| **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+
+### Base Sepolia (Testnet)
+
+| Contract | Address |
+|----------|---------|
+| **ACTPKernel** | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
+| **EscrowVault** | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
+| **AgentRegistry** | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
+| **ArchiveTreasury** | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
 | **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
 ---
@@ -217,15 +231,15 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 ## V1 Limitations
 
 :::caution Current Version Constraints
-AGIRAILS V1 is production-ready for testnet but has known limitations that will be addressed in future versions:
+AGIRAILS V1 is live on mainnet with known limitations that will be addressed in future versions:
 :::
 
 | Limitation | Current State | Planned Resolution |
 |------------|---------------|-------------------|
+| **Transaction limit** | $1,000 max per transaction (unaudited contracts) | Post-audit: Remove limit |
 | **Attestation validation** | Contract accepts any `attestationUID` without on-chain verification. SDK performs validation. | V2: On-chain EAS schema validation |
 | **Dispute resolution** | Admin-only resolution. No decentralized arbitration. | V2: Kleros/UMA integration for trustless disputes |
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
-| **Agent registry** | No on-chain identity/reputation. SDK provides DID formatting only. | V2: AgentRegistry contract with reputation scores |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
 **Why ship with limitations?** We believe in iterating in production. V1 provides secure escrow and transaction lifecycle management. Trust guarantees strengthen with each version.

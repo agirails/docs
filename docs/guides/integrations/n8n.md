@@ -29,12 +29,12 @@ By the end of this guide, you'll have:
 Before starting, ensure you have:
 
 - [ ] **n8n instance** - [Self-hosted](https://docs.n8n.io/hosting/) or [n8n Cloud](https://n8n.io/cloud/)
-- [ ] **Ethereum wallet** with private key (testnet only!)
-- [ ] **Base Sepolia ETH** for gas - [Get from faucet](https://portal.cdp.coinbase.com/products/faucet)
-- [ ] **Mock USDC** for transactions - See [Getting Testnet USDC](#getting-testnet-usdc)
+- [ ] **Ethereum wallet** with private key
+- [ ] **ETH for gas** - Base Sepolia (testnet) or Base Mainnet
+- [ ] **USDC** - Mock USDC (testnet) or real USDC (mainnet)
 
 :::danger Security Warning
-**Never use mainnet private keys in n8n.** Only use testnet wallets with no real funds. Private keys are stored in n8n's credential system.
+**Use dedicated wallets for n8n.** Private keys are stored in n8n's credential system. For mainnet, use hardware wallets or consider a dedicated hot wallet with limited funds.
 :::
 
 ---
@@ -648,13 +648,27 @@ await usdc.mint(wallet.address, ethers.parseUnits('1000', 6));
 
 ---
 
-## Contract Addresses (Base Sepolia)
+## Contract Addresses
+
+### Base Sepolia (Testnet)
 
 | Contract | Address |
 |----------|---------|
-| ACTPKernel | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
-| EscrowVault | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
+| ACTPKernel | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
+| EscrowVault | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
 | Mock USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+
+### Base Mainnet (Production)
+
+| Contract | Address |
+|----------|---------|
+| ACTPKernel | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
+| EscrowVault | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
+| USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+
+:::caution Mainnet Transaction Limit
+Mainnet is limited to **$1,000 per transaction** until formal audit.
+:::
 
 ---
 

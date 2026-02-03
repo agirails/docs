@@ -681,11 +681,11 @@ async for event in client.advanced.events.escrow_created():
 
 ## Contract Reference
 
-| Contract | Address (Base Sepolia) |
-|----------|------------------------|
-| EscrowVault | `0x921edE340770db5DB6059B5B866be987d1b7311F` |
-| ACTPKernel | `0x6aDB650e185b0ee77981AC5279271f0Fa6CFe7ba` |
-| Mock USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+| Contract | Address (Base Sepolia) | Address (Base Mainnet) |
+|----------|------------------------|------------------------|
+| EscrowVault | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
+| ACTPKernel | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
+| USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` (Mock) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
 ---
 
