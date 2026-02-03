@@ -32,16 +32,20 @@ By the end of this guide, you'll have:
 |-------------|---------------|
 | **Node.js 16+** | [nodejs.org](https://nodejs.org) |
 | **Python 3.9+** | [python.org](https://python.org) |
-| **Two testnet wallets** | Requester and Provider must be different addresses |
-| **Base Sepolia ETH** | [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) (both wallets) |
-| **Mock USDC** | See [Installation Guide](./installation#step-4-get-testnet-tokens) (requester wallet) |
+| **Two wallets** | Requester and Provider must be different addresses |
+| **ETH for gas** | [Base Bridge](https://bridge.base.org) (mainnet) or [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) (testnet) |
+| **USDC** | See [Installation Guide](./installation#step-4-get-tokens) |
 
 <div style={{textAlign: 'center', margin: '1.5rem 0'}}>
   <img src="./img/diagrams/two-wallets-required.svg" alt="Two Wallets Required - Requester and Provider must be different" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
+:::tip Testnet or Mainnet?
+This guide uses **testnet** examples for safety. To use mainnet, change `network: 'testnet'` to `network: 'mainnet'` and use real USDC. Mainnet has a **$1,000 transaction limit** until audit.
+:::
+
 :::warning Two Wallets Required
-The contract requires `requester != provider`. You need two separate wallets to test the full flow. Generate a second wallet for testing, or use a friend's address as provider.
+The contract requires `requester != provider`. You need two separate wallets to complete the flow.
 :::
 
 ---

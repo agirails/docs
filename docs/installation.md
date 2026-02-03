@@ -150,9 +150,11 @@ import 'dotenv/config';
 
 ---
 
-## Step 4: Get Testnet Tokens
+## Step 4: Get Tokens
 
-### Get Base Sepolia ETH
+### Option A: Testnet (Recommended for Development)
+
+#### Get Base Sepolia ETH
 
 ETH is required for gas fees:
 
@@ -161,7 +163,7 @@ ETH is required for gas fees:
 3. Request Base Sepolia ETH
 4. Wait ~30 seconds
 
-### Get Mock USDC
+#### Get Mock USDC
 
 Mint mock USDC tokens:
 
@@ -232,6 +234,30 @@ if __name__ == "__main__":
 :::tip No Public Mint?
 If the Mock USDC contract doesn't have a public mint, contact us on [Discord](https://discord.gg/nuhCt75qe4).
 :::
+
+### Option B: Mainnet (Production)
+
+:::caution Transaction Limit
+Mainnet transactions are limited to **$1,000** until security audit is completed.
+:::
+
+#### Get Base Mainnet ETH
+
+ETH is required for gas fees (~$0.001 per transaction):
+
+- **Bridge from Ethereum:** [Base Bridge](https://bridge.base.org)
+- **Buy directly:** [Coinbase](https://coinbase.com), [Moonpay](https://moonpay.com)
+- **From another L2:** Use [Across](https://across.to) or [Stargate](https://stargate.finance)
+
+#### Get USDC
+
+Real USDC on Base Mainnet:
+
+- **Bridge from Ethereum:** [Base Bridge](https://bridge.base.org) (native USDC)
+- **Buy on Coinbase:** Transfer USDC directly to Base
+- **Swap on Base:** [Uniswap](https://app.uniswap.org), [Aerodrome](https://aerodrome.finance)
+
+**USDC Contract:** [`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
 
 ---
 
