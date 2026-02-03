@@ -120,6 +120,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'guides/integrations/n8n',
             'guides/integrations/claude-plugin',
+            'guides/integrations/openclaw',
             'guides/integrations/langchain',
             'guides/integrations/crewai',
           ],
