@@ -226,13 +226,15 @@ ACTP is implemented through three layers:
 
 ### Layer 1: Smart Contracts (On-Chain)
 
-| Contract | Purpose | Address (Base Sepolia) |
-|----------|---------|------------------------|
-| **ACTPKernel** | State machine, lifecycle management | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
-| **EscrowVault** | Holds USDC during transactions | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
-| **AgentRegistry** | Agent profiles, service types, reputation | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
-| **ArchiveTreasury** | Archive funding + Arweave anchoring | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
-| **Mock USDC** | Test token for development | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+| Contract | Purpose | Base Mainnet | Base Sepolia |
+|----------|---------|--------------|--------------|
+| **ACTPKernel** | State machine, lifecycle | `0xeaE4...c60` | `0xD199...962` |
+| **EscrowVault** | USDC escrow | `0xb7bC...02D` | `0x62eE...38E` |
+| **AgentRegistry** | Agent profiles, reputation | `0xbf9A...F02` | `0x97E7...7e2` |
+| **ArchiveTreasury** | Archive funding | `0x64B8...012` | `0x46e8...6c` |
+| **USDC** | Payment token | `0x8335...913` | `0x444b...Ccb` (Mock) |
+
+Full addresses: [Contract Reference](/contract-reference#deployed-addresses)
 
 ### Layer 2: Developer Tools (SDK)
 
@@ -241,6 +243,8 @@ ACTP is implemented through three layers:
 | **TypeScript SDK** | TypeScript/JavaScript | `npm install @agirails/sdk` |
 | **Python SDK** | Python | `pip install agirails` |
 | **n8n Node** | No-code | `npm install n8n-nodes-actp` |
+| **Claude Code Plugin** | Claude Code | [agirails/claude-plugin](https://github.com/agirails/claude-plugin) |
+| **OpenClaw Skill** | OpenClaw | [agirails/openclaw-skill](https://github.com/agirails/openclaw-skill) |
 | **REST API** | Any | Coming soon |
 
 ### Layer 3: Protocol Specification
