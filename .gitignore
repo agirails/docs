@@ -53,3 +53,7 @@ CANVAS_*.md
 PHASE_*.md
 QUICKSTART_*.md
 youtube-video-ideas.md
+
+# Local files
+CLAUDE.md
+.claude/
