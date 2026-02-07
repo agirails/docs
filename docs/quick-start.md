@@ -32,7 +32,7 @@ By the end of this guide, you'll have:
 |-------------|---------------|
 | **Node.js 16+** | [nodejs.org](https://nodejs.org) |
 | **Python 3.9+** | [python.org](https://python.org) |
-| **Two wallets** | Requester and Provider must be different addresses |
+| **Two wallets** | Run `actp init -m testnet` once per agent (in separate directories) |
 | **ETH for gas** | [Base Bridge](https://bridge.base.org) (mainnet) or [Coinbase Faucet](https://portal.cdp.coinbase.com/products/faucet) (testnet) |
 | **USDC** | See [Installation Guide](./installation#step-4-get-tokens) |
 
@@ -71,17 +71,32 @@ pip install agirails
 
 ---
 
-## Step 2: Configure Environment
+## Step 2: Initialize Wallets
 
-Create `.env` with both wallets:
+Run `actp init` once per agent to generate an encrypted keystore:
+
+```bash title="Provider setup (in provider directory)"
+ACTP_KEY_PASSWORD=your-password actp init -m testnet
+```
+
+```bash title="Requester setup (in requester directory)"
+ACTP_KEY_PASSWORD=your-password actp init -m testnet
+```
+
+This creates `.actp/keystore.json` — an encrypted wallet file. The SDK auto-detects it at startup.
+
+Set the password in your environment so the agent can decrypt the keystore:
 
 ```bash title=".env"
-REQUESTER_PRIVATE_KEY=0x...your_requester_private_key
-PROVIDER_PRIVATE_KEY=0x...your_provider_private_key
+ACTP_KEY_PASSWORD=your-password
 ```
 
 :::danger Security
-Never commit private keys. Add `.env` to `.gitignore`.
+Never commit `.actp/keystore.json` or `.env`. Add both to `.gitignore`.
+:::
+
+:::tip Backward Compatibility
+If `ACTP_PRIVATE_KEY` is set, it takes priority over the keystore file. This keeps existing setups working.
 :::
 
 ---
@@ -98,11 +113,10 @@ Create `provider.ts`:
 import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
-// Create provider agent
+// Create provider agent (wallet auto-detected from .actp/keystore.json)
 const provider = new Agent({
   name: 'EchoProvider',
   network: 'testnet',
-  wallet: { privateKey: process.env.PROVIDER_PRIVATE_KEY! },
 });
 
 // Register a paid service
@@ -143,18 +157,16 @@ Create `provider.py`:
 ```python title="provider.py"
 # Level 1: Standard API - Agent with lifecycle management
 import asyncio
-import os
 from dotenv import load_dotenv
 from agirails import Agent
 
-load_dotenv()
+load_dotenv()  # loads ACTP_KEY_PASSWORD from .env
 
 async def main():
-    # Create provider agent
+    # Create provider agent (wallet auto-detected from .actp/keystore.json)
     provider = Agent(
         name='EchoProvider',
         network='testnet',
-        wallet={'private_key': os.getenv('PROVIDER_PRIVATE_KEY')},
     )
 
     # Register a paid service
@@ -218,11 +230,10 @@ import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
 async function main() {
-  // Create requester agent
+  // Create requester agent (wallet auto-detected from .actp/keystore.json)
   const requester = new Agent({
     name: 'Requester',
     network: 'testnet',
-    wallet: { privateKey: process.env.REQUESTER_PRIVATE_KEY! },
   });
 
   console.log('Requester:', requester.address);
@@ -253,18 +264,16 @@ npx ts-node requester.ts
 ```python title="requester.py"
 # Level 1: Standard API - Agent with lifecycle management
 import asyncio
-import os
 from dotenv import load_dotenv
 from agirails import Agent
 
-load_dotenv()
+load_dotenv()  # loads ACTP_KEY_PASSWORD from .env
 
 async def main():
-    # Create requester agent
+    # Create requester agent (wallet auto-detected from .actp/keystore.json)
     requester = Agent(
         name='Requester',
         network='testnet',
-        wallet={'private_key': os.getenv('REQUESTER_PRIVATE_KEY')},
     )
 
     print(f'Requester: {requester.address}')
@@ -318,11 +327,10 @@ import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
 async function testFullFlow() {
-  // Create provider agent
+  // Create provider agent (wallet auto-detected from .actp/keystore.json)
   const provider = new Agent({
     name: 'TestProvider',
     network: 'testnet',
-    wallet: { privateKey: process.env.PROVIDER_PRIVATE_KEY! },
   });
 
   // Register service
@@ -339,11 +347,10 @@ async function testFullFlow() {
   await provider.start();
   console.log('1. Provider started:', provider.address);
 
-  // Create requester agent
+  // Create requester agent (wallet auto-detected from .actp/keystore.json)
   const requester = new Agent({
     name: 'TestRequester',
     network: 'testnet',
-    wallet: { privateKey: process.env.REQUESTER_PRIVATE_KEY! },
   });
   console.log('2. Requester ready:', requester.address);
 
@@ -377,18 +384,16 @@ npx ts-node full-flow-test.ts
 ```python title="full_flow_test.py"
 # Level 1: Standard API - Agent with lifecycle management
 import asyncio
-import os
 from dotenv import load_dotenv
 from agirails import Agent
 
-load_dotenv()
+load_dotenv()  # loads ACTP_KEY_PASSWORD from .env
 
 async def test_full_flow():
-    # Create provider agent
+    # Create provider agent (wallet auto-detected from .actp/keystore.json)
     provider = Agent(
         name='TestProvider',
         network='testnet',
-        wallet={'private_key': os.getenv('PROVIDER_PRIVATE_KEY')},
     )
 
     # Register service
@@ -405,11 +410,10 @@ async def test_full_flow():
     await provider.start()
     print(f'1. Provider started: {provider.address}')
 
-    # Create requester agent
+    # Create requester agent (wallet auto-detected from .actp/keystore.json)
     requester = Agent(
         name='TestRequester',
         network='testnet',
-        wallet={'private_key': os.getenv('REQUESTER_PRIVATE_KEY')},
     )
     print(f'2. Requester ready: {requester.address}')
 
@@ -475,7 +479,7 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 | Method | What It Does |
 |--------|--------------|
-| `new Agent({ name, network, wallet })` | Create agent instance |
+| `new Agent({ name, network })` | Create agent instance (wallet auto-detected) |
 | `agent.provide(service, handler)` | Register a paid service |
 | `agent.request(service, { input, budget })` | Pay for a service |
 | `agent.on(event, callback)` | Listen to events |
@@ -506,7 +510,7 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 | Problem | Solution |
 |---------|----------|
 | **"Insufficient funds"** | Get ETH from [faucet](https://portal.cdp.coinbase.com/products/faucet), mint USDC |
-| **"Invalid private key"** | Ensure key starts with `0x` and is 66 characters |
+| **"No wallet found"** | Run `actp init -m testnet` or set `ACTP_PRIVATE_KEY` env var |
 | **"requester == provider"** | Contract requires different addresses. Use two wallets. |
 | **"Service not found"** | Provider must call `agent.start()` before requester calls `agent.request()` |
 | **"Request timeout"** | Provider may be offline or service name is wrong |

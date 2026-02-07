@@ -121,25 +121,42 @@ Add to `tsconfig.json`:
 
 ---
 
-## Step 3: Environment Setup
+## Step 3: Wallet Setup
+
+Generate an encrypted keystore (one-time):
+
+```bash
+# Testnet
+ACTP_KEY_PASSWORD=your-password actp init -m testnet
+
+# Mainnet
+ACTP_KEY_PASSWORD=your-password actp init -m mainnet
+```
+
+This creates `.actp/keystore.json` with a new wallet. The SDK auto-detects it at startup.
 
 Create `.env`:
 
 ```bash title=".env"
-# Your wallet private key (starts with 0x)
-PRIVATE_KEY=0x1234567890abcdef...
+# Password to decrypt your keystore
+ACTP_KEY_PASSWORD=your-password
 
 # RPC URL (optional - defaults to public Base Sepolia RPC)
 RPC_URL=https://sepolia.base.org
 ```
 
 :::danger Security
-Never commit private keys to version control.
+Never commit your keystore or passwords to version control.
 
 ```bash title=".gitignore"
 .env
 .env.local
+.actp/
 ```
+:::
+
+:::tip Backward Compatibility
+If `ACTP_PRIVATE_KEY` is set, it takes priority over keystore auto-detection. This supports existing setups that pass a raw private key.
 :::
 
 Load in your code:
@@ -274,11 +291,10 @@ import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
 async function verify() {
-  // Create agent to verify setup
+  // Create agent to verify setup (auto-detects .actp/keystore.json)
   const agent = new Agent({
     name: 'VerifySetup',
     network: 'testnet',
-    wallet: { privateKey: process.env.PRIVATE_KEY! },
   });
 
   // Get balances
@@ -303,18 +319,16 @@ verify().catch(e => {
 ```python title="verify_setup.py"
 # Level 1: Standard API - Agent with lifecycle management
 import asyncio
-import os
 from dotenv import load_dotenv
 from agirails import Agent
 
 load_dotenv()
 
 async def verify():
-    # Create agent to verify setup
+    # Create agent to verify setup (auto-detects .actp/keystore.json)
     agent = Agent(
         name='VerifySetup',
         network='testnet',
-        wallet={'private_key': os.environ['PRIVATE_KEY']},
     )
 
     # Get balances
@@ -400,14 +414,15 @@ Mainnet is limited to **$1,000 per transaction** until formal security audit is 
 | Using local build | Run `npm link @agirails/sdk` in your project |
 | Wrong moduleResolution | Add `"moduleResolution": "node"` to tsconfig |
 
-### "Invalid private key"
+### "No wallet found" or "Invalid private key"
 
 | Cause | Solution |
 |-------|----------|
-| Missing `0x` prefix | Add `0x` to start of key |
-| Wrong length | Key should be 66 characters (0x + 64 hex) |
-| Not loaded | Add `import 'dotenv/config'` |
-| Wrong env name | Check `PRIVATE_KEY` matches your `.env` |
+| No keystore | Run `ACTP_KEY_PASSWORD=pw actp init -m testnet` |
+| Wrong password | Check `ACTP_KEY_PASSWORD` in your `.env` |
+| Missing keystore file | Verify `.actp/keystore.json` exists |
+| Using `ACTP_PRIVATE_KEY` with wrong format | Key should be 66 characters (0x + 64 hex) |
+| Env not loaded | Add `import 'dotenv/config'` |
 
 ### "Network connection failed"
 
@@ -436,26 +451,30 @@ Mainnet is limited to **$1,000 per transaction** until formal security audit is 
 import { Agent } from '@agirails/sdk';
 import 'dotenv/config';
 
-// Minimal (uses defaults)
+// Minimal — auto-detects .actp/keystore.json
 const agent = new Agent({
   name: 'MyAgent',
   network: 'testnet',
-  wallet: { privateKey: process.env.PRIVATE_KEY! },
 });
 
 // With custom RPC
 const agentWithRpc = new Agent({
   name: 'MyAgent',
   network: 'testnet',
-  wallet: { privateKey: process.env.PRIVATE_KEY! },
   rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/YOUR_KEY',
+});
+
+// Explicit private key (backward compat)
+const agentWithKey = new Agent({
+  name: 'MyAgent',
+  network: 'testnet',
+  wallet: { privateKey: process.env.ACTP_PRIVATE_KEY! },
 });
 
 // Mock mode (local development, no blockchain needed)
 const mockAgent = new Agent({
   name: 'MockAgent',
   network: 'mock',
-  wallet: { privateKey: process.env.PRIVATE_KEY! },
 });
 ```
 
@@ -467,26 +486,30 @@ const mockAgent = new Agent({
 import os
 from agirails import Agent
 
-# Minimal (uses defaults)
+# Minimal — auto-detects .actp/keystore.json
 agent = Agent(
     name='MyAgent',
     network='testnet',
-    wallet={'private_key': os.environ['PRIVATE_KEY']},
 )
 
 # With custom RPC
 agent_with_rpc = Agent(
     name='MyAgent',
     network='testnet',
-    wallet={'private_key': os.environ['PRIVATE_KEY']},
     rpc_url='https://base-sepolia.g.alchemy.com/v2/YOUR_KEY',
+)
+
+# Explicit private key (backward compat)
+agent_with_key = Agent(
+    name='MyAgent',
+    network='testnet',
+    wallet={'private_key': os.environ['ACTP_PRIVATE_KEY']},
 )
 
 # Mock mode (local development, no blockchain needed)
 mock_agent = Agent(
     name='MockAgent',
     network='mock',
-    wallet={'private_key': os.environ['PRIVATE_KEY']},
 )
 ```
 

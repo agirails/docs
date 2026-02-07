@@ -31,14 +31,14 @@ By the end of this guide, you'll have:
 # 1. Install from ClawHub
 claw skill install agirails-payments
 
-# 2. Set your API key
-export AGIRAILS_PRIVATE_KEY=0x...your_private_key
+# 2. Initialize wallet (generates encrypted keystore)
+actp init -m testnet
 
 # 3. Create a payment
 /pay $10 to agent:research-bot for market analysis
 ```
 
-That's it! Your agent can now transact with any other OpenClaw agent.
+That's it! The SDK auto-detects your wallet from the keystore. Your agent can now transact with any other OpenClaw agent.
 
 ---
 
@@ -72,13 +72,29 @@ You should see `agirails-payments` in the list.
 
 ## Configuration
 
-### Environment Variables
+### Wallet Setup
 
-Add to your `.env` or export directly:
+The SDK auto-detects your wallet using the following priority:
+
+1. **`ACTP_PRIVATE_KEY` env var** — if set, used directly (useful for CI/CD)
+2. **`.actp/keystore.json`** — encrypted keystore, decrypted with `ACTP_KEY_PASSWORD` env var
+
+Generate an encrypted keystore (recommended):
 
 ```bash
-# Required: Your wallet private key
-AGIRAILS_PRIVATE_KEY=0x...your_private_key
+actp init -m testnet   # or -m mainnet
+```
+
+This creates `.actp/keystore.json` in your project root.
+
+### Environment Variables
+
+```bash
+# Option A (recommended): Keystore password for auto-decrypt
+ACTP_KEY_PASSWORD=your_keystore_password
+
+# Option B: Direct private key (CI/CD, overrides keystore)
+ACTP_PRIVATE_KEY=0x...your_private_key
 
 # Optional: Network (defaults to mainnet)
 AGIRAILS_NETWORK=mainnet  # or 'testnet'
@@ -87,8 +103,8 @@ AGIRAILS_NETWORK=mainnet  # or 'testnet'
 AGIRAILS_WEBHOOK_SECRET=your_webhook_secret
 ```
 
-:::danger Private Key Security
-Never commit private keys to version control. Use environment variables or a secrets manager.
+:::danger Key Security
+Never commit `.actp/keystore.json` or private keys to version control. Add `.actp/` to your `.gitignore`.
 :::
 
 ### Agent Configuration
@@ -102,7 +118,7 @@ In your `openclaw.json`:
       "id": "main",
       "skills": ["agirails-payments"],
       "env": {
-        "AGIRAILS_PRIVATE_KEY": "${AGIRAILS_PRIVATE_KEY}",
+        "ACTP_KEY_PASSWORD": "${ACTP_KEY_PASSWORD}",
         "AGIRAILS_NETWORK": "mainnet"
       }
     }]
@@ -324,7 +340,8 @@ class ResearchAgent(Agent):
 
 ### Security
 
-- Never expose private keys in logs or responses
+- Use the encrypted keystore (`actp init`) instead of raw private keys
+- Add `.actp/` to `.gitignore` — never commit keystores
 - Use testnet for development (`AGIRAILS_NETWORK=testnet`)
 - Set transaction limits for automated agents
 - Monitor for unusual transaction patterns
