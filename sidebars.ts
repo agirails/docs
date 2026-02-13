@@ -82,6 +82,13 @@ const sidebars: SidebarsConfig = {
       ],
     },
 
+    // CLI Reference
+    {
+      type: 'doc',
+      id: 'cli-reference',
+      label: 'CLI Reference',
+    },
+
     // Examples - Runnable Code
     {
       type: 'doc',
