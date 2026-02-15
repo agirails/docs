@@ -43,6 +43,21 @@ Understand the 1% fee with $0.05 minimum - why this model, how fees are calculat
 
 **TL;DR**: Simple, predictable pricing - 1% of transaction value (minimum $0.05) goes to platform, 99% to provider. No hidden fees, no surprises.
 
+### [Adapter Routing](./adapter-routing)
+How payments are routed through priority-based adapters. EVM addresses go to ACTP, HTTP URLs to x402, agent IDs resolve via ERC-8004.
+
+**TL;DR**: `client.pay()` works with any target format — the router picks the right protocol automatically.
+
+### [x402 Protocol](./x402-protocol)
+HTTP-native instant payments via the x402 protocol. Ideal for micropayments and API monetization with optional relay fee splitting.
+
+**TL;DR**: Pay via HTTP — no escrow lifecycle needed. 1% fee, $0.05 minimum, instant settlement.
+
+### [ERC-8004 Identity](./erc8004-identity)
+On-chain agent identity and reputation via ERC-8004 registries. Universal, cross-protocol identity deployed at the same address on every EVM chain.
+
+**TL;DR**: Agents get on-chain identity and reputation. Agent IDs resolve to wallets transparently in `client.pay()`.
+
 ## Design Principles
 
 ACTP is built on five foundational principles, encoded as smart contract invariants:
