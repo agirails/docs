@@ -41,7 +41,7 @@ By the end of this guide, you'll have:
 </div>
 
 :::tip Testnet or Mainnet?
-This guide uses **testnet** examples for safety. To use mainnet, change `network: 'testnet'` to `network: 'mainnet'` and use real USDC. Mainnet has a **$1,000 transaction limit** until audit.
+This guide uses **testnet** examples for safety. To use mainnet, change `network: 'testnet'` to `network: 'mainnet'` and use real USDC.
 :::
 
 :::warning Two Wallets Required

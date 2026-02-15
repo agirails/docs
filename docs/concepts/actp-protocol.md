@@ -228,10 +228,10 @@ ACTP is implemented through three layers:
 
 | Contract | Purpose | Base Mainnet | Base Sepolia |
 |----------|---------|--------------|--------------|
-| **ACTPKernel** | State machine, lifecycle | `0xeaE4...c60` | `0xD199...962` |
-| **EscrowVault** | USDC escrow | `0xb7bC...02D` | `0x62eE...38E` |
-| **AgentRegistry** | Agent profiles, reputation | `0xbf9A...F02` | `0x97E7...7e2` |
-| **ArchiveTreasury** | Archive funding | `0x64B8...012` | `0x46e8...6c` |
+| **ACTPKernel** | State machine, lifecycle | `0x132B...d29` | `0x469C...411` |
+| **EscrowVault** | USDC escrow | `0x6aAF...b99` | `0x57f8...9E5` |
+| **AgentRegistry** | Agent profiles, reputation | `0x6fB2...de8` | `0x6fB2...de8` |
+| **ArchiveTreasury** | Archive funding | `0x0516...2f2` | `0x0516...2f2` |
 | **USDC** | Payment token | `0x8335...913` | `0x444b...Ccb` (Mock) |
 
 Full addresses: [Contract Reference](/contract-reference#deployed-addresses)

@@ -340,8 +340,8 @@ print(f"Success rate: {success_rate:.1f}%")
 
 :::info Deployed
 On-chain reputation is now live on both mainnet and testnet via AgentRegistry.
-- **Base Mainnet:** `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`
-- **Base Sepolia:** `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`
+- **Base Mainnet:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
+- **Base Sepolia:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
 :::
 
 **Reputation formula:**
@@ -420,8 +420,8 @@ EAS attestations are **optional** and **not validated on-chain** in V1. Use SDK-
 
 :::info Deployed
 The Agent Registry is now live. Registration is optional - any wallet can transact without it.
-- **Base Mainnet:** `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`
-- **Base Sepolia:** `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`
+- **Base Mainnet:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
+- **Base Sepolia:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
 :::
 
 **Contract structure:**

@@ -38,6 +38,8 @@ By the end of this page, you'll know how to:
 | [`actp publish`](#publish) | Publish agent config to IPFS + on-chain |
 | [`actp pull`](#pull) | Pull on-chain config to local file |
 | [`actp diff`](#diff) | Compare local vs on-chain config |
+| [`actp deploy:env`](#deployenv) | Generate `ACTP_KEYSTORE_BASE64` for CI/CD |
+| [`actp deploy:check`](#deploycheck) | Scan repo for exposed secrets |
 
 ---
 
@@ -690,6 +692,90 @@ actp diff --network base-mainnet
 
 # Just the status word
 actp diff --quiet
+```
+
+---
+
+## deploy:env
+
+Generate a base64-encoded keystore string for use in CI/CD environments. Reads your local `.actp/keystore.json` and outputs `ACTP_KEYSTORE_BASE64` ready to paste into environment variables.
+
+```bash
+actp deploy:env [options]
+```
+
+### Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--keystore` | string | `.actp/keystore.json` | Path to keystore file |
+| `--output` | string | `stdout` | Output: `stdout`, `dotenv` (append to `.env`) |
+
+### Examples
+
+```bash
+# Print base64 keystore to stdout
+actp deploy:env
+
+# Append to .env file
+actp deploy:env --output dotenv
+
+# Use with custom keystore location
+actp deploy:env --keystore /path/to/keystore.json
+```
+
+:::tip CI/CD Usage
+Set `ACTP_KEYSTORE_BASE64` and `ACTP_KEY_PASSWORD` as secrets in your CI/CD platform (GitHub Actions, Railway, Vercel, etc.). The SDK auto-detects these at runtime — no file needed on the server.
+:::
+
+---
+
+## deploy:check
+
+Scan your repository for exposed secrets, missing `.gitignore` entries, and deployment security issues. Recursively scans monorepos (up to depth 5).
+
+```bash
+actp deploy:check [path] [options]
+```
+
+### Arguments
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `[path]` | No | Directory to scan (defaults to current directory) |
+
+### Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--quiet` | boolean | `false` | Hide PASS and WARN results, show only FAIL |
+| `--fix` | boolean | `false` | Auto-generate `.dockerignore` and `.railwayignore` if missing |
+
+### What It Checks
+
+| Check | Severity | Description |
+|-------|----------|-------------|
+| `.env` in `.gitignore` | FAIL | Prevents committing secrets |
+| `.actp/` in `.gitignore` | FAIL | Prevents committing keystore |
+| `ACTP_PRIVATE_KEY` in code | FAIL | Hardcoded private keys |
+| `.dockerignore` exists | WARN | Prevents secrets in Docker images |
+| `.railwayignore` exists | WARN | Prevents secrets in Railway deploys |
+| `keystore.json` in git | FAIL | Encrypted key in version control |
+
+### Examples
+
+```bash
+# Full scan with all results
+actp deploy:check
+
+# CI mode — only show failures
+actp deploy:check --quiet
+
+# Auto-fix missing ignore files
+actp deploy:check --fix
+
+# Scan specific directory
+actp deploy:check ./packages/my-agent
 ```
 
 ---

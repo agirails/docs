@@ -683,8 +683,8 @@ async for event in client.advanced.events.escrow_created():
 
 | Contract | Address (Base Sepolia) | Address (Base Mainnet) |
 |----------|------------------------|------------------------|
-| EscrowVault | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
-| ACTPKernel | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
+| EscrowVault | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
+| ACTPKernel | `0x469CBADbACFFE096270594F0a31f0EEC53753411` | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
 | USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` (Mock) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
 ---

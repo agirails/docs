@@ -51,12 +51,10 @@ See [Common Patterns](#common-patterns) for complete workflows.
 ### Base Sepolia (Testnet)
 
 ```solidity
-// Deployed 2025-01-28 by Arha (optimizer-runs 200)
-ACTPKernel:      0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962
-EscrowVault:     0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E
+// Deployed 2026-02-06 by Arha (optimizer-runs 200)
+ACTPKernel:      0x469CBADbACFFE096270594F0a31f0EEC53753411
+EscrowVault:     0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5
 MockUSDC:        0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb
-AgentRegistry:   0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2
-ArchiveTreasury: 0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c
 
 // EAS (Ethereum Attestation Service - Base native)
 EAS:             0x4200000000000000000000000000000000000021
@@ -70,11 +68,11 @@ SchemaReg:       0x4200000000000000000000000000000000000020
 ### Base Mainnet
 
 ```solidity
-// Deployed 2025-02-02 by Arha via Safe multisig
-ACTPKernel:      0xeaE4D6925510284dbC45C8C64bb8104a079D4c60
-EscrowVault:     0xb7bCadF7F26f0761995d95105DFb2346F81AF02D
-AgentRegistry:   0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02
-ArchiveTreasury: 0x64B8f93fef2D2E749F5E88586753343F73246012
+// Redeployed 2026-02-09 by Arha via Safe multisig (AgentRegistry v2)
+ACTPKernel:      0x132B9eB321dBB57c828B083844287171BDC92d29
+EscrowVault:     0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99
+AgentRegistry:   0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8
+ArchiveTreasury: 0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2
 USDC:            0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913  // Official Circle USDC
 
 // EAS (Ethereum Attestation Service - Base native)
@@ -86,8 +84,8 @@ SchemaReg:       0x4200000000000000000000000000000000000020
 
 **Verification:** All contracts verified on Sourcify (perfect status)
 
-:::caution Mainnet Transaction Limit
-Mainnet contracts are limited to **$1,000 per transaction** until formal security audit is completed. For larger amounts, contact support@agirails.io.
+:::info Security Audit Complete
+Smart contracts passed security audit (Feb 2026). No transaction limits.
 :::
 
 ---
@@ -157,8 +155,8 @@ enum State {
 The core transaction coordinator implementing the ACTP protocol.
 
 **Contract Addresses:**
-- **Base Mainnet:** `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60`
-- **Base Sepolia:** `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962`
+- **Base Mainnet:** `0x132B9eB321dBB57c828B083844287171BDC92d29`
+- **Base Sepolia:** `0x469CBADbACFFE096270594F0a31f0EEC53753411`
 
 **Source Code:** [ACTPKernel.sol](https://github.com/agirails/agirails/blob/main/Protocol/actp-kernel/src/ACTPKernel.sol)
 
@@ -295,7 +293,7 @@ import { ethers } from 'ethers';
 
 const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
 const kernel = new ethers.Contract(
-  '0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962',
+  '0x469CBADbACFFE096270594F0a31f0EEC53753411',
   KERNEL_ABI,
   provider
 );
@@ -317,7 +315,7 @@ from web3 import Web3
 
 provider = Web3(Web3.HTTPProvider('https://sepolia.base.org'))
 kernel = provider.eth.contract(
-    address='0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962',
+    address='0x469CBADbACFFE096270594F0a31f0EEC53753411',
     abi=KERNEL_ABI
 )
 
@@ -336,7 +334,7 @@ print(f"Provider: {tx.provider}")
 **Example (Foundry cast):**
 
 ```bash
-cast call 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast call 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "getTransaction(bytes32)" 0x1234...5678 \
   --rpc-url https://sepolia.base.org
 ```
@@ -478,7 +476,7 @@ function createTransaction(
 import {IACTPKernel} from "./interfaces/IACTPKernel.sol";
 
 contract MyAgent {
-    IACTPKernel public kernel = IACTPKernel(0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962);
+    IACTPKernel public kernel = IACTPKernel(0x469CBADbACFFE096270594F0a31f0EEC53753411);
 
     function requestService(address provider, uint256 amountUSDC) external {
         bytes32 txId = kernel.createTransaction(
@@ -564,7 +562,7 @@ print(f"Transaction created: {transaction_id.hex()}")
 **Example (Foundry):**
 
 ```bash
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "createTransaction(address,address,uint256,uint256,uint256,bytes32)" \
   0xPROVIDER \
   0xREQUESTER \
@@ -640,8 +638,8 @@ function linkEscrow(
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MyAgent {
-    IACTPKernel public kernel = IACTPKernel(0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962);
-    address public escrowVault = 0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E;
+    IACTPKernel public kernel = IACTPKernel(0x469CBADbACFFE096270594F0a31f0EEC53753411);
+    address public escrowVault = 0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5;
     IERC20 public usdc = IERC20(0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb);
 
     function linkTransactionEscrow(bytes32 txId) external {
@@ -979,7 +977,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 **Example (Foundry):**
 
 ```bash
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "releaseEscrow(bytes32)" 0x1234...5678 \
   --private-key $PRIVATE_KEY \
   --rpc-url https://sepolia.base.org
@@ -1879,7 +1877,7 @@ Emitted when economic parameters are updated.
 
 Non-custodial escrow vault for holding USDC during transactions.
 
-**Contract Address (Base Sepolia):** `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E`
+**Contract Address (Base Sepolia):** `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5`
 
 **Source Code:** [EscrowVault.sol](https://github.com/agirails/agirails/blob/main/Protocol/actp-kernel/src/escrow/EscrowVault.sol)
 
@@ -2325,8 +2323,8 @@ kernel.pause(); // Only pauser/admin
 On-chain registry for AI agent profiles, service descriptors, and reputation.
 
 **Contract Addresses:**
-- **Base Mainnet:** `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`
-- **Base Sepolia:** `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`
+- **Base Mainnet:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
+- **Base Sepolia:** `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
 
 **Purpose:** Track agent endpoints, supported services, DID mappings, and reputation derived from ACTPKernel settlements.
 
@@ -2366,8 +2364,8 @@ On-chain registry for AI agent profiles, service descriptors, and reputation.
 Archive funding and anchoring contract for permanent Arweave storage.
 
 **Contract Addresses:**
-- **Base Mainnet:** `0x64B8f93fef2D2E749F5E88586753343F73246012`
-- **Base Sepolia:** `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c`
+- **Base Mainnet:** `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2`
+- **Base Sepolia:** `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2`
 
 **Fee Allocation:** Receives 0.1% of protocol fees from ACTPKernel settlements.
 
@@ -2805,12 +2803,12 @@ Using Foundry's `cast` for contract calls.
 
 ```bash
 # Get transaction details
-cast call 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast call 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "getTransaction(bytes32)" $TX_ID \
   --rpc-url https://sepolia.base.org
 
 # Create transaction
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "createTransaction(address,address,uint256,uint256,uint256,bytes32)" \
   $PROVIDER $REQUESTER 10000000 \
   $(date -d '+1 day' +%s) 172800 \
@@ -2821,34 +2819,34 @@ cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
 # Approve USDC
 cast send 0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb \
   "approve(address,uint256)" \
-  0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E 10000000 \
+  0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5 10000000 \
   --private-key $PRIVATE_KEY \
   --rpc-url https://sepolia.base.org
 
 # Link escrow
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "linkEscrow(bytes32,address,bytes32)" \
-  $TX_ID 0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E \
+  $TX_ID 0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5 \
   $(cast keccak "escrow-$TX_ID") \
   --private-key $PRIVATE_KEY \
   --rpc-url https://sepolia.base.org
 
 # Transition to DELIVERED (state 4)
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "transitionState(bytes32,uint8,bytes)" \
   $TX_ID 4 0x \
   --private-key $PROVIDER_KEY \
   --rpc-url https://sepolia.base.org
 
 # Settle
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "transitionState(bytes32,uint8,bytes)" \
   $TX_ID 5 0x \
   --private-key $PRIVATE_KEY \
   --rpc-url https://sepolia.base.org
 
 # Release escrow
-cast send 0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962 \
+cast send 0x469CBADbACFFE096270594F0a31f0EEC53753411 \
   "releaseEscrow(bytes32)" $TX_ID \
   --private-key $PRIVATE_KEY \
   --rpc-url https://sepolia.base.org
@@ -2864,7 +2862,7 @@ Using Basescan block explorer for contract verification.
 
 ```bash
 # 1. Find transaction on Basescan
-https://sepolia.basescan.org/address/0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962
+https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
 
 # 2. Click "Contract" tab → "Read Contract"
 # 3. Call getTransaction with your txId

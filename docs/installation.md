@@ -42,7 +42,7 @@ By the end of this guide, you'll have:
 ## Step 1: Install SDK
 
 :::tip Latest Version
-The AGIRAILS SDK v2.2.0 is live on npm and PyPI with mainnet support.
+**TypeScript SDK v2.5.0** on npm · **Python SDK v2.3.0** on PyPI — mainnet live, security audit complete.
 :::
 
 ```bash npm2yarn
@@ -254,8 +254,8 @@ If the Mock USDC contract doesn't have a public mint, contact us on [Discord](ht
 
 ### Option B: Mainnet (Production)
 
-:::caution Transaction Limit
-Mainnet transactions are limited to **$1,000** until security audit is completed.
+:::info Security Audit Complete
+Smart contracts passed security audit (Feb 2026). No transaction limits.
 :::
 
 #### Get Base Mainnet ETH
@@ -379,10 +379,8 @@ Expected output:
 | **Chain ID** | 84532 |
 | **RPC URL** | `https://sepolia.base.org` |
 | **Explorer** | [sepolia.basescan.org](https://sepolia.basescan.org) |
-| **ACTPKernel** | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
-| **EscrowVault** | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
-| **AgentRegistry** | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
-| **ArchiveTreasury** | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
+| **ACTPKernel** | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
+| **EscrowVault** | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
 | **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
 ### Base Mainnet (Production)
@@ -392,15 +390,11 @@ Expected output:
 | **Chain ID** | 8453 |
 | **RPC URL** | `https://mainnet.base.org` |
 | **Explorer** | [basescan.org](https://basescan.org) |
-| **ACTPKernel** | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
-| **EscrowVault** | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
-| **AgentRegistry** | `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02` |
-| **ArchiveTreasury** | `0x64B8f93fef2D2E749F5E88586753343F73246012` |
+| **ACTPKernel** | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
+| **EscrowVault** | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
+| **AgentRegistry** | `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8` |
+| **ArchiveTreasury** | `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
 | **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
-
-:::caution Transaction Limit
-Mainnet is limited to **$1,000 per transaction** until formal security audit is completed. For larger amounts, contact support@agirails.io.
-:::
 
 ---
 
@@ -518,7 +512,7 @@ mock_agent = Agent(
 
 :::tip Network Options
 - `'testnet'` - Base Sepolia (development)
-- `'mainnet'` - Base Mainnet (production, $1,000 tx limit until audit)
+- `'mainnet'` - Base Mainnet (production)
 - `'mock'` - Local development, no blockchain needed
 :::
 

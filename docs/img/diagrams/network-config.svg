@@ -15,10 +15,10 @@
   <text x="180" y="60" fill="#E5E7EB" font-family="monospace" font-size="7">sepolia.base.org</text>
 
   <text x="50" y="75" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">ACTPKernel:</text>
-  <text x="180" y="75" fill="#E5E7EB" font-family="monospace" font-size="6">0xD199...962</text>
+  <text x="180" y="75" fill="#E5E7EB" font-family="monospace" font-size="6">0x469C...411</text>
 
   <text x="50" y="90" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">EscrowVault:</text>
-  <text x="180" y="90" fill="#E5E7EB" font-family="monospace" font-size="6">0x62eE...38E</text>
+  <text x="180" y="90" fill="#E5E7EB" font-family="monospace" font-size="6">0x57f8...9E5</text>
 
   <text x="50" y="105" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="8">Mock USDC:</text>
   <text x="180" y="105" fill="#E5E7EB" font-family="monospace" font-size="6">0x444b...Ccb</text>
@@ -36,10 +36,10 @@
   <text x="470" y="60" fill="#E5E7EB" font-family="monospace" font-size="7">mainnet.base.org</text>
 
   <text x="340" y="75" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">ACTPKernel:</text>
-  <text x="470" y="75" fill="#E5E7EB" font-family="monospace" font-size="6">0xeaE4...c60</text>
+  <text x="470" y="75" fill="#E5E7EB" font-family="monospace" font-size="6">0x132B...d29</text>
 
   <text x="340" y="90" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">EscrowVault:</text>
-  <text x="470" y="90" fill="#E5E7EB" font-family="monospace" font-size="6">0xb7bC...02D</text>
+  <text x="470" y="90" fill="#E5E7EB" font-family="monospace" font-size="6">0x6aAF...b99</text>
 
   <text x="340" y="105" fill="#93C5FD" font-family="system-ui, -apple-system, sans-serif" font-size="8">USDC:</text>
   <text x="470" y="105" fill="#E5E7EB" font-family="monospace" font-size="6">0x8335...913</text>

@@ -210,33 +210,30 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 | Contract | Address |
 |----------|---------|
-| **ACTPKernel** | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
-| **EscrowVault** | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
-| **AgentRegistry** | `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02` |
-| **ArchiveTreasury** | `0x64B8f93fef2D2E749F5E88586753343F73246012` |
+| **ACTPKernel** | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
+| **EscrowVault** | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
+| **AgentRegistry** | `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8` |
+| **ArchiveTreasury** | `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
 | **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
 ### Base Sepolia (Testnet)
 
 | Contract | Address |
 |----------|---------|
-| **ACTPKernel** | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
-| **EscrowVault** | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
-| **AgentRegistry** | `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2` |
-| **ArchiveTreasury** | `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
+| **ACTPKernel** | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
+| **EscrowVault** | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
 | **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
 ---
 
 ## V1 Limitations
 
-:::caution Current Version Constraints
-AGIRAILS V1 is live on mainnet with known limitations that will be addressed in future versions:
+:::info Security Audit Complete
+Smart contracts passed security audit (Feb 2026). No transaction limits.
 :::
 
 | Limitation | Current State | Planned Resolution |
 |------------|---------------|-------------------|
-| **Transaction limit** | $1,000 max per transaction (unaudited contracts) | Post-audit: Remove limit |
 | **Attestation validation** | Contract accepts any `attestationUID` without on-chain verification. SDK performs validation. | V2: On-chain EAS schema validation |
 | **Dispute resolution** | Admin-only resolution. No decentralized arbitration. | V2: Kleros/UMA integration for trustless disputes |
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |

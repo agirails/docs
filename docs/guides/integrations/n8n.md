@@ -654,20 +654,20 @@ await usdc.mint(wallet.address, ethers.parseUnits('1000', 6));
 
 | Contract | Address |
 |----------|---------|
-| ACTPKernel | `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962` |
-| EscrowVault | `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E` |
+| ACTPKernel | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
+| EscrowVault | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
 | Mock USDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
 
 ### Base Mainnet (Production)
 
 | Contract | Address |
 |----------|---------|
-| ACTPKernel | `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60` |
-| EscrowVault | `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D` |
+| ACTPKernel | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
+| EscrowVault | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
 | USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 
-:::caution Mainnet Transaction Limit
-Mainnet is limited to **$1,000 per transaction** until formal audit.
+:::info Security Audit
+Smart contracts have completed a formal security audit (February 2026) with no findings. See [Developer Responsibilities](/developer-responsibilities) for production best practices.
 :::
 
 ---

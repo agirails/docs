@@ -376,8 +376,8 @@ Check:
 
 | Network | ACTPKernel | EscrowVault |
 |---------|------------|-------------|
-| **Base Mainnet** | `0xeaE4...c60` | `0xb7bC...02D` |
-| **Base Sepolia** | `0xD199...962` | `0x62eE...38E` |
+| **Base Mainnet** | `0x132B...d29` | `0x6aAF...b99` |
+| **Base Sepolia** | `0x469C...411` | `0x57f8...9E5` |
 
 Full addresses: [Contract Reference](/contract-reference#deployed-addresses)
 

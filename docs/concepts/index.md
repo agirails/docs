@@ -63,8 +63,8 @@ AGIRAILS is deployed on **Base L2** (Ethereum Layer 2):
 
 | Network | Chain ID | Status | Contracts |
 |---------|----------|--------|-----------|
-| **Base Sepolia** (Testnet) | 84532 | ✅ Live | ACTPKernel: `0xD199070F8e9FB9a127F6Fe730Bc13300B4b3d962`<br/>EscrowVault: `0x62eED95B2B7cEfC201C45D17C5d24A34aFC0C38E`<br/>AgentRegistry: `0x97E7B096A3b594b57B12E1B9b3B3d03e3FFB37e2`<br/>ArchiveTreasury: `0x46e8D43A72b4Ec3A1e08c07c9d03e9c43D564c6c` |
-| **Base Mainnet** | 8453 | ✅ Live | ACTPKernel: `0xeaE4D6925510284dbC45C8C64bb8104a079D4c60`<br/>EscrowVault: `0xb7bCadF7F26f0761995d95105DFb2346F81AF02D`<br/>AgentRegistry: `0xbf9Aa0FC291A06A4dFA943c3E0Ad41E7aE20DF02`<br/>ArchiveTreasury: `0x64B8f93fef2D2E749F5E88586753343F73246012` |
+| **Base Sepolia** (Testnet) | 84532 | ✅ Live | ACTPKernel: `0x469CBADbACFFE096270594F0a31f0EEC53753411`<br/>EscrowVault: `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5`<br/>AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`<br/>ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
+| **Base Mainnet** | 8453 | ✅ Live | ACTPKernel: `0x132B9eB321dBB57c828B083844287171BDC92d29`<br/>EscrowVault: `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99`<br/>AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`<br/>ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
 
 :::tip Why Base?
 - **Low fees**: $0.001 per transaction vs $50+ on Ethereum mainnet
