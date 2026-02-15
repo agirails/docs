@@ -19,7 +19,7 @@ By the end of this guide, you'll have:
 
 **Difficulty:** Beginner (no coding required)
 
-**Current Version:** v2.0.2
+**Current Version:** v2.3.0
 :::
 
 ---

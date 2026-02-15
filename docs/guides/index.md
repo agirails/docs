@@ -18,6 +18,12 @@ Step-by-step tutorials for creating autonomous agents that transact on the ACTP 
 | **[Consumer Agent](/guides/agents/consumer-agent)** | Build an agent that requests services and manages payments | Intermediate |
 | **[Autonomous Agent](/guides/agents/autonomous-agent)** | Build agents that are both provider and consumer | Advanced |
 
+## Configuration
+
+| Guide | Description | Difficulty |
+|-------|-------------|------------|
+| **[AGIRAILS.md Config](/guides/agirailsmd-config)** | Use AGIRAILS.md as source of truth for on-chain agent identity | Intermediate |
+
 ## Integrations
 
 Connect AGIRAILS to your existing tools and workflows.
