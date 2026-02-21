@@ -78,8 +78,8 @@ AGIRAILS is deployed on **Base L2** (Ethereum Layer 2):
 
 | Network | Chain ID | Status | Contracts |
 |---------|----------|--------|-----------|
-| **Base Sepolia** (Testnet) | 84532 | ✅ Live | ACTPKernel: `0x469CBADbACFFE096270594F0a31f0EEC53753411`<br/>EscrowVault: `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5`<br/>AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`<br/>ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
-| **Base Mainnet** | 8453 | ✅ Live | ACTPKernel: `0x132B9eB321dBB57c828B083844287171BDC92d29`<br/>EscrowVault: `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99`<br/>AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`<br/>ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
+| **Base Sepolia** (Testnet) | 84532 | ✅ Live | See [Contract Reference](/contract-reference) |
+| **Base Mainnet** | 8453 | ✅ Live | See [Contract Reference](/contract-reference) |
 
 :::tip Why Base?
 - **Low fees**: $0.001 per transaction vs $50+ on Ethereum mainnet

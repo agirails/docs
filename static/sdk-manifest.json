@@ -1,0 +1,940 @@
+{
+  "$schema": "https://agirails.io/schemas/sdk-manifest-v1.json",
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-02-21",
+  "package": {
+    "name": "@agirails/sdk",
+    "version": "2.7.0",
+    "description": "TypeScript SDK for AGIRAILS ACTP protocol — escrow-backed payments for AI agents",
+    "install": {
+      "npm": "npm install @agirails/sdk",
+      "yarn": "yarn add @agirails/sdk",
+      "pnpm": "pnpm add @agirails/sdk"
+    },
+    "pythonPackage": {
+      "name": "agirails",
+      "install": "pip install agirails"
+    },
+    "requirements": {
+      "node": ">=16.0.0",
+      "typescript": ">=5.0",
+      "python": ">=3.9"
+    }
+  },
+  "tiers": {
+    "basic": {
+      "description": "Simplest integration — two functions for prototyping and simple payments",
+      "imports": {
+        "typescript": "import { provide, request, serviceDirectory } from '@agirails/sdk';",
+        "python": "from agirails import provide, request, service_directory"
+      },
+      "functions": [
+        {
+          "name": "provide",
+          "description": "Register a service and start earning USDC",
+          "signature": {
+            "typescript": "function provide(service: string, handler: JobHandler, options?: ProvideOptions): Provider",
+            "python": "def provide(service: str, handler: Callable[[Job], Any], options: ProvideOptions = None) -> Provider"
+          },
+          "parameters": [
+            { "name": "service", "type": "string", "required": true, "description": "Service name (e.g., 'echo', 'translation')" },
+            { "name": "handler", "type": "JobHandler", "required": true, "description": "Async function to process incoming jobs. Receives Job, returns any." },
+            { "name": "options", "type": "ProvideOptions", "required": false, "description": "Configuration options" }
+          ],
+          "returns": {
+            "type": "Provider",
+            "properties": ["status", "address", "balance", "stats", "pause()", "resume()", "stop()", "on(event, handler)"]
+          },
+          "events": ["job:received", "job:accepted", "job:completed", "job:failed", "payment:received"]
+        },
+        {
+          "name": "request",
+          "description": "Request a service and pay with USDC",
+          "async": true,
+          "signature": {
+            "typescript": "async function request(service: string, options: RequestOptions): Promise<RequestResult>",
+            "python": "async def request(service: str, options: RequestOptions) -> RequestResult"
+          },
+          "parameters": [
+            { "name": "service", "type": "string", "required": true, "description": "Service name to request" },
+            { "name": "options", "type": "RequestOptions", "required": true, "description": "Request configuration" }
+          ],
+          "returns": {
+            "type": "RequestResult",
+            "properties": ["result", "transaction.id", "transaction.provider", "transaction.amount", "transaction.fee", "transaction.duration", "transaction.proof"]
+          },
+          "errors": ["NoProviderFoundError", "TimeoutError", "ProviderRejectedError", "DeliveryFailedError"]
+        }
+      ],
+      "objects": [
+        {
+          "name": "serviceDirectory",
+          "pythonName": "service_directory",
+          "description": "In-memory registry of available service providers (local to process)",
+          "methods": [
+            { "name": "findProviders", "pythonName": "find_providers", "signature": "(service: string) => string[]", "description": "Find provider addresses for a service" },
+            { "name": "listServices", "pythonName": "list_services", "signature": "() => string[]", "description": "Get all registered service names" },
+            { "name": "register", "signature": "(service: string, address: string) => void", "description": "Manually register a provider" },
+            { "name": "unregister", "signature": "(service: string, address: string) => void", "description": "Unregister a provider" }
+          ]
+        }
+      ]
+    },
+    "standard": {
+      "description": "Production-ready agent patterns with lifecycle management, pricing, and events",
+      "imports": {
+        "typescript": "import { Agent } from '@agirails/sdk';",
+        "python": "from agirails import Agent"
+      },
+      "classes": [
+        {
+          "name": "Agent",
+          "description": "Core abstraction for building production agents with lifecycle management",
+          "constructor": {
+            "typescript": "new Agent(config: AgentConfig)",
+            "python": "Agent(config)"
+          },
+          "constructorParameters": [
+            { "name": "name", "type": "string", "required": true, "description": "Agent name" },
+            { "name": "description", "type": "string", "required": false, "description": "Human-readable description" },
+            { "name": "network", "type": "'mock' | 'testnet' | 'mainnet'", "required": false, "default": "mock", "description": "Network to use" },
+            { "name": "wallet", "type": "WalletOption", "required": false, "default": "auto", "description": "Wallet configuration" },
+            { "name": "rpcUrl", "type": "string", "required": false, "description": "Custom RPC URL" },
+            { "name": "stateDirectory", "type": "string", "required": false, "description": "State persistence path (mock only)" },
+            { "name": "behavior", "type": "BehaviorConfig", "required": false, "description": "Behavior configuration" }
+          ],
+          "properties": [
+            { "name": "name", "type": "string", "description": "Agent name" },
+            { "name": "address", "type": "string", "description": "Wallet address" },
+            { "name": "status", "type": "AgentStatus", "description": "Current lifecycle status" },
+            { "name": "balance", "type": "AgentBalance", "description": "USDC and ETH balances" },
+            { "name": "stats", "type": "AgentStats", "description": "Performance statistics" },
+            { "name": "services", "type": "string[]", "description": "Registered service names" }
+          ],
+          "methods": [
+            {
+              "name": "start",
+              "async": true,
+              "signature": {
+                "typescript": "async start(): Promise<void>",
+                "python": "async start() -> None"
+              },
+              "description": "Start the agent and begin accepting jobs"
+            },
+            {
+              "name": "pause",
+              "signature": {
+                "typescript": "pause(): void",
+                "python": "pause() -> None"
+              },
+              "description": "Pause accepting new jobs (existing jobs continue)"
+            },
+            {
+              "name": "resume",
+              "signature": {
+                "typescript": "resume(): void",
+                "python": "resume() -> None"
+              },
+              "description": "Resume accepting jobs after pause"
+            },
+            {
+              "name": "stop",
+              "async": true,
+              "signature": {
+                "typescript": "async stop(): Promise<void>",
+                "python": "async stop() -> None"
+              },
+              "description": "Gracefully stop the agent, waiting for in-flight jobs"
+            },
+            {
+              "name": "provide",
+              "signature": {
+                "typescript": "provide(config: ServiceConfig | string, handler: JobHandler): void",
+                "python": "provide(config: Union[ServiceConfig, str], handler: Callable[[Job, JobContext], Any]) -> None"
+              },
+              "description": "Register a service with the agent",
+              "parameters": [
+                { "name": "config", "type": "ServiceConfig | string", "required": true, "description": "Service config object or service name string" },
+                { "name": "handler", "type": "JobHandler", "required": true, "description": "Function to handle incoming jobs. Receives (job, context)." }
+              ]
+            },
+            {
+              "name": "on",
+              "signature": {
+                "typescript": "on(event: string, handler: Function): void",
+                "python": "on(event: str, handler: Callable) -> None"
+              },
+              "description": "Subscribe to agent events"
+            }
+          ],
+          "events": [
+            "started", "stopped", "paused", "resumed",
+            "job:received", "job:accepted", "job:rejected", "job:started",
+            "job:progress", "job:completed", "job:failed",
+            "payment:received", "error"
+          ]
+        }
+      ]
+    },
+    "advanced": {
+      "description": "Full protocol control via ACTPClient — direct transaction lifecycle, escrow, and attestation management",
+      "imports": {
+        "typescript": "import { ACTPClient, State } from '@agirails/sdk';",
+        "python": "from agirails import ACTPClient, State"
+      },
+      "classes": [
+        {
+          "name": "ACTPClient",
+          "description": "Main entry point for all Advanced API operations. Foundation that Basic and Standard APIs are built upon.",
+          "factory": {
+            "typescript": "static async create(config: ACTPClientConfig): Promise<ACTPClient>",
+            "python": "await ACTPClient.create(config) -> ACTPClient"
+          },
+          "factoryParameters": [
+            { "name": "mode", "type": "'mock' | 'testnet' | 'mainnet'", "required": true, "description": "Operating mode" },
+            { "name": "requesterAddress", "type": "string", "required": true, "description": "Your wallet address (0x-prefixed)" },
+            { "name": "privateKey", "type": "string", "required": false, "description": "Signing key (required for testnet/mainnet)" },
+            { "name": "stateDirectory", "type": "string", "required": false, "description": "State persistence path (mock only)" },
+            { "name": "rpcUrl", "type": "string", "required": false, "description": "Custom RPC URL" },
+            { "name": "eas", "type": "EASConfig", "required": false, "description": "Attestation configuration" }
+          ],
+          "adapters": [
+            {
+              "name": "basic",
+              "type": "BasicAdapter",
+              "description": "High-level, opinionated API for simple use cases",
+              "methods": [
+                {
+                  "name": "pay",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async pay(options: { to: string, amount: string, deadline?: string }): Promise<PayResult>",
+                    "python": "async pay(options: dict) -> PayResult"
+                  },
+                  "description": "Create and fund a payment in one call"
+                },
+                {
+                  "name": "checkStatus",
+                  "pythonName": "check_status",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async checkStatus(txId: string): Promise<StatusResult>",
+                    "python": "async check_status(tx_id: str) -> StatusResult"
+                  },
+                  "description": "Check transaction status with action hints (canComplete, canDispute)"
+                }
+              ]
+            },
+            {
+              "name": "standard",
+              "type": "StandardAdapter",
+              "description": "Balanced API with explicit lifecycle control",
+              "methods": [
+                {
+                  "name": "createTransaction",
+                  "pythonName": "create_transaction",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async createTransaction(options: { provider: string, amount: string, deadline?: string }): Promise<string>",
+                    "python": "async create_transaction(options: dict) -> str"
+                  },
+                  "description": "Create a new transaction (INITIATED state). Returns txId.",
+                  "returns": "string (txId, bytes32)"
+                },
+                {
+                  "name": "linkEscrow",
+                  "pythonName": "link_escrow",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async linkEscrow(txId: string): Promise<string>",
+                    "python": "async link_escrow(tx_id: str) -> str"
+                  },
+                  "description": "Link escrow to transaction (auto-transitions to COMMITTED). Returns escrowId."
+                },
+                {
+                  "name": "transitionState",
+                  "pythonName": "transition_state",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async transitionState(txId: string, state: State): Promise<void>",
+                    "python": "async transition_state(tx_id: str, state: State) -> None"
+                  },
+                  "description": "Transition transaction to a new state"
+                },
+                {
+                  "name": "releaseEscrow",
+                  "pythonName": "release_escrow",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async releaseEscrow(escrowId: string, options: { txId: string, attestationUID: string }): Promise<void>",
+                    "python": "async release_escrow(escrow_id: str, options: dict) -> None"
+                  },
+                  "description": "Release escrowed funds to the provider (after dispute window)"
+                },
+                {
+                  "name": "getTransaction",
+                  "pythonName": "get_transaction",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async getTransaction(txId: string): Promise<Transaction | null>",
+                    "python": "async get_transaction(tx_id: str) -> Transaction | None"
+                  },
+                  "description": "Get transaction details by ID"
+                }
+              ]
+            },
+            {
+              "name": "advanced",
+              "type": "IACTPRuntime",
+              "description": "Direct protocol access with protocol-level types (wei strings, unix timestamps)",
+              "methods": [
+                {
+                  "name": "createTransaction",
+                  "pythonName": "create_transaction",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async createTransaction(options: { provider: string, requester: string, amount: bigint, deadline: number, disputeWindow: number }): Promise<string>",
+                    "python": "async create_transaction(options: dict) -> str"
+                  },
+                  "description": "Create transaction with protocol-level types. Amount in wei (6 decimals for USDC), deadline as unix timestamp.",
+                  "parameters": [
+                    { "name": "provider", "type": "string", "description": "Provider address" },
+                    { "name": "requester", "type": "string", "description": "Requester address" },
+                    { "name": "amount", "type": "bigint (TS) / int (PY)", "description": "Amount in wei (USDC has 6 decimals, so 1 USDC = 1000000)" },
+                    { "name": "deadline", "type": "number", "description": "Unix timestamp in seconds" },
+                    { "name": "disputeWindow", "type": "number", "description": "Dispute window in seconds (default: 172800 = 48h)" }
+                  ]
+                },
+                {
+                  "name": "getTransaction",
+                  "pythonName": "get_transaction",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async getTransaction(txId: string): Promise<Transaction | null>",
+                    "python": "async get_transaction(tx_id: str) -> Transaction | None"
+                  },
+                  "description": "Get transaction by ID"
+                },
+                {
+                  "name": "linkEscrow",
+                  "pythonName": "link_escrow",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async linkEscrow(txId: string): Promise<void>",
+                    "python": "async link_escrow(tx_id: str) -> None"
+                  },
+                  "description": "Link escrow (locks funds, auto-transitions to COMMITTED)"
+                },
+                {
+                  "name": "transitionState",
+                  "pythonName": "transition_state",
+                  "async": true,
+                  "signature": {
+                    "typescript": "async transitionState(txId: string, state: State, proof: string): Promise<void>",
+                    "python": "async transition_state(tx_id: str, state: State, proof: bytes) -> None"
+                  },
+                  "description": "Transition state with proof data. Use '0x' (TS) or b'' (PY) for empty proof."
+                }
+              ],
+              "mockOnlyMethods": [
+                {
+                  "name": "time.advance",
+                  "signature": {
+                    "typescript": "client.advanced.time.advance(seconds: number): void",
+                    "python": "client.advanced.time.advance(seconds: int) -> None"
+                  },
+                  "description": "Advance mock blockchain time by seconds"
+                }
+              ]
+            }
+          ],
+          "helperMethods": [
+            {
+              "name": "getAddress",
+              "pythonName": "get_address",
+              "signature": {
+                "typescript": "getAddress(): string",
+                "python": "get_address() -> str"
+              },
+              "description": "Get the client's wallet address"
+            },
+            {
+              "name": "getBalance",
+              "pythonName": "get_balance",
+              "async": true,
+              "signature": {
+                "typescript": "async getBalance(address: string): Promise<string>",
+                "python": "async get_balance(address: str) -> str"
+              },
+              "description": "Get USDC balance in wei (6 decimals)"
+            },
+            {
+              "name": "mintTokens",
+              "pythonName": "mint_tokens",
+              "async": true,
+              "mockOnly": true,
+              "signature": {
+                "typescript": "async mintTokens(address: string, amount: string): Promise<void>",
+                "python": "async mint_tokens(address: str, amount: str) -> None"
+              },
+              "description": "Mint test USDC tokens (mock mode only). Amount in wei."
+            },
+            {
+              "name": "reset",
+              "async": true,
+              "mockOnly": true,
+              "signature": {
+                "typescript": "async reset(): Promise<void>",
+                "python": "async reset() -> None"
+              },
+              "description": "Reset mock state to initial values (mock mode only)"
+            }
+          ]
+        }
+      ],
+      "modules": [
+        { "name": "Kernel", "description": "Transaction lifecycle" },
+        { "name": "Escrow", "description": "Fund management" },
+        { "name": "Events", "description": "Real-time monitoring" },
+        { "name": "EAS", "description": "Attestations (Ethereum Attestation Service)" },
+        { "name": "Quote", "description": "Price negotiation" },
+        { "name": "ProofGenerator", "description": "Delivery proofs" },
+        { "name": "MessageSigner", "description": "EIP-712 signing" }
+      ]
+    }
+  },
+  "registry": {
+    "description": "Agent identity and service discovery",
+    "imports": {
+      "typescript": "import { AgentRegistry, DIDManager, DIDResolver } from '@agirails/sdk';",
+      "python": "from agirails import AgentRegistry, DIDManager, DIDResolver"
+    },
+    "classes": [
+      {
+        "name": "AgentRegistry",
+        "constructor": {
+          "typescript": "new AgentRegistry(registryAddress: string, signer: Signer)",
+          "python": "AgentRegistry(registry_address: str, signer)"
+        },
+        "methods": [
+          {
+            "name": "register",
+            "async": true,
+            "description": "Register an agent with services",
+            "parameters": [
+              { "name": "services", "type": "string[]", "required": true },
+              { "name": "metadata", "type": "AgentMetadata", "required": false }
+            ]
+          },
+          {
+            "name": "queryAgentsByService",
+            "pythonName": "query_agents_by_service",
+            "async": true,
+            "description": "Find agents offering a specific service. Max 1000 agents (use off-chain indexer for larger registries).",
+            "parameters": [
+              { "name": "service", "type": "string", "required": true },
+              { "name": "limit", "type": "number", "required": false, "default": 10 }
+            ],
+            "returns": "AgentInfo[]"
+          },
+          {
+            "name": "getAgent",
+            "pythonName": "get_agent",
+            "async": true,
+            "description": "Get agent details by address",
+            "parameters": [
+              { "name": "address", "type": "string", "required": true }
+            ],
+            "returns": "AgentInfo | null"
+          },
+          {
+            "name": "updateMetadata",
+            "pythonName": "update_metadata",
+            "async": true,
+            "description": "Update agent metadata"
+          },
+          {
+            "name": "deactivate",
+            "async": true,
+            "description": "Deactivate agent (still on-chain, but not discoverable)"
+          }
+        ]
+      },
+      {
+        "name": "DIDManager",
+        "constructor": {
+          "typescript": "new DIDManager(chainId: number)",
+          "python": "DIDManager(chain_id: int)"
+        },
+        "didFormat": "did:ethr:<chainId>:<address>",
+        "methods": [
+          {
+            "name": "create",
+            "description": "Create a DID from an Ethereum address",
+            "parameters": [{ "name": "address", "type": "string", "required": true }],
+            "returns": "string (DID)"
+          },
+          {
+            "name": "parse",
+            "description": "Parse a DID string into components",
+            "parameters": [{ "name": "did", "type": "string", "required": true }],
+            "returns": "{ method: string, chainId: number, address: string }"
+          },
+          {
+            "name": "getAddress",
+            "pythonName": "get_address",
+            "description": "Extract address from DID",
+            "parameters": [{ "name": "did", "type": "string", "required": true }],
+            "returns": "string (address)"
+          }
+        ]
+      },
+      {
+        "name": "DIDResolver",
+        "constructor": {
+          "typescript": "new DIDResolver(provider: Provider)",
+          "python": "DIDResolver(provider)"
+        },
+        "methods": [
+          {
+            "name": "resolve",
+            "async": true,
+            "description": "Resolve DID to document",
+            "parameters": [{ "name": "did", "type": "string", "required": true }],
+            "returns": "DIDDocument"
+          },
+          {
+            "name": "resolveAddress",
+            "pythonName": "resolve_address",
+            "async": true,
+            "description": "Quick address lookup from DID",
+            "parameters": [{ "name": "did", "type": "string", "required": true }],
+            "returns": "string (address)"
+          }
+        ]
+      }
+    ]
+  },
+  "types": {
+    "State": {
+      "kind": "enum",
+      "description": "ACTP transaction states (8-state machine)",
+      "values": [
+        { "name": "INITIATED", "terminal": false, "description": "Created, no escrow" },
+        { "name": "QUOTED", "terminal": false, "description": "Provider quote received (optional)" },
+        { "name": "COMMITTED", "terminal": false, "description": "Escrow linked, funds locked" },
+        { "name": "IN_PROGRESS", "terminal": false, "description": "Provider working (optional)" },
+        { "name": "DELIVERED", "terminal": false, "description": "Work delivered with proof" },
+        { "name": "SETTLED", "terminal": true, "description": "Payment released to provider" },
+        { "name": "DISPUTED", "terminal": false, "description": "Under dispute resolution" },
+        { "name": "CANCELLED", "terminal": true, "description": "Cancelled, funds returned" }
+      ],
+      "transitions": {
+        "INITIATED": ["QUOTED", "COMMITTED", "CANCELLED"],
+        "QUOTED": ["COMMITTED", "CANCELLED"],
+        "COMMITTED": ["IN_PROGRESS", "DELIVERED", "CANCELLED"],
+        "IN_PROGRESS": ["DELIVERED", "CANCELLED"],
+        "DELIVERED": ["SETTLED", "DISPUTED"],
+        "DISPUTED": ["SETTLED", "CANCELLED"]
+      }
+    },
+    "RequestOptions": {
+      "kind": "interface",
+      "description": "Options for the basic request() function",
+      "fields": [
+        { "name": "input", "type": "any", "required": true, "description": "Input data for the service" },
+        { "name": "budget", "type": "number", "required": true, "description": "Maximum USDC to spend" },
+        { "name": "provider", "type": "string | 'any' | 'best' | 'cheapest'", "required": false, "description": "Provider selection strategy" },
+        { "name": "network", "type": "'mock' | 'testnet' | 'mainnet'", "required": false, "default": "mock" },
+        { "name": "wallet", "type": "'auto' | string | { privateKey: string }", "required": false, "default": "auto" },
+        { "name": "timeout", "type": "number", "required": false, "default": 300000, "description": "Timeout in ms" },
+        { "name": "deadline", "type": "number | Date", "required": false, "description": "Absolute deadline" },
+        { "name": "disputeWindow", "type": "number", "required": false, "default": 172800, "description": "Dispute window in seconds (48h)" },
+        { "name": "onProgress", "type": "(status: ProgressStatus) => void", "required": false },
+        { "name": "rpcUrl", "type": "string", "required": false }
+      ]
+    },
+    "ProvideOptions": {
+      "kind": "interface",
+      "description": "Options for the basic provide() function",
+      "fields": [
+        { "name": "network", "type": "'mock' | 'testnet' | 'mainnet'", "required": false, "default": "mock" },
+        { "name": "wallet", "type": "'auto' | string | { privateKey: string }", "required": false, "default": "auto" },
+        { "name": "filter", "type": "ServiceFilter", "required": false },
+        { "name": "autoAccept", "type": "boolean", "required": false, "default": true },
+        { "name": "stateDirectory", "type": "string", "required": false, "description": "State persistence path (mock only)" },
+        { "name": "rpcUrl", "type": "string", "required": false }
+      ]
+    },
+    "ServiceFilter": {
+      "kind": "interface",
+      "fields": [
+        { "name": "minBudget", "type": "number", "required": false, "description": "Minimum job budget in USDC" },
+        { "name": "maxBudget", "type": "number", "required": false, "description": "Maximum job budget in USDC" },
+        { "name": "custom", "type": "(job: Job) => boolean", "required": false, "description": "Custom filter function" }
+      ]
+    },
+    "Job": {
+      "kind": "interface",
+      "description": "Job object passed to handlers",
+      "fields": [
+        { "name": "id", "type": "string", "description": "Unique job ID" },
+        { "name": "txId", "type": "string", "description": "ACTP transaction ID" },
+        { "name": "service", "type": "string", "description": "Service name" },
+        { "name": "input", "type": "any", "description": "Input data from requester" },
+        { "name": "budget", "type": "number", "description": "Budget in USDC" },
+        { "name": "requester", "type": "string", "description": "Requester's address" },
+        { "name": "deadline", "type": "number", "description": "Deadline timestamp" },
+        { "name": "metadata", "type": "object", "description": "Additional metadata" }
+      ]
+    },
+    "JobContext": {
+      "kind": "interface",
+      "description": "Context utilities passed as second argument to Standard API handlers",
+      "fields": [
+        { "name": "job", "type": "Job", "description": "The job object" },
+        { "name": "progress", "type": "(percent: number, message?: string) => void", "description": "Report progress" },
+        { "name": "log", "type": "(message: string) => void", "description": "Log a message" },
+        { "name": "abort", "type": "(reason: string) => void", "description": "Abort the job" }
+      ]
+    },
+    "AgentConfig": {
+      "kind": "interface",
+      "description": "Configuration for the Agent class (Standard API)",
+      "fields": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "description", "type": "string", "required": false },
+        { "name": "network", "type": "'mock' | 'testnet' | 'mainnet'", "required": false, "default": "mock" },
+        { "name": "wallet", "type": "WalletOption", "required": false },
+        { "name": "rpcUrl", "type": "string", "required": false },
+        { "name": "stateDirectory", "type": "string", "required": false },
+        { "name": "behavior", "type": "BehaviorConfig", "required": false }
+      ]
+    },
+    "BehaviorConfig": {
+      "kind": "interface",
+      "fields": [
+        { "name": "autoAccept", "type": "boolean | (job: Job) => boolean", "required": false, "default": true },
+        { "name": "concurrency", "type": "number", "required": false, "default": 10 },
+        { "name": "retry.attempts", "type": "number", "required": false, "default": 3 },
+        { "name": "retry.delay", "type": "number", "required": false, "default": 1000, "description": "Retry delay in ms" },
+        { "name": "retry.backoff", "type": "'linear' | 'exponential'", "required": false, "default": "exponential" }
+      ]
+    },
+    "ServiceConfig": {
+      "kind": "interface",
+      "description": "Configuration for agent.provide() (Standard API)",
+      "fields": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "description", "type": "string", "required": false },
+        { "name": "pricing", "type": "PricingStrategy", "required": false },
+        { "name": "capabilities", "type": "string[]", "required": false },
+        { "name": "filter", "type": "ServiceFilter | (job: Job) => boolean", "required": false },
+        { "name": "timeout", "type": "number", "required": false, "description": "Per-job timeout in ms" }
+      ]
+    },
+    "PricingStrategy": {
+      "kind": "interface",
+      "description": "Cost + Margin pricing model",
+      "fields": [
+        { "name": "cost", "type": "ServiceCost", "required": true },
+        { "name": "margin", "type": "number", "required": true, "description": "Profit margin (0.0 - 1.0)" },
+        { "name": "minimum", "type": "number", "required": false, "default": 0.05, "description": "Minimum price in USDC" },
+        { "name": "maximum", "type": "number", "required": false, "default": 10000, "description": "Maximum price in USDC" },
+        { "name": "behavior", "type": "PricingBehavior", "required": false }
+      ]
+    },
+    "ServiceCost": {
+      "kind": "interface",
+      "fields": [
+        { "name": "base", "type": "number", "required": false, "description": "Fixed cost per job in USDC" },
+        { "name": "perUnit", "type": "{ unit: string, rate: number }", "required": false, "description": "Per-unit cost (unit: word|token|image|minute)" },
+        { "name": "api", "type": "string", "required": false, "description": "Auto-calculate from known API pricing (e.g., 'openai:gpt-4-turbo')" }
+      ]
+    },
+    "PricingBehavior": {
+      "kind": "interface",
+      "fields": [
+        { "name": "belowPrice", "type": "'reject' | 'counter-offer'", "required": false, "default": "counter-offer" },
+        { "name": "belowCost", "type": "'reject' | 'counter-offer'", "required": false, "default": "reject" },
+        { "name": "maxNegotiationRounds", "type": "number", "required": false, "default": 3 }
+      ]
+    },
+    "WalletOption": {
+      "kind": "union",
+      "description": "Wallet configuration",
+      "variants": [
+        { "value": "'auto'", "description": "Auto-generate wallet with gas-free Smart Wallet (default)" },
+        { "value": "string", "description": "Address string (for read-only)" },
+        { "value": "{ privateKey: string }", "description": "Object with private key (0x-prefixed)" }
+      ]
+    },
+    "AgentStatus": {
+      "kind": "enum",
+      "values": ["idle", "starting", "running", "paused", "stopping", "stopped"]
+    },
+    "AgentBalance": {
+      "kind": "interface",
+      "fields": [
+        { "name": "usdc", "type": "number", "description": "USDC balance" },
+        { "name": "eth", "type": "number", "description": "ETH balance (for gas)" }
+      ]
+    },
+    "AgentStats": {
+      "kind": "interface",
+      "fields": [
+        { "name": "jobsReceived", "type": "number" },
+        { "name": "jobsCompleted", "type": "number" },
+        { "name": "jobsFailed", "type": "number" },
+        { "name": "jobsRejected", "type": "number" },
+        { "name": "totalEarned", "type": "number", "description": "Total USDC earned" },
+        { "name": "averageJobTime", "type": "number", "description": "Average job duration in ms" },
+        { "name": "uptime", "type": "number", "description": "Agent uptime in ms" }
+      ]
+    },
+    "AgentMetadata": {
+      "kind": "interface",
+      "description": "Recommended metadata structure for AgentRegistry",
+      "fields": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "description", "type": "string", "required": true },
+        { "name": "endpoint", "type": "string", "required": false },
+        { "name": "version", "type": "string", "required": false },
+        { "name": "pricing", "type": "{ model: 'fixed' | 'dynamic', basePrice?: string, currency: 'USDC' }", "required": false },
+        { "name": "capabilities", "type": "string[]", "required": false },
+        { "name": "languages", "type": "string[]", "required": false },
+        { "name": "documentation", "type": "string", "required": false }
+      ]
+    },
+    "RequestResult": {
+      "kind": "interface",
+      "description": "Result returned by request()",
+      "fields": [
+        { "name": "result", "type": "any", "description": "Service result from provider" },
+        { "name": "transaction.id", "type": "string", "description": "Transaction ID (bytes32)" },
+        { "name": "transaction.provider", "type": "string", "description": "Provider address" },
+        { "name": "transaction.amount", "type": "number", "description": "Amount paid in USDC" },
+        { "name": "transaction.fee", "type": "number", "description": "Platform fee (1%)" },
+        { "name": "transaction.duration", "type": "number", "description": "Total time in ms" },
+        { "name": "transaction.proof", "type": "string", "description": "Delivery proof JSON" }
+      ]
+    }
+  },
+  "errors": {
+    "baseClass": "ACTPError",
+    "baseProperties": [
+      { "name": "name", "type": "string", "description": "Error class name" },
+      { "name": "message", "type": "string", "description": "Human-readable message" },
+      { "name": "code", "type": "string", "description": "Machine-readable code" },
+      { "name": "txHash", "type": "string?", "description": "Blockchain transaction hash" },
+      { "name": "details", "type": "any?", "description": "Additional context" }
+    ],
+    "errors": [
+      { "class": "InsufficientFundsError", "code": "INSUFFICIENT_FUNDS", "details": ["required", "available"] },
+      { "class": "TransactionNotFoundError", "code": "TRANSACTION_NOT_FOUND", "details": ["txId"] },
+      { "class": "DeadlineExpiredError", "code": "DEADLINE_EXPIRED", "details": ["txId", "deadline"] },
+      { "class": "InvalidStateTransitionError", "code": "INVALID_STATE_TRANSITION", "details": ["from", "to", "validTransitions"] },
+      { "class": "SignatureVerificationError", "code": "SIGNATURE_VERIFICATION_FAILED", "details": ["expectedSigner", "recoveredSigner"] },
+      { "class": "TransactionRevertedError", "code": "TRANSACTION_REVERTED", "details": ["reason"] },
+      { "class": "NetworkError", "code": "NETWORK_ERROR", "details": ["network"] },
+      { "class": "ValidationError", "code": "VALIDATION_ERROR", "details": ["field"] },
+      { "class": "InvalidAddressError", "code": "VALIDATION_ERROR", "parent": "ValidationError" },
+      { "class": "InvalidAmountError", "code": "VALIDATION_ERROR", "parent": "ValidationError" },
+      { "class": "InvalidCIDError", "code": "VALIDATION_ERROR", "parent": "ValidationError" },
+      { "class": "StorageError", "code": "STORAGE_ERROR", "details": ["operation"] },
+      { "class": "QueryCapExceededError", "code": "QUERY_CAP_EXCEEDED", "details": ["registrySize", "maxQueryAgents", "solution"] },
+      { "class": "NoProviderFoundError", "code": "NO_PROVIDER_FOUND", "details": ["service", "availableProviders"] },
+      { "class": "TimeoutError", "code": "TIMEOUT", "details": ["timeoutMs", "operation"] },
+      { "class": "ProviderRejectedError", "code": "PROVIDER_REJECTED", "details": ["provider", "reason"] },
+      { "class": "DeliveryFailedError", "code": "DELIVERY_FAILED", "details": ["txId", "reason"] },
+      { "class": "DisputeRaisedError", "code": "DISPUTE_RAISED", "details": ["txId", "reason"] },
+      { "class": "ServiceConfigError", "code": "SERVICE_CONFIG_ERROR", "details": ["field"] },
+      { "class": "AgentLifecycleError", "code": "AGENT_LIFECYCLE_ERROR", "details": ["currentState", "attemptedAction"] }
+    ]
+  },
+  "networks": [
+    {
+      "name": "mock",
+      "mode": "mock",
+      "description": "Local development with in-memory state",
+      "requirements": "None",
+      "usdc": "Unlimited (mintable via mintTokens or actp mint)"
+    },
+    {
+      "name": "base-sepolia",
+      "mode": "testnet",
+      "chainId": 84532,
+      "description": "Base Sepolia testnet",
+      "requirements": "privateKey, ETH for gas, Mock USDC from faucet"
+    },
+    {
+      "name": "base-mainnet",
+      "mode": "mainnet",
+      "chainId": 8453,
+      "description": "Base Mainnet (production)",
+      "requirements": "privateKey, ETH for gas, Real USDC"
+    }
+  ],
+  "protocol": {
+    "token": "USDC",
+    "tokenDecimals": 6,
+    "feeModel": {
+      "description": "1% GMV fee with $0.05 minimum per transaction",
+      "platformFeeBps": 100,
+      "minimumFeeUsdc": 0.05,
+      "maxFeeCapBps": 500
+    },
+    "defaultDisputeWindowSeconds": 172800,
+    "transactionIdDerivation": "keccak256(requester, provider, amount, serviceHash, nonce)"
+  },
+  "cli": {
+    "binary": "actp",
+    "install": "npm install -g @agirails/sdk",
+    "globalFlags": ["--json", "--quiet", "--help", "--version"],
+    "exitCodes": {
+      "0": "Success",
+      "1": "Error",
+      "2": "Pending (watch)",
+      "124": "Timeout (watch)"
+    },
+    "commands": [
+      {
+        "name": "init",
+        "description": "Initialize ACTP in current directory",
+        "usage": "actp init [options]",
+        "flags": [
+          { "flag": "-m, --mode", "type": "string", "default": "mock", "values": ["mock", "testnet", "mainnet"] },
+          { "flag": "-a, --address", "type": "string" },
+          { "flag": "-w, --wallet", "type": "string", "default": "auto", "values": ["auto", "eoa"] },
+          { "flag": "-f, --force", "type": "boolean", "default": false },
+          { "flag": "--scaffold", "type": "boolean", "default": false },
+          { "flag": "--intent", "type": "string", "default": "earn", "values": ["earn", "pay", "both"] },
+          { "flag": "--service", "type": "string", "default": "my-service" },
+          { "flag": "--price", "type": "string", "default": "1" }
+        ]
+      },
+      {
+        "name": "pay",
+        "description": "Create escrow-backed payment in one command",
+        "usage": "actp pay <to> <amount> [options]",
+        "args": ["to (address)", "amount (USDC)"],
+        "flags": [
+          { "flag": "-d, --deadline", "type": "string", "default": "+24h" },
+          { "flag": "-w, --dispute-window", "type": "string", "default": "172800" }
+        ]
+      },
+      {
+        "name": "tx create",
+        "description": "Create transaction without auto-funding",
+        "usage": "actp tx create <provider> <amount> [options]",
+        "flags": [
+          { "flag": "-d, --deadline", "type": "string", "default": "+24h" },
+          { "flag": "-w, --dispute-window", "type": "string", "default": "172800" },
+          { "flag": "--description", "type": "string" },
+          { "flag": "--fund", "type": "boolean", "default": false }
+        ]
+      },
+      {
+        "name": "tx status",
+        "description": "Check transaction status and available actions",
+        "usage": "actp tx status <txId>"
+      },
+      {
+        "name": "tx list",
+        "description": "List transactions with optional filtering",
+        "usage": "actp tx list [options]",
+        "flags": [
+          { "flag": "-s, --state", "type": "string", "values": ["INITIATED", "QUOTED", "COMMITTED", "IN_PROGRESS", "DELIVERED", "SETTLED", "DISPUTED", "CANCELLED"] },
+          { "flag": "-l, --limit", "type": "number", "default": 50 }
+        ]
+      },
+      { "name": "tx deliver", "description": "Mark transaction as delivered", "usage": "actp tx deliver <txId>" },
+      { "name": "tx settle", "description": "Release escrow funds after dispute window", "usage": "actp tx settle <txId>" },
+      { "name": "tx cancel", "description": "Cancel transaction, return escrowed funds", "usage": "actp tx cancel <txId>" },
+      { "name": "balance", "description": "Check USDC balance", "usage": "actp balance [address]" },
+      { "name": "mint", "description": "Mint test USDC (mock only)", "usage": "actp mint <address> <amount>" },
+      { "name": "config show", "description": "Display current configuration", "usage": "actp config show" },
+      { "name": "config set", "description": "Set a configuration value", "usage": "actp config set <key> <value>", "validKeys": ["mode", "address", "privateKey", "rpcUrl"] },
+      { "name": "config get", "description": "Get a configuration value", "usage": "actp config get <key>", "validKeys": ["mode", "address", "privateKey", "rpcUrl", "version"] },
+      {
+        "name": "watch",
+        "description": "Stream transaction state changes (NDJSON with --json)",
+        "usage": "actp watch <txId> [options]",
+        "flags": [
+          { "flag": "-t, --timeout", "type": "string", "default": "0", "description": "Seconds, 0 = indefinite" },
+          { "flag": "-i, --interval", "type": "string", "default": "1000", "description": "Polling interval in ms" },
+          { "flag": "--until", "type": "string", "description": "Exit when transaction reaches this state" }
+        ]
+      },
+      {
+        "name": "simulate pay",
+        "description": "Dry-run a payment (fee breakdown, validation)",
+        "usage": "actp simulate pay <to> <amount> [options]"
+      },
+      {
+        "name": "simulate fee",
+        "description": "Calculate fee for an amount",
+        "usage": "actp simulate fee <amount>"
+      },
+      {
+        "name": "batch",
+        "description": "Execute multiple commands from a file",
+        "usage": "actp batch [file] [options]",
+        "flags": [
+          { "flag": "--dry-run", "type": "boolean", "default": false },
+          { "flag": "--stop-on-error", "type": "boolean", "default": false }
+        ]
+      },
+      { "name": "time show", "description": "Show current mock blockchain time (mock only)", "usage": "actp time show" },
+      { "name": "time advance", "description": "Advance mock time (e.g., 30s, 5m, 2h, 7d)", "usage": "actp time advance <duration>" },
+      { "name": "time set", "description": "Set mock time to specific timestamp", "usage": "actp time set <timestamp>" },
+      {
+        "name": "publish",
+        "description": "Publish agent config to IPFS + on-chain (lazy publish)",
+        "usage": "actp publish [path] [options]",
+        "flags": [
+          { "flag": "--skip-arweave", "type": "boolean", "default": false },
+          { "flag": "--dry-run", "type": "boolean", "default": false }
+        ]
+      },
+      {
+        "name": "pull",
+        "description": "Pull on-chain config to local AGIRAILS.md",
+        "usage": "actp pull [path] [options]",
+        "flags": [
+          { "flag": "-n, --network", "type": "string", "default": "base-sepolia" },
+          { "flag": "-a, --address", "type": "string" },
+          { "flag": "--force", "type": "boolean", "default": false }
+        ]
+      },
+      {
+        "name": "diff",
+        "description": "Compare local vs on-chain config",
+        "usage": "actp diff [path] [options]",
+        "statusValues": ["in-sync", "local-ahead", "remote-ahead", "diverged", "no-local", "no-remote"],
+        "flags": [
+          { "flag": "-n, --network", "type": "string", "default": "base-sepolia" },
+          { "flag": "-a, --address", "type": "string" }
+        ]
+      },
+      {
+        "name": "deploy:env",
+        "description": "Generate ACTP_KEYSTORE_BASE64 for CI/CD",
+        "usage": "actp deploy:env [options]",
+        "flags": [
+          { "flag": "--keystore", "type": "string", "default": ".actp/keystore.json" },
+          { "flag": "--output", "type": "string", "default": "stdout", "values": ["stdout", "dotenv"] }
+        ]
+      },
+      {
+        "name": "deploy:check",
+        "description": "Scan repo for exposed secrets and deployment issues",
+        "usage": "actp deploy:check [path] [options]",
+        "flags": [
+          { "flag": "--quiet", "type": "boolean", "default": false },
+          { "flag": "--fix", "type": "boolean", "default": false }
+        ]
+      }
+    ]
+  }
+}

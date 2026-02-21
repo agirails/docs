@@ -27,3 +27,13 @@ developer-experience:
   label: Developer Experience
   description: SDK improvements, documentation, and developer tools
   permalink: /developer-experience
+
+breaking-change:
+  label: Breaking Change
+  description: Releases with breaking changes that require migration
+  permalink: /breaking-change
+
+python:
+  label: Python
+  description: Python SDK updates and releases
+  permalink: /python

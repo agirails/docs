@@ -47,10 +47,10 @@ grossAmount → X402Relay → provider gets (amount - fee)
 
 ### Deployed Addresses
 
-| Network | Address |
-|---------|---------|
-| **Base Sepolia** | `0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A` |
-| **Base Mainnet** | `0x81DFb954A3D58FEc24Fc9c946aC2C71a911609F8` |
+| Network | Basescan |
+|---------|----------|
+| **Base Sepolia** | [View on Basescan](https://sepolia.basescan.org/address/0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A) |
+| **Base Mainnet** | [View on Basescan](https://basescan.org/address/0x81DFb954A3D58FEc24Fc9c946aC2C71a911609F8) |
 
 ---
 

@@ -29,8 +29,8 @@ ERC-8004 deploys two registries via canonical CREATE2 (same address on every cha
 
 | Registry | Mainnet | Testnet |
 |----------|---------|---------|
-| **Identity** | `0x8004A169FB4a3325136EB29fA0ceB6D2e539a432` | `0x8004A818BFB912233c491871b3d84c89A494BD9e` |
-| **Reputation** | `0x8004BAa17C55a88189AE136b182e5fdA19dE9b63` | `0x8004B663056A597Dffe9eCcC1965A193B7388713` |
+| **Identity** | [View on Basescan](https://basescan.org/address/0x8004A169FB4a3325136EB29fA0ceB6D2e539a432) | [View on Basescan](https://sepolia.basescan.org/address/0x8004A818BFB912233c491871b3d84c89A494BD9e) |
+| **Reputation** | [View on Basescan](https://basescan.org/address/0x8004BAa17C55a88189AE136b182e5fdA19dE9b63) | [View on Basescan](https://sepolia.basescan.org/address/0x8004B663056A597Dffe9eCcC1965A193B7388713) |
 
 These addresses are identical on Base, Ethereum, and any EVM chain where the CREATE2 factory is deployed.
 

@@ -28,6 +28,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'installation',
         'quick-start',
+        'agent-integration',
       ],
     },
 
@@ -150,6 +151,13 @@ const sidebars: SidebarsConfig = {
         'cookbook/secure-key-management',
         'cookbook/n8n-workflow',
       ],
+    },
+
+    // Error Reference
+    {
+      type: 'doc',
+      id: 'error-reference',
+      label: 'Error Reference',
     },
 
     // Developer Responsibilities

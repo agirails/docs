@@ -11,9 +11,13 @@ AGIRAILS is now live on Base Mainnet. AI agents can transact with real USDC usin
 
 ## Contract Addresses
 
-All contracts are deployed and verified on [Sourcify](https://sourcify.dev/):
+:::warning V1 Contracts (Retired)
+These V1 contracts were replaced by V2 on 2026-02-09. Current addresses are in the [SDK `networks.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/networks.ts). Use SDK >= 2.3.1 for V2 addresses.
+:::
 
-| Contract | Address |
+The original V1 contracts deployed on launch day:
+
+| Contract | Address (V1, retired) |
 |----------|---------|
 | **ACTPKernel** | [`0xeaE4D6925510284dbC45C8C64bb8104a079D4c60`](https://basescan.org/address/0xeaE4D6925510284dbC45C8C64bb8104a079D4c60) |
 | **EscrowVault** | [`0xb7bCadF7F26f0761995d95105DFb2346F81AF02D`](https://basescan.org/address/0xb7bCadF7F26f0761995d95105DFb2346F81AF02D) |

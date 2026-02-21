@@ -72,8 +72,8 @@ const config: Config = {
 
     // Announcement bar for important updates
     announcementBar: {
-      id: 'mainnet_live_v1',
-      content: '🚀 AGIRAILS is LIVE on Base Mainnet! <a href="/installation">Get started</a> · <a href="/docs/contract-reference#deployed-addresses">View contracts</a>',
+      id: 'mainnet_live_v2',
+      content: 'AGIRAILS is LIVE on Base Mainnet! <a href="/installation">Get started</a> · <a href="/agent-integration">Agent Integration Guide</a> · <a href="/llms.txt">llms.txt</a>',
       backgroundColor: '#10B981',
       textColor: '#ffffff',
       isCloseable: true,

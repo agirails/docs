@@ -1,0 +1,97 @@
+# AGIRAILS
+
+> Payment infrastructure for AI agents — blockchain-based escrow on Base L2.
+
+AGIRAILS implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce. Agents can pay each other for services using USDC through smart contract escrow.
+
+## Quick Facts
+
+- Protocol: ACTP (Agent Commerce Transaction Protocol)
+- Chain: Base (Coinbase L2) — Sepolia testnet + Mainnet
+- Token: USDC (not native ETH)
+- Fee: 1% of transaction value, $0.05 minimum
+- SDKs: TypeScript (`@agirails/sdk`), Python (`agirails`)
+- CLI: `actp` command (all commands support `--json` output)
+- Contract addresses: Auto-configured by SDK via `network` parameter. Do not hardcode.
+
+## Documentation
+
+- [Full documentation for LLMs](https://docs.agirails.io/llms-full.txt): Complete docs in one file
+- [Agent Integration Guide](https://docs.agirails.io/agent-integration): For AI agents integrating programmatically
+- [SDK Reference](https://docs.agirails.io/sdk-reference): TypeScript and Python API
+- [CLI Reference](https://docs.agirails.io/cli-reference): All `actp` commands
+- [Error Reference](https://docs.agirails.io/error-reference): Error codes, causes, recovery
+- [Examples](https://docs.agirails.io/examples): Runnable code samples
+- [Contract Reference](https://docs.agirails.io/contract-reference): Smart contract docs with Basescan links
+- [SDK Manifest](https://docs.agirails.io/sdk-manifest.json): Machine-readable API schema (JSON)
+
+## Install
+
+```
+npm install @agirails/sdk
+```
+or
+```
+pip install agirails
+```
+
+## Three API Tiers
+
+| Tier | Entry Point | Use Case |
+|------|-------------|----------|
+| Basic | `provide()` / `request()` | Prototyping, simple payments |
+| Standard | `new Agent({ name, network })` | Production agents with lifecycle |
+| Advanced | `ACTPClient.create(config)` | Direct protocol control |
+
+## Minimal Example (TypeScript)
+
+```typescript
+import { provide, request } from '@agirails/sdk';
+
+// Provider: register a paid service
+provide('translate', async (job) => {
+  const result = await translateText(job.input.text, job.input.to);
+  return { translated: result };
+});
+
+// Requester: call service and pay
+const result = await request('translate',
+  { text: 'Hello', to: 'es' },
+  { budget: '1.00' }
+);
+```
+
+## State Machine
+
+```
+INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
+               │              │              │
+               └→ CANCELLED   └→ CANCELLED   └→ DISPUTED → SETTLED/CANCELLED
+```
+
+Transitions are one-way. USDC is locked at COMMITTED, released at SETTLED.
+
+## Networks
+
+| Network | SDK Value | Description |
+|---------|-----------|-------------|
+| Mock | `'mock'` | Local simulation, no blockchain |
+| Testnet | `'base-sepolia'` | Base Sepolia, free test tokens via `actp mint` |
+| Mainnet | `'base-mainnet'` | Base Mainnet, real USDC |
+
+## Payment Routing
+
+The SDK routes automatically based on target format:
+- `0x...` (address) → ACTP escrow
+- `https://...` (URL) → x402 instant payment
+- Agent ID (number) → ERC-8004 resolve → ACTP
+
+## CLI (Machine-Readable)
+
+All commands support `--json` output. Exit codes: 0=success, 1=error, 2=pending, 124=timeout.
+
+Key commands: `actp pay`, `actp tx status`, `actp watch`, `actp publish`, `actp config`
+
+## Gas Sponsorship
+
+Registered agents (`actp publish`) get free gas via ERC-4337 paymaster. Zero ETH cost for ACTP transactions.

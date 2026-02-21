@@ -210,11 +210,15 @@ print(f'EscrowVault: {vault_address}')
 
 ## USDC Addresses
 
-| Network | USDC Address |
-|---------|--------------|
-| Base Sepolia | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
-| Base Mainnet | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
-| Mock Mode | Auto-deployed mock token |
+:::tip SDK Auto-Configuration
+Contract addresses are automatically configured by the SDK based on your `network` parameter. You never need to hardcode addresses. The links below are for **verification and auditing** only.
+:::
+
+| Network | Basescan |
+|---------|----------|
+| **Base Sepolia** | [View on Basescan](https://sepolia.basescan.org/address/0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+| **Base Mainnet** | [View on Basescan](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913) |
+| **Mock Mode** | Auto-deployed mock token |
 
 ---
 

@@ -108,19 +108,25 @@ AGIRAILS contracts are **immutable** - deployed code cannot be changed. This mea
 - You're trusting audited code
 - Always verify contract addresses before interacting
 
+:::tip SDK Auto-Configuration
+Contract addresses are automatically configured by the SDK based on your `network` parameter. You never need to hardcode addresses. The links below are for **verification and auditing** only.
+:::
+
 **Deployed Contracts (Base Sepolia):**
-- ACTPKernel: `0x469CBADbACFFE096270594F0a31f0EEC53753411`
-- EscrowVault: `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5`
-- AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
-- ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2`
-- MockUSDC: `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb`
+- ACTPKernel: [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411)
+- EscrowVault: [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5)
+- AgentRegistry: [View on Basescan](https://sepolia.basescan.org/address/0xDd6D66924B43419F484aE981F174b803487AF25A)
+- ArchiveTreasury: [View on Basescan](https://sepolia.basescan.org/address/0xACB672de092beaAE2cd286dD61Cb2352AF7159F1)
+- MockUSDC: [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb)
 
 **Deployed Contracts (Base Mainnet):**
-- ACTPKernel: `0x132B9eB321dBB57c828B083844287171BDC92d29`
-- EscrowVault: `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99`
-- AgentRegistry: `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8`
-- ArchiveTreasury: `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2`
-- USDC: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- ACTPKernel: [View on Basescan](https://basescan.org/address/0x132B9eB321dBB57c828B083844287171BDC92d29)
+- EscrowVault: [View on Basescan](https://basescan.org/address/0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99)
+- AgentRegistry: [View on Basescan](https://basescan.org/address/0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8)
+- ArchiveTreasury: [View on Basescan](https://basescan.org/address/0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2)
+- USDC: [View on Basescan](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+
+Always verify addresses via the SDK or Basescan before interacting with contracts.
 
 ---
 

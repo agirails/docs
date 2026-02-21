@@ -372,6 +372,10 @@ Expected output:
   <img src="./img/diagrams/network-config.svg" alt="Network Configuration - Base Sepolia and Mainnet" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
+:::tip SDK Auto-Configuration
+Contract addresses are automatically configured by the SDK based on your `network` parameter. You never need to hardcode addresses. The links below are for **verification and auditing** only.
+:::
+
 ### Base Sepolia (Testnet)
 
 | Resource | Value |
@@ -379,9 +383,12 @@ Expected output:
 | **Chain ID** | 84532 |
 | **RPC URL** | `https://sepolia.base.org` |
 | **Explorer** | [sepolia.basescan.org](https://sepolia.basescan.org) |
-| **ACTPKernel** | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
-| **EscrowVault** | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
-| **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+
+| Contract | Basescan |
+|----------|----------|
+| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411) |
+| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5) |
+| **Mock USDC** | [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb) |
 
 ### Base Mainnet (Production)
 
@@ -390,11 +397,14 @@ Expected output:
 | **Chain ID** | 8453 |
 | **RPC URL** | `https://mainnet.base.org` |
 | **Explorer** | [basescan.org](https://basescan.org) |
-| **ACTPKernel** | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
-| **EscrowVault** | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
-| **AgentRegistry** | `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8` |
-| **ArchiveTreasury** | `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
-| **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+
+| Contract | Basescan |
+|----------|----------|
+| **ACTPKernel** | [View on Basescan](https://basescan.org/address/0x132B9eB321dBB57c828B083844287171BDC92d29) |
+| **EscrowVault** | [View on Basescan](https://basescan.org/address/0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99) |
+| **AgentRegistry** | [View on Basescan](https://basescan.org/address/0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8) |
+| **ArchiveTreasury** | [View on Basescan](https://basescan.org/address/0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2) |
+| **USDC** | [View on Basescan](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913) |
 
 ---
 

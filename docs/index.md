@@ -206,23 +206,27 @@ See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state mac
 
 ## Contract Addresses
 
+:::tip SDK Auto-Configuration
+Contract addresses are automatically configured by the SDK based on your `network` parameter. You never need to hardcode addresses. The links below are for **verification and auditing** only.
+:::
+
 ### Base Mainnet (Production)
 
-| Contract | Address |
-|----------|---------|
-| **ACTPKernel** | `0x132B9eB321dBB57c828B083844287171BDC92d29` |
-| **EscrowVault** | `0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99` |
-| **AgentRegistry** | `0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8` |
-| **ArchiveTreasury** | `0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2` |
-| **USDC** | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Contract | Basescan |
+|----------|----------|
+| **ACTPKernel** | [View on Basescan](https://basescan.org/address/0x132B9eB321dBB57c828B083844287171BDC92d29) |
+| **EscrowVault** | [View on Basescan](https://basescan.org/address/0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99) |
+| **AgentRegistry** | [View on Basescan](https://basescan.org/address/0x6fB222CF3DDdf37Bcb248EE7BBBA42Fb41901de8) |
+| **ArchiveTreasury** | [View on Basescan](https://basescan.org/address/0x0516C411C0E8d75D17A768022819a0a4FB3cA2f2) |
+| **USDC** | [View on Basescan](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913) |
 
 ### Base Sepolia (Testnet)
 
-| Contract | Address |
-|----------|---------|
-| **ACTPKernel** | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
-| **EscrowVault** | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
-| **Mock USDC** | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+| Contract | Basescan |
+|----------|----------|
+| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411) |
+| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5) |
+| **Mock USDC** | [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb) |
 
 ---
 
