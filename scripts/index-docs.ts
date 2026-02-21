@@ -37,6 +37,7 @@ const CONFIG = {
   claudePluginDir: '../SDK and Runtime/claude-plugin',
   aipsDir: '../Protocol/aips',
   contractsDir: '../Protocol/actp-kernel/src/interfaces',
+  staticFiles: ['./static/llms.txt', './static/llms-full.txt', './static/sdk-manifest.json'],
 
   // Chunk settings
   chunkSize: 500,        // tokens (roughly 4 chars per token)
@@ -559,6 +560,54 @@ async function processContractFiles(contractsDir: string): Promise<DocumentChunk
 }
 
 /**
+ * Process static files (llms.txt, llms-full.txt, sdk-manifest.json)
+ */
+async function processStaticFiles(filePaths: string[]): Promise<DocumentChunk[]> {
+  const chunks: DocumentChunk[] = [];
+
+  console.log(`Processing ${filePaths.length} static files`);
+
+  for (const filePath of filePaths) {
+    if (!fs.existsSync(filePath)) {
+      console.log(`  Skipping (not found): ${filePath}`);
+      continue;
+    }
+
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const fileName = path.basename(filePath);
+      const isJson = fileName.endsWith('.json');
+
+      // For JSON files, stringify with readable formatting for better embedding
+      const processedContent = isJson
+        ? `// Machine-readable SDK manifest: ${fileName}\n\n${content}`
+        : content;
+
+      const textChunks = chunkText(processedContent, isJson ? 3000 : 2000, 200);
+
+      for (let i = 0; i < textChunks.length; i++) {
+        chunks.push({
+          id: `static-${fileName}-${i}`.replace(/[^a-zA-Z0-9-]/g, '-'),
+          content: textChunks[i],
+          metadata: {
+            source: `static/${fileName}`,
+            type: 'documentation',
+            title: fileName,
+            section: i === 0 ? 'intro' : `section-${i}`,
+          },
+        });
+      }
+
+      console.log(`  Processed: ${fileName} (${textChunks.length} chunks)`);
+    } catch (error) {
+      console.error(`  Error processing ${filePath}:`, error);
+    }
+  }
+
+  return chunks;
+}
+
+/**
  * Upload chunks to Upstash Vector
  */
 async function uploadChunks(chunks: DocumentChunk[]): Promise<void> {
@@ -596,6 +645,7 @@ async function main() {
   console.log('='.repeat(60));
   console.log('\nIndexing:');
   console.log('  - Documentation (concepts, guides)');
+  console.log('  - Static files (llms.txt, llms-full.txt, sdk-manifest.json)');
   console.log('  - TypeScript SDK (Level 0, Level 1, Level 2, Adapters)');
   console.log('  - Python SDK (full parity)');
   console.log('  - Claude Plugin (MCP integration)');
@@ -623,28 +673,33 @@ async function main() {
   const docChunks = await processDocFiles(CONFIG.docsDir);
   allChunks.push(...docChunks);
 
+  // Process static files
+  console.log('\n2. Processing static files...');
+  const staticChunks = await processStaticFiles(CONFIG.staticFiles);
+  allChunks.push(...staticChunks);
+
   // Process TypeScript SDK
-  console.log('\n2. Processing TypeScript SDK files...');
+  console.log('\n3. Processing TypeScript SDK files...');
   const tsChunks = await processCodeFiles(CONFIG.sdkJsDir);
   allChunks.push(...tsChunks);
 
   // Process Python SDK
-  console.log('\n3. Processing Python SDK files...');
+  console.log('\n4. Processing Python SDK files...');
   const pyChunks = await processPythonFiles(CONFIG.pythonSdkDir);
   allChunks.push(...pyChunks);
 
   // Process Claude Plugin
-  console.log('\n4. Processing Claude Plugin files...');
+  console.log('\n5. Processing Claude Plugin files...');
   const pluginChunks = await processClaudePluginFiles(CONFIG.claudePluginDir);
   allChunks.push(...pluginChunks);
 
   // Process AIPs
-  console.log('\n5. Processing AIP files...');
+  console.log('\n6. Processing AIP files...');
   const aipChunks = await processAIPFiles(CONFIG.aipsDir);
   allChunks.push(...aipChunks);
 
   // Process Solidity interfaces
-  console.log('\n6. Processing Solidity interface files...');
+  console.log('\n7. Processing Solidity interface files...');
   const solChunks = await processContractFiles(CONFIG.contractsDir);
   allChunks.push(...solChunks);
 
@@ -652,6 +707,7 @@ async function main() {
   console.log('\n' + '='.repeat(60));
   console.log('Summary:');
   console.log(`  Documentation chunks:   ${docChunks.length}`);
+  console.log(`  Static file chunks:     ${staticChunks.length}`);
   console.log(`  TypeScript SDK chunks:  ${tsChunks.length}`);
   console.log(`  Python SDK chunks:      ${pyChunks.length}`);
   console.log(`  Claude Plugin chunks:   ${pluginChunks.length}`);
@@ -661,7 +717,7 @@ async function main() {
   console.log(`  Total chunks:           ${allChunks.length}`);
 
   // Upload to Upstash
-  console.log('\n7. Uploading to Upstash Vector...');
+  console.log('\n8. Uploading to Upstash Vector...');
   await uploadChunks(allChunks);
 
   console.log('\n' + '='.repeat(60));
