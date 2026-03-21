@@ -34,7 +34,7 @@ const initialFormValues: FormValues = {
   deadlineUnit: 'hours',
   description: 'Translate 500 words EN→DE',
   txId: '0x7a3b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b',
-  escrowAddress: '0x469CBADbACFFE096270594F0a31f0EEC53753411',
+  escrowAddress: '0x0ba0b17554601b30F5406e74d2208f567C12CcFE',
   attestation: '0x1a2b3c4d5e6f7890abcdef1234567890abcdef1234567890abcdef1234567890',
 };
 
