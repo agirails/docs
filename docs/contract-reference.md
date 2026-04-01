@@ -56,8 +56,8 @@ Contract addresses are automatically configured by the SDK based on your `networ
 
 | Contract | Basescan | Notes |
 |----------|----------|-------|
-| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411) | Deployed 2026-02-06, optimizer-runs 200 |
-| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5) | |
+| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE) | Deployed 2026-02-06, optimizer-runs 200 |
+| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4) | |
 | **MockUSDC** | [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb) | Test token, free minting |
 | **EAS** | `0x4200000000000000000000000000000000000021` | Base-native canonical address (system contract) |
 | **SchemaRegistry** | `0x4200000000000000000000000000000000000020` | Base-native canonical address (system contract) |
@@ -150,7 +150,7 @@ The core transaction coordinator implementing the ACTP protocol.
 
 **Contract Addresses:**
 - **Base Mainnet:** [View on Basescan](https://basescan.org/address/0x132B9eB321dBB57c828B083844287171BDC92d29)
-- **Base Sepolia:** [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411)
+- **Base Sepolia:** [View on Basescan](https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE)
 
 **Source Code:** [ACTPKernel.sol](https://github.com/agirails/agirails/blob/main/Protocol/actp-kernel/src/ACTPKernel.sol)
 
@@ -286,8 +286,8 @@ function getTransaction(bytes32 transactionId)
 import { ethers } from 'ethers';
 
 const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
-// Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
-const KERNEL_ADDRESS = '0x469CBADbACFFE096270594F0a31f0EEC53753411';
+// Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE
+const KERNEL_ADDRESS = '0x0ba0b17554601b30F5406e74d2208f567C12CcFE';
 const kernel = new ethers.Contract(
   KERNEL_ADDRESS,
   KERNEL_ABI,
@@ -310,8 +310,8 @@ console.log('Provider:', tx.provider);
 from web3 import Web3
 
 provider = Web3(Web3.HTTPProvider('https://sepolia.base.org'))
-# Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
-KERNEL_ADDRESS = '0x469CBADbACFFE096270594F0a31f0EEC53753411'
+# Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE
+KERNEL_ADDRESS = '0x0ba0b17554601b30F5406e74d2208f567C12CcFE'
 kernel = provider.eth.contract(
     address=KERNEL_ADDRESS,
     abi=KERNEL_ABI
@@ -333,7 +333,7 @@ print(f"Provider: {tx.provider}")
 
 ```bash
 # ACTPKernel address — see Deployed Addresses above
-KERNEL=0x469CBADbACFFE096270594F0a31f0EEC53753411
+KERNEL=0x0ba0b17554601b30F5406e74d2208f567C12CcFE
 cast call $KERNEL \
   "getTransaction(bytes32)" 0x1234...5678 \
   --rpc-url https://sepolia.base.org
@@ -476,8 +476,8 @@ function createTransaction(
 import {IACTPKernel} from "./interfaces/IACTPKernel.sol";
 
 contract MyAgent {
-    // Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
-    IACTPKernel public kernel = IACTPKernel(0x469CBADbACFFE096270594F0a31f0EEC53753411);
+    // Address auto-configured by SDK. See: https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE
+    IACTPKernel public kernel = IACTPKernel(0x0ba0b17554601b30F5406e74d2208f567C12CcFE);
 
     function requestService(address provider, uint256 amountUSDC) external {
         bytes32 txId = kernel.createTransaction(
@@ -564,7 +564,7 @@ print(f"Transaction created: {transaction_id.hex()}")
 
 ```bash
 # ACTPKernel address — see Deployed Addresses above
-KERNEL=0x469CBADbACFFE096270594F0a31f0EEC53753411
+KERNEL=0x0ba0b17554601b30F5406e74d2208f567C12CcFE
 cast send $KERNEL \
   "createTransaction(address,address,uint256,uint256,uint256,bytes32)" \
   0xPROVIDER \
@@ -642,10 +642,10 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MyAgent {
     // Addresses auto-configured by SDK. See Deployed Addresses in contract-reference.
-    // ACTPKernel: https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
-    IACTPKernel public kernel = IACTPKernel(0x469CBADbACFFE096270594F0a31f0EEC53753411);
-    // EscrowVault: https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5
-    address public escrowVault = 0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5;
+    // ACTPKernel: https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE
+    IACTPKernel public kernel = IACTPKernel(0x0ba0b17554601b30F5406e74d2208f567C12CcFE);
+    // EscrowVault: https://sepolia.basescan.org/address/0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4
+    address public escrowVault = 0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4;
     // MockUSDC: https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb
     IERC20 public usdc = IERC20(0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb);
 
@@ -985,7 +985,7 @@ w3.eth.send_raw_transaction(signed.rawTransaction)
 
 ```bash
 # ACTPKernel address — see Deployed Addresses above
-KERNEL=0x469CBADbACFFE096270594F0a31f0EEC53753411
+KERNEL=0x0ba0b17554601b30F5406e74d2208f567C12CcFE
 cast send $KERNEL \
   "releaseEscrow(bytes32)" 0x1234...5678 \
   --private-key $PRIVATE_KEY \
@@ -1890,7 +1890,7 @@ Non-custodial escrow vault for holding USDC during transactions.
 
 **Contract Addresses:**
 - **Base Mainnet:** [View on Basescan](https://basescan.org/address/0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99)
-- **Base Sepolia:** [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5)
+- **Base Sepolia:** [View on Basescan](https://sepolia.basescan.org/address/0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4)
 
 **Source Code:** [EscrowVault.sol](https://github.com/agirails/agirails/blob/main/Protocol/actp-kernel/src/escrow/EscrowVault.sol)
 
@@ -2816,8 +2816,8 @@ Using Foundry's `cast` for contract calls.
 
 ```bash
 # Contract addresses — see Deployed Addresses above for Basescan links
-KERNEL=0x469CBADbACFFE096270594F0a31f0EEC53753411
-VAULT=0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5
+KERNEL=0x0ba0b17554601b30F5406e74d2208f567C12CcFE
+VAULT=0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4
 USDC=0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb
 
 # Get transaction details
@@ -2880,7 +2880,7 @@ Using Basescan block explorer for contract verification.
 
 ```bash
 # 1. Find transaction on Basescan
-https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411
+https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE
 
 # 2. Click "Contract" tab → "Read Contract"
 # 3. Call getTransaction with your txId

@@ -113,8 +113,8 @@ Contract addresses are automatically configured by the SDK based on your `networ
 :::
 
 **Deployed Contracts (Base Sepolia):**
-- ACTPKernel: [View on Basescan](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411)
-- EscrowVault: [View on Basescan](https://sepolia.basescan.org/address/0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5)
+- ACTPKernel: [View on Basescan](https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE)
+- EscrowVault: [View on Basescan](https://sepolia.basescan.org/address/0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4)
 - AgentRegistry: [View on Basescan](https://sepolia.basescan.org/address/0xDd6D66924B43419F484aE981F174b803487AF25A)
 - ArchiveTreasury: [View on Basescan](https://sepolia.basescan.org/address/0xACB672de092beaAE2cd286dD61Cb2352AF7159F1)
 - MockUSDC: [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb)
