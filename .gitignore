@@ -62,3 +62,6 @@ CLAUDE.md
 # Ralph task runner
 .ralph/
 SCRATCHPAD.md
+
+# Environment
+.env
