@@ -36,9 +36,10 @@ client.pay({ to: "...", amount: "10.00" })
 
 HTTP-native instant payments via the [x402 protocol](./x402-protocol). Triggered when the `to` field is an `https://` URL.
 
-- Instant settlement (no escrow lifecycle)
-- Optional relay fee splitting via X402Relay contract
-- Requires `transfer_fn` configuration
+- Instant atomic settlement via facilitator (no escrow lifecycle)
+- Zero AGIRAILS fee — `payTo` goes directly to seller
+- Auto-registered when wallet provider present (`@agirails/sdk@3.3.0+`)
+- Requires explicit opt-in: `metadata: { paymentMethod: 'x402' }` or host in `allowedHosts`
 
 ### StandardAdapter (Priority 60)
 
@@ -89,8 +90,8 @@ const client = await ACTPClient.create({ mode: 'testnet' });
 // EVM address → StandardAdapter (priority 60)
 await client.pay({ to: '0xProvider...', amount: '10.00' });
 
-// HTTP URL → X402Adapter (priority 70)
-await client.pay({ to: 'https://api.example.com/pay', amount: '5.00' });
+// HTTP URL → X402Adapter (priority 70) — requires opt-in
+await client.pay({ to: 'https://api.example.com/pay', metadata: { paymentMethod: 'x402' } });
 
 // Agent ID → ERC-8004 resolve → StandardAdapter
 await client.pay({ to: '12345', amount: '10.00' });
@@ -107,8 +108,8 @@ client = await ACTPClient.create(mode="testnet")
 # EVM address → StandardAdapter (priority 60)
 await client.pay({"to": "0xProvider...", "amount": "10.00"})
 
-# HTTP URL → X402Adapter (priority 70)
-await client.pay({"to": "https://api.example.com/pay", "amount": "5.00"})
+# HTTP URL → X402Adapter (priority 70) — requires opt-in
+await client.pay({"to": "https://api.example.com/pay", "metadata": {"paymentMethod": "x402"}})
 
 # Agent ID → ERC-8004 resolve → StandardAdapter
 await client.pay({"to": "12345", "amount": "10.00"})
