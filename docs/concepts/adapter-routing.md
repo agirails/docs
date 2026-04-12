@@ -146,8 +146,8 @@ class MyAdapter implements IAdapter {
   }
 }
 
-// Register with router
-client.adapterRouter.register(new MyAdapter());
+// Register with client
+client.registerAdapter(new MyAdapter());
 ```
 
 </TabItem>
