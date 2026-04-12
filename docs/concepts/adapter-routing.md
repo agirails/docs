@@ -132,9 +132,13 @@ import { IAdapter, AdapterMetadata, UnifiedPayParams } from '@agirails/sdk';
 
 class MyAdapter implements IAdapter {
   metadata: AdapterMetadata = {
-    name: 'my-adapter',
+    id: 'my-adapter',
+    name: 'My Custom Adapter',
+    usesEscrow: false,
+    supportsDisputes: false,
+    requiresIdentity: false,
+    settlementMode: 'atomic',
     priority: 55,  // Between Basic and Standard
-    protocols: ['custom'],
   };
 
   canHandle(params: UnifiedPayParams): boolean {
