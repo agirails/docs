@@ -163,9 +163,13 @@ from agirails.adapters.types import AdapterMetadata, UnifiedPayParams
 
 class MyAdapter(IAdapter):
     metadata = AdapterMetadata(
-        name="my-adapter",
+        id="my-adapter",
+        name="My Custom Adapter",
+        uses_escrow=False,
+        supports_disputes=False,
+        requires_identity=False,
+        settlement_mode="atomic",
         priority=55,
-        protocols=["custom"],
     )
 
     def can_handle(self, params: UnifiedPayParams) -> bool:
