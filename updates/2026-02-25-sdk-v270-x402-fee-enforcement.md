@@ -2,7 +2,7 @@
 slug: sdk-v270-x402-fee-enforcement
 title: "SDK v2.7.0 — x402 Platform Fee Enforcement"
 authors: [sdk-team]
-tags: [release, breaking-change, engineering]
+tags: [release, breaking-change]
 ---
 
 `@agirails/sdk@2.7.0` enforces the platform fee on x402 payments fail-closed, prevents double-pay on fee-failure, and bumps the Sepolia `archiveTreasury` to the V2 contract. Breaking change for x402 buyers — fee handling is no longer optional.
