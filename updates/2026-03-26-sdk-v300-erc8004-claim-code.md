@@ -43,19 +43,25 @@ Claim codes shortcut this:
 
 ```bash
 $ actp claim-code generate --network base-sepolia
-🔑 Code: ABCD-EFGH-1234
-
-Visit https://agirails.app/claim and paste the code while logged in.
-Code expires in 10 minutes. One-time use.
+# → prints a one-time code + the URL to paste it into the dashboard
 ```
 
-The dashboard side performs the on-chain `ownerOf(agentId)` verification and links the agent row to the user account. The code itself is a 12-character base32 secret with HMAC binding to the agent's wallet — copying the code without controlling the wallet doesn't work.
+The dashboard side performs the on-chain `ownerOf(agentId)` verification and links the agent row to the user account. The code is short-lived and one-time use; copying it without controlling the agent wallet doesn't work.
 
 ## Breaking changes vs 2.x
 
 - Publish flow now requires ERC-8004 identity registration. Existing pre-3.0 agents are auto-migrated on next `actp publish` (the SDK detects "no identity yet, mint it").
 - `actp claim` (the old EIP-712 challenge flow) still works but is deprecated; the dashboard prefers claim codes for the better UX.
 - Network handling tightened in `claim-code` — explicit `--network` is now required to prevent accidental cross-network code generation.
+
+## Phase 1 PRD gaps closed (rolled into this release)
+
+The post-2.7.0 March work consolidated several Phase 1 PRD gaps that didn't justify their own release. All ship as part of 3.0.0:
+
+- **`actp publish` write-back** — `wallet_address`, `agent_id`, and `did` now sync from the on-chain register call into the agirails.app dashboard row, closing the gap where on-chain was authoritative but the dashboard view stayed stale.
+- **Slug auto-rename** — collision handling that suggests an alternative and renames in-place atomically rather than failing the publish.
+- **`loadConfig` crash fix** — malformed JSON now surfaces with file path + line context rather than throwing before the user-facing error renders.
+- **Test timing metrics** — per-suite duration in the test runner output, useful for CI bisecting.
 
 ## Other fixes
 
@@ -65,11 +71,10 @@ The dashboard side performs the on-chain `ownerOf(agentId)` verification and lin
 
 ## Stats
 
-- 6 net-new audit findings closed during the 3.0.0 hardening pass
-- 1840 tests, 0 lint errors
+- Audit findings closed during the 3.0.0 hardening pass (commit `b470da0`)
+- All tests green, 0 lint errors
 
 ## Links
 
-- [npm](https://www.npmjs.com/package/@agirails/sdk/v/3.0.0)
-- [Claim code docs](https://docs.agirails.io/cli/claim-code)
-- [ERC-8004 deep dive](https://docs.agirails.io/protocol/identity)
+- [npm v3.0.0](https://www.npmjs.com/package/@agirails/sdk/v/3.0.0)
+- [GitHub](https://github.com/agirails/sdk-js)

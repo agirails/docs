@@ -27,7 +27,7 @@ Now: after the on-chain `disputeWindow` timestamp passes, **any address can subm
 }
 ```
 
-The settler doesn't get a fee — there's no economic incentive to keep an indexer running just for cleanup. The expectation is that AGIRAILS itself will sweep stale `DELIVERED` rows once a day. Third parties are welcome to sweep too.
+The settler doesn't get a fee. The expectation is that participants will mostly self-settle (see "settle-on-interact" below); the permissionless path is the safety net for genuinely abandoned escrow.
 
 ## SDK side: settle-on-interact
 
@@ -43,17 +43,17 @@ This means a long-idle agent that comes back online auto-cleans its own escrow w
 
 ## Sepolia redeploy (3.0.1 → 3.1.0)
 
-The 3.0.1 contract redeploy on April 2 included an audit fix from the post-3.0.0 review (one allowance edge case). 3.1.0 ships the permissionless settle as a separate redeploy on April 5. Addresses are recorded in `deployments/base-sepolia.json` and bundled with the SDK; existing 3.0.x users on Sepolia should `npm install @agirails/sdk@latest` to pick them up.
+The 3.0.1 contract redeploy (commit `10311a7`) included an audit fix from the post-3.0.0 review. 3.1.0 (commit `1337c07`) ships the permissionless settle as the next redeploy. Addresses are recorded in `deployments/base-sepolia.json` and bundled with the SDK; existing 3.0.x users on Sepolia should `npm install @agirails/sdk@latest` to pick them up.
 
 ## Live verification
 
-We armed a `DELIVERED` tx on April 6, waited the 1-hour minimum window, and on April 7 had a third-party wallet (treasury, not a participant) execute the settle path. SETTLED transition emitted normally; provider received funds.
+A `DELIVERED` Sepolia tx was armed and then settled by a non-participant wallet after the dispute window expired. SETTLED transition emitted normally; provider received funds.
 
 ```
-SmokeExecAutoSettle.s.sol → 0xf3d727aa…dbb1de
+SmokeExecAutoSettle.s.sol → 0xf3d727aa304290d50a5d72194ac16f54d112163f35aa7f7b0a3bef0c64dbb1de
 State pre:  DELIVERED (4)
 State post: SETTLED   (5)  ✓
-Settler: 0x866ECF4b0E79EA6095c19e4adA4Ed872373fF6b7 (treasury, non-participant)
+Settler: 0x866ECF4b0E79EA6095c19e4adA4Ed872373fF6b7 (treasury wallet, non-participant in this tx)
 ```
 
 ## Why this matters
@@ -64,6 +64,6 @@ Permissionless settle is the simplest possible escape hatch: no governance vote,
 
 ## Links
 
-- [Sepolia kernel](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411)
+- [Sepolia kernel (current)](https://sepolia.basescan.org/address/0xE83cba71C445B4f658D88E4F179FccB9E1454F97)
 - [npm v3.1.0](https://www.npmjs.com/package/@agirails/sdk/v/3.1.0)
-- [Settle path source](https://github.com/agirails/actp-kernel/blob/main/src/ACTPKernel.sol)
+- [actp-kernel source](https://github.com/agirails/actp-kernel)

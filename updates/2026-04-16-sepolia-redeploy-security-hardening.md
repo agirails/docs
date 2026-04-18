@@ -11,14 +11,17 @@ Fresh Base Sepolia stack went live April 15 — new `ACTPKernel`, `EscrowVault`,
 
 ## What got redeployed
 
-| Contract | Old (Feb 6) | New (Apr 15) |
-|---|---|---|
-| ACTPKernel | `0xeaE4...` | `0x469CBADbACFFE096270594F0a31f0EEC53753411` |
-| EscrowVault | `0xb7bC...` | `0x57f888261b629bB380dfb983f5DA6c70Ff2D49E5` |
-| MockUSDC | `0x4d9b...` | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
-| AgentRegistry | `0xbf9A...` | (canonical CREATE2 — unchanged on testnet) |
-| ArchiveTreasury | (n/a) | `0x866ECF4b0E79EA6095c19e4adA4Ed872373fF6b7` |
-| X402Relay | (mainnet only) | `0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A` |
+Live addresses on Base Sepolia (per `deployments/base-sepolia.json`):
+
+| Contract | Address |
+|---|---|
+| MockUSDC | `0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb` |
+| ACTPKernel | `0xE83cba71C445B4f658D88E4F179FccB9E1454F97` |
+| EscrowVault | `0x0DAbBF59C40C1804488a84237C87971b2a7f5f5f` |
+| AgentRegistry | `0x40ca9b043220ecc26b0b280fe6a02861eadc2448` |
+| AGIRAILSIdentityRegistry | `0xce9749c768b425fab0daa0331047d1340ec99a88` |
+| ArchiveTreasury | `0x6acb954550b6a5135da9df5ac224cff33d697351` |
+| X402Relay | `0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b` |
 
 The redeploy consolidates: per-tx penalty lock (`requesterPenaltyBpsLocked`), tighter resolver gate, dust guard on X402Relay, and milestone-settle path. Deployments JSON shipped with the SDK so `npm install @agirails/sdk@latest` picks up the new addresses automatically.
 
@@ -44,11 +47,7 @@ GitHub flagged three transitive critical-severity vulnerabilities:
 }
 ```
 
-Plus a manual bump of `@aws-sdk/client-s3` to `3.989+` to close the underlying transitive chain. Three CVEs cleared:
-
-1. **CVE-2026-XXXX (axios)** — server-side request forgery via redirect handling. `axios <1.15.0` followed cross-origin redirects without re-validating the target URL, which the SDK uses for IPFS pinning to known providers.
-2. **CVE-2026-YYYY (fast-xml-parser)** — prototype pollution via XML attribute parsing. Reachable through one EAS attestation parsing path.
-3. **CVE-2026-ZZZZ (@aws-sdk/client-s3 transitive)** — TLS certificate validation bypass on certain Node versions. SDK's S3 path is opt-in (used for Filebase backup of AGIRAILS.md); not exploitable in default config but worth closing.
+Plus a manual bump of `@aws-sdk/client-s3` to `3.989+` to close the underlying transitive chain. The three flagged advisories all resolved without behavioral changes to the SDK's public API — they were transitive dependency issues. See the `overrides` block in `package.json` for the active pins.
 
 None of these were exploited against any deployed AGIRAILS infrastructure that we know of. Dependabot caught them before they had a chance to be.
 
@@ -70,6 +69,6 @@ Mainnet kernel `0x132B…2d29` (deployed Feb 9) was not touched. It remains the 
 
 ## Links
 
-- [Sepolia kernel](https://sepolia.basescan.org/address/0x469CBADbACFFE096270594F0a31f0EEC53753411)
-- [Sepolia X402Relay](https://sepolia.basescan.org/address/0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A)
-- [SmokeOnChainSuite source](https://github.com/agirails/actp-kernel/blob/main/script/SmokeOnChainSuite.s.sol)
+- [Sepolia kernel](https://sepolia.basescan.org/address/0xE83cba71C445B4f658D88E4F179FccB9E1454F97)
+- [Sepolia X402Relay](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
+- [actp-kernel source](https://github.com/agirails/actp-kernel)

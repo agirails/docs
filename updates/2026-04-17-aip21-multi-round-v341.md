@@ -58,17 +58,16 @@ A 4-agent parallel audit caught five real issues, all fixed in commit `92204ca`:
 4. **Slow-loris in `actp serve`** — `readBody` had a 64 KiB cap but no wall-clock timeout. A peer dripping 1 byte/sec held handlers open until the OS keepalive aged out. Now: `headersTimeout: 10s`, `requestTimeout: 15s`, and a 10s read deadline inside `readBody`.
 5. **Memory leaks in COMMITTED fast-path + escrow-success returns** — `_cleanupTxState` only fired via `_runNegotiationRound`'s `terminate()` wrapper. Daemon-style runners accumulated entries in `receivedQuotes` / `sentCounters` across thousands of negotiations. Now cleanup fires on every terminal outcome.
 
-3 new E2E test suites cover the end-to-end flow:
+3 new E2E test suites cover the end-to-end flow (under `src/__e2e__/`):
 
-- `negotiation-roundtrip` — real `http.createServer` ↔ `BuyerOrchestrator` over loopback HTTP
-- `state-machine-happy-path` — INITIATED → SETTLED + dispute path + cancel path
-- `cli-actp-serve` — spawn `node bin/actp serve --mock` subprocess + real `fetch()`
+- real `http.createServer` ↔ `BuyerOrchestrator` over loopback HTTP
+- INITIATED → SETTLED full state-machine + dispute path + cancel path
+- `node bin/actp serve --mock` subprocess + real `fetch()`
 
 ## Stats
 
-- 92 suites, 2167 passing
-- 16 new unit tests, 11 new E2E tests
-- 0 lint errors
+- All tests green, 0 lint errors
+- New regression coverage spans the security fixes + the new CLI surface
 
 ## What's coming in 3.5.x
 

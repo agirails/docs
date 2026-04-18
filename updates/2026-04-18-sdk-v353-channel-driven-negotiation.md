@@ -107,9 +107,9 @@ Six lower-impact issues:
 
 ---
 
-## Wave 4 — Damir review (mainnet compat)
+## Wave 4 — Mainnet compat (community review report)
 
-A community review report from a real end-to-end Base Mainnet test caught three issues blocking new integrators:
+A community review report from a real end-to-end Base Mainnet test (provider on @agirails/sdk@3.4.1, requester on @agirails/sdk@2.7.0, settled successfully via local hotfixes) caught three issues blocking new integrators:
 
 **Legacy 16-field ABI fallback** — Deployed Base Mainnet kernel `0x132B…2d29` returns a 16-field `getTransaction` tuple (canonical through SDK 2.7). The current 19-field ABI fails decode with `BAD_DATA`, and `BlockchainRuntime` swallowed the error as `null`, surfacing as `TX_NOT_FOUND` in the CLI for a real on-chain tx. Fix: precompiled `LEGACY_GET_TRANSACTION_IFACE` fallback that retries via `runner.provider` on decode failure.
 
@@ -165,5 +165,5 @@ Provider side similarly trades `actp serve` for `actp agent` (zero code change t
 ## Links
 
 - [npm v3.5.3](https://www.npmjs.com/package/@agirails/sdk/v/3.5.3)
-- [AIP-2.1 §6 spec](https://github.com/agirails/aips/blob/main/AIP-2.1.md#6-negotiationchannel--multi-round-transport-350)
-- [Migration guide](https://docs.agirails.io/migration/3.5)
+- [AIP-2.1 spec (§6 added in this release)](https://github.com/agirails/aips/blob/main/AIP-2.1.md)
+- [GitHub](https://github.com/agirails/sdk-js)
