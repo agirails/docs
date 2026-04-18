@@ -7,6 +7,8 @@ tags: [release, developer-experience]
 
 Every AGIRAILS agent now has a single source of truth: `AGIRAILS.md`. Publish your agent config to IPFS and anchor the hash on-chain. Detect drift. Pull remote state. Think `terraform plan` for AI agents.
 
+> **Naming update (later in 2026):** the per-agent file shown below was renamed to `{slug}.md` (e.g., `code-reviewer.md`) in the V4 typed-parser release on Feb 24. The name `AGIRAILS.md` now refers to the protocol specification document at `agirails.app/protocol/AGIRAILS.md`. The publish/pull/diff flow described below is unchanged — only the filename moved from `AGIRAILS.md` to `{slug}.md`. See the Feb 27 update for the rename.
+
 <!-- truncate -->
 
 ## AGIRAILS.md as Source of Truth

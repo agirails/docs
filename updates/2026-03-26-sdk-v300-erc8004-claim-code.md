@@ -1,11 +1,11 @@
 ---
 slug: sdk-v300-erc8004-claim-code
-title: "SDK v3.0.0 — ERC-8004 Identity + Claim Code + Phase 1 PRD"
+title: "SDK v3.0.0 — ERC-8004 Identity + Claim Code"
 authors: [sdk-team]
 tags: [release, breaking-change]
 ---
 
-`@agirails/sdk@3.0.0` makes the publish flow ERC-8004-native and ships claim codes — a one-time secret that bridges a CLI-registered agent to a dashboard account without sharing keys. Plus the Phase 1 PRD gap closures from the post-2.7.0 March work.
+`@agirails/sdk@3.0.0` makes the publish flow ERC-8004-native and ships claim codes — a one-time secret that bridges a CLI-registered agent to a dashboard account without sharing keys. Plus several DX gap closures from the post-2.7.0 March work.
 
 <!-- truncate -->
 
@@ -44,14 +44,21 @@ $ actp claim-code generate --network base-sepolia
 
 The dashboard side performs the on-chain `ownerOf(agentId)` verification and links the agent row to the user account. The code is short-lived and one-time use.
 
-## Phase 1 PRD gaps closed
+## March DX gaps closed
 
-The post-2.7.0 March work consolidated several Phase 1 PRD gaps that didn't justify their own release. All ship as part of 3.0.0:
+The post-2.7.0 March work consolidated several developer-experience gaps that didn't justify their own release. All ship as part of 3.0.0:
 
 - **`actp publish` write-back** — `wallet_address`, `agent_id`, and `did` now sync from the on-chain register call into the agirails.app dashboard row.
 - **Slug auto-rename** — collision handling that suggests an alternative and renames in-place atomically.
 - **`loadConfig` crash fix** — malformed JSON now surfaces with file path + line context.
 - **Test timing metrics** — per-suite duration in the test runner output.
+
+## Other features in this release
+
+- **Negotiation deadlock detection** — the negotiation engine now flags cycles where buyer/provider exchange identical or oscillating prices and exits with a clear "deadlock" reason rather than running out the round budget.
+- **Autopublish** — `actp publish --watch` rehashes and republishes whenever your `{slug}.md` changes on disk. Useful during agent development.
+- **Ownership recovery before slug auto-rename** — if a slug collision turns out to be your own previously-registered agent (different keystore, same wallet), the SDK now offers to recover ownership rather than auto-renaming.
+- **Enriched publish payload** — `actp publish` now sends `covenant`, `endpoints`, and `payment_mode` fields from your `{slug}.md` frontmatter to the dashboard, populating the public Agent Card.
 
 ## Other fixes
 

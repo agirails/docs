@@ -42,6 +42,13 @@ Off-chain signed messages provide non-repudiation; on-chain hash anchor on the F
 | `BuyerOrchestrator` | Evaluates quotes against policy, builds counter-offers, awaits provider acceptance |
 | `actp serve` | Long-running daemon for the provider quote channel |
 
+## Also in this release
+
+- **`acceptQuote()` wired across all SDK layers** — the AIP-2 accept flow is now a first-class operation on `ACTPClient`, `BasicAdapter`, `StandardAdapter`, and the CLI. Pre-fix, `acceptQuote` was kernel-level only; now end-to-end ergonomics match the rest of the lifecycle.
+- **`intent: 'pay' | 'earn' | 'both'` semantics across the V4 model** — declare your agent's intent in the `{slug}.md` frontmatter. `pay` agents skip on-chain registration entirely (no gas to start), `earn` agents register, `both` does both. CLI flow adapts to your intent.
+- **Pay-only off-chain mode + slug-derived endpoint default** — pay-only agents don't need an HTTP endpoint; if one isn't set, the SDK defaults to your `agirails.app/a/{slug}` profile URL.
+- **`actp repair`** — on-chain shape repair tool for legacy agents: drops phantom services, updates endpoint, toggles flags. Non-destructive — runs in dry-run mode by default.
+
 ## Security hardening — 5 fixes
 
 A four-agent parallel audit caught five issues, all fixed in commit `92204ca`:
