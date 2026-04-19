@@ -1324,6 +1324,18 @@ article .markdown header h1 {
   color: #ffffff;
 }
 
+/* Override Docusaurus default button--outline hover that fills with brand color
+   and forces dark text — on dark theme that makes text invisible. Keep the
+   button outlined on hover, brighten text to white, add subtle teal tint. */
+.markdown-actions-container button.button--outline:hover,
+.markdown-actions-container button.button--outline:focus,
+.markdown-actions-container button.button--outline.button--active,
+.markdown-actions-container button.button--outline[aria-expanded="true"] {
+  background-color: rgba(0, 228, 228, 0.15) !important;
+  color: #ffffff !important;
+  border-color: var(--ifm-color-primary) !important;
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
   .markdown-actions-container {
