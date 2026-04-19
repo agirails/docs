@@ -1317,9 +1317,11 @@ article .markdown header h1 {
   left: 0;
 }
 
-/* Hover effect for dropdown items */
-.markdown-actions-container .dropdown__link:hover {
-  background-color: var(--ifm-hover-overlay);
+/* Hover effect for dropdown items — lighten text + subtle teal background */
+.markdown-actions-container .dropdown__link:hover,
+.markdown-actions-container .dropdown__link:focus {
+  background-color: rgba(0, 228, 228, 0.15);
+  color: #ffffff;
 }
 
 /* Responsive adjustments for mobile */
