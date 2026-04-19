@@ -3,6 +3,49 @@
     {
       "source": "/api/:path*",
       "destination": "/api/:path*"
+    },
+    {
+      "source": "/sdk-reference.md",
+      "destination": "/sdk-reference/intro.md"
+    },
+    {
+      "source": "/concepts.md",
+      "destination": "/concepts/intro.md"
+    },
+    {
+      "source": "/cookbook.md",
+      "destination": "/cookbook/intro.md"
+    },
+    {
+      "source": "/examples.md",
+      "destination": "/examples/intro.md"
+    },
+    {
+      "source": "/guides.md",
+      "destination": "/guides/intro.md"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
     }
   ]
 }
