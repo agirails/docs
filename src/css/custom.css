@@ -1275,3 +1275,89 @@ a[href*='edit'][class*='theme'] {
     border-left: 3px solid #00E4E4 !important;
   }
 }
+
+/* ===========================================================================
+   Markdown Source Plugin — "Open Markdown" dropdown in doc page headers
+   Provides view/copy raw markdown for LLM/AI assistant workflows.
+   Spec from docusaurus-markdown-source-plugin v2.2.4 README.
+   =========================================================================== */
+
+/* Style the article header as flexbox so the dropdown sits beside the title */
+article .markdown header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  overflow: visible;
+}
+
+/* Allow h1 to grow and take available space */
+article .markdown header h1 {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+/* Container for the markdown actions dropdown */
+.markdown-actions-container {
+  flex-shrink: 0;
+  margin-left: auto;
+  position: relative;
+}
+
+/* Ensure dropdown wrapper has proper positioning */
+.markdown-actions-container .dropdown {
+  position: relative;
+}
+
+/* Base dropdown menu styles */
+.markdown-actions-container .dropdown__menu {
+  z-index: 1000;
+  min-width: 220px;
+  right: auto;
+  left: 0;
+}
+
+/* Hover effect for dropdown items */
+.markdown-actions-container .dropdown__link:hover {
+  background-color: var(--ifm-hover-overlay);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .markdown-actions-container {
+    margin-right: clamp(0px, 0.5rem, 1rem);
+    margin-bottom: 1rem;
+  }
+
+  .markdown-actions-container .button {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* Right-align menu on mobile to prevent cutoff */
+  .markdown-actions-container .dropdown__menu {
+    right: 0;
+    left: auto;
+    min-width: min(220px, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* RTL language support */
+[dir="rtl"] .markdown-actions-container {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .markdown-actions-container .dropdown__menu {
+  right: auto;
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  [dir="rtl"] .markdown-actions-container .dropdown__menu {
+    left: 0;
+    right: auto;
+  }
+}

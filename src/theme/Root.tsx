@@ -1,6 +1,10 @@
 import React, { useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import '../components/AIAssistant/AIAssistant.css';
+// Plugin-provided Root that injects the "Open Markdown" dropdown into doc page headers.
+// We compose it inside our own Root so both behaviors apply on every page.
+// @ts-ignore — plugin ships untyped JS
+import PluginMarkdownRoot from 'docusaurus-markdown-source-plugin/theme/Root';
 
 interface RootProps {
   children: React.ReactNode;
@@ -77,7 +81,7 @@ export default function Root({ children }: RootProps): JSX.Element {
 
   return (
     <WalletErrorBoundary>
-      {children}
+      <PluginMarkdownRoot>{children}</PluginMarkdownRoot>
       <BrowserOnly fallback={null}>
         {() => {
           const AIAssistant = require('../components/AIAssistant/AIAssistant').default;

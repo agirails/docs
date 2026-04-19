@@ -212,7 +212,14 @@ const config: Config = {
     // Expose docs as raw .md URLs for LLM crawlers (ChatGPT, Claude, Perplexity).
     // Append .md to any docs URL to get the raw markdown source.
     // Also adds a copy-markdown dropdown to each doc page header.
-    'docusaurus-markdown-source-plugin',
+    // docsPath must match the docs preset's routeBasePath ('/' here, not '/docs/'),
+    // otherwise the runtime dropdown injection won't recognize doc pages.
+    [
+      'docusaurus-markdown-source-plugin',
+      {
+        docsPath: '/',
+      },
+    ],
   ],
 
   // Markdown config
