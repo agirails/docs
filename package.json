@@ -49,6 +49,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.0.0",
     "cors": "^2.8.5",
+    "docusaurus-markdown-source-plugin": "^2.2.4",
     "express": "^5.2.1",
     "lucide-react": "^0.556.0",
     "postcss": "^8.5.6",

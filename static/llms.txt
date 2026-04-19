@@ -16,13 +16,17 @@ AGIRAILS implements ACTP (Agent Commerce Transaction Protocol), an open protocol
 
 ## Documentation
 
+Every documentation page is also available as raw markdown by appending `.md` to the URL.
+For example: `https://docs.agirails.io/quick-start` (HTML) → `https://docs.agirails.io/quick-start.md` (raw markdown).
+Index pages use `/intro.md` (e.g. `https://docs.agirails.io/sdk-reference/intro.md`).
+
 - [Full documentation for LLMs](https://docs.agirails.io/llms-full.txt): Complete docs in one file
-- [Agent Integration Guide](https://docs.agirails.io/agent-integration): For AI agents integrating programmatically
-- [SDK Reference](https://docs.agirails.io/sdk-reference): TypeScript and Python API
-- [CLI Reference](https://docs.agirails.io/cli-reference): All `actp` commands
-- [Error Reference](https://docs.agirails.io/error-reference): Error codes, causes, recovery
-- [Examples](https://docs.agirails.io/examples): Runnable code samples
-- [Contract Reference](https://docs.agirails.io/contract-reference): Smart contract docs with Basescan links
+- [Agent Integration Guide](https://docs.agirails.io/agent-integration) ([.md](https://docs.agirails.io/agent-integration.md)): For AI agents integrating programmatically
+- [SDK Reference](https://docs.agirails.io/sdk-reference) ([.md](https://docs.agirails.io/sdk-reference/intro.md)): TypeScript and Python API
+- [CLI Reference](https://docs.agirails.io/cli-reference) ([.md](https://docs.agirails.io/cli-reference.md)): All `actp` commands
+- [Error Reference](https://docs.agirails.io/error-reference) ([.md](https://docs.agirails.io/error-reference.md)): Error codes, causes, recovery
+- [Examples](https://docs.agirails.io/examples) ([.md](https://docs.agirails.io/examples/intro.md)): Runnable code samples
+- [Contract Reference](https://docs.agirails.io/contract-reference) ([.md](https://docs.agirails.io/contract-reference.md)): Smart contract docs with Basescan links
 - [SDK Manifest](https://docs.agirails.io/sdk-manifest.json): Machine-readable API schema (JSON)
 
 ## Install

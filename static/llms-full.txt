@@ -1,5 +1,5 @@
 AGIRAILS — Complete Documentation for LLMs
-Generated: 2026-02-21
+Generated: 2026-04-19
 Short version: https://docs.agirails.io/llms.txt
 Website: https://docs.agirails.io
 
@@ -16310,9 +16310,10 @@ client.pay({ to: "...", amount: "10.00" })
 
 HTTP-native instant payments via the [x402 protocol](./x402-protocol). Triggered when the `to` field is an `https://` URL.
 
-- Instant settlement (no escrow lifecycle)
-- Optional relay fee splitting via X402Relay contract
-- Requires `transfer_fn` configuration
+- Instant atomic settlement via facilitator (no escrow lifecycle)
+- Zero AGIRAILS fee — `payTo` goes directly to seller
+- Auto-registered when wallet provider present (`@agirails/sdk@3.3.0+`)
+- Requires explicit opt-in: `metadata: { paymentMethod: 'x402' }` or host in `allowedHosts`
 
 ### StandardAdapter (Priority 60)
 
@@ -16361,8 +16362,8 @@ const client = await ACTPClient.create({ mode: 'testnet' });
 // EVM address → StandardAdapter (priority 60)
 await client.pay({ to: '0xProvider...', amount: '10.00' });
 
-// HTTP URL → X402Adapter (priority 70)
-await client.pay({ to: 'https://api.example.com/pay', amount: '5.00' });
+// HTTP URL → X402Adapter (priority 70) — requires opt-in
+await client.pay({ to: 'https://api.example.com/pay', metadata: { paymentMethod: 'x402' } });
 
 // Agent ID → ERC-8004 resolve → StandardAdapter
 await client.pay({ to: '12345', amount: '10.00' });
@@ -16377,8 +16378,8 @@ client = await ACTPClient.create(mode="testnet")
 # EVM address → StandardAdapter (priority 60)
 await client.pay({"to": "0xProvider...", "amount": "10.00"})
 
-# HTTP URL → X402Adapter (priority 70)
-await client.pay({"to": "https://api.example.com/pay", "amount": "5.00"})
+# HTTP URL → X402Adapter (priority 70) — requires opt-in
+await client.pay({"to": "https://api.example.com/pay", "metadata": {"paymentMethod": "x402"}})
 
 # Agent ID → ERC-8004 resolve → StandardAdapter
 await client.pay({"to": "12345", "amount": "10.00"})
@@ -16397,9 +16398,13 @@ You can register custom adapters by implementing the `IAdapter` interface:
 
 class MyAdapter implements IAdapter {
   metadata: AdapterMetadata = {
-    name: 'my-adapter',
+    id: 'my-adapter',
+    name: 'My Custom Adapter',
+    usesEscrow: false,
+    supportsDisputes: false,
+    requiresIdentity: false,
+    settlementMode: 'atomic',
     priority: 55,  // Between Basic and Standard
-    protocols: ['custom'],
   };
 
   canHandle(params: UnifiedPayParams): boolean {
@@ -16411,8 +16416,8 @@ class MyAdapter implements IAdapter {
   }
 }
 
-// Register with router
-client.adapterRouter.register(new MyAdapter());
+// Register with client
+client.registerAdapter(new MyAdapter());
 ```
 
 
@@ -16422,9 +16427,13 @@ from agirails.adapters.types import AdapterMetadata, UnifiedPayParams
 
 class MyAdapter(IAdapter):
     metadata = AdapterMetadata(
-        name="my-adapter",
+        id="my-adapter",
+        name="My Custom Adapter",
+        uses_escrow=False,
+        supports_disputes=False,
+        requires_identity=False,
+        settlement_mode="atomic",
         priority=55,
-        protocols=["custom"],
     )
 
     def can_handle(self, params: UnifiedPayParams) -> bool:
@@ -16597,52 +16606,34 @@ x402 Protocol
 
 The **x402 protocol** enables HTTP-native instant payments. Instead of the full ACTP escrow lifecycle, x402 processes payments in a single HTTP request — ideal for micropayments and API monetization.
 
+As of `@agirails/sdk@3.3.0`, the SDK speaks the **real x402 v2 wire protocol** (EIP-3009 / Permit2 signing, CAIP-2 networks) and is interoperable with any x402 v2 server (Coinbase, third-party, self-hosted).
+
 ---
 
 ## How It Works
 
-x402 payments use the HTTP `402 Payment Required` status code as a payment negotiation mechanism:
-
 ```
-1. Client sends request to API endpoint
-2. Server responds with 402 + payment details (amount, address, token)
-3. Client signs payment authorization
-4. Server verifies payment and returns the response
+1. Client sends request to HTTPS endpoint
+2. Server responds with 402 + payment-required header (x402 v2 format)
+3. Client signs EIP-3009 (EOA) or Permit2 (Smart Wallet) authorization off-chain
+4. Facilitator submits on-chain settlement, server returns the response
 ```
 
-In AGIRAILS, the `X402Adapter` handles this flow transparently through `client.pay()`.
+The `X402Adapter` is **auto-registered** on `ACTPClient.create()` when a wallet provider is present. No manual setup needed.
 
 ---
 
-## X402Relay Contract
+## Zero Fee Layer
 
-For fee splitting, AGIRAILS deploys an on-chain `X402Relay` contract that calculates and distributes fees:
+x402 payments go directly from buyer to seller via the facilitator. **No AGIRAILS fee** on x402 — `payTo` is the seller's address at 100%.
 
-```
-grossAmount → X402Relay → provider gets (amount - fee)
-                       → treasury gets fee
-```
+[note]
+The `X402Relay` fee-splitting contract (Base Mainnet `0x81DF...`, Base Sepolia `0x4DCD...`) is **deprecated** as of SDK 3.3.0. It remains deployed for historical compatibility but is no longer used by the SDK.
 
-**Fee formula:** `max(grossAmount * bps / 10000, MIN_FEE)`
-
-| Parameter | Value |
-|-----------|-------|
-| **Default BPS** | 100 (1%) |
-| **MIN_FEE** | 50,000 ($0.05 USDC) |
-| **MAX_FEE_CAP** | 500 (5%) |
-
-### Deployed Addresses
-
-| Network | Basescan |
-|---------|----------|
-| **Base Sepolia** | [View on Basescan](https://sepolia.basescan.org/address/0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A) |
-| **Base Mainnet** | [View on Basescan](https://basescan.org/address/0x81DFb954A3D58FEc24Fc9c946aC2C71a911609F8) |
 
 ---
 
 ## SDK Integration
-
-The `X402Adapter` registers at **priority 70** (highest) and handles any `to` target starting with `https://`:
 
 
 ```typescript
@@ -16650,26 +16641,33 @@ The `X402Adapter` registers at **priority 70** (highest) and handles any `to` ta
 
 const client = await ACTPClient.create({ mode: 'testnet' });
 
-// X402Adapter auto-selected for HTTPS URLs
+// X402Adapter auto-registered — pay any HTTPS URL
 const result = await client.pay({
   to: 'https://api.example.com/translate',
-  amount: '0.50',  // $0.50 USDC
+  metadata: { paymentMethod: 'x402' },  // explicit opt-in
 });
+
+console.log(result.txId);     // on-chain settlement tx hash
+console.log(result.success);  // true
+// No release() needed — x402 is atomic
 ```
 
-**With relay config:**
 
 ```typescript
 
 
-const x402 = new X402Adapter({
-  relayAddress: '0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A',
-  treasuryAddress: '0x866E...',
-  feeBps: 100,
-  transferFn: async (to, amount) => { /* USDC transfer */ },
+const { httpServer, routes } = await buildX402Server({
+  payTo: '0xYourAddress',
+  network: 'eip155:84532',  // Base Sepolia
+  routes: [
+    { route: 'GET /api/translate', price: '$0.10', description: 'Translation' },
+  ],
 });
 
-client.adapterRouter.register(x402);
+const app = express();
+app.use(paymentMiddleware(routes, httpServer));
+app.get('/api/translate', (req, res) => res.json({ result: '...' }));
+app.listen(3000);
 ```
 
 
@@ -16678,28 +16676,34 @@ from agirails import ACTPClient
 
 client = await ACTPClient.create(mode="testnet")
 
-# X402Adapter auto-selected for HTTPS URLs
 result = await client.pay({
     "to": "https://api.example.com/translate",
-    "amount": "0.50",
+    "metadata": {"paymentMethod": "x402"},
 })
 ```
 
-**With relay config:**
 
-```python
-from agirails.adapters.x402_adapter import X402Adapter, X402AdapterConfig
+---
 
-x402 = X402Adapter(X402AdapterConfig(
-    relay_address="0x4DCD02b276Dbeab57c265B72435e90507b6Ac81A",
-    treasury_address="0x866E...",
-    fee_bps=100,
-    transfer_fn=my_transfer_function,
-))
+## Smart Wallet Support
 
-client.adapter_router.register(x402)
-```
+Smart Wallets (Tier 1, ERC-4337) work via the **Permit2 path**:
 
+1. One-time `USDC.approve(PERMIT2_ADDRESS, MAX_UINT256)` — sponsored by paymaster, zero cost
+2. Each payment: off-chain Permit2 witness signature → facilitator settles on-chain
+3. ERC-1271 (deployed) and ERC-6492 (counterfactual) signatures both supported
+
+EOA wallets (Tier 2) use the standard EIP-3009 `transferWithAuthorization` path.
+
+---
+
+## Security
+
+- **Strict HTTPS only** — `http://` rejected to prevent MITM interception of signed payloads
+- **Explicit opt-in** — `metadata.paymentMethod: 'x402'` or host in `allowedHosts` required
+- **Per-tx safety cap** — Default $1 USDC (`maxAmountPerTx` configurable)
+- **Asset allowlist** — Only canonical USDC per chain accepted by default
+- **MEV hard cap** — 5 min authorization validity window
 
 ---
 
@@ -16707,13 +16711,14 @@ client.adapter_router.register(x402)
 
 | | x402 | ACTP (Standard) |
 |--|------|-----------------|
-| **Settlement** | Instant | Escrow lifecycle |
+| **Settlement** | Instant (atomic) | Escrow lifecycle |
 | **Dispute protection** | None | Full dispute window |
 | **Best for** | Micropayments, APIs | Large transactions, services |
 | **Minimum viable** | Single HTTP call | 3+ on-chain calls |
-| **Fee** | 1% (relay) | 1% (platform) |
+| **AGIRAILS fee** | None (zero) | 1% ($0.05 min) |
+| **Smart Wallet** | Yes (Permit2) | Yes (batched UserOp) |
 
-**Rule of thumb:** Use x402 for payments under $10 where instant settlement matters. Use ACTP for anything requiring dispute protection or service delivery verification.
+**Rule of thumb:** Use x402 for synchronous API calls where instant settlement matters. Use ACTP for anything requiring dispute protection or service delivery verification.
 
 ---
 
