@@ -50,7 +50,7 @@ Eight files updated:
 - `skills/agirails-security/SKILL.md` — X402Relay fee-enforcement bullet rewritten for v2 facilitator model
 - `README.md` — added a "What's new in v4.0" callout at the top with the six high-impact changes integrators see
 
-### `agirails/claude-skill` (ClawHub generic Claude skill)
+### `agirails/claude-skill` (generic Claude skill)
 
 - Fee section in `SKILL.md` refreshed — ACTP path keeps 1% / $0.05 floor (now enforced on-chain via MIN_FEE), x402 path documented as zero-fee buyer→seller via `@x402/fetch` + facilitator
 - "Current state (v4.0.0, 2026-05-19)" callout added at the top of the skill — mainnet V3 redeploy, AIP-14 dispute bonds, MIN_FEE on-chain, INV-30, Sourcify EXACT_MATCH, workflow-attested publish
@@ -61,7 +61,7 @@ Eight files updated:
 - Floor references `@agirails/sdk@3.3.0+` → `@agirails/sdk@4.0.0+` (kept the historical "deprecated AS OF SDK 3.3.0" timestamps where relevant)
 - "What's new in v4.0.0" callout added below the title
 
-All three skill repos auto-sync from GitHub `main` to their respective distribution channels (Claude Code plugin marketplace and ClawHub). No version tag or npm publish involved — the docs propagate on the next consumer refresh.
+All three skill repos auto-sync from GitHub `main` to their respective distribution channels: the Claude Code plugin marketplace (`claude-plugin`), Anthropic's generic Claude skill format (`claude-skill`), and ClawHub via OpenClaw (`openclaw-skill`). No version tag or npm publish involved — the docs propagate on the next consumer refresh.
 
 ## What didn't ship in this wave
 
