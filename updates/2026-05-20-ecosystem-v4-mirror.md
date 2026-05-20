@@ -66,7 +66,6 @@ All three skill repos auto-sync from GitHub `main` to their respective distribut
 ## What didn't ship in this wave
 
 - **Python SDK on PyPI (`agirails`)** — `python-sdk-v2` still on 2.4.0 with pre-V3 addresses. The mirror is queued; the wider story (poetry publish path, dependency cleanup, address surface refresh) takes another focused session.
-- **`agirails-market` Next.js app** — local-only repo (no GitHub remote). `lib/contracts/addresses.ts` still references the pre-2026-04-15 Sepolia generation. Bumps queued for the next time it gets touched.
 
 ## Resources
 
