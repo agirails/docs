@@ -2,7 +2,7 @@
 slug: workflow-attested-publish-v4
 title: "Workflow-Attested npm Publish — Apex FIND-001 Closed"
 authors: [agirails]
-tags: [security, release, supply-chain]
+tags: [release, engineering, governance]
 ---
 
 Starting with `@agirails/sdk@4.0.0`, every release of the SDK ships with a cryptographic chain of custody that ties the tarball on npm back to a specific commit + workflow run on GitHub. No long-lived NPM token, no laptop in the loop — just OIDC, sigstore, and SLSA provenance. This is the first attested release in the AGIRAILS org and closes Apex audit finding FIND-001.

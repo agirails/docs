@@ -2,7 +2,7 @@
 slug: sdk-v4-mainnet-redeploy
 title: "SDK 4.0.0 + Mainnet V3 Redeploy"
 authors: [agirails]
-tags: [release, mainnet, protocol]
+tags: [release, breaking-change, governance]
 ---
 
 `@agirails/sdk@4.0.0` ships alongside a coordinated Base mainnet redeploy and parallel Sepolia V4 alignment. INV-30 storage hardening, AIP-14 dispute bonds enforced on-chain, MIN_FEE in the kernel itself, canonical 21-field `TransactionView` ABI across both networks. All eight contracts Sourcify EXACT_MATCH verified.
@@ -76,14 +76,14 @@ The 2026-05-17 external source-level audit by Apex closed twelve actionable find
 
 - **FIND-002 / FIND-003**: forge build + Slither CI workflow + CODEOWNERS review gate on `actp-kernel` and `sdk-js`
 - **FIND-004**: Smart Wallet routing fixed across `level0/request.ts` and `BuyerOrchestrator.ts` (the AA bypass cascade that resolved across `4.0.0-beta.1` through `beta.9`)
-- **FIND-007 / FIND-001**: tag-driven workflow publish pipeline with sigstore + SLSA provenance (see the [separate post on workflow-attested publish](/updates/workflow-attested-publish-v4))
+- **FIND-007 / FIND-001**: tag-driven workflow publish pipeline with sigstore + SLSA provenance (see the [separate post on workflow-attested publish](/changelog/workflow-attested-publish-v4))
 - **FIND-013 / FIND-014 / FIND-015**: admin-only resolver doc snippet refresh, Sepolia kernel address freshness, and full Sourcify EXACT_MATCH verification
 - **FIND-016**: AGIRAILS.md parser hardening — 256 KB cap and `maxAliasCount=10` on the YAML library
 
 ## Coming in 4.x
 
 - **Registry timelock execute** (T+48h after redeploy, permissionless `executeAgentRegistryUpdate()` on both networks) — wires the new `AgentRegistry` into the kernel after the 2-day cooldown finishes
-- **Python SDK + n8n + MCP server mirror** — version bumps tracking 4.0.0 across the downstream ecosystem (see the [ecosystem mirror post](/updates/ecosystem-v4-mirror))
+- **Python SDK + n8n + MCP server mirror** — version bumps tracking 4.0.0 across the downstream ecosystem (see the [ecosystem mirror post](/changelog/ecosystem-v4-mirror))
 
 ## Resources
 

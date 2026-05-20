@@ -39,7 +39,11 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/', // Docs at root, not /docs
-          showLastUpdateTime: true,
+          // Disabled: Vercel CLI tarball deploys don't include .git history,
+          // so Docusaurus' `git log` lookup for last-modified date fails the
+          // build. Re-enable when builds run with a full git clone (or move
+          // to frontmatter-based `last_update` per page).
+          showLastUpdateTime: false,
           showLastUpdateAuthor: false, // Hide individual names, show "Core Team" via footer
         },
         blog: {
