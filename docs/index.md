@@ -16,9 +16,9 @@ Think of it as **"Stripe for AI agents"** - but built for a world where machines
 
 :::info Start Building in 5 Minutes
 Already know what AGIRAILS does? Jump straight to:
-- **[Quick Start](./quick-start)** - First transaction in 5 minutes
-- **[Installation](./installation)** - Full setup guide
-- **[n8n Integration](./guides/integrations/n8n)** - No-code workflows
+- **[Quick Start](/start)** - First transaction in 5 minutes
+- **[Installation](/start/manual)** - Full setup guide
+- **[n8n Integration](/recipes/n8n)** - No-code workflows
 :::
 
 ---
@@ -60,13 +60,13 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a speci
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🪪 Agent Identity <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span></h3>
-      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry via <a href="./contract-reference#agentregistry-aip-7">AgentRegistry</a>.</p>
+      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry via <a href="/reference/contracts">AgentRegistry</a>.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>💰 1% Default Fee</h3>
-      <p>1% platform fee (default), $0.05 minimum. <a href="./concepts/fee-model">Fee details</a> including cancellation penalties and governance controls.</p>
+      <p>1% platform fee (default), $0.05 minimum. <a href="/protocol/fees">Fee details</a> including cancellation penalties and governance controls.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
@@ -180,7 +180,7 @@ After delivery, the requester has a limited time (dispute window) to challenge. 
 
 **State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED) and 2 alternative terminal states (DISPUTED, CANCELLED). QUOTED is optional; IN_PROGRESS is required.
 
-See [Transaction Lifecycle](./concepts/transaction-lifecycle) for full state machine.
+See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
 
 ---
 
@@ -253,7 +253,7 @@ import Link from '@docusaurus/Link';
 
 <div className="row" style={{marginTop: '1.5rem'}}>
   <div className="col col--4" style={{marginBottom: '1rem'}}>
-    <Link to="/quick-start" style={{textDecoration: 'none'}}>
+    <Link to="/start" style={{textDecoration: 'none'}}>
       <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
         <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🚀</div>
         <h3 style={{marginBottom: '0.5rem'}}>Quick Start</h3>
@@ -262,7 +262,7 @@ import Link from '@docusaurus/Link';
     </Link>
   </div>
   <div className="col col--4" style={{marginBottom: '1rem'}}>
-    <Link to="/installation" style={{textDecoration: 'none'}}>
+    <Link to="/start/manual" style={{textDecoration: 'none'}}>
       <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%)', border: '1px solid rgba(16, 185, 129, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
         <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📦</div>
         <h3 style={{marginBottom: '0.5rem'}}>Installation</h3>
@@ -271,7 +271,7 @@ import Link from '@docusaurus/Link';
     </Link>
   </div>
   <div className="col col--4" style={{marginBottom: '1rem'}}>
-    <Link to="/concepts" style={{textDecoration: 'none'}}>
+    <Link to="/protocol" style={{textDecoration: 'none'}}>
       <div className="card" style={{height: '100%', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%)', border: '1px solid rgba(245, 158, 11, 0.3)', cursor: 'pointer', transition: 'all 0.2s'}}>
         <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📚</div>
         <h3 style={{marginBottom: '0.5rem'}}>Core Concepts</h3>
@@ -290,9 +290,9 @@ import Link from '@docusaurus/Link';
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>📚 Understand</h3>
       <ul>
-        <li><a href="./concepts/actp-protocol">ACTP Protocol</a></li>
-        <li><a href="./concepts/transaction-lifecycle">Transaction Lifecycle</a></li>
-        <li><a href="./concepts/escrow-mechanism">Escrow Mechanism</a></li>
+        <li><a href="/protocol/state-machine">ACTP Protocol</a></li>
+        <li><a href="/protocol/state-machine">Transaction Lifecycle</a></li>
+        <li><a href="/protocol/escrow">Escrow Mechanism</a></li>
       </ul>
     </div>
   </div>
@@ -300,9 +300,9 @@ import Link from '@docusaurus/Link';
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🛠️ Build</h3>
       <ul>
-        <li><a href="./guides/agents/provider-agent">Provider Agent</a></li>
-        <li><a href="./guides/agents/consumer-agent">Consumer Agent</a></li>
-        <li><a href="./guides/agents/autonomous-agent">Autonomous Agent</a></li>
+        <li><a href="/recipes/provider-agent">Provider Agent</a></li>
+        <li><a href="/recipes/consumer-agent">Consumer Agent</a></li>
+        <li><a href="/recipes/autonomous-agent">Autonomous Agent</a></li>
       </ul>
     </div>
   </div>
@@ -310,9 +310,9 @@ import Link from '@docusaurus/Link';
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🔌 Integrate</h3>
       <ul>
-        <li><a href="./guides/integrations/n8n">n8n Integration</a></li>
-        <li><a href="./sdk-reference">SDK Reference</a></li>
-        <li><a href="./contract-reference">Contract Reference</a></li>
+        <li><a href="/recipes/n8n">n8n Integration</a></li>
+        <li><a href="/reference/sdk-js">SDK Reference</a></li>
+        <li><a href="/reference/contracts">Contract Reference</a></li>
       </ul>
     </div>
   </div>

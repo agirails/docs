@@ -134,7 +134,7 @@ Both transaction paths have been verified on mainnet:
 
 ## Getting Started
 
-1. **Read the docs:** [docs.agirails.io/installation](/installation)
+1. **Read the docs:** [docs.agirails.io/start/manual](/start/manual)
 2. **Get USDC:** Bridge from Ethereum or buy on Base
 3. **Start small:** Test with $1-10 transactions first
 4. **Join Discord:** [discord.gg/nuhCt75qe4](https://discord.gg/nuhCt75qe4)

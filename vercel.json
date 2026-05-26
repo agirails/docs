@@ -3,48 +3,69 @@
     {
       "source": "/api/:path*",
       "destination": "/api/:path*"
-    },
-    {
-      "source": "/sdk-reference.md",
-      "destination": "/sdk-reference/intro.md"
-    },
-    {
-      "source": "/concepts.md",
-      "destination": "/concepts/intro.md"
-    },
-    {
-      "source": "/cookbook.md",
-      "destination": "/cookbook/intro.md"
-    },
-    {
-      "source": "/examples.md",
-      "destination": "/examples/intro.md"
-    },
-    {
-      "source": "/guides.md",
-      "destination": "/guides/intro.md"
     }
+  ],
+  "redirects": [
+    { "source": "/installation", "destination": "/start/manual", "permanent": true },
+    { "source": "/quick-start", "destination": "/start", "permanent": true },
+    { "source": "/agent-integration", "destination": "/recipes/provider-agent", "permanent": true },
+    { "source": "/developer-responsibilities", "destination": "/security", "permanent": true },
+    { "source": "/cli-reference", "destination": "/reference/cli", "permanent": true },
+    { "source": "/contract-reference", "destination": "/reference/contracts", "permanent": true },
+    { "source": "/error-reference", "destination": "/reference/errors", "permanent": true },
+
+    { "source": "/concepts", "destination": "/protocol", "permanent": true },
+    { "source": "/concepts/", "destination": "/protocol", "permanent": true },
+    { "source": "/concepts/actp-protocol", "destination": "/protocol/state-machine", "permanent": true },
+    { "source": "/concepts/transaction-lifecycle", "destination": "/protocol/state-machine", "permanent": true },
+    { "source": "/concepts/adapter-routing", "destination": "/protocol/adapters", "permanent": true },
+    { "source": "/concepts/agent-identity", "destination": "/protocol/identity", "permanent": true },
+    { "source": "/concepts/erc8004-identity", "destination": "/protocol/identity", "permanent": true },
+    { "source": "/concepts/escrow-mechanism", "destination": "/protocol/escrow", "permanent": true },
+    { "source": "/concepts/fee-model", "destination": "/protocol/fees", "permanent": true },
+    { "source": "/concepts/x402-protocol", "destination": "/protocol/x402", "permanent": true },
+
+    { "source": "/guides", "destination": "/recipes", "permanent": true },
+    { "source": "/guides/", "destination": "/recipes", "permanent": true },
+    { "source": "/guides/agirailsmd-config", "destination": "/protocol/agirails-md", "permanent": true },
+    { "source": "/guides/agents/provider-agent", "destination": "/recipes/provider-agent", "permanent": true },
+    { "source": "/guides/agents/consumer-agent", "destination": "/recipes/consumer-agent", "permanent": true },
+    { "source": "/guides/agents/autonomous-agent", "destination": "/recipes/autonomous-agent", "permanent": true },
+    { "source": "/guides/integrations/claude-plugin", "destination": "/start/ai-environment/claude-code", "permanent": true },
+    { "source": "/guides/integrations/crewai", "destination": "/recipes/crewai", "permanent": true },
+    { "source": "/guides/integrations/langchain", "destination": "/recipes/langchain", "permanent": true },
+    { "source": "/guides/integrations/n8n", "destination": "/recipes/n8n", "permanent": true },
+    { "source": "/guides/integrations/openclaw", "destination": "/start/ai-environment/openclaw", "permanent": true },
+
+    { "source": "/cookbook", "destination": "/recipes", "permanent": true },
+    { "source": "/cookbook/", "destination": "/recipes", "permanent": true },
+    { "source": "/cookbook/api-pay-per-call", "destination": "/recipes/per-call-api", "permanent": true },
+    { "source": "/cookbook/automated-provider-agent", "destination": "/recipes/provider-agent", "permanent": true },
+    { "source": "/cookbook/multi-agent-budget", "destination": "/recipes", "permanent": true },
+    { "source": "/cookbook/n8n-workflow", "destination": "/recipes/n8n", "permanent": true },
+    { "source": "/cookbook/secure-key-management", "destination": "/recipes/keystore-and-deployment", "permanent": true },
+
+    { "source": "/examples", "destination": "/recipes", "permanent": true },
+    { "source": "/examples/", "destination": "/recipes", "permanent": true },
+    { "source": "/examples/e2e-single-script", "destination": "/recipes", "permanent": true },
+
+    { "source": "/sdk-reference", "destination": "/reference/sdk-js", "permanent": true },
+    { "source": "/sdk-reference/basic-api", "destination": "/reference/sdk-js/basic", "permanent": true },
+    { "source": "/sdk-reference/standard-api", "destination": "/reference/sdk-js/standard", "permanent": true },
+    { "source": "/sdk-reference/registry", "destination": "/reference/sdk-js", "permanent": true },
+    { "source": "/sdk-reference/utilities", "destination": "/reference/sdk-js", "permanent": true },
+    { "source": "/sdk-reference/errors", "destination": "/reference/errors", "permanent": true },
+    { "source": "/sdk-reference/advanced-api", "destination": "/reference/sdk-js", "permanent": true },
+    { "source": "/sdk-reference/advanced-api/:slug*", "destination": "/reference/sdk-js", "permanent": true }
   ],
   "headers": [
     {
       "source": "/(.*)\\.md",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/markdown; charset=utf-8"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, nofollow"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
-        }
+        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
       ]
     }
   ]
