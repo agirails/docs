@@ -46,6 +46,13 @@ interface ContractEntry {
   owner?: string;
 }
 
+interface ErrorEntry {
+  class_name: string;
+  parent: string;
+  code: string | null;
+  source_file: string;
+}
+
 interface Manifest {
   _generatedAt: string;
   _sourceVersions: Record<string, string>;
@@ -68,6 +75,12 @@ interface Manifest {
       runtime: { name: string; description: string; read_only: boolean; destructive: boolean }[];
       protocol: { name: string; description: string; read_only: boolean; destructive: boolean }[];
     };
+  };
+  errors: {
+    ts: ErrorEntry[];
+    python: ErrorEntry[];
+    cross_sdk: { ts_only: string[]; python_only: string[] };
+    counts: { ts: number; python: number };
   };
 }
 
@@ -276,6 +289,74 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
   return lines.join('\n');
 }
 
+function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): string {
+  const lines: string[] = [];
+  lines.push('---');
+  lines.push('slug: /reference/errors');
+  lines.push('title: "Error reference"');
+  lines.push(`description: "All ${errors.counts.ts} TypeScript + ${errors.counts.python} Python error classes — auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."`);
+  lines.push('schema_type: APIReference');
+  lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
+  lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('tags: [reference, errors, auto-extracted]');
+  lines.push('sidebar_position: 5');
+  lines.push('---');
+  lines.push('');
+  lines.push(GENERATED_BANNER);
+  lines.push('');
+  lines.push('# Error reference');
+  lines.push('');
+  lines.push(`**TypeScript SDK**: ${errors.counts.ts} error classes · **Python SDK**: ${errors.counts.python} error classes · **Manifest generated**: ${generatedAt.slice(0, 19).replace('T', ' ')} UTC`);
+  lines.push('');
+  lines.push('Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks — preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren\'t thrown directly.');
+  lines.push('');
+
+  const renderTable = (sdk: 'TypeScript' | 'Python', entries: ErrorEntry[]) => {
+    lines.push(`## ${sdk} SDK errors`);
+    lines.push('');
+    lines.push('| Class | Parent | Code | Source |');
+    lines.push('|---|---|---|---|');
+    const sorted = [...entries].sort((a, b) => a.class_name.localeCompare(b.class_name));
+    for (const e of sorted) {
+      const code = e.code ? `\`${e.code}\`` : '_(abstract)_';
+      lines.push(`| \`${e.class_name}\` | \`${e.parent}\` | ${code} | \`${e.source_file}\` |`);
+    }
+    lines.push('');
+  };
+
+  renderTable('TypeScript', errors.ts);
+  renderTable('Python', errors.python);
+
+  if (errors.cross_sdk.ts_only.length > 0 || errors.cross_sdk.python_only.length > 0) {
+    lines.push('## Cross-SDK divergences');
+    lines.push('');
+    lines.push('Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don\'t apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn\'t share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.');
+    lines.push('');
+    if (errors.cross_sdk.ts_only.length > 0) {
+      lines.push(`**TypeScript-only** (${errors.cross_sdk.ts_only.length}):`);
+      lines.push('');
+      lines.push(errors.cross_sdk.ts_only.map((c) => `\`${c}\``).join(', '));
+      lines.push('');
+    }
+    if (errors.cross_sdk.python_only.length > 0) {
+      lines.push(`**Python-only** (${errors.cross_sdk.python_only.length}):`);
+      lines.push('');
+      lines.push(errors.cross_sdk.python_only.map((c) => `\`${c}\``).join(', '));
+      lines.push('');
+    }
+  }
+
+  lines.push('## See also');
+  lines.push('');
+  lines.push('- [Reference overview](/reference)');
+  lines.push('- [SDK reference — TypeScript](/reference/sdk-js)');
+  lines.push('- [SDK reference — Python](/reference/sdk-python)');
+  lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)');
+  lines.push('');
+
+  return lines.join('\n');
+}
+
 function writeFile(relPath: string, content: string): void {
   const fullPath = path.join(DOCS_DIR, relPath);
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -292,6 +373,7 @@ function main(): void {
   writeFile('reference/contracts/base-sepolia.md', renderContractsPage('base-sepolia', m.contracts['base-sepolia'], m._generatedAt));
   writeFile('reference/cli/index.md', renderCliPage(m.cli, m._generatedAt));
   writeFile('reference/mcp-server/index.md', renderMcpPage(m.mcp, m._generatedAt));
+  writeFile('reference/errors/index.md', renderErrorsPage(m.errors, m._generatedAt));
 
   console.log('[render-reference] done');
 }

@@ -65,3 +65,5 @@ SCRATCHPAD.md
 
 # Environment
 .env
+.vercel
+.env*.local
