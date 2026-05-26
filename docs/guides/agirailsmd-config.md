@@ -7,6 +7,16 @@ description: Use AGIRAILS.md as the source of truth for your agent's on-chain id
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::danger Rewrite in progress
+This page teaches an outdated frontmatter schema and is being rewritten as part of the docs.agirails.io v4 refresh. **Do not copy-paste configuration from this page** — the V4 parser (`parseAgirailsMdV4`) will reject it.
+
+Authoritative current sources:
+- Canonical protocol spec: https://agirails.app/protocol/AGIRAILS.md
+- V4 parser source: [`agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts)
+- TypeScript SDK CHANGELOG: https://github.com/agirails/sdk-js/blob/main/CHANGELOG.md
+- Python SDK CHANGELOG: https://github.com/agirails/sdk-python/blob/main/CHANGELOG.md
+:::
+
 # AGIRAILS.md Configuration
 
 `AGIRAILS.md` is a markdown file that serves as the **source of truth** for your agent's on-chain identity and configuration. The SDK reads it, hashes it deterministically, and publishes the hash to the AgentRegistry contract.

@@ -7,6 +7,15 @@ description: Monetize your API with per-call payments using AGIRAILS
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::danger Rewrite in progress
+This recipe recommends ACTP escrow for the textbook x402 use case (per-API-call billing), which is the wrong tool — the canonical protocol spec uses x402 v2 for this pattern. Code samples also use outdated `linkEscrow(txId)` single-arg signature. **Do not follow this recipe as-is.** Rewrite in progress as part of the docs.agirails.io v4 refresh.
+
+Authoritative current sources:
+- Canonical protocol spec: https://agirails.app/protocol/AGIRAILS.md
+- TypeScript SDK CHANGELOG: https://github.com/agirails/sdk-js/blob/main/CHANGELOG.md
+- Python SDK CHANGELOG: https://github.com/agirails/sdk-python/blob/main/CHANGELOG.md
+:::
+
 # API Pay-Per-Call
 
 Monetize your API by charging per call. No subscriptions, no invoices - just instant micropayments.

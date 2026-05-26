@@ -4,6 +4,15 @@ title: CrewAI Integration
 description: Build payment-enabled AI crews with CrewAI and AGIRAILS
 ---
 
+:::danger Rewrite in progress
+The Python code examples on this page do not parse against `agirails@3.0.1` (broken indentation, sync-on-async calls, methods that don't exist on `ACTPClient`). **Do not copy-paste from this page.** Rewrite in progress as part of the docs.agirails.io v4 refresh.
+
+Authoritative current sources:
+- Python SDK CHANGELOG: https://github.com/agirails/sdk-python/blob/main/CHANGELOG.md
+- Python SDK reference: https://pypi.org/project/agirails/
+- Canonical protocol spec: https://agirails.app/protocol/AGIRAILS.md
+:::
+
 # CrewAI Integration
 
 Build AI crews where agents can pay each other and external services.

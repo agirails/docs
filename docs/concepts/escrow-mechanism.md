@@ -687,8 +687,8 @@ Contract addresses are automatically configured by the SDK based on your `networ
 
 | Contract | Base Sepolia | Base Mainnet |
 |----------|-------------|-------------|
-| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0xedC62264301A119207f1f89C6bDE4Fd7a7A4CeB4) | [View on Basescan](https://basescan.org/address/0x6aAF45882c4b0dD34130ecC790bb5Ec6be7fFb99) |
-| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x0ba0b17554601b30F5406e74d2208f567C12CcFE) | [View on Basescan](https://basescan.org/address/0x132B9eB321dBB57c828B083844287171BDC92d29) |
+| **EscrowVault** | [View on Basescan](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB) | [View on Basescan](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5) |
+| **ACTPKernel** | [View on Basescan](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b) | [View on Basescan](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842) |
 | **USDC** | [View on Basescan](https://sepolia.basescan.org/address/0x444b4e1A65949AB2ac75979D5d0166Eb7A248Ccb) (Mock) | [View on Basescan](https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913) |
 
 ---

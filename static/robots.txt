@@ -1,0 +1,54 @@
+# AGIRAILS docs — robots.txt
+# We explicitly allow AI crawlers and search engines.
+# Raw .md endpoints are served via the markdown-source plugin and
+# carry X-Robots-Tag: noindex (Vercel header) to avoid double-indexing
+# the same content as both HTML and raw markdown.
+
+User-agent: *
+Allow: /
+
+# Major search crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# AI / LLM crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://docs.agirails.io/sitemap.xml
+
+# LLM-targeted indexes (llms.txt protocol)
+# https://llmstxt.org
+# Short index:  https://docs.agirails.io/llms.txt
+# Full corpus:  https://docs.agirails.io/llms-full.txt
