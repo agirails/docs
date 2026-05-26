@@ -103,6 +103,13 @@ jobs:
           CI_STRICT: 'true'
         run: npm run truth-ledger
 
+      - name: Render auto-extracted reference pages
+        # Consumes static/sdk-manifest.json → writes docs/reference/{contracts,cli,mcp-server}/*.md
+        # If manifest is content-unchanged from emit.ts's idempotent compare,
+        # render still runs (cheap) but git will see no diff.
+        working-directory: docs-site
+        run: npm run render-reference
+
       - name: Run compat tests
         working-directory: docs-site
         run: npx vitest run scripts/truth-ledger/__tests__/
