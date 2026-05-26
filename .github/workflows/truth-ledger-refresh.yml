@@ -72,11 +72,15 @@ jobs:
           repository: agirails/agirails-mcp-server
           path: Platform/agirails-mcp-server
 
-      - name: Checkout agirails.app
+      - name: Checkout agirails.app (private repo — needs PAT)
         uses: actions/checkout@v4
         with:
           repository: agirails/agirails.app
           path: Platform/agirails.app/web
+          # agirails/agirails.app is a private repo. Default GITHUB_TOKEN
+          # cannot cross-org-clone private repos; we use a DamirAGI PAT
+          # stored as repo secret AGIRAILS_APP_PAT (repo scope).
+          token: ${{ secrets.AGIRAILS_APP_PAT }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
