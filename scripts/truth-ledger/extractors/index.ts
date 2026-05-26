@@ -12,6 +12,8 @@
  */
 
 import type { Extractor, RawSurface, ExtractorConfig, SurfaceName } from '../types.ts';
+import { contractsExtractor } from './contracts.ts';
+import { agirailsMdV4Extractor } from './agirailsmd-v4.ts';
 
 function makeStub(surface: SurfaceName): Extractor {
   return {
@@ -42,9 +44,11 @@ function surfacePhase(surface: SurfaceName): string {
 }
 
 // Order matters only for log readability; execution is parallel.
+// Phase 5.2: contracts + agirailsmd-v4 are real.
+// Phase 5.3-5.4: remaining 5 extractors are stubs.
 export const EXTRACTORS: readonly Extractor[] = [
-  makeStub('contracts'),
-  makeStub('agirailsmd-v4'),
+  contractsExtractor,
+  agirailsMdV4Extractor,
   makeStub('errors'),
   makeStub('cli'),
   makeStub('sdk-api-ts'),
