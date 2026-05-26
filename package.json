@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "prebuild": "tsx scripts/generate-llms-full.ts",
+    "prebuild": "tsx scripts/build-truth-ledger.ts && tsx scripts/generate-llms-full.ts",
     "truth-ledger": "tsx scripts/build-truth-ledger.ts",
     "truth-ledger:dry": "tsx scripts/build-truth-ledger.ts --dry-run",
     "build": "docusaurus build",
