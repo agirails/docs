@@ -78,17 +78,19 @@ Twelve commitments baked into Phase 1 page templates, BEFORE any content is writ
 
 ## Roadmap
 
-### Day -1 — Machine-surface quarantine (~2-3h) — NEW per Codex review
+### Day -1 — Machine-surface quarantine — ✅ COMPLETED 2026-05-26
 
-LLM crawlers ingest continuously; can't leave V2 addresses in `static/llms-full.txt` for three weeks of branch-and-flip work. Day -1 minimal-touch fix on **machine surfaces only** (not human-facing pages — those go via branch-and-flip):
+Pushed as commit `5ea8f0df` on docs-site `main`. Machine-bleed Codex flagged is stopped.
 
-- **`static/llms-full.txt`** — regenerate with current V3 mainnet + V4 sepolia addresses, or temporarily replace with a one-page redirect note pointing at GitHub canonical AGIRAILS.md
-- **`static/llms.txt`** — same regen
-- **`docs/contract-reference.md`** — minimal surgical update of the 8 stale addresses (target: machine readers, not narrative)
-- **`robots.txt`** — explicit allow for GPTBot/ClaudeBot/Google-Extended/PerplexityBot/CCBot if not already set
-- **`sitemap.xml`** — verify generated (Docusaurus does this by default); confirm `lastmod` accurate
+What landed:
+- ✅ **8-address sweep** (V2 mainnet kernel/vault/registry/archive + pre-V4 sepolia equivalents) → V3/V4 across 12 doc files via `sed`. `lint-addresses.sh` passes; V2 addresses verified absent.
+- ✅ **`static/robots.txt`** created with explicit AI-crawler allowlist: GPTBot, ClaudeBot, anthropic-ai, Google-Extended, PerplexityBot, CCBot, Bytespider, Applebot, Applebot-Extended. Sitemap reference + llms.txt/llms-full.txt references included.
+- ✅ **`static/llms-full.txt`** regenerated via `npx tsx scripts/generate-llms-full.ts` — 49 files, 78380 words, 0 V2 occurrences, 27 V3/V4 occurrences, 2 stub-banner occurrences. Vercel rebuild auto-deploys.
+- ✅ **Stub banners** on 3 most-broken pages: `guides/agirailsmd-config.md`, `guides/integrations/crewai.md`, `cookbook/api-pay-per-call.md`. Each banner names current SDK versions + points at GitHub CHANGELOGs + canonical AGIRAILS.md. Renders as `:::danger` admonition.
+- ✅ **`.audit/` planning artifacts** force-committed (gitignore `*_PLAN*.md` pattern matched FINAL_PLAN.md; bypassed for walk-away test).
+- ✅ **sitemap.xml** verified (Docusaurus generates at build, no custom step needed).
 
-Direct push to main (single commit). NOT part of branch-and-flip. Removes the machine-bleed Codex flagged.
+Time spent: ~1.5h. Estimate was 2-3h.
 
 ### Pre-Week — Decisions & branch setup (1-2 days elapsed time)
 
