@@ -16,8 +16,12 @@ import { contractsExtractor } from './contracts.ts';
 import { agirailsMdV4Extractor } from './agirailsmd-v4.ts';
 import { errorsExtractor } from './errors.ts';
 import { cliExtractor } from './cli.ts';
+import { mcpToolsExtractor } from './mcp-tools.ts';
+import { sdkApiTsExtractor } from './sdk-api-ts.ts';
+import { sdkApiPyExtractor } from './sdk-api-py.ts';
 
-function makeStub(surface: SurfaceName): Extractor {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _makeStub_unused(surface: SurfaceName): Extractor {
   return {
     surface,
     async extract(_config: ExtractorConfig): Promise<RawSurface> {
@@ -46,15 +50,13 @@ function surfacePhase(surface: SurfaceName): string {
 }
 
 // Order matters only for log readability; execution is parallel.
-// Phase 5.2: contracts + agirailsmd-v4.
-// Phase 5.3: errors + cli.
-// Phase 5.4: remaining 3 extractors still stubbed.
+// All 7 extractors are real as of Phase 5.4.
 export const EXTRACTORS: readonly Extractor[] = [
   contractsExtractor,
   agirailsMdV4Extractor,
   errorsExtractor,
   cliExtractor,
-  makeStub('sdk-api-ts'),
-  makeStub('sdk-api-py'),
-  makeStub('mcp-tools'),
+  sdkApiTsExtractor,
+  sdkApiPyExtractor,
+  mcpToolsExtractor,
 ] as const;
