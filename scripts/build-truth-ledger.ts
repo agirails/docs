@@ -19,7 +19,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { resolveConfig, MANIFEST_OUTPUT_PATH } from './truth-ledger/config.ts';
+import { resolveConfig, checkSourceAvailability, MANIFEST_OUTPUT_PATH } from './truth-ledger/config.ts';
 import { EXTRACTORS } from './truth-ledger/extractors/index.ts';
 import { normalize } from './truth-ledger/normalize.ts';
 import { computeDivergences } from './truth-ledger/diverge.ts';
@@ -67,7 +67,33 @@ function readSourceVersions(config: ReturnType<typeof resolveConfig>): Record<st
 
 async function main(): Promise<void> {
   const dryRun = process.argv.includes('--dry-run');
+  const checkOnly = process.argv.includes('--check');
   const config = resolveConfig();
+
+  // Pre-flight: verify all source paths exist before running extractors.
+  // Truth-ledger requires the broader AGIRAILS monorepo structure
+  // (sibling SDK + Platform + Protocol directories). It is meant to run
+  // locally or via the CI workflow that checks out the full monorepo.
+  // It is NOT designed for Vercel build environments that only clone
+  // the docs repo in isolation.
+  const missing = checkSourceAvailability(config);
+  if (missing.length > 0) {
+    console.error('[truth-ledger] FATAL: required source paths missing:');
+    for (const m of missing) console.error(`  - ${m}`);
+    console.error('');
+    console.error('Truth-ledger requires the full AGIRAILS monorepo layout.');
+    console.error('Run from the local AGIRAILS workspace, or use the CI workflow.');
+    console.error('Vercel build environments only clone the docs repo — the prebuild');
+    console.error('hook intentionally does NOT run truth-ledger; the committed');
+    console.error('static/sdk-manifest.json is what gets deployed.');
+    process.exit(1);
+  }
+
+  if (checkOnly) {
+    console.log('[truth-ledger] --check: all source paths present; exiting');
+    return;
+  }
+
   const sourceVersions = readSourceVersions(config);
 
   console.log('[truth-ledger] starting build');

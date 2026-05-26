@@ -6,9 +6,30 @@
  * `process.env` or computes paths itself. Per A2 architecture.
  */
 
+import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ExtractorConfig } from './types.ts';
 import { NETWORKS } from './types.ts';
+
+/**
+ * Verify that source paths exist before extraction begins. Helps
+ * fail-fast when running in an environment that doesn't include
+ * the broader AGIRAILS monorepo (e.g. Vercel build of `agirails/docs`
+ * repo in isolation). Truth-ledger is meant to run locally or via
+ * the CI workflow, NOT during Vercel deploys.
+ *
+ * @returns array of missing paths (empty when all present)
+ */
+export function checkSourceAvailability(config: ExtractorConfig): string[] {
+  const required = [
+    { label: 'sdk-js root', path: config.sdkJsRoot },
+    { label: 'python-sdk root', path: config.pythonSdkRoot },
+    { label: 'mcp-server root', path: config.mcpServerRoot },
+    { label: 'contracts deployments', path: config.contractsRoot },
+    { label: 'canonical AGIRAILS.md', path: config.agirailsMdPath },
+  ];
+  return required.filter((r) => !fs.existsSync(r.path)).map((r) => `${r.label}: ${r.path}`);
+}
 
 /**
  * Resolve config from the docs-site root. Assumes this script is
