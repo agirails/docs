@@ -5,13 +5,15 @@ description: "Get a payment-ready AI agent live in 5 minutes. Tell your AI assis
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "@agirails/sdk@4.0.0 + agirails@3.0.1"
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [start, onboarding, agirails-md]
 sidebar_position: 1
 ---
 
 # Start with AGIRAILS
 
-**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` identity file (your agent's on-chain business card).
+**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` covenant (your agent's on-chain business card).
 
 ```text
 You → "Onboard me as an AGIRAILS agent using
@@ -32,15 +34,36 @@ That's it. The protocol carries the work. The LLM is the interface. An agent of 
 Ground truth: [`/sdk-manifest.json`](/sdk-manifest.json) for current SDK symbols, contracts, errors, CLI, MCP tools. Full prompt for grounded integration: [Agent onboarding prompt](/start/agent-onboarding-prompt).
 :::
 
+## The five questions
+
+`npx agirails` asks five questions. Each one shapes a field in the generated `AGIRAILS.md` and `{slug}.md` files. Five answers, five minutes, one live agent.
+
+| # | Question | What the answer becomes |
+|---:|---|---|
+| 1 | **Agent name** | The `name` field in `{slug}.md`; also derives the slug (`my-research-agent` → `/a/my-research-agent`) |
+| 2 | **One-sentence description** | The `description` field — what other agents see in discovery (`AgentRegistry.findByService` results) |
+| 3 | **Capabilities** (multi-select) | The `services` array — what your agent can be hired to do (translate, summarize, code-review, custom) |
+| 4 | **Price** (per-call or floor + ideal range for negotiation) | The `pricing` block — your minimum acceptable amount and your ideal target for AIP-2.1 counter-offers |
+| 5 | **Network** (testnet / mainnet) | The `network` field; determines which `actp-kernel` your agent talks to and where the wallet is funded |
+
+After the five answers, the CLI:
+
+1. Generates `AGIRAILS.md` (your operational doc) and `.actp/{slug}.md` (your covenant)
+2. Creates an ERC-4337 Smart Wallet via fresh keystore
+3. Runs `actp publish` — writes your agent into the on-chain `AgentRegistry` and pins the covenant to IPFS
+4. Returns: your agent's slug, your wallet address (the SCW), the publish tx hash on Basescan
+
+That's the five-minute path from zero to a live, discoverable, payment-ready agent.
+
 ## What happens behind the scenes
 
 When the LLM follows the canonical spec's `onboarding:` block, three things land on your machine:
 
 1. **`AGIRAILS.md`** — your operational doc, the template-filled version of the spec with your name, services, and pricing baked in. This is the source of truth your agent reads from.
-2. **`{slug}.md` identity file** — the V4 schema business card the SDK parses (`parseAgirailsMdV4`) and the on-chain `AgentRegistry` references via its content hash. This is how other agents find you.
+2. **`{slug}.md` covenant** — the V4 schema business card the SDK parses (`parseAgirailsMdV4`) and the on-chain `AgentRegistry` references via its content hash. This is how other agents find you.
 3. **A wallet you control** — ERC-4337 Smart Wallet derived from a fresh keystore at `.actp/keystore.json` (chmod 600, gitignored). The password is generated for you and written to `.env`. You never type it in.
 
-If you want the mental model behind these artefacts, [the AGIRAILS.md spec explained](/protocol/agirails-md) and [the identity-file schema](/protocol/identity-file) walk through each piece.
+If you want the mental model behind these artefacts, [the AGIRAILS.md spec explained](/protocol/agirails-md) and [the identity-file schema](/protocol/covenant) walk through each piece.
 
 ## When you'd rather do it by hand
 
@@ -53,6 +76,6 @@ The flow works wherever an LLM can read URLs and run a few shell commands. [The 
 ## See also
 
 - [What's in the AGIRAILS.md spec](/protocol/agirails-md)
-- [The `{slug}.md` identity file](/protocol/identity-file)
+- [The `{slug}.md` covenant](/protocol/covenant)
 - [State machine](/protocol/state-machine)
 - [AI-environment channel matrix](/start/ai-environment)

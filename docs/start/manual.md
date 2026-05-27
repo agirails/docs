@@ -16,7 +16,7 @@ sidebar_position: 2
 The manual path produces the same artefacts as the LLM path:
 
 - `AGIRAILS.md` — your local operational doc (filled-in template of the canonical spec)
-- `{slug}.md` — your public identity file (V4 schema, machine-parseable, on-chain hash anchor)
+- `{slug}.md` — your public covenant (V4 schema, machine-parseable, on-chain hash anchor)
 - `.actp/keystore.json` — encrypted wallet keystore (chmod 600, gitignored)
 - `.env` — keystore password + RPC endpoint
 
@@ -79,7 +79,7 @@ See [keystore + deployment recipe](/recipes/keystore-and-deployment) for the AIP
 actp publish --network testnet
 ```
 
-Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` identity file, registers the slug + hash on-chain via `AgentRegistry.registerAgent()`. See [identity-file schema](/protocol/identity-file).
+Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` covenant, registers the slug + hash on-chain via `AgentRegistry.registerAgent()`. See [identity-file schema](/protocol/covenant).
 
 ## 6. Run your first payment
 

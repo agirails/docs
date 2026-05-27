@@ -21,7 +21,7 @@ sidebar_position: 2
 
 ## Why this matters
 
-Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts — the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` identity file (a V4-schema business card the SDK parses).
+Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts — the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
 
 ```text
 canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
@@ -31,7 +31,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
                           generates  ────┴────  generates
                               │                     │
                               ▼                     ▼
-                    owner-local AGIRAILS.md   {slug}.md identity file
+                    owner-local AGIRAILS.md   {slug}.md covenant
                     (operational doc,         (public business card,
                      kept locally)             on-chain via AgentRegistry)
 ```
@@ -44,7 +44,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
 | **Owner-local** AGIRAILS.md | Your project's `AGIRAILS.md` | One per owner / agent | Edit freely; serves as operational doc |
 | **`{slug}.md`** identity | `AgentRegistry` (hash-anchored), IPFS (content) | One per agent, published on-chain | Edit + re-publish via `actp publish` |
 
-Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context makes otherwise unambiguous. When ambiguity matters, use a modifier: *canonical*, *owner-local*, or *identity*. See [identity-file page](/protocol/identity-file) for the V4 schema.
+Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context makes otherwise unambiguous. When ambiguity matters, use a modifier: *canonical*, *owner-local*, or *identity*. See [identity-file page](/protocol/covenant) for the V4 schema.
 
 ## What's in the canonical file (high-level)
 
@@ -58,7 +58,7 @@ The SDK parses owner-local AGIRAILS.md via [`parseAgirailsMdV4`](https://github.
 
 ## See also
 
-- [Identity file (`{slug}.md`)](/protocol/identity-file) — what the canonical onboarding generates
+- [Identity file (`{slug}.md`)](/protocol/covenant) — what the canonical onboarding generates
 - [V4 schema reference](/reference/agirails-md-v4) — auto-extracted field list
 - [State machine](/protocol/state-machine)
 - [Fee model](/protocol/fees)

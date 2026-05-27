@@ -108,6 +108,124 @@ agent.on('payment:sent', () => {
 
 LangChain agents can get caught in retry loops if a tool errors transiently — without a cap, the next thing you notice is a depleted wallet.
 
+## Full scenario — paid research assistant
+
+A LangGraph research workflow that decides which paid services to use, calls them, and reports back. The pattern most LangChain users actually want to ship.
+
+```ts
+import { ChatAnthropic } from '@langchain/anthropic';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { tool } from '@langchain/core/tools';
+import { z } from 'zod';
+import { Agent } from '@agirails/sdk';
+
+const agirails = new Agent({
+  network: 'mainnet',
+  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  behavior: {
+    budget: {
+      perRequestSpendCap: 0.50, // never spend more than $0.50 per top-level query
+      dailySpendCap: 20.00,     // hard daily ceiling
+      onCapExceeded: 'halt',
+    },
+  },
+});
+await agirails.start();
+
+// Tool 1: fetch web content (a paid AGIRAILS provider somewhere)
+const fetchWeb = tool(
+  async ({ url }) => {
+    const r = await agirails.request('fetch-content', {
+      input: { url, format: 'markdown' },
+      budget: 0.05,
+      timeout: 15_000,
+    });
+    return r.result.markdown;
+  },
+  {
+    name: 'fetch_web',
+    description: 'Fetch a URL and return clean markdown. Costs up to $0.05 USDC.',
+    schema: z.object({ url: z.string().url() }),
+  }
+);
+
+// Tool 2: translate (paid AGIRAILS provider)
+const translate = tool(
+  async ({ text, target }) => {
+    const r = await agirails.request('translate', {
+      input: { text, target },
+      budget: 0.10,
+      timeout: 30_000,
+    });
+    return r.result.translated;
+  },
+  {
+    name: 'translate',
+    description: 'Translate text. Costs up to $0.10 USDC per call.',
+    schema: z.object({
+      text: z.string(),
+      target: z.string().describe('ISO-639 code (es, fr, de, ja, ...)'),
+    }),
+  }
+);
+
+// Tool 3: summarize (paid AGIRAILS provider — bulk; uses standard adapter, not x402)
+const summarize = tool(
+  async ({ text, sentences }) => {
+    const r = await agirails.request('summarize', {
+      input: { text, sentences },
+      budget: 0.30,
+      timeout: 45_000,
+    });
+    return r.result.summary;
+  },
+  {
+    name: 'summarize',
+    description: 'Summarize text in N sentences. Costs up to $0.30 USDC per call.',
+    schema: z.object({
+      text: z.string(),
+      sentences: z.number().int().min(1).max(20),
+    }),
+  }
+);
+
+const researcher = createReactAgent({
+  llm: new ChatAnthropic({ model: 'claude-opus-4-7' }),
+  tools: [fetchWeb, translate, summarize],
+});
+
+// Run a research task
+const out = await researcher.invoke({
+  messages: [{
+    role: 'user',
+    content: 'Find the latest paper on sheaf cohomology from agirails.io and give me a 3-sentence summary in Croatian.',
+  }],
+});
+
+console.log('answer:', out.messages.at(-1)?.content);
+console.log('spent:', agirails.stats.totalSpent, 'USDC');
+```
+
+What happens at runtime:
+
+1. The LLM decides it needs `fetch_web` → calls it on agirails.io → pays ~$0.04 USDC
+2. The LLM decides it needs `summarize` → calls it with 3-sentence target → pays ~$0.30 USDC
+3. The LLM decides it needs `translate` to Croatian → calls it → pays ~$0.08 USDC
+4. Returns answer to the user; total spend visible in `agirails.stats.totalSpent` (~$0.42)
+
+The `behavior.budget.perRequestSpendCap` ensures the whole query never exceeds $0.50 even if the LLM gets stuck in a loop. The `dailySpendCap` is the secondary safety net.
+
+For LangSmith correlation, attach the LangSmith run ID as metadata on every `request()` call:
+
+```ts
+const r = await agirails.request('translate', {
+  input: { text, target },
+  budget: 0.10,
+  metadata: { langsmithRunId: traceContext.runId },
+});
+// Later: result.transaction.id ↔ langsmithRunId for cost attribution per trace
+```
+
 ## Exposing your LangChain workflow as a provider
 
 The other direction is also useful: your LangChain workflow *is* the service.

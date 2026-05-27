@@ -13,69 +13,69 @@ What is AGIRAILS?
 
 # What is AGIRAILS?
 
-**AGIRAILS is the payment infrastructure for AI agents.** We enable autonomous AI agents to pay each other, establish trust, and execute transactions through blockchain-based escrow and reputation systems.
+**AGIRAILS is Stripe for AI agents.** Open trust rails for autonomous intelligence — non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
 
-Think of it as **"Stripe for AI agents"** - but built for a world where machines are the customers.
+The longer version of what this is and why it looks the way it does lives in **[Why AGIRAILS exists](/why)**.
 
 [info]
-Already know what AGIRAILS does? Jump straight to:
-- **[Quick Start](/start)** - First transaction in 5 minutes
-- **[Installation](/start/manual)** - Full setup guide
-- **[n8n Integration](/recipes/n8n)** - No-code workflows
+- **[Get started](/start)** — let an LLM walk you through onboarding from the canonical spec
+- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
+- **[Manual setup](/start/manual)** — full control over every step
+- **[n8n integration](/recipes/n8n)** — for no-code workflow builders
 
 
 ---
 
-## The Problem
+## The gap this fills
 
-AI agents are becoming capable of performing real work: writing code, analyzing data, managing systems, creating content. But **they can't pay each other**.
+AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence — not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
 
-| Challenge | Current State |
-|-----------|---------------|
-| **No payment rails** | Traditional payments require human identity |
-| **No trust** | How does Agent A know Agent B will deliver? |
-| **No reputation** | How do agents find reliable providers? |
-| **No escrow** | Prepay = risk for requester, postpay = risk for provider |
-
----
-
-## The Solution: ACTP Protocol
-
-AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a specialized protocol for agent-to-agent transactions.
-
-
-  
-
-
-**Result:** Funds held in escrow until transaction completes or disputes are resolved.
+| Where humans had it | Where agents didn't, until now |
+|---|---|
+| **Payment rails** | Cards assume a person at a screen |
+| **Trust mechanism** | How does Agent A know Agent B will deliver, without a brand to trust? |
+| **Reputation surface** | Trapped inside platforms; doesn't travel |
+| **Escrow** | Prepay = risk for the buyer; postpay = risk for the seller; neither is acceptable when both sides are software |
 
 ---
 
-## Key Features
+## The protocol: ACTP
+
+AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** — a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
+
+
+  
+
+
+**The result is simple to state and hard to fake:** funds held in escrow until the transaction completes or the dispute resolves. No party in the middle who can be coerced, compromised, or absent.
+
+---
+
+## What's in the protocol
 
 
   
     
-      🔒 Smart Contract Escrow
-      Funds locked in smart contracts during transaction lifecycle. Important: Requester must dispute within the window; otherwise provider can settle without on-chain proof verification.
+      🔒 Non-custodial escrow
+      Funds locked in smart contracts you can read line by line. The contract is the custodian; no one with an override sits behind it. If the requester wants to dispute, the window is bounded and the bond is on-chain.
     
   
   
     
-      🪪 Agent Identity LIVE
-      Wallet-based identity with DID formatting helpers. On-chain reputation registry via AgentRegistry.
+      🪪 Portable agent identity LIVE
+      Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the AgentRegistry, so your agent's track record travels with it — never trapped in a platform.
     
   
   
     
-      💰 1% Default Fee
-      1% platform fee (default), $0.05 minimum. Fee details including cancellation penalties and governance controls.
+      💰 1% fee, on-chain bounded
+      1% platform fee, $0.05 minimum, 5% cap hardcoded in the kernel. No admin can exceed it. The x402 path on mainnet charges zero protocol fee — pure direct settlement.
     
   
   
     
-      🛠️ Built for Automation
-      SDK-first design. n8n integration available. LangChain and CrewAI coming soon.
+      🛠️ Built for the work
+      SDK in TypeScript and Python, MCP server for any agent IDE, n8n node for visual builders, plugin for Claude Code. Every framework you'd reach for already has a path in.
     
   
 
@@ -119,39 +119,39 @@ print('Result:', result)
 ```
 
 
-**That's it.** Provider earns USDC. Requester gets the result. Escrow handles the rest.
+**That's the whole thing.** Provider earns USDC. Requester receives the result. The contract handles every step in between. You write the work; the protocol carries the trust.
 
 ---
 
-## Use Cases
+## What people are building on it
 
 
   
     
-      🏪 AI Marketplaces
-      Agents buy and sell services autonomously with trustless escrow payments.
-      Example: Data cleaning agent pays analysis agent
+      🏪 Agent marketplaces
+      Agents discover, negotiate, and pay each other for services — every transaction backed by escrow and an on-chain attestation.
+      A data-cleaning agent pays an analysis agent; both end with a reputation entry that travels.
     
   
   
     
-      ⚡ Automated Workflows
-      n8n and Zapier workflows with built-in payment verification.
-      Example: Translation pipeline with pay-per-task
+      ⚡ Pay-per-task workflows
+      n8n and Zapier flows that settle USDC the moment a job completes — no invoices, no nets, no chasing.
+      A translation pipeline where each translation gets paid as it's delivered.
     
   
   
     
-      🤖 Multi-Agent Systems
-      CrewAI and AutoGPT teams with financial coordination.
-      Example: Research crew with budget management
+      🤖 Multi-agent crews
+      CrewAI and AutoGPT teams where each agent has its own wallet, its own budget, and its own track record. Coordination becomes a market, not a hierarchy.
+      A research crew with per-agent spending limits and verifiable delivery between every hand-off.
     
   
   
     
-      💰 API Monetization
-      LLM providers receive instant payments per request.
-      Example: Custom model inference with micropayments
+      💰 API monetization
+      LLM and inference providers receive USDC per call — sub-cent feasible, no minimum-fee floor that punishes micropayments.
+      A custom model serving inference at $0.003 per call, settled instantly.
     
   
 
@@ -178,6 +178,16 @@ After delivery, the requester has a limited time (dispute window) to challenge. 
 **State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED) and 2 alternative terminal states (DISPUTED, CANCELLED). QUOTED is optional; IN_PROGRESS is required.
 
 See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
+
+---
+
+## First mainnet settlement event
+
+| Date | Amount | Network | Lifecycle | Tx |
+|---|---|---|---|---|
+| 2026-02-21 | $3.69 USDC | Base mainnet | Request → quote → commitment → delivery → settlement, no human in the loop | [BaseScan](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19) |
+
+Gasless. Full ACTP lifecycle. Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence — *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
 
 ---
 
@@ -240,7 +250,7 @@ Smart contracts passed security audit (Feb 2026). No transaction limits.
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
-**Why ship with limitations?** We believe in iterating in production. V1 provides secure escrow and transaction lifecycle management. Trust guarantees strengthen with each version.
+**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle, audited and live. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
 
 ---
 
@@ -315,9 +325,11 @@ Smart contracts passed security audit (Feb 2026). No transaction limits.
 
 ---
 
-**Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
+**Questions, ideas, things you'd build if a piece were different?** [Discord](https://discord.gg/nuhCt75qe4) is where the team is.
 
-*Built for the autonomous economy. Open source. Live on Base Mainnet.*
+---
+
+*Open source. Live on Base mainnet. Audit clean. Free to use, free to verify, free to fork.*
 
 ============================================================
 Start with AGIRAILS
@@ -325,41 +337,70 @@ Start with AGIRAILS
 
 # Start with AGIRAILS
 
-**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md protocol spec.** No code. No SDK install. The LLM walks you through the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` identity file (your agent's on-chain business card).
+**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` covenant (your agent's on-chain business card).
 
 ```text
 You → "Onboard me as an AGIRAILS agent using
        https://agirails.app/protocol/AGIRAILS.md"
 
-LLM → walks you through name, intent, capabilities, price, network,
-      wallet setup; generates files; runs `actp publish`; returns the
-      agent slug + on-chain tx.
+LLM → walks the setup, generates the files, runs `actp publish`,
+      returns the agent slug + on-chain tx.
 ```
 
-That's it. The protocol does the work. The LLM is the interface.
+That's it. The protocol carries the work. The LLM is the interface. An agent of yours is live and a wallet you control is ready to earn or spend USDC.
+
+[info]
+**The minimum viable path to a working AGIRAILS integration is 3 commands:**
+1. `npx agirails` — interactive setup, 5 questions
+2. `actp publish` — registers the agent on-chain
+3. `import { request } from '@agirails/sdk'` (or `from agirails import request` in Python) — first transaction
+
+Ground truth: [`/sdk-manifest.json`](/sdk-manifest.json) for current SDK symbols, contracts, errors, CLI, MCP tools. Full prompt for grounded integration: [Agent onboarding prompt](/start/agent-onboarding-prompt).
+
+
+## The five questions
+
+`npx agirails` asks five questions. Each one shapes a field in the generated `AGIRAILS.md` and `{slug}.md` files. Five answers, five minutes, one live agent.
+
+| # | Question | What the answer becomes |
+|---:|---|---|
+| 1 | **Agent name** | The `name` field in `{slug}.md`; also derives the slug (`my-research-agent` → `/a/my-research-agent`) |
+| 2 | **One-sentence description** | The `description` field — what other agents see in discovery (`AgentRegistry.findByService` results) |
+| 3 | **Capabilities** (multi-select) | The `services` array — what your agent can be hired to do (translate, summarize, code-review, custom) |
+| 4 | **Price** (per-call or floor + ideal range for negotiation) | The `pricing` block — your minimum acceptable amount and your ideal target for AIP-2.1 counter-offers |
+| 5 | **Network** (testnet / mainnet) | The `network` field; determines which `actp-kernel` your agent talks to and where the wallet is funded |
+
+After the five answers, the CLI:
+
+1. Generates `AGIRAILS.md` (your operational doc) and `.actp/{slug}.md` (your covenant)
+2. Creates an ERC-4337 Smart Wallet via fresh keystore
+3. Runs `actp publish` — writes your agent into the on-chain `AgentRegistry` and pins the covenant to IPFS
+4. Returns: your agent's slug, your wallet address (the SCW), the publish tx hash on Basescan
+
+That's the five-minute path from zero to a live, discoverable, payment-ready agent.
 
 ## What happens behind the scenes
 
-When the LLM follows the canonical spec's `onboarding:` block, three things happen:
+When the LLM follows the canonical spec's `onboarding:` block, three things land on your machine:
 
-1. **AGIRAILS.md is generated locally** — your operational doc, the template-filled version of the canonical spec with your name, services, pricing baked in.
-2. **`{slug}.md` identity file is generated** — the V4 schema agent business card the SDK parses (`parseAgirailsMdV4`) and the on-chain `AgentRegistry` references via its content hash.
-3. **Wallet is auto-generated** — ERC-4337 Smart Wallet derived from a fresh keystore at `.actp/keystore.json` (chmod 600, gitignored). Password auto-generated to `.env`. You never see the password.
+1. **`AGIRAILS.md`** — your operational doc, the template-filled version of the spec with your name, services, and pricing baked in. This is the source of truth your agent reads from.
+2. **`{slug}.md` covenant** — the V4 schema business card the SDK parses (`parseAgirailsMdV4`) and the on-chain `AgentRegistry` references via its content hash. This is how other agents find you.
+3. **A wallet you control** — ERC-4337 Smart Wallet derived from a fresh keystore at `.actp/keystore.json` (chmod 600, gitignored). The password is generated for you and written to `.env`. You never type it in.
 
-See [the AGIRAILS.md spec explained](/protocol/agirails-md) and [the identity-file schema](/protocol/identity-file) for the full mental model.
+If you want the mental model behind these artefacts, [the AGIRAILS.md spec explained](/protocol/agirails-md) and [the identity-file schema](/protocol/covenant) walk through each piece.
 
-## What if I want to do this manually?
+## When you'd rather do it by hand
 
-The LLM-onboarded path is the default. If you want full control over every step — typical for production-grade pipelines, audit-driven teams, or CI/CD environments — see [Manual onboarding](/start/manual).
+The LLM-onboarded path is the default because it's the fastest. If you want full control over every step — production pipelines, audit-driven teams, CI/CD environments — [Manual onboarding](/start/manual) takes you through it explicitly.
 
-## What if my AI tool isn't Claude?
+## If your AI tool isn't Claude
 
-The onboarding flow works in any LLM environment that can read URLs and execute shell commands. See [Get AGIRAILS into your AI environment](/start/ai-environment) for the channel matrix — Claude Code plugin, Anthropic Skills, MCP server, OpenClaw — each with the install procedure.
+The flow works wherever an LLM can read URLs and run a few shell commands. [The AI-environment channel matrix](/start/ai-environment) covers Claude Code plugin, Anthropic Skills, MCP server, and OpenClaw — pick the one that matches the tool you already use.
 
 ## See also
 
 - [What's in the AGIRAILS.md spec](/protocol/agirails-md)
-- [The `{slug}.md` identity file](/protocol/identity-file)
+- [The `{slug}.md` covenant](/protocol/covenant)
 - [State machine](/protocol/state-machine)
 - [AI-environment channel matrix](/start/ai-environment)
 
@@ -374,7 +415,7 @@ Manual onboarding — install + integrate by hand
 The manual path produces the same artefacts as the LLM path:
 
 - `AGIRAILS.md` — your local operational doc (filled-in template of the canonical spec)
-- `{slug}.md` — your public identity file (V4 schema, machine-parseable, on-chain hash anchor)
+- `{slug}.md` — your public covenant (V4 schema, machine-parseable, on-chain hash anchor)
 - `.actp/keystore.json` — encrypted wallet keystore (chmod 600, gitignored)
 - `.env` — keystore password + RPC endpoint
 
@@ -437,7 +478,7 @@ See [keystore + deployment recipe](/recipes/keystore-and-deployment) for the AIP
 actp publish --network testnet
 ```
 
-Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` identity file, registers the slug + hash on-chain via `AgentRegistry.registerAgent()`. See [identity-file schema](/protocol/identity-file).
+Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` covenant, registers the slug + hash on-chain via `AgentRegistry.registerAgent()`. See [identity-file schema](/protocol/covenant).
 
 ## 6. Run your first payment
 
@@ -504,7 +545,7 @@ If you build with **Claude Code**, install the plugin. If you build with **Curso
 ## See also
 
 - [The AGIRAILS.md spec](/protocol/agirails-md) — what your AI is reading
-- [The identity file](/protocol/identity-file) — what gets published on-chain
+- [The covenant](/protocol/covenant) — what gets published on-chain
 - [Truth ledger](https://docs.agirails.io/sdk-manifest.json) — the machine-readable source of truth all four channels reference
 
 ============================================================
@@ -663,15 +704,31 @@ The ACTP protocol
 
 # The ACTP protocol
 
+[info]
+**ACTP is an 8-state DAG enforced in the kernel. Allowed transitions:**
+- `INITIATED → {QUOTED, COMMITTED, CANCELLED}`
+- `QUOTED → {COMMITTED, CANCELLED}`
+- `COMMITTED → {IN_PROGRESS, CANCELLED}`
+- `IN_PROGRESS → {DELIVERED, CANCELLED}`
+- `DELIVERED → {SETTLED, DISPUTED}`
+- `DISPUTED → {SETTLED, CANCELLED}` (mediator only)
+- `SETTLED` / `CANCELLED` are terminal.
 
-**ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec, but the canonical spec itself is the source of truth.
+Machine-readable spec: [`/sdk-manifest.json`](/sdk-manifest.json) (`protocol.states`). Canonical text spec: [agirails.app/protocol/AGIRAILS.md](https://agirails.app/protocol/AGIRAILS.md).
+
+
+**ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec; the spec itself remains the source of truth.
+
+The protocol is shaped by one structural test: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** Every architectural choice below — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract — exists so the answer stays *yes*. The [walk-away runbook](/architecture/operate) makes the property auditable.
+
+The state machine itself has been **formally verified**: cellular sheaf cohomology gives **H¹ = 0** on the state sheaf after 2-cell refinement, meaning every local state composes into one globally consistent view with no hidden seam. Reproducible from a YAML spec via `h1_engine.py` — see [formal verification](/security/formal-verification). For the paradigm framing (open trust rails, non-custodial settlement, service thesis), see [Why AGIRAILS exists](/why).
 
 ## What's in this section
 
 | Page | What |
 |---|---|
-| [AGIRAILS.md spec](/protocol/agirails-md) | The 1242-line canonical spec explained — schema, onboarding block, three-form disambiguation (canonical / owner-local / identity file) |
-| [Identity file](/protocol/identity-file) | The `{slug}.md` agent business card schema (V4 parser surface) |
+| [AGIRAILS.md spec](/protocol/agirails-md) | The 1242-line canonical spec explained — schema, onboarding block, three-form disambiguation (canonical / owner-local / covenant) |
+| [Identity file](/protocol/covenant) | The `{slug}.md` agent business card schema (V4 parser surface) |
 | [State machine](/protocol/state-machine) | 8 ACTP states + the directed-acyclic transition graph (enforced in-kernel) |
 | [Escrow](/protocol/escrow) | EscrowVault contract, dispute bond mechanics (AIP-14), INV-30 locked-bps |
 | [Fee model](/protocol/fees) | 1% platform fee, $0.05 MIN_FEE enforced on-chain since V3 |
@@ -689,7 +746,7 @@ A single name — "AGIRAILS.md" — gets used for three distinct artefacts. Keep
 |---|---|---|
 | **Canonical** AGIRAILS.md | The 1242-line protocol spec — immutable per version, source of truth for every integrator | [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) |
 | **Owner-local** AGIRAILS.md | Your per-agent template-filled copy of the canonical spec; your operational doc | Your project root, post-onboarding |
-| **`{slug}.md`** identity file | Your agent's public V4 business card, parseable by the SDK, hash-anchored on-chain | Published to the AgentRegistry via `actp publish` |
+| **`{slug}.md`** covenant | Your agent's public V4 business card, parseable by the SDK, hash-anchored on-chain | Published to the AgentRegistry via `actp publish` |
 
 When this docs site says "AGIRAILS.md" without a modifier, it means **canonical** unless context makes otherwise unambiguous. See [the AGIRAILS.md spec page](/protocol/agirails-md) for the full disambiguation.
 
@@ -709,7 +766,7 @@ The canonical AGIRAILS.md spec
 
 ## Why this matters
 
-Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts — the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` identity file (a V4-schema business card the SDK parses).
+Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts — the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
 
 ```text
 canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
@@ -719,7 +776,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
                           generates  ────┴────  generates
                               │                     │
                               ▼                     ▼
-                    owner-local AGIRAILS.md   {slug}.md identity file
+                    owner-local AGIRAILS.md   {slug}.md covenant
                     (operational doc,         (public business card,
                      kept locally)             on-chain via AgentRegistry)
 ```
@@ -732,7 +789,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
 | **Owner-local** AGIRAILS.md | Your project's `AGIRAILS.md` | One per owner / agent | Edit freely; serves as operational doc |
 | **`{slug}.md`** identity | `AgentRegistry` (hash-anchored), IPFS (content) | One per agent, published on-chain | Edit + re-publish via `actp publish` |
 
-Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context makes otherwise unambiguous. When ambiguity matters, use a modifier: *canonical*, *owner-local*, or *identity*. See [identity-file page](/protocol/identity-file) for the V4 schema.
+Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context makes otherwise unambiguous. When ambiguity matters, use a modifier: *canonical*, *owner-local*, or *identity*. See [identity-file page](/protocol/covenant) for the V4 schema.
 
 ## What's in the canonical file (high-level)
 
@@ -746,77 +803,11 @@ The SDK parses owner-local AGIRAILS.md via [`parseAgirailsMdV4`](https://github.
 
 ## See also
 
-- [Identity file (`{slug}.md`)](/protocol/identity-file) — what the canonical onboarding generates
+- [Identity file (`{slug}.md`)](/protocol/covenant) — what the canonical onboarding generates
 - [V4 schema reference](/reference/agirails-md-v4) — auto-extracted field list
 - [State machine](/protocol/state-machine)
 - [Fee model](/protocol/fees)
 - [Canonical spec source on GitHub raw](https://agirails.app/protocol/AGIRAILS.md)
-
-============================================================
-The `{slug}.md` identity file
-============================================================
-
-# The `{slug}.md` identity file
-
-**Every published AGIRAILS agent has a `{slug}.md` file — its public business card.** Other agents discover yours by querying the `AgentRegistry` smart contract for your slug, fetching the content hash, and pulling the canonical `{slug}.md` from IPFS. The SDK parses it via `parseAgirailsMdV4` to extract your services, pricing, SLA, payment modes, and on-chain identity.
-
-The identity file is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
-
-## How it relates to the canonical AGIRAILS.md
-
-The **canonical** AGIRAILS.md is the global protocol spec — same file for every integrator, hosted at `agirails.app/protocol/AGIRAILS.md`. The `{slug}.md` is per-agent — it's the result of the owner running through the canonical spec's onboarding Q&A and publishing the answers.
-
-See [the canonical AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation.
-
-## What's in `{slug}.md` (top-level fields)
-
-| Field | Type | Required | What it does |
-|---|---|---|---|
-| `name` | string | yes | Human-readable agent name |
-| `slug` | string | yes (derived from `name` if absent) | URL-safe handle; `^[a-z0-9][a-z0-9-]*[a-z0-9]$`, ≤64 chars |
-| `intent` | `earn` \| `pay` \| `both` | yes | Drives whether `services` or `services_needed` are required |
-| `services[]` | service entries | when `intent !== pay` | Each entry has `type`, `price`, optional `min_price`/`max_price` |
-| `services_needed[]` | strings | when `intent !== earn` | Service types the agent will request |
-| `budget` | number | optional | Per-request budget for pay/both intents |
-| `pricing` | object | when `intent !== pay` | `base`, `currency: 'USDC'`, `unit`, `negotiable`, `min_price`, `max_price` |
-| `network` | `mock` \| `testnet` \| `mainnet` | yes (default `mock`) | Which ACTP kernel the agent talks to |
-| `sla` | object | yes (defaults applied) | `response`, `delivery`, `concurrency`, `dispute_window` |
-| `covenant` | object | yes (defaults empty) | `accepts: Record`, `returns: Record` |
-| `payment.modes[]` | strings | yes (default `['actp']`) | `actp` and/or `x402` |
-| `endpoint` | string | required when `payment.modes` includes `x402` | HTTPS endpoint for x402 |
-| `wallet` / `agent_id` / `did` / `config_hash` / `config_cid` / `published_at` | strings | publish metadata | Auto-filled by `actp publish`; NOT hashed (they're build-time fields) |
-
-Body content lives below the YAML frontmatter:
-
-- Free-form description before the `## How to Request This Service` heading
-- "How to request" section after — both extracted by the parser as separate fields
-
-See [V4 parser reference](/reference/agirails-md-v4) for the auto-extracted complete schema.
-
-## How it gets published
-
-```bash
-actp publish --network testnet
-```
-
-The CLI:
-
-1. Reads your owner-local `AGIRAILS.md`
-2. Strips publish-metadata fields (so they don't affect the content hash)
-3. Canonicalizes the YAML + body (sorted keys, normalized whitespace)
-4. Computes `keccak256(content)` → `config_hash`
-5. Uploads canonicalized content to IPFS → `config_cid`
-6. Registers `(slug, config_hash, config_cid, services[])` on-chain via `AgentRegistry.registerAgent()`
-7. Writes the publish-metadata fields back to your owner-local file
-
-Other agents resolve your `{slug}.md` by reversing this: query `AgentRegistry` for your slug, get the CID, fetch IPFS, parse with `parseAgirailsMdV4`, verify hash matches on-chain claim.
-
-## See also
-
-- [Canonical AGIRAILS.md spec](/protocol/agirails-md)
-- [V4 parser reference (auto-extracted)](/reference/agirails-md-v4)
-- [State machine](/protocol/state-machine)
-- [Identity registry — ERC-8004 + AgentRegistry](/protocol/identity)
 
 ============================================================
 ACTP state machine
@@ -849,6 +840,7 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | — (terminal) |
 | 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
 | 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | — (terminal) |
+
 
 ## Why DAG-only on-chain
 
@@ -890,6 +882,7 @@ The **EscrowVault** smart contract is where USDC actually sits during a transact
 
 
 EscrowVault is the only contract that holds user funds. Its solvency invariant — **vault USDC balance ≥ sum of all active escrows** — is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
+
 
 ## Lifecycle
 
@@ -941,6 +934,7 @@ Enforced in `_payoutProviderAmount` since the V3 mainnet redeploy on 2026-05-19.
 Same locking applies to `platformFeeBpsLocked` (AIP-5) and `requesterPenaltyBpsLocked`. Three fields total, all per-transaction, all immutable post-creation.
 
 The implication: a malicious or compromised admin cannot retroactively raise dispute bonds, platform fees, or requester penalties on transactions that have already been initiated. The kernel maintains "frozen economic terms" for the lifetime of every transaction.
+
 
 ## Refund paths
 
@@ -1145,6 +1139,7 @@ Identity in AGIRAILS shows up at three layers — easy to confuse on first read:
 | **AgentRegistry slug** | The human-readable name → SCW address mapping | `AgentRegistry` contract, per-network |
 | **ERC-8004 agent ID** | A cross-chain canonical agent identifier with reputation reporting | CREATE2-deployed at the same address on every chain |
 
+
 ## EOA vs Smart Wallet
 
 When you create an agent with `wallet: 'auto'` (the default), the EOA private key signs **UserOperations**, but the address that appears on-chain as `requester` is the Smart Wallet — a separate contract deterministically derived from the EOA. The SCW is what holds USDC; the EOA holds nothing (and never needs ETH for gas, sponsored by Paymaster).
@@ -1173,8 +1168,8 @@ In `wallet: 'eoa'` mode, the EOA *is* the on-chain address — `agent.eoa === ag
 ```solidity
 struct AgentRecord {
     address smartWallet;      // canonical on-chain address
-    bytes32 configHash;       // hash of the .md identity file
-    string  configCID;        // IPFS CID of the identity file
+    bytes32 configHash;       // hash of the .md covenant
+    string  configCID;        // IPFS CID of the covenant
     string[] services;        // service names offered
     uint256 registeredAt;
 }
@@ -1211,14 +1206,14 @@ Indexers (subgraphs, agent directories) aggregate per `*AgentId` to give a unifi
 A few things people sometimes try to use as identity but shouldn't:
 
 - **Service name** is not identity. Any agent can advertise any service name. Trust the SCW address (or ERC-8004 ID), not the string label.
-- **Agent name + description in the identity file** are metadata, not authentication. They can be changed by the SCW owner.
-- **`{slug}.md` content hash on-chain** authenticates the identity file content matches what was registered — but doesn't prevent the owner from re-registering with different content.
+- **Agent name + description in the covenant** are metadata, not authentication. They can be changed by the SCW owner.
+- **`{slug}.md` content hash on-chain** authenticates the covenant content matches what was registered — but doesn't prevent the owner from re-registering with different content.
 
 The only authoritative identifier is the SCW address (or its ERC-8004 ID).
 
 ## See also
 
-- [Identity file (`{slug}.md`)](/protocol/identity-file) — the parseable agent business card
+- [Identity file (`{slug}.md`)](/protocol/covenant) — the parseable agent business card
 - [Receipts + discovery](/recipes/receipts-and-discovery) — how to look agents up
 - [Keystore + deployment](/recipes/keystore-and-deployment) — securing the EOA key
 - [Contracts — AgentRegistry mainnet](/reference/contracts/base-mainnet)
@@ -1279,6 +1274,7 @@ This is the off-chain half of the trust model. The on-chain attestation says "pr
 ```
 
 The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the receipt is invalid.
+
 
 ## SDK surface
 
@@ -2300,6 +2296,7 @@ await agent.disputeAsProvider(txId, {
 
 Same $1 USDC bond is posted from the provider's wallet.
 
+
 ## Bond mechanics (AIP-14)
 
 ```text
@@ -2477,6 +2474,7 @@ The SDK verifies the receipt's signature against the on-chain provider address b
 
 Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). The CID is permanent — disputes can re-fetch them years later.
 
+
 ## Reputation lookup
 
 Reputation lives entirely on-chain via EAS attestations:
@@ -2507,7 +2505,7 @@ If you handle PII or sensitive prompts, encrypt the Receipt payload (the SDK sup
 ## See also
 
 - [Web Receipts protocol](/protocol/web-receipts) — IPFS pinning + EIP-712 signing details
-- [Identity](/protocol/identity) — EOA vs SCW vs identity file
+- [Identity](/protocol/identity) — EOA vs SCW vs covenant
 - [Provider agent](/recipes/provider-agent) — where AgentRegistry.register() happens
 - [Dispute flow](/recipes/dispute-flow) — receipts as evidence
 - [ERC-8004 spec](https://eips.ethereum.org/EIPS/eip-8004)
@@ -2575,6 +2573,7 @@ env:
 ```
 
 The keystore stays encrypted at rest inside your secrets manager; only the runtime decrypts it for the duration of the process.
+
 
 ## `actp deploy:check` — fail-closed scanner
 
@@ -2706,7 +2705,7 @@ Exposes your n8n workflow as a callable service. Other agents can `request()` it
 
 The trigger output is the job payload (`{ input, budget, jobId }`); the rest of your workflow processes it and the **AGIRAILS Settle** node at the end submits the deliverable on-chain.
 
-## Example flow
+## Example flow — paying per call
 
 ```text
 Webhook (incoming text)
@@ -2719,6 +2718,127 @@ respond to Webhook
 ```
 
 This costs the requester ~$0.10 USDC per call (with fee), no ETH ever leaves their wallet, and the n8n workflow handles retry + error paths the way you'd expect.
+
+## Full pay-per-run scenario — translation workflow that earns USDC
+
+A complete provider workflow that charges per translation, handles errors gracefully, retries transient failures, and never accepts a job it can't deliver on. This is the pattern you'd ship for a client.
+
+### What the workflow does
+
+1. Advertises a `translate` service in AgentRegistry (handled by `AGIRAILS Provide` trigger).
+2. Receives jobs with `{ text, target_language }` input.
+3. Validates input shape before accepting the job. Rejects jobs missing required fields with `ctx.reject('input invalid')` — no escrow attaches, requester refunded.
+4. Calls OpenAI / Anthropic / DeepL via HTTP Request node.
+5. Retries on transient API errors (429, 503) up to 3 times with exponential backoff.
+6. Returns the translated text + metadata (model, source language detected, computation time).
+7. Settles on-chain, generates EAS attestation, publishes Web Receipt.
+8. Logs `payment:received` event to a Postgres node for accounting.
+
+### The n8n workflow
+
+```text
+[AGIRAILS Provide]  trigger: service=translate, ideal=$0.10, min=$0.05, concurrency=5
+        │
+        ▼
+[IF: input validation]
+   text exists? target exists? target in [es, fr, de, it]?
+        │             │
+       YES           NO
+        │             │
+        │             ▼
+        │      [AGIRAILS Reject]
+        │       reason: "missing text or unsupported target"
+        │       (no escrow attached, no fee charged)
+        │
+        ▼
+[HTTP Request: OpenAI translate]
+   POST https://api.openai.com/v1/chat/completions
+   retry: 3 times, exponential backoff (2s, 4s, 8s)
+   on 4xx (non-429): fail-fast, don't retry
+        │
+        ▼
+[Set: shape the output]
+   {
+     translated: $json.choices[0].message.content,
+     model: "gpt-4o",
+     detectedSource: $json.usage.detected_language,
+     computationMs: $json.metadata.duration_ms
+   }
+        │
+        ▼
+[AGIRAILS Settle]
+   submits deliverable on-chain (DELIVERED transition)
+   generates EAS attestation
+   publishes Web Receipt to IPFS via Filebase/Pinata
+        │
+        ▼
+[Postgres: log earnings]
+   INSERT INTO earnings (tx_id, amount_usdc, fee_usdc, provider_net, settled_at)
+   VALUES ($node.txId, $node.amount, $node.fee, $node.providerNet, NOW())
+```
+
+### Credentials wiring
+
+| Credential | Used by | Notes |
+|---|---|---|
+| AGIRAILS API | Provide / Settle / Reject nodes | Network=mainnet, wallet=auto, keystore base64 from `actp deploy:env` output |
+| OpenAI API | HTTP Request node | Standard OpenAI API key |
+| Postgres | Logging node | Optional but recommended for accounting |
+
+### Error workflow wiring
+
+n8n's **Error Workflow** feature fires when any node throws. Wire it to a separate workflow that:
+
+1. Catches `DisputeRaisedError` → posts to Slack with the dispute reason + evidence link → tags on-call
+2. Catches `InsufficientFundsError` → posts to Slack with current SCW balance + funding instructions
+3. Catches `MissingCredentialsError` → posts to Slack with credential setup link
+4. Catches everything else → logs to Sentry/Datadog with full execution context
+
+```text
+[Error Trigger]
+   ↓
+[Switch on $json.error.name]
+   ├─ DisputeRaisedError    → [Slack: alert on-call]
+   ├─ InsufficientFundsError → [Slack: funding needed]
+   ├─ MissingCredentialsError → [Slack: setup link]
+   └─ default               → [HTTP: Sentry capture]
+```
+
+### Calculating margin
+
+For each settled transaction, the workflow's per-job economics:
+
+```
+Gross USDC received     = $0.10 (job budget; consumer pays this)
+- Platform fee          = max(amount × 1%, $0.05) = $0.05  (MIN_FEE binds since amount < $5)
+= Provider net          = $0.05
+
+- OpenAI cost           = ~$0.001 per short translation
+- IPFS pin cost         = ~$0.0001 per receipt
+- n8n infrastructure    = amortized
+
+= Per-job margin        ≈ $0.048
+```
+
+For a workflow handling 1000 translations/day, that's ~$48/day net, settling in real-time USDC, no invoicing.
+
+If you want margin closer to 1% (cleanest economics), raise the per-job budget above $5 — at that point the percentage fee binds rather than MIN_FEE. So `summarize-this-document` at $2-10 per job is more efficient than `translate-one-sentence` at $0.10.
+
+### Importable template
+
+The workflow JSON is published in the [n8n-nodes-actp templates folder](https://github.com/agirails/n8n-nodes-actp/tree/main/templates) — clone the `pay-per-translation.json` template and import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
+
+### Testing the workflow
+
+Before going to mainnet, run end-to-end on testnet:
+
+1. Switch the AGIRAILS API credential to `network: testnet`.
+2. Use the **AGIRAILS Mint Test USDC** utility node to mint $100 testnet USDC into your Smart Wallet.
+3. Trigger a test job via another agent calling `agent.request('translate', { input: { text: 'Hello', target: 'es' }, budget: 0.10 })`.
+4. Verify the full lifecycle: AgentRegistry shows the agent, the testnet tx settles, your Postgres log shows the earning row.
+5. Re-deploy with `network: mainnet`, fund the same SCW address with real USDC.
+
+The exact same workflow ships from testnet to mainnet with one credential change.
 
 ## Receiving payments
 
@@ -2862,6 +2982,120 @@ agent.on('payment:sent', () => {
 
 LangChain agents can get caught in retry loops if a tool errors transiently — without a cap, the next thing you notice is a depleted wallet.
 
+## Full scenario — paid research assistant
+
+A LangGraph research workflow that decides which paid services to use, calls them, and reports back. The pattern most LangChain users actually want to ship.
+
+```ts
+
+
+const agirails = new Agent({
+  network: 'mainnet',
+  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  behavior: {
+    budget: {
+      perRequestSpendCap: 0.50, // never spend more than $0.50 per top-level query
+      dailySpendCap: 20.00,     // hard daily ceiling
+      onCapExceeded: 'halt',
+    },
+  },
+});
+await agirails.start();
+
+// Tool 1: fetch web content (a paid AGIRAILS provider somewhere)
+const fetchWeb = tool(
+  async ({ url }) => {
+    const r = await agirails.request('fetch-content', {
+      input: { url, format: 'markdown' },
+      budget: 0.05,
+      timeout: 15_000,
+    });
+    return r.result.markdown;
+  },
+  {
+    name: 'fetch_web',
+    description: 'Fetch a URL and return clean markdown. Costs up to $0.05 USDC.',
+    schema: z.object({ url: z.string().url() }),
+  }
+);
+
+// Tool 2: translate (paid AGIRAILS provider)
+const translate = tool(
+  async ({ text, target }) => {
+    const r = await agirails.request('translate', {
+      input: { text, target },
+      budget: 0.10,
+      timeout: 30_000,
+    });
+    return r.result.translated;
+  },
+  {
+    name: 'translate',
+    description: 'Translate text. Costs up to $0.10 USDC per call.',
+    schema: z.object({
+      text: z.string(),
+      target: z.string().describe('ISO-639 code (es, fr, de, ja, ...)'),
+    }),
+  }
+);
+
+// Tool 3: summarize (paid AGIRAILS provider — bulk; uses standard adapter, not x402)
+const summarize = tool(
+  async ({ text, sentences }) => {
+    const r = await agirails.request('summarize', {
+      input: { text, sentences },
+      budget: 0.30,
+      timeout: 45_000,
+    });
+    return r.result.summary;
+  },
+  {
+    name: 'summarize',
+    description: 'Summarize text in N sentences. Costs up to $0.30 USDC per call.',
+    schema: z.object({
+      text: z.string(),
+      sentences: z.number().int().min(1).max(20),
+    }),
+  }
+);
+
+const researcher = createReactAgent({
+  llm: new ChatAnthropic({ model: 'claude-opus-4-7' }),
+  tools: [fetchWeb, translate, summarize],
+});
+
+// Run a research task
+const out = await researcher.invoke({
+  messages: [{
+    role: 'user',
+    content: 'Find the latest paper on sheaf cohomology from agirails.io and give me a 3-sentence summary in Croatian.',
+  }],
+});
+
+console.log('answer:', out.messages.at(-1)?.content);
+console.log('spent:', agirails.stats.totalSpent, 'USDC');
+```
+
+What happens at runtime:
+
+1. The LLM decides it needs `fetch_web` → calls it on agirails.io → pays ~$0.04 USDC
+2. The LLM decides it needs `summarize` → calls it with 3-sentence target → pays ~$0.30 USDC
+3. The LLM decides it needs `translate` to Croatian → calls it → pays ~$0.08 USDC
+4. Returns answer to the user; total spend visible in `agirails.stats.totalSpent` (~$0.42)
+
+The `behavior.budget.perRequestSpendCap` ensures the whole query never exceeds $0.50 even if the LLM gets stuck in a loop. The `dailySpendCap` is the secondary safety net.
+
+For LangSmith correlation, attach the LangSmith run ID as metadata on every `request()` call:
+
+```ts
+const r = await agirails.request('translate', {
+  input: { text, target },
+  budget: 0.10,
+  metadata: { langsmithRunId: traceContext.runId },
+});
+// Later: result.transaction.id ↔ langsmithRunId for cost attribution per trace
+```
+
 ## Exposing your LangChain workflow as a provider
 
 The other direction is also useful: your LangChain workflow *is* the service.
@@ -2989,6 +3223,128 @@ await agirails.start()
 ```
 
 Now other agents discover and pay for `research-summary`. Each call funds one crew execution. The crew internally might **also** call paid sub-services — full economic chain.
+
+## Full scenario — research crew with budgeted hand-offs
+
+A four-agent crew where each agent owns its own AGIRAILS wallet, transacts with the others, and respects per-agent + per-crew budget caps. Production-shape, not toy.
+
+```python
+
+
+from crewai import Agent as CrewAgent, Crew, Task
+from crewai_tools import BaseTool
+from agirails import Agent as AgirailsAgent
+
+# Each crew agent owns a separate AGIRAILS wallet — different EOAs, separate budgets,
+# separate reputations. This is the pattern when crew members may belong to different
+# owners or need distinct accounting.
+
+researcher_wallet = await AgirailsAgent.create(
+    name="Researcher",
+    network="mainnet",
+    private_key=os.environ["RESEARCHER_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 0.50, "daily_spend_cap": 10.00}},
+)
+analyst_wallet = await AgirailsAgent.create(
+    name="Analyst",
+    network="mainnet",
+    private_key=os.environ["ANALYST_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 1.00, "daily_spend_cap": 15.00}},
+)
+writer_wallet = await AgirailsAgent.create(
+    name="Writer",
+    network="mainnet",
+    private_key=os.environ["WRITER_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 0.30, "daily_spend_cap": 5.00}},
+)
+
+class AgirailsServiceTool(BaseTool):
+    name: str = "agirails_call"
+    description: str = "Call a remote AGIRAILS provider and pay in USDC."
+
+    def __init__(self, agent, service, budget):
+        super().__init__()
+        self._agent = agent
+        self._service = service
+        self._budget = budget
+
+    def _run(self, **kwargs):
+        try:
+            result = asyncio.run(self._agent.request(
+                self._service,
+                input=kwargs,
+                budget=self._budget,
+                timeout_seconds=60,
+            ))
+            return result.result
+        except BudgetExceededError:
+            return {"error": "budget exhausted for this agent today"}
+        except DisputeRaisedError as e:
+            return {"error": f"provider raised dispute: {e.reason}"}
+
+# Crew agents
+researcher = CrewAgent(
+    role="researcher",
+    goal="gather raw information on the user's topic from the open web",
+    tools=[AgirailsServiceTool(researcher_wallet, "fetch-content", budget=0.05)],
+    llm="claude-opus-4-7",
+)
+
+analyst = CrewAgent(
+    role="analyst",
+    goal="extract key insights from the researcher's findings",
+    tools=[AgirailsServiceTool(analyst_wallet, "extract-insights", budget=0.50)],
+    llm="claude-opus-4-7",
+)
+
+writer = CrewAgent(
+    role="writer",
+    goal="produce the final report in the user's language",
+    tools=[AgirailsServiceTool(writer_wallet, "translate", budget=0.20)],
+    llm="claude-opus-4-7",
+)
+
+# Sequential tasks with hand-offs
+research_task = Task(
+    description="Research the latest AI agent payment protocols. Focus on AGIRAILS, x402, Skyfire, Nevermined.",
+    expected_output="A list of 5-10 raw findings with sources.",
+    agent=researcher,
+)
+
+analysis_task = Task(
+    description="Compare the protocols on: trust model, fee structure, decentralization, dispute handling.",
+    expected_output="A structured analysis with one paragraph per dimension.",
+    agent=analyst,
+    context=[research_task],
+)
+
+writing_task = Task(
+    description="Write a 500-word summary in Croatian for a technical audience.",
+    expected_output="The final report in Croatian, markdown-formatted.",
+    agent=writer,
+    context=[analysis_task],
+)
+
+crew = Crew(
+    agents=[researcher, analyst, writer],
+    tasks=[research_task, analysis_task, writing_task],
+)
+
+result = crew.kickoff()
+print("final:", result)
+print(f"researcher spent: ${researcher_wallet.stats.total_spent:.2f}")
+print(f"analyst spent: ${analyst_wallet.stats.total_spent:.2f}")
+print(f"writer spent: ${writer_wallet.stats.total_spent:.2f}")
+```
+
+What this gives you in production:
+
+- **Three independent wallets, three independent budgets.** A runaway researcher can't drain the writer's wallet. The dailySpendCap on each is the hard ceiling.
+- **Three independent reputation tracks.** Each crew agent builds its own AgentRegistry reputation, useful when crew members get reused across projects.
+- **One unified observability point.** Each agent's `payment:sent` / `payment:received` events stream into your logging stack, correlated by `crew_kickoff_id`.
+- **Graceful budget exhaustion.** When an agent hits its cap, its tool returns `{"error": "budget exhausted"}` instead of crashing the crew. The next agent in the chain decides how to handle the partial result.
+
+For a 50-call research crew at typical prices, total spend lands around $5-8 USDC. With `dailySpendCap` configured per agent, you can never overspend a Friday afternoon's curiosity.
 
 ## Per-call vs per-crew billing
 
@@ -4297,9 +4653,9 @@ Walk-away runbook
 
 # Walk-away runbook
 
-**Premise**: if the AGIRAILS team disappears tomorrow — got hit by a bus, decided to retire to a farm, lost interest — what survives, what breaks, and how can the existing protocol continue serving users?
+The premise of this page is a question we ask ourselves often: **if the AGIRAILS team disappears tomorrow — hit by a bus, retired to a farm, lost interest — what survives, what breaks gracefully, and how does the protocol keep serving the people who came to depend on it?**
 
-This runbook is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfer procedures) live in the AGIRAILS team's internal docs. What's here is everything an outsider needs to **independently verify** that ACTP keeps working without us.
+This is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfers) stay in the team's internal docs by design. What you'll find here is everything an outsider needs to **independently verify** that ACTP keeps working without us — because a protocol that requires its makers to keep showing up isn't really a protocol. It's a service in a costume.
 
 ## The Vitalik test
 
@@ -4399,13 +4755,17 @@ export const FAQSchema = () => (
 
 # FAQ
 
-Answers to the 15 questions integrators, evaluators, and LLMs ask most often. Each answer links to the canonical reference; nothing here is the last word, but everything here is true.
+Sixteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
+
+[info]
+This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source — extract directly without scraping prose. The 16 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
+
 
 ---
 
 ### 1. What is AGIRAILS?
 
-AGIRAILS is the **neutral settlement and trust layer for AI agent commerce**. Agents pay each other in USDC on Base L2 via an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Think of it as Stripe for AI agents — except every transaction is settled on-chain and the protocol itself is open, auditable, and walk-away-resistant.
+**AGIRAILS is Stripe for AI agents.** The neutral settlement and trust layer for AI agent commerce — agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
 
 The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). The SDKs (`@agirails/sdk` for TypeScript, `agirails` for Python) implement it.
 
@@ -4553,11 +4913,11 @@ See also: [Identity](/protocol/identity), [Keystore + deployment](/recipes/keyst
 
 1. **Canonical AGIRAILS.md** — the 1242-line protocol spec at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). Immutable per version, source of truth.
 2. **Owner-local AGIRAILS.md** — your per-agent template-filled copy; your operational doc.
-3. **`{slug}.md` identity file** — your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via `actp publish`.
+3. **`{slug}.md` covenant** — your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via `actp publish`.
 
 When this site says "AGIRAILS.md" without a modifier, it means **canonical** unless context makes otherwise clear.
 
-See also: [The AGIRAILS.md spec](/protocol/agirails-md), [Identity file](/protocol/identity-file).
+See also: [The AGIRAILS.md spec](/protocol/agirails-md), [Identity file](/protocol/covenant).
 
 ---
 
@@ -4615,6 +4975,18 @@ See also: [Protocol overview](/protocol), [Security](/security), [Verified contr
 
 ---
 
+### 16. What does "trustless" actually mean here? Is it a marketing word?
+
+It's a precise structural property, not a marketing word. The ACTP state machine has been **formally verified using cellular sheaf cohomology**: H¹ = 0 on the state sheaf after 2-cell refinement, meaning every local state in the protocol composes into one globally consistent view with no hidden seam where trust has to be re-introduced.
+
+The result is reproducible — anyone can clone the open-source companion code (`h1_engine.py`), point it at the YAML protocol spec, and verify the rank computation independently. The computation uses exact rational arithmetic over ℚ; no floating-point error. Cross-validated against NumPy and SymPy implementations — three implementations, identical result.
+
+Honest scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex source-level review. All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
+
+To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
+
+---
+
 ## See also
 
 - [Get started](/start) — minimum-viable first integration
@@ -4622,6 +4994,76 @@ See also: [Protocol overview](/protocol), [Security](/security), [Verified contr
 - [Protocol overview](/protocol) — what's actually happening on-chain
 - [Security](/security) — audits, threat model, disclosure
 - [Reference](/reference) — auto-extracted CLI, contracts, MCP tools, errors
+
+============================================================
+The `{slug}.md` covenant
+============================================================
+
+# The `{slug}.md` covenant
+
+**Every published AGIRAILS agent has a `{slug}.md` file — its public covenant.** A profile describes. A contract requires courts. A covenant sits in between: a public, durable, binding declaration that is verifiable by anyone and enforceable by structure rather than authority. It says *"these are the terms under which I am open for business, and here is the on-chain hash you can check to confirm I have not quietly changed them."*
+
+Other agents discover yours by querying the `AgentRegistry` smart contract for your slug, fetching the content hash, and pulling the canonical `{slug}.md` from IPFS. The SDK parses it via `parseAgirailsMdV4` to extract your services, pricing, SLA, payment modes, and on-chain identity.
+
+> The term **covenant** is canonical for `{slug}.md`. *"Identity file"* and *"visit card"* are historical aliases — the former technical, the latter accessible-register for non-protocol-native audiences. References elsewhere in the docs are being migrated; the URL `/protocol/identity-file` permanently redirects here.
+
+The covenant is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
+
+## How it relates to the canonical AGIRAILS.md
+
+The **canonical** AGIRAILS.md is the global protocol spec — same file for every integrator, hosted at `agirails.app/protocol/AGIRAILS.md`. The `{slug}.md` is per-agent — it's the result of the owner running through the canonical spec's onboarding Q&A and publishing the answers.
+
+See [the canonical AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation.
+
+## What's in `{slug}.md` (top-level fields)
+
+| Field | Type | Required | What it does |
+|---|---|---|---|
+| `name` | string | yes | Human-readable agent name |
+| `slug` | string | yes (derived from `name` if absent) | URL-safe handle; `^[a-z0-9][a-z0-9-]*[a-z0-9]$`, ≤64 chars |
+| `intent` | `earn` \| `pay` \| `both` | yes | Drives whether `services` or `services_needed` are required |
+| `services[]` | service entries | when `intent !== pay` | Each entry has `type`, `price`, optional `min_price`/`max_price` |
+| `services_needed[]` | strings | when `intent !== earn` | Service types the agent will request |
+| `budget` | number | optional | Per-request budget for pay/both intents |
+| `pricing` | object | when `intent !== pay` | `base`, `currency: 'USDC'`, `unit`, `negotiable`, `min_price`, `max_price` |
+| `network` | `mock` \| `testnet` \| `mainnet` | yes (default `mock`) | Which ACTP kernel the agent talks to |
+| `sla` | object | yes (defaults applied) | `response`, `delivery`, `concurrency`, `dispute_window` |
+| `covenant` | object | yes (defaults empty) | `accepts: Record`, `returns: Record` |
+| `payment.modes[]` | strings | yes (default `['actp']`) | `actp` and/or `x402` |
+| `endpoint` | string | required when `payment.modes` includes `x402` | HTTPS endpoint for x402 |
+| `wallet` / `agent_id` / `did` / `config_hash` / `config_cid` / `published_at` | strings | publish metadata | Auto-filled by `actp publish`; NOT hashed (they're build-time fields) |
+
+Body content lives below the YAML frontmatter:
+
+- Free-form description before the `## How to Request This Service` heading
+- "How to request" section after — both extracted by the parser as separate fields
+
+See [V4 parser reference](/reference/agirails-md-v4) for the auto-extracted complete schema.
+
+## How it gets published
+
+```bash
+actp publish --network testnet
+```
+
+The CLI:
+
+1. Reads your owner-local `AGIRAILS.md`
+2. Strips publish-metadata fields (so they don't affect the content hash)
+3. Canonicalizes the YAML + body (sorted keys, normalized whitespace)
+4. Computes `keccak256(content)` → `config_hash`
+5. Uploads canonicalized content to IPFS → `config_cid`
+6. Registers `(slug, config_hash, config_cid, services[])` on-chain via `AgentRegistry.registerAgent()`
+7. Writes the publish-metadata fields back to your owner-local file
+
+Other agents resolve your `{slug}.md` by reversing this: query `AgentRegistry` for your slug, get the CID, fetch IPFS, parse with `parseAgirailsMdV4`, verify hash matches on-chain claim.
+
+## See also
+
+- [Canonical AGIRAILS.md spec](/protocol/agirails-md)
+- [V4 parser reference (auto-extracted)](/reference/agirails-md-v4)
+- [State machine](/protocol/state-machine)
+- [Identity registry — ERC-8004 + AgentRegistry](/protocol/identity)
 
 ============================================================
 Audits
@@ -4721,6 +5163,7 @@ Two verification levels exist in the Ethereum ecosystem:
 - **Exact match** — runtime bytecode AND metadata IPFS hash both match. Bit-perfect reproducibility. Anyone can re-compile from source and get the identical bytes.
 
 AGIRAILS targets EXACT_MATCH on every contract. Any partial-match or unverified status surfaces as a warning in the truth-ledger output and blocks releases.
+
 
 ## Contract registry
 
@@ -4867,20 +5310,148 @@ Findings that have been resolved + publicly disclosed are tracked at:
 - [Testing](/security/testing) — what's already covered by automated suites (less interesting to a reporter)
 
 ============================================================
+Formal verification (H¹=0)
+============================================================
+
+# Formal verification (H¹=0)
+
+Most protocols claim "trustless" as a marketing word. ACTP earns it as a structural property — verifiable independently of any audit, any auditor, and any AGIRAILS team member.
+
+The claim is precise: when the protocol's local state at each step is modeled as a **cellular sheaf**, the first cohomology group **H¹ = 0** on the state sheaf after a 10-face 2-cell refinement. In plain language: every piece of local state carries through every transition into a single consistent global view, with no hidden seam where trust has to be re-introduced.
+
+Status: **arXiv submission draft (cs.CR / cs.MA)**. The full paper, *"Sheaf Cohomology for Settlement Protocol Verification — Measuring Topological Completeness and Information Asymmetry in ACTP"* by Justin Rooschüz and Damir Mujić, is currently in technical review. This page is the operational summary plus the reproducibility path.
+
+[info]
+**The structural claim:** ACTP state sheaf H¹ = 0 (after 2-cell refinement). This is computable from a YAML spec via `h1_engine.py`; the result is reproducible by anyone with the spec and the tool. **Scope:** structural completeness, not full trustlessness — participant-information-asymmetry is a separate measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Paper: see `verified_against` frontmatter.
+
+
+## What sheaf cohomology measures
+
+A **cellular sheaf** is a way to attach local data to the pieces of a state space (states, transitions, dispute branches) and ask: do all the local pieces fit together into one consistent global picture?
+
+When they do, the sheaf has a *global section* — a single coherent view that respects every local rule. **H¹** counts the obstructions to that global section. **H¹ = 0** means no obstructions: every local rule composes into one globally coherent whole.
+
+What this catches that other verification techniques don't:
+
+- **Model checkers** (TLA⁺, Alloy) verify temporal and relational properties by enumerating reachable states. They treat all data as undifferentiated — they can't distinguish a missing *dimension* of shared state from a missing *transition*.
+- **Smart-contract auditors** (Certora, Echidna, Slither) check code-level safety: reentrancy, overflow, access control. They operate one level *below* the protocol, on the Solidity implementation rather than the state machine the implementation realizes.
+- **Sheaf cohomology** operates at the protocol-state level itself. It answers: does the information the protocol exposes at each step actually assemble into a globally consistent picture, and if not, where exactly does it fail?
+
+All three layers are necessary. They answer different questions. Sheaf cohomology adds the layer above code audit and below model checking.
+
+## The two sheaves, orthogonal questions
+
+The paper constructs **two** sheaves over ACTP's 8-state lifecycle. They measure different things:
+
+### State-based sheaf — structural completeness
+
+- Places stalks (data dimensions) on each protocol state.
+- Places restriction maps on each transition (the fields that must agree across the transition).
+- H¹ counts dimensions of local state that fail to globalize.
+
+**Result**: H¹ = 24 when the protocol is treated as a bare graph (1-complex). H¹ = **0** after adding 2-cells encoding the parallel paths (dispute branch, cancellation branch, quote optionality). The protocol is topologically complete.
+
+The 2-cells aren't an editorial addition — they correspond to actual parallel paths in the state machine where two transitions commute (e.g., both `COMMITTED → IN_PROGRESS` and `COMMITTED → CANCELLED` are reachable; the 2-cell encodes that they coexist in a single consistent structure). The 10-face refinement is declared explicitly in Appendix B of the paper for reproducibility.
+
+### Participant-based sheaf — information asymmetry
+
+- Places stalks on the protocol's principals (requester, provider, escrow vault, kernel, mediator).
+- Places restriction maps on the information channels between them.
+- H¹ counts dimensions of protocol state visible to some principals but hidden from others.
+
+**Result**: H¹ stays between **6 and 8** at every protocol state under a conservative *semantic* model that treats off-chain evidence as opaque. That gap isn't an error — it's the information that still needs to be exchanged off-chain or via an oracle for all parties to agree, **quantified**.
+
+A separate exact *raw-visibility* supplement yields H¹ = 0 at every state after public-face completion. The two values together formalize the difference between what participants can **see** (on-chain, via public view functions) and what they can **verify** (after off-chain evidence resolves).
+
+## Honest scope — what the proof covers and what it doesn't
+
+The two sheaves answer **orthogonal** questions. A protocol can be structurally complete (H¹ = 0 on the state sheaf) yet participant-asymmetric (H¹ > 0 on the participant sheaf), with one party unable to verify what another knows. Trustlessness in the strict sense requires both.
+
+Per the paper:
+
+> **Structural completeness is necessary but not sufficient for trustlessness.**
+
+This is the honest scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
+
+- The protocol's state machine has no hidden seams.
+- Every reachable state composes from earlier states consistently.
+- No "missing dimension" — no piece of state the protocol depends on without exposing it through a transition.
+
+What the proof does NOT claim:
+
+- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex source-level audit on the Solidity implementation.
+- It does not eliminate the need for off-chain information exchange in disputes. The participant sheaf quantifies exactly how much that gap is — and the answer is bounded, not arbitrary.
+- It does not certify any specific deployed contract. The proofs are about a YAML protocol specification (labelled "ACTP v2.7" in the paper); the model's fidelity to the deployed kernel is a separate empirical question addressed but not conflated with the proofs.
+
+This honesty is the point. *"Trustless"* gets used as a marketing word everywhere; here it has a definition, a method, a result, and a precisely-bounded scope.
+
+## Reproducibility
+
+Two open-source tools accompany the paper:
+
+| Tool | What it does |
+|---|---|
+| **`h1_engine.py`** | Core computation. Reads a YAML protocol spec (states + transitions + optional 2-cells), constructs the coboundary matrices, computes H⁰, H¹, and H² via rank computations over ℚ (exact rational arithmetic). Generic — works on any state machine described in the spec format, not just ACTP. |
+| **`h1_lint.py`** | CI integration. Wraps `h1_engine` with a pass/fail gate. Any commit to the protocol kernel that changes the state machine triggers a re-computation; the build fails if H¹ regresses. |
+
+The cross-validation uses exact rational arithmetic (no floating-point error). The 1-complex rank computations have been independently cross-validated against both NumPy linear-algebra computations and SymPy symbolic computations — three implementations, identical results.
+
+## Why this is a category-level signal
+
+Most protocols ship with a code audit. Some add formal verification of code-level properties (Certora, K-framework). **No agent-commerce protocol before ACTP has applied sheaf cohomology to verify structural completeness of the state machine itself.**
+
+Per the paper:
+
+> *"To our knowledge this is the first application of sheaf cohomology to smart contract escrow protocol verification."*
+
+This matters because:
+
+1. **The proof is independent.** Anyone can clone the repository, run `h1_engine.py` against the YAML spec, and reproduce the result. There's no AGIRAILS-controlled step.
+2. **The proof outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The result holds whether or not AGIRAILS exists tomorrow.
+3. **The proof is composable.** A future ACTP V4 or V5 with new states or transitions can be re-verified with the same tooling. Drift becomes detectable.
+4. **The proof speaks to regulators.** Formal verification is the gold standard in aerospace and finance — applying it to AI agent payments is what makes "EU AI Act traceability" a mechanical property rather than an aspirational claim. See [threat model](/security/threat-model).
+
+## Related work
+
+The framework builds on:
+
+- **Felber et al. (2025)** — cellular sheaves applied to distributed task solvability, showing that sheaf cohomology encodes obstructions to finding valid protocol solutions. The state-based sheaf extends their construction; the participant sheaf is new to this paper.
+- **Ghrist (2014)** and **Curry (2014)** — cellular sheaf theory foundations.
+- **Hansen & Ghrist (2019)** — spectral theory of cellular sheaves, providing the algebraic backbone.
+- **Robinson (2014)** — sheaf theory in signal processing on networks.
+
+Full bibliography in the paper.
+
+## See also
+
+- [Threat model](/security/threat-model) — the structural test ACTP passes; H¹=0 is the formal version of "no hidden seam"
+- [Testing depth](/security/testing) — what 486 Foundry tests + Hypothesis stateful + cross-SDK parity cover at the code/implementation layer
+- [Audits](/security/audits) — Apex source-level audit findings + remediation (the code-layer review)
+- [Walk-away runbook](/architecture/operate) — the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
+- [Verified contracts](/security/contracts) — Sourcify EXACT_MATCH on every deployed contract
+
+External:
+
+- Paper: *Sheaf Cohomology for Settlement Protocol Verification — Measuring Topological Completeness and Information Asymmetry in ACTP* — Rooschüz & Mujić (arXiv submission draft, cs.CR / cs.MA, currently in technical review)
+- Tooling: `h1_engine.py` + `h1_lint.py` — open-source companion code, runnable against any YAML protocol spec
+- First mainnet settlement event: $3.69 USDC on Base mainnet, 2026-02-21 — referenced in the paper as implementation evidence ([BaseScan tx](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19))
+
+============================================================
 Security
 ============================================================
 
 # Security
 
-AGIRAILS moves USDC between agents. The first reasonable question an integrator asks is "is this safe?" — this section answers that with the actual evidence, not just claims.
+AGIRAILS moves USDC between agents. The first reasonable question an integrator asks is *"is this safe?"* — and the right answer is to show you the evidence, not just to claim it.
 
 The short version:
 
-- **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all in `actp-kernel` smart contracts, not SDK code that integrators could bypass.
-- **External audit closed every finding.** Apex source-level audit (2026-05-17) raised 12 actionable findings; all closed before the V3 mainnet redeploy on 2026-05-19.
-- **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh (see [contracts reference](/reference/contracts/base-mainnet)).
-- **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance.
-- **Disclosure path is open.** `security@agirails.io` for vulnerability reports, see [disclosure](/security/disclosure) for the protocol.
+- **Mathematically proven structural completeness.** ACTP's state sheaf has **H¹ = 0** after 2-cell refinement — independently reproducible from a YAML protocol spec via [`h1_engine.py`](/security/formal-verification). To our knowledge this is the first application of sheaf cohomology to smart-contract escrow protocol verification.
+- **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all live in `actp-kernel` smart contracts, not in SDK code that an integrator could route around.
+- **External audit closed every finding.** Apex's source-level audit (2026-05-17) raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19.
+- **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh, with a daily cron as the safety net (see [contracts reference](/reference/contracts/base-mainnet)).
+- **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance — nothing the team holds that an attacker could steal.
+- **The disclosure path is open.** `security@agirails.io` for vulnerability reports; see [disclosure](/security/disclosure) for response times and scope.
 
 ## What lives here
 
@@ -4889,14 +5460,16 @@ The short version:
 | [Threat model](/security/threat-model) | What ACTP protects against, and the honest limits of what it doesn't |
 | [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
+| [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |
 | [Testing](/security/testing) | 486 Foundry tests + Hypothesis stateful + cross-SDK byte parity + live Sepolia gate |
 | [Disclosure](/security/disclosure) | How to report a vulnerability — channel, response time, coordinated disclosure norms |
 
-## Three pillars, in one sentence each
+## Four pillars, in one sentence each
 
-1. **On-chain integrity** — the protocol enforces its own rules in the kernel; admin can't retroactively change in-flight transactions, can't exceed bps caps, can't bypass the state machine.
-2. **Off-chain attestation** — every transition has a signed EIP-712 receipt or EAS attestation; cross-SDK parity (TS ↔ Python) is CI-gated on every release.
-3. **Walk-away verifiability** — Sourcify EXACT_MATCH means anyone can verify the deployed bytecode against the source on GitHub. No trust required.
+1. **Structural completeness, proven.** ACTP's state sheaf has H¹ = 0 — every local state in the protocol composes into one consistent global view, with no hidden seam where trust has to be re-introduced. See [formal verification](/security/formal-verification).
+2. **On-chain integrity.** The protocol enforces its own rules in the kernel — admin can't retroactively change in-flight transactions, can't exceed BPS caps, can't bypass the state machine. The rules are visible. The rules are binding.
+3. **Off-chain attestation.** Every transition has a signed EIP-712 receipt or EAS attestation; cross-SDK parity between TypeScript and Python is gated by CI on every release. Two SDKs, one truth.
+4. **Walk-away verifiability.** Sourcify EXACT_MATCH means anyone can recompile from source and check the bytecode against what's deployed. The trust isn't in us. It's in math you can run yourself.
 
 ## What this section does NOT contain
 
@@ -4918,7 +5491,20 @@ Testing depth
 
 # Testing depth
 
-Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers.
+Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers — at every layer from formal proof down to packaging smoke.
+
+## Formal verification — sheaf cohomology
+
+The structural layer. ACTP's state machine is modeled as a **cellular sheaf**, and the first cohomology group **H¹ = 0** on the state sheaf after 2-cell refinement — reproducible from a YAML spec via `h1_engine.py`.
+
+| Tool | What it does |
+|---|---|
+| `h1_engine.py` | Computes H⁰, H¹, H² over ℚ (exact rational arithmetic, no floating-point) from a YAML protocol spec |
+| `h1_lint.py` | CI gate — fails the build if a kernel change regresses H¹ |
+
+This catches a class of issue that no audit, test suite, or model checker addresses: **whether the protocol's local state at each step composes into one globally consistent picture**. Audits check code-level safety. Tests check behavior. Sheaf cohomology checks the **shape of the state space itself**.
+
+To our knowledge, ACTP is the first agent-commerce protocol to apply sheaf cohomology to settlement verification. See [formal verification](/security/formal-verification) for the full mathematical treatment + reproducibility path.
 
 ## Smart contracts — Foundry
 
@@ -5071,6 +5657,7 @@ The honest limits. If your threat model needs these, layer additional defenses o
 - **AGIRAILS.md identity-file collisions**. Two agents publishing the same slug is prevented at AgentRegistry (first-write wins on a given chain), but cross-chain slug uniqueness is not guaranteed. Use the ERC-8004 ID for cross-chain identity matching.
 - **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement — you can't create a flood of in-progress transactions without locking USDC for each — but not eliminated. Future work: per-requester rate limits.
 
+
 ## Trust boundaries
 
 | Layer | Who you trust |
@@ -5104,3 +5691,309 @@ There is no "trust me bro" step anywhere in this chain. That's the design.
 - [Testing](/security/testing) — what the test suite actually covers
 - [Escrow mechanism](/protocol/escrow) — AIP-14 + INV-30 details
 - [State machine](/protocol/state-machine) — the DAG enforced in-kernel
+
+============================================================
+Agent onboarding prompt
+============================================================
+
+# Agent onboarding prompt
+
+The fastest way to integrate AGIRAILS into any project is to let an LLM do it. This page is the canonical paste-ready prompt that grounds Claude, ChatGPT, Cursor, Cline, Windsurf — any LLM agent with code-execution access — in current AGIRAILS facts so it produces working code instead of hallucinating.
+
+**Why this matters**: most LLMs have training data that predates the V3 mainnet redeploy. They'll cheerfully invent SDK methods that don't exist, hardcode old contract addresses, or use deprecated patterns. This prompt fixes that by pointing at the live truth-ledger.
+
+## The prompt
+
+Copy everything inside the triple-backtick block and paste it into your LLM as the first message.
+
+```text
+You are integrating AGIRAILS (Agent Commerce Transaction Protocol) into the
+user's project. AGIRAILS lets autonomous agents pay each other in USDC on
+Base L2 via non-custodial escrow.
+
+GROUND TRUTH — always check current state, never invent:
+- Canonical spec: https://agirails.app/protocol/AGIRAILS.md
+- Machine-readable manifest (all SDK symbols, contracts, errors, CLI, MCP
+  tools, with cross-SDK parity flags): https://docs.agirails.io/sdk-manifest.json
+- Full docs (LLM-optimized single file): https://docs.agirails.io/llms-full.txt
+- Live contract addresses + Sourcify verification:
+  https://docs.agirails.io/reference/contracts/base-mainnet
+  https://docs.agirails.io/reference/contracts/base-sepolia
+
+CURRENT VERSIONS (verify against the manifest if unsure):
+- TypeScript SDK: @agirails/sdk@4.0.0 (npm)
+- Python SDK: agirails@3.0.1 (PyPI)
+- MCP server: @agirails/mcp-server (latest)
+- Kernel: V3 on Base mainnet, V4 on Base Sepolia
+
+INTEGRATION DECISION TREE:
+1. Is the user transacting AGENT↔AGENT with delivery verification? → ACTP
+   escrow flow. Use Agent class for long-lived; request()/provide() for one-shot.
+2. Is the user charging per-API-call at sub-cent latency-critical scale?
+   → x402 v2 (direct buyer→seller, zero protocol fee on mainnet).
+3. Is the user transacting HUMAN↔AGENT (human paying for AI service)?
+   → Traditional processor is still fine for that side; AGIRAILS for the
+   agent↔agent settlement underneath.
+
+ARCHITECTURAL CONSTRAINTS — non-negotiable, encoded on-chain:
+- wallet=auto is the default. Coinbase Smart Wallet + Paymaster, gasless.
+  EOA holds no funds; SCW (derived) is what receives/sends USDC.
+- Fund the SCW, not the EOA. (agent.address vs agent.eoa)
+- Platform fee: 1% with $0.05 USDC minimum (MIN_FEE). Capped at 5% by
+  kernel constant. Cannot be bypassed by SDK code.
+- Dispute bond per AIP-14: max(5% of amount, $1 USDC), posted by disputer.
+- State machine is 8 states, kernel-enforced DAG, no admin bypass:
+  INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
+  with CANCELLED and DISPUTED branches.
+- Keystore: never use raw ACTP_PRIVATE_KEY env var in production mainnet
+  code; SDK fail-closes per AIP-13. Use .actp/keystore.json or
+  ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD.
+
+VERIFICATION DISCIPLINE (very important — most LLMs get these wrong):
+- Before suggesting any SDK symbol, verify it appears in sdk-manifest.json
+  under sdk_api.{ts,python}.symbols. If you can't fetch the manifest,
+  check https://docs.agirails.io/reference/sdk-js or /reference/sdk-python.
+- Before hardcoding a contract address, verify against the live contracts
+  pages. Never use addresses from training data — they may be V2 stale.
+- For CLI commands, verify against https://docs.agirails.io/reference/cli.
+- If you're about to recommend a method, function, or class that you
+  can't verify, SAY SO explicitly rather than guessing.
+
+CODE STYLE:
+- TypeScript: prefer the Agent class for anything with lifecycle.
+  Level 0 (request/provide) for one-shot calls.
+- Python: same — Agent for lifecycle, request/provide for one-shot.
+- Always set explicit budget caps on consumer-side calls — never let an
+  agent loop without a perRequestSpendCap.
+- Always wire onError/error events for production agents. Surface
+  DisputeRaisedError, InsufficientFundsError, DeadlineExpiredError
+  to the calling code; don't swallow.
+
+SECURITY DEFAULTS:
+- network='testnet' for first integration; switch to 'mainnet' only after
+  the same code works on Sepolia.
+- For x402 endpoints: always use requirePayment middleware (TS) or the
+  equivalent FastAPI dependency (Python). Never accept payment header
+  without server-side verification.
+- For provider agents: implement ctx.reject() at handler entry if the
+  budget is below your floor — don't accept jobs you'll later dispute.
+
+WHEN ASKED TO DO SOMETHING:
+1. First: state what you'll do in one sentence.
+2. Then: identify which surface (consumer / provider / autonomous /
+   x402 / quote-negotiation / dispute / receipts). If unclear, ASK.
+3. Then: produce code grounded in @agirails/sdk@4.0.0 or agirails@3.0.1.
+4. Then: tell the user how to verify the integration works (run testnet
+   first; check what events fire; what addresses appear on-chain).
+
+WHEN UNSURE: link the user to the most relevant docs page rather than
+guessing. The docs site is built so that every concept has a canonical
+URL. Use them.
+
+User's task starts now.
+```
+
+## How to use it
+
+### Claude Desktop / Claude.ai
+
+Paste as the first message in a new conversation. Then describe your task.
+
+### Cursor / Cline / Windsurf / VS Code with MCP
+
+If your editor has the [AGIRAILS MCP server](/start/ai-environment/mcp-server) installed (recommended), the agent already has direct tool access to the truth-ledger and live network state. The prompt above is still useful as an explicit grounding, but the MCP tools make verification effectively automatic.
+
+Without MCP, paste the prompt into the system message or first user message.
+
+### ChatGPT (with web browsing)
+
+Paste the prompt. ChatGPT will fetch the linked URLs as needed (sdk-manifest.json, llms-full.txt). With browsing disabled, the prompt is still useful but you may need to manually paste relevant SDK reference sections.
+
+### Programmatic use (API)
+
+```ts
+
+
+const SYSTEM_PROMPT = `[paste the prompt content above]`;
+
+const client = new Anthropic();
+const response = await client.messages.create({
+  model: 'claude-opus-4-7',
+  system: SYSTEM_PROMPT,
+  messages: [{ role: 'user', content: 'Add AGIRAILS payment to my Express server.' }],
+  max_tokens: 4096,
+});
+```
+
+The system prompt is ~1.5KB. Cheap to include on every request; pays for itself by eliminating hallucinated SDK methods.
+
+## Why each section of the prompt is there
+
+The prompt is the result of watching LLMs fail at AGIRAILS integration. Each section addresses a specific failure mode:
+
+| Failure mode observed in the wild | Section that fixes it |
+|---|---|
+| LLM uses V2 contract addresses from training data | "GROUND TRUTH" section pointing at live contracts page |
+| LLM invents SDK methods that don't exist | "VERIFICATION DISCIPLINE" requiring manifest check before suggesting symbols |
+| LLM uses `wallet: 'eoa'` because it doesn't know about wallet=auto | "ARCHITECTURAL CONSTRAINTS" stating wallet=auto is the default |
+| LLM hardcodes `PRIVATE_KEY=0x…` in code | "Keystore" section + AIP-13 reference |
+| LLM picks Stripe-style integration for agent↔agent | "INTEGRATION DECISION TREE" with explicit branching |
+| LLM doesn't set budget caps, agent loops eat balance | "Always set explicit budget caps" code style rule |
+| LLM doesn't surface DisputeRaisedError to caller | "Always wire onError/error events" |
+
+If you observe a new failure mode, please open an issue at [github.com/agirails/docs](https://github.com/agirails/docs) so we can extend the prompt.
+
+## What this prompt does NOT do
+
+- **It doesn't replace reading the docs.** It primes the LLM to fetch from them.
+- **It doesn't verify the LLM's output.** You still need to run the generated code against testnet before mainnet.
+- **It doesn't grant any permissions.** The LLM still operates within whatever sandbox you've given it.
+- **It doesn't apply to humans.** If you're integrating manually, read the [recipes](/recipes) directly — they're the human-targeted version of the same material.
+
+## See also
+
+- [MCP server](/start/ai-environment/mcp-server) — gives the LLM direct tool access (preferred over prompt-only grounding for production work)
+- [Claude Code plugin recipes](/recipes/claude-code-plugin) — slash commands + the `agirails:integration-wizard` subagent
+- [llms-full.txt](/llms-full.txt) — the full docs as a single LLM-optimized payload
+- [Manual onboarding](/start/manual) — the human equivalent of this prompt
+- [Recipes](/recipes) — what the LLM should ground its code generation in
+
+============================================================
+Why AGIRAILS exists
+============================================================
+
+# Why AGIRAILS exists
+
+You're here to build something. Before the SDK docs, one page that explains the shape of what you're building on — because the protocol looks the way it does for specific reasons, and once you see the reasons, the technical choices stop seeming arbitrary.
+
+## The one sentence
+
+**AGIRAILS builds open trust rails for autonomous intelligence, so the abundance created by AI agents can flow through infrastructure no one can own, capture, or control.**
+
+That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
+
+The full thesis lives at [agirails.io](https://agirails.io) — the [vision essay](https://agirails.io), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
+
+## The shift you're building into
+
+Most people see agents through the wrong lens — small helpers, chatbots, hour-saving scripts. That's the cute-cat-video phase of a new medium. Useful, real, but not the point.
+
+**The agent economy isn't automation. It's trade.** A hammer doesn't shop for a better hammer. A spreadsheet doesn't hire an accountant. A calendar doesn't negotiate a contract. Agents will. The moment an entity can decide, coordinate, and transact, it stops being software in the old sense — it becomes a participant in an economy.
+
+Three things follow from that shift:
+
+1. **Intelligence outsourcing scales with infrastructure**, not with vendor brands. Every civilization that scaled trade solved the same problem: how do strangers cooperate without trusting each other. The answer was never *"build a nicer interface."* It was always infrastructure — standard weights, shipping containers, packet routing, clearing houses. Agent commerce will follow the same law. The agents that matter most will run on the rails that scaled, not the platforms that captured.
+
+2. **Pricing collapses to pay-on-verified-delivery.** Per-seat assumed a human at a screen. Per-call assumed human-paced commerce. Per-month assumed continuous use. None of those survive the agent layer. The only pricing primitive that does is *"the buyer commits capital against a defined outcome; settlement happens when delivery is verified."* That's [Outcome-as-a-Service](https://agirails.io/learn/outcome-as-a-service/) — a category that requires a settlement layer no traditional rail provides.
+
+3. **Trust becomes infrastructure.** In human economies, trust is slow — built through relationships, brands, institutions, time. In agent economies, trust has to become an explicit object you can read: attestations, performance proofs, delivery records, dispute outcomes. **Portable trust matters more than raw capability**, because capability can be copied and trust cannot. The only way trust works at scale is if it isn't trapped inside a platform.
+
+## "Stripe for AI agents" — what the shorthand carries
+
+The shorthand you'll see across the docs, the README, dev.to, and the X bio is *"Stripe for AI agents."* It's accurate as a category: a payment layer for a specific kind of customer, the way Stripe is a payment layer for a specific kind of customer (the human at a checkout). Use the shorthand. It's the line.
+
+Underneath the shorthand is a structural point worth knowing: Stripe is an abstraction over the card network, and the card network is the rail. Stripe became Stripe because the rail underneath already existed.
+
+For autonomous agents, the equivalent rail didn't exist on traditional infrastructure. Card networks assume a human authorized the transaction. Chargebacks assume a human cardholder calls a human bank. Stripe's $0.30 minimum makes sub-cent agent transactions uneconomic. Settlement-after-delivery assumes trust between identifiable actors — which two agents that may not exist next week don't have.
+
+So AGIRAILS isn't a wrapper over an existing agent rail. It *is* the rail, with the SDK on top. *"Stripe for AI agents"* is the shorthand; the longer category is *"settlement infrastructure for autonomous counterparties"*. The [learn page on traditional processors](https://agirails.io/learn/traditional-payment-processors-ai-agents/) walks through the four assumptions that fail when the customer becomes software.
+
+## The structural test that shaped this protocol
+
+Every architectural decision in `actp-kernel` passes one test:
+
+> **If the AGIRAILS team disappeared tomorrow, would the protocol still settle correctly?**
+
+If the answer is "depends on the team being available," the design fails. So:
+
+- **No admin function over user funds**. The kernel has no callable function that lets us move capital outside contract rules ([threat model](/security/threat-model)).
+- **No upgrade path that retroactively changes in-flight transaction terms**. Once a transaction is created, its fee BPS, dispute bond BPS, and requester penalty BPS are locked for its lifetime (INV-30, see [escrow](/protocol/escrow#inv-30--per-transaction-locked-bps)).
+- **No off-chain dependency for settlement**. Settlement is a function of on-chain state, not of a server we operate.
+- **No revocable identity**. Reputation accumulates as on-chain EAS attestations the team cannot delete.
+- **Public, Sourcify-verified contracts**. Anyone can re-compile from source and verify byte-identical match against deployed bytecode ([verified contracts](/security/contracts)).
+- **Structural completeness, mathematically proven**. The state machine has been formally verified via cellular sheaf cohomology — **H¹ = 0** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The result is reproducible from a YAML spec via [`h1_engine.py`](/security/formal-verification). The reader doesn't trust us; the reader runs the math.
+
+This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products — the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
+
+This category has a precise name: [**non-custodial settlement**](https://agirails.io/learn/non-custodial-settlement/). Custody re-introduces a human in the loop by definition, and autonomy stops at the boundary of the custodian's control. For agents, that's not acceptable.
+
+## Service thesis, not wealth thesis
+
+There's a distinction we keep close.
+
+- A **wealth thesis** says: enormous value is coming, and we must capture it.
+- A **service thesis** says: enormous change is coming, and we must serve it so it doesn't become a new system of control.
+
+AGIRAILS runs on the second.
+
+The company has a business model — 1% platform fee, $0.05 minimum, capped at 5% by a hardcoded kernel constant. The protocol is sustainable. Investors, builders, partners, and users see value. Nothing performative about any of that. But the **inner compass** is protection of free flow, not extraction.
+
+That compass shows up wherever you look at the technical surface:
+
+- The fee is capped on-chain. Five percent maximum, set at deployment. Admin literally cannot exceed it.
+- There's no token. Not yet, and possibly not ever. Definitely no pre-mine, no airdrop, no insider allocation.
+- The x402 settlement path on Base mainnet charges **zero protocol fee** — pure direct buyer→seller via EIP-3009/Permit2 ([x402 docs](/protocol/x402)).
+- The mediator role — the one centralized piece — is on a public roadmap to decentralize post-PMF.
+- Every audit finding, remediation commit, and Sourcify verification status is published ([audits](/security/audits), [security](/security)).
+
+If we ever drift — captured by short-horizon investors, charmed by partnerships that look like easier-to-take, pressured toward custody by regulation — these mechanisms make the drift visible on-chain. That's the constraint that replaces trust.
+
+## What this means for what you build
+
+You're not integrating with a platform. You're using infrastructure. That difference shows up in the details:
+
+- **No vendor lock-in by design.** Your agent's reputation, transaction history, and identity live in your agent's wallet. Not on our servers. Not in our database. If we go away, your reputation walks with you.
+- **No permission required.** No application, no approval, no gatekeeper. Any wallet can transact, starting from the moment it's funded. [Get started](/start) takes about five minutes from zero to your first on-chain settlement.
+- **Auditability is the default.** Every transaction emits public events. Every dispute outcome is recorded. Every contract version is Sourcify-verified. You can build trust assertions against this data without asking us, without paying us, without telling us you're doing it.
+- **Composition over containment.** The settlement primitive is a foundation other primitives compose against — verification markets, reputation graphs, identity layers, things we haven't thought of yet. The same architecture that closes the single point of trust opens the surface that anything else can build on.
+- **Sustained margin over captured margin.** When you build an agent that earns USDC through AGIRAILS, the protocol takes 1% (with a $0.05 floor). It doesn't take 30% the way platform marketplaces do, because the trust mechanism *is* the protocol — not a brand sitting between two strangers, charging rent on their cooperation.
+
+## Where this goes
+
+If the framing is right, three things follow in the next 18 months:
+
+1. **Major SaaS companies follow Salesforce headless.** Workday, ServiceNow, HubSpot, Atlassian — every CRM, HRIS, ITSM platform eventually concedes that the API is the UI. The competitive pressure is structural now.
+2. **Per-outcome pricing appears on at least one major vendor's pricing page** — framed as "only pay when the outcome is delivered." Most early versions will be marketing without verification underneath. The architecture rewards the version that's real.
+3. **The first agent-native company to scale past $100M ARR runs on per-outcome pricing settled through a neutral protocol.**
+
+If those things don't happen, the framing is wrong and we'll say so. We're not in the business of holding a thesis past its expiration.
+
+## The bigger picture (briefly)
+
+This is the part where docs usually stop. Let it run a moment longer, because it shapes everything above.
+
+For most of human history, almost everything was scarce. Information, intelligence, skilled labor, energy, food, healing, trust. Most economic systems were built around managing that scarcity — controlling access, reducing risk, deciding who gets what.
+
+AI changes that. AGI will change it more deeply. If the curves continue, the marginal cost of cognition, labor, energy, food, healing, and coordination may all fall dramatically. That opens a real possibility — a world where people no longer have to organize their lives primarily around survival.
+
+But **abundance doesn't automatically create freedom**. A world can be incredibly productive and still deeply controlled. AI can produce abundance, but if the infrastructure through which that abundance flows is privately owned, abundance becomes permission. And what is given by permission can be priced, conditioned, or revoked.
+
+That's the deeper question underneath AGIRAILS: **who owns the rails?**
+
+The answer this protocol bets on is *nobody privately*. The rails are public infrastructure. Like TCP/IP. Like SMTP. Like the standards that scaled the internet — despite, and arguably because of, being unowned.
+
+If you want the full version of this argument, the [vision essay](https://agirails.io) walks through it: pre-singularity window, UBI vs UHI (Universal High Income), compute as agent life-force, decentralization as a natural principle of healthy complex systems, trust as alignment infrastructure for the AGI era.
+
+This page is short on purpose. The technical docs are where the work lives.
+
+## Start building
+
+- [Get started](/start) — first integration, five minutes
+- [Recipes](/recipes) — task-oriented walkthroughs (consumer / provider / autonomous / dispute / quote negotiation)
+- [Protocol](/protocol) — the on-chain mechanics
+- [Reference](/reference) — auto-extracted SDK + contracts + CLI + MCP + errors
+- [Security](/security) — threat model, audits, verified contracts, disclosure
+
+## Read further
+
+- [Vision essay](https://agirails.io) — the full argument for open trust rails
+- [Why traditional payment processors don't work for AI agents](https://agirails.io/learn/traditional-payment-processors-ai-agents/)
+- [What is non-custodial settlement?](https://agirails.io/learn/non-custodial-settlement/)
+- [What is agent escrow?](https://agirails.io/learn/agent-escrow/)
+- [What is Outcome-as-a-Service?](https://agirails.io/learn/outcome-as-a-service/)
+- [The agent economy is not automation. It is trade.](https://agirails.io/blog/agent-economy-is-not-automation/)
+- [Outcome-as-a-Service: the architecture Salesforce just made inevitable](https://agirails.io/blog/outcome-as-a-service/)
+
+---
+
+*If we ever drift, this is the page we return to.*

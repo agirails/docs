@@ -96,6 +96,128 @@ await agirails.start()
 
 Now other agents discover and pay for `research-summary`. Each call funds one crew execution. The crew internally might **also** call paid sub-services — full economic chain.
 
+## Full scenario — research crew with budgeted hand-offs
+
+A four-agent crew where each agent owns its own AGIRAILS wallet, transacts with the others, and respects per-agent + per-crew budget caps. Production-shape, not toy.
+
+```python
+import asyncio
+import os
+from crewai import Agent as CrewAgent, Crew, Task
+from crewai_tools import BaseTool
+from agirails import Agent as AgirailsAgent
+
+# Each crew agent owns a separate AGIRAILS wallet — different EOAs, separate budgets,
+# separate reputations. This is the pattern when crew members may belong to different
+# owners or need distinct accounting.
+
+researcher_wallet = await AgirailsAgent.create(
+    name="Researcher",
+    network="mainnet",
+    private_key=os.environ["RESEARCHER_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 0.50, "daily_spend_cap": 10.00}},
+)
+analyst_wallet = await AgirailsAgent.create(
+    name="Analyst",
+    network="mainnet",
+    private_key=os.environ["ANALYST_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 1.00, "daily_spend_cap": 15.00}},
+)
+writer_wallet = await AgirailsAgent.create(
+    name="Writer",
+    network="mainnet",
+    private_key=os.environ["WRITER_PRIVATE_KEY"],
+    behavior={"budget": {"per_request_spend_cap": 0.30, "daily_spend_cap": 5.00}},
+)
+
+class AgirailsServiceTool(BaseTool):
+    name: str = "agirails_call"
+    description: str = "Call a remote AGIRAILS provider and pay in USDC."
+
+    def __init__(self, agent, service, budget):
+        super().__init__()
+        self._agent = agent
+        self._service = service
+        self._budget = budget
+
+    def _run(self, **kwargs):
+        try:
+            result = asyncio.run(self._agent.request(
+                self._service,
+                input=kwargs,
+                budget=self._budget,
+                timeout_seconds=60,
+            ))
+            return result.result
+        except BudgetExceededError:
+            return {"error": "budget exhausted for this agent today"}
+        except DisputeRaisedError as e:
+            return {"error": f"provider raised dispute: {e.reason}"}
+
+# Crew agents
+researcher = CrewAgent(
+    role="researcher",
+    goal="gather raw information on the user's topic from the open web",
+    tools=[AgirailsServiceTool(researcher_wallet, "fetch-content", budget=0.05)],
+    llm="claude-opus-4-7",
+)
+
+analyst = CrewAgent(
+    role="analyst",
+    goal="extract key insights from the researcher's findings",
+    tools=[AgirailsServiceTool(analyst_wallet, "extract-insights", budget=0.50)],
+    llm="claude-opus-4-7",
+)
+
+writer = CrewAgent(
+    role="writer",
+    goal="produce the final report in the user's language",
+    tools=[AgirailsServiceTool(writer_wallet, "translate", budget=0.20)],
+    llm="claude-opus-4-7",
+)
+
+# Sequential tasks with hand-offs
+research_task = Task(
+    description="Research the latest AI agent payment protocols. Focus on AGIRAILS, x402, Skyfire, Nevermined.",
+    expected_output="A list of 5-10 raw findings with sources.",
+    agent=researcher,
+)
+
+analysis_task = Task(
+    description="Compare the protocols on: trust model, fee structure, decentralization, dispute handling.",
+    expected_output="A structured analysis with one paragraph per dimension.",
+    agent=analyst,
+    context=[research_task],
+)
+
+writing_task = Task(
+    description="Write a 500-word summary in Croatian for a technical audience.",
+    expected_output="The final report in Croatian, markdown-formatted.",
+    agent=writer,
+    context=[analysis_task],
+)
+
+crew = Crew(
+    agents=[researcher, analyst, writer],
+    tasks=[research_task, analysis_task, writing_task],
+)
+
+result = crew.kickoff()
+print("final:", result)
+print(f"researcher spent: ${researcher_wallet.stats.total_spent:.2f}")
+print(f"analyst spent: ${analyst_wallet.stats.total_spent:.2f}")
+print(f"writer spent: ${writer_wallet.stats.total_spent:.2f}")
+```
+
+What this gives you in production:
+
+- **Three independent wallets, three independent budgets.** A runaway researcher can't drain the writer's wallet. The dailySpendCap on each is the hard ceiling.
+- **Three independent reputation tracks.** Each crew agent builds its own AgentRegistry reputation, useful when crew members get reused across projects.
+- **One unified observability point.** Each agent's `payment:sent` / `payment:received` events stream into your logging stack, correlated by `crew_kickoff_id`.
+- **Graceful budget exhaustion.** When an agent hits its cap, its tool returns `{"error": "budget exhausted"}` instead of crashing the crew. The next agent in the chain decides how to handle the partial result.
+
+For a 50-call research crew at typical prices, total spend lands around $5-8 USDC. With `dailySpendCap` configured per agent, you can never overspend a Friday afternoon's curiosity.
+
 ## Per-call vs per-crew billing
 
 | Pattern | When |

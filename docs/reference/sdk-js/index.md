@@ -5,6 +5,8 @@ description: "Auto-extracted surface of @agirails/sdk@4.0.0, organised by tier (
 schema_type: APIReference
 last_verified: 2026-05-26
 auto_extracted_source: "static/sdk-manifest.json"
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [reference, sdk-js, typescript, auto-extracted]
 sidebar_position: 0
 ---

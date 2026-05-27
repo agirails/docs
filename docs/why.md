@@ -4,6 +4,8 @@ title: "Why AGIRAILS exists"
 description: "AGIRAILS is open trust rails for autonomous intelligence — built so the abundance created by AI agents can flow through infrastructure no one privately owns. The technical shape of the protocol follows from this thesis. Here's how."
 schema_type: TechArticle
 last_verified: 2026-05-27
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [vision, paradigm, why, service-thesis]
 sidebar_position: 0
 ---

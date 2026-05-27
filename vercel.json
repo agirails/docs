@@ -6,6 +6,7 @@
     }
   ],
   "redirects": [
+    { "source": "/protocol/identity-file", "destination": "/protocol/covenant", "permanent": true },
     { "source": "/installation", "destination": "/start/manual", "permanent": true },
     { "source": "/quick-start", "destination": "/start", "permanent": true },
     { "source": "/agent-integration", "destination": "/recipes/provider-agent", "permanent": true },

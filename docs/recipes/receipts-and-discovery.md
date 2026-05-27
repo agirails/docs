@@ -141,7 +141,7 @@ If you handle PII or sensitive prompts, encrypt the Receipt payload (the SDK sup
 ## See also
 
 - [Web Receipts protocol](/protocol/web-receipts) — IPFS pinning + EIP-712 signing details
-- [Identity](/protocol/identity) — EOA vs SCW vs identity file
+- [Identity](/protocol/identity) — EOA vs SCW vs covenant
 - [Provider agent](/recipes/provider-agent) — where AgentRegistry.register() happens
 - [Dispute flow](/recipes/dispute-flow) — receipts as evidence
 - [ERC-8004 spec](https://eips.ethereum.org/EIPS/eip-8004)

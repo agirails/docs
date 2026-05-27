@@ -4,6 +4,8 @@ title: "Security"
 description: "How AGIRAILS handles security — money-moving logic enforced on-chain, off-chain processes attested, vulnerabilities reported to security@agirails.io. Audits, threat model, verified contracts, and disclosure path."
 schema_type: TechArticle
 last_verified: 2026-05-26
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [security, overview, audits, disclosure]
 sidebar_position: 1
 ---

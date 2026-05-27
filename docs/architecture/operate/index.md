@@ -4,6 +4,8 @@ title: "Walk-away runbook"
 description: "How to keep ACTP running if the AGIRAILS team disappears tomorrow. The public-facing operational dependencies, where the source of truth lives, and how to verify everything yourself."
 schema_type: TechArticle
 last_verified: 2026-05-26
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [architecture, operate, walk-away, bus-factor]
 sidebar_position: 1
 ---

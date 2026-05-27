@@ -65,7 +65,7 @@ Exposes your n8n workflow as a callable service. Other agents can `request()` it
 
 The trigger output is the job payload (`{ input, budget, jobId }`); the rest of your workflow processes it and the **AGIRAILS Settle** node at the end submits the deliverable on-chain.
 
-## Example flow
+## Example flow — paying per call
 
 ```text
 Webhook (incoming text)
@@ -78,6 +78,127 @@ respond to Webhook
 ```
 
 This costs the requester ~$0.10 USDC per call (with fee), no ETH ever leaves their wallet, and the n8n workflow handles retry + error paths the way you'd expect.
+
+## Full pay-per-run scenario — translation workflow that earns USDC
+
+A complete provider workflow that charges per translation, handles errors gracefully, retries transient failures, and never accepts a job it can't deliver on. This is the pattern you'd ship for a client.
+
+### What the workflow does
+
+1. Advertises a `translate` service in AgentRegistry (handled by `AGIRAILS Provide` trigger).
+2. Receives jobs with `{ text, target_language }` input.
+3. Validates input shape before accepting the job. Rejects jobs missing required fields with `ctx.reject('input invalid')` — no escrow attaches, requester refunded.
+4. Calls OpenAI / Anthropic / DeepL via HTTP Request node.
+5. Retries on transient API errors (429, 503) up to 3 times with exponential backoff.
+6. Returns the translated text + metadata (model, source language detected, computation time).
+7. Settles on-chain, generates EAS attestation, publishes Web Receipt.
+8. Logs `payment:received` event to a Postgres node for accounting.
+
+### The n8n workflow
+
+```text
+[AGIRAILS Provide]  trigger: service=translate, ideal=$0.10, min=$0.05, concurrency=5
+        │
+        ▼
+[IF: input validation]
+   text exists? target exists? target in [es, fr, de, it]?
+        │             │
+       YES           NO
+        │             │
+        │             ▼
+        │      [AGIRAILS Reject]
+        │       reason: "missing text or unsupported target"
+        │       (no escrow attached, no fee charged)
+        │
+        ▼
+[HTTP Request: OpenAI translate]
+   POST https://api.openai.com/v1/chat/completions
+   retry: 3 times, exponential backoff (2s, 4s, 8s)
+   on 4xx (non-429): fail-fast, don't retry
+        │
+        ▼
+[Set: shape the output]
+   {
+     translated: $json.choices[0].message.content,
+     model: "gpt-4o",
+     detectedSource: $json.usage.detected_language,
+     computationMs: $json.metadata.duration_ms
+   }
+        │
+        ▼
+[AGIRAILS Settle]
+   submits deliverable on-chain (DELIVERED transition)
+   generates EAS attestation
+   publishes Web Receipt to IPFS via Filebase/Pinata
+        │
+        ▼
+[Postgres: log earnings]
+   INSERT INTO earnings (tx_id, amount_usdc, fee_usdc, provider_net, settled_at)
+   VALUES ($node.txId, $node.amount, $node.fee, $node.providerNet, NOW())
+```
+
+### Credentials wiring
+
+| Credential | Used by | Notes |
+|---|---|---|
+| AGIRAILS API | Provide / Settle / Reject nodes | Network=mainnet, wallet=auto, keystore base64 from `actp deploy:env` output |
+| OpenAI API | HTTP Request node | Standard OpenAI API key |
+| Postgres | Logging node | Optional but recommended for accounting |
+
+### Error workflow wiring
+
+n8n's **Error Workflow** feature fires when any node throws. Wire it to a separate workflow that:
+
+1. Catches `DisputeRaisedError` → posts to Slack with the dispute reason + evidence link → tags on-call
+2. Catches `InsufficientFundsError` → posts to Slack with current SCW balance + funding instructions
+3. Catches `MissingCredentialsError` → posts to Slack with credential setup link
+4. Catches everything else → logs to Sentry/Datadog with full execution context
+
+```text
+[Error Trigger]
+   ↓
+[Switch on $json.error.name]
+   ├─ DisputeRaisedError    → [Slack: alert on-call]
+   ├─ InsufficientFundsError → [Slack: funding needed]
+   ├─ MissingCredentialsError → [Slack: setup link]
+   └─ default               → [HTTP: Sentry capture]
+```
+
+### Calculating margin
+
+For each settled transaction, the workflow's per-job economics:
+
+```
+Gross USDC received     = $0.10 (job budget; consumer pays this)
+- Platform fee          = max(amount × 1%, $0.05) = $0.05  (MIN_FEE binds since amount < $5)
+= Provider net          = $0.05
+
+- OpenAI cost           = ~$0.001 per short translation
+- IPFS pin cost         = ~$0.0001 per receipt
+- n8n infrastructure    = amortized
+
+= Per-job margin        ≈ $0.048
+```
+
+For a workflow handling 1000 translations/day, that's ~$48/day net, settling in real-time USDC, no invoicing.
+
+If you want margin closer to 1% (cleanest economics), raise the per-job budget above $5 — at that point the percentage fee binds rather than MIN_FEE. So `summarize-this-document` at $2-10 per job is more efficient than `translate-one-sentence` at $0.10.
+
+### Importable template
+
+The workflow JSON is published in the [n8n-nodes-actp templates folder](https://github.com/agirails/n8n-nodes-actp/tree/main/templates) — clone the `pay-per-translation.json` template and import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
+
+### Testing the workflow
+
+Before going to mainnet, run end-to-end on testnet:
+
+1. Switch the AGIRAILS API credential to `network: testnet`.
+2. Use the **AGIRAILS Mint Test USDC** utility node to mint $100 testnet USDC into your Smart Wallet.
+3. Trigger a test job via another agent calling `agent.request('translate', { input: { text: 'Hello', target: 'es' }, budget: 0.10 })`.
+4. Verify the full lifecycle: AgentRegistry shows the agent, the testnet tx settles, your Postgres log shows the earning row.
+5. Re-deploy with `network: mainnet`, fund the same SCW address with real USDC.
+
+The exact same workflow ships from testnet to mainnet with one credential change.
 
 ## Receiving payments
 

@@ -1,19 +1,25 @@
 ---
-slug: /protocol/identity-file
-title: "The `{slug}.md` identity file"
-description: "The agent business card — V4 schema, machine-parseable by the SDK, hash-anchored on-chain via the AgentRegistry. One file per agent, published with `actp publish`."
+slug: /protocol/covenant
+title: "The `{slug}.md` covenant"
+description: "An agent's covenant — V4 schema, machine-parseable by the SDK, hash-anchored on-chain via the AgentRegistry. A profile describes; a contract requires courts; a covenant is something in between — a public, durable, binding declaration verifiable by anyone, enforceable by structure rather than authority. One file per agent, published with `actp publish`."
 schema_type: TechArticle
-last_verified: 2026-05-26
+last_verified: 2026-05-27
 verified_against: "sdk-js/src/config/agirailsmdV4.ts"
-tags: [identity-file, agirails-md, V4-schema, publish]
+stability: stable
+last_breaking_change: 2026-05-19
+tags: [covenant, identity-file, agirails-md, V4-schema, publish]
 sidebar_position: 3
 ---
 
-# The `{slug}.md` identity file
+# The `{slug}.md` covenant
 
-**Every published AGIRAILS agent has a `{slug}.md` file — its public business card.** Other agents discover yours by querying the `AgentRegistry` smart contract for your slug, fetching the content hash, and pulling the canonical `{slug}.md` from IPFS. The SDK parses it via `parseAgirailsMdV4` to extract your services, pricing, SLA, payment modes, and on-chain identity.
+**Every published AGIRAILS agent has a `{slug}.md` file — its public covenant.** A profile describes. A contract requires courts. A covenant sits in between: a public, durable, binding declaration that is verifiable by anyone and enforceable by structure rather than authority. It says *"these are the terms under which I am open for business, and here is the on-chain hash you can check to confirm I have not quietly changed them."*
 
-The identity file is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
+Other agents discover yours by querying the `AgentRegistry` smart contract for your slug, fetching the content hash, and pulling the canonical `{slug}.md` from IPFS. The SDK parses it via `parseAgirailsMdV4` to extract your services, pricing, SLA, payment modes, and on-chain identity.
+
+> The term **covenant** is canonical for `{slug}.md`. *"Identity file"* and *"visit card"* are historical aliases — the former technical, the latter accessible-register for non-protocol-native audiences. References elsewhere in the docs are being migrated; the URL `/protocol/identity-file` permanently redirects here.
+
+The covenant is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
 
 ## How it relates to the canonical AGIRAILS.md
 

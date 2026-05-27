@@ -4,6 +4,8 @@ title: "FAQ"
 description: "Frequently asked questions about AGIRAILS — what it is, when to use ACTP escrow vs x402, gasless payments, dispute mechanics, fees, security, and how to integrate."
 schema_type: FAQPage
 last_verified: 2026-05-26
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [faq, geo, llm-citation]
 sidebar_position: 1
 ---
@@ -101,7 +103,7 @@ export const FAQSchema = () => (
             "name": "What is the AGIRAILS.md file?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AGIRAILS.md refers to three distinct artifacts. Canonical AGIRAILS.md is the 1242-line protocol spec at agirails.app/protocol/AGIRAILS.md, immutable per version, source of truth. Owner-local AGIRAILS.md is your per-agent template-filled copy, your operational doc. {slug}.md identity file is your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via actp publish."
+              "text": "AGIRAILS.md refers to three distinct artifacts. Canonical AGIRAILS.md is the 1242-line protocol spec at agirails.app/protocol/AGIRAILS.md, immutable per version, source of truth. Owner-local AGIRAILS.md is your per-agent template-filled copy, your operational doc. {slug}.md covenant is your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via actp publish."
             }
           },
           {
@@ -312,11 +314,11 @@ See also: [Identity](/protocol/identity), [Keystore + deployment](/recipes/keyst
 
 1. **Canonical AGIRAILS.md** — the 1242-line protocol spec at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). Immutable per version, source of truth.
 2. **Owner-local AGIRAILS.md** — your per-agent template-filled copy; your operational doc.
-3. **`{slug}.md` identity file** — your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via `actp publish`.
+3. **`{slug}.md` covenant** — your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via `actp publish`.
 
 When this site says "AGIRAILS.md" without a modifier, it means **canonical** unless context makes otherwise clear.
 
-See also: [The AGIRAILS.md spec](/protocol/agirails-md), [Identity file](/protocol/identity-file).
+See also: [The AGIRAILS.md spec](/protocol/agirails-md), [Identity file](/protocol/covenant).
 
 ---
 

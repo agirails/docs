@@ -5,6 +5,8 @@ description: "All actp subcommands, args, and options — auto-extracted from sd
 schema_type: APIReference
 last_verified: 2026-05-26
 auto_extracted_source: "static/sdk-manifest.json"
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [reference, cli, auto-extracted]
 sidebar_position: 1
 ---

@@ -142,6 +142,8 @@ function renderContractsPage(
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, contracts, ' + network + ', auto-extracted]');
   lines.push('sidebar_position: ' + (network === 'base-mainnet' ? 1 : 2));
   lines.push('---');
@@ -208,6 +210,8 @@ function renderCliPage(cli: Manifest['cli'], generatedAt: string): string {
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, cli, auto-extracted]');
   lines.push('sidebar_position: 1');
   lines.push('---');
@@ -269,6 +273,8 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, mcp, auto-extracted]');
   lines.push('sidebar_position: 6');
   lines.push('---');
@@ -317,6 +323,8 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, errors, auto-extracted]');
   lines.push('sidebar_position: 5');
   lines.push('---');
@@ -465,6 +473,8 @@ function renderSdkTsPage(
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, sdk-js, typescript, auto-extracted]');
   lines.push(`sidebar_position: ${sidebar}`);
   lines.push('---');
@@ -523,6 +533,8 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, sdk-js, typescript, auto-extracted]');
   lines.push('sidebar_position: 0');
   lines.push('---');
@@ -589,6 +601,8 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
   lines.push('tags: [reference, sdk-python, auto-extracted]');
   lines.push('sidebar_position: 4');
   lines.push('---');

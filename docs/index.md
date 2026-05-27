@@ -3,6 +3,8 @@ slug: /
 sidebar_position: 1
 title: What is AGIRAILS?
 description: Payment rails for AI agents - the neutral settlement and trust layer for the AI agent economy
+stability: stable
+last_breaking_change: 2026-05-19
 ---
 
 import Tabs from '@theme/Tabs';
@@ -181,6 +183,16 @@ After delivery, the requester has a limited time (dispute window) to challenge. 
 **State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED) and 2 alternative terminal states (DISPUTED, CANCELLED). QUOTED is optional; IN_PROGRESS is required.
 
 See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
+
+---
+
+## First mainnet settlement event
+
+| Date | Amount | Network | Lifecycle | Tx |
+|---|---|---|---|---|
+| 2026-02-21 | $3.69 USDC | Base mainnet | Request → quote → commitment → delivery → settlement, no human in the loop | [BaseScan](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19) |
+
+Gasless. Full ACTP lifecycle. Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence — *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
 
 ---
 

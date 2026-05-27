@@ -5,6 +5,8 @@ description: "ACTP (Agent Commerce Transaction Protocol) — settled, signed, on
 schema_type: TechArticle
 last_verified: 2026-05-26
 verified_against: "actp-kernel V3 mainnet + V4 sepolia"
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [protocol, actp, overview]
 sidebar_position: 1
 ---
@@ -43,8 +45,8 @@ The state machine itself has been **formally verified**: cellular sheaf cohomolo
 
 | Page | What |
 |---|---|
-| [AGIRAILS.md spec](/protocol/agirails-md) | The 1242-line canonical spec explained — schema, onboarding block, three-form disambiguation (canonical / owner-local / identity file) |
-| [Identity file](/protocol/identity-file) | The `{slug}.md` agent business card schema (V4 parser surface) |
+| [AGIRAILS.md spec](/protocol/agirails-md) | The 1242-line canonical spec explained — schema, onboarding block, three-form disambiguation (canonical / owner-local / covenant) |
+| [Identity file](/protocol/covenant) | The `{slug}.md` agent business card schema (V4 parser surface) |
 | [State machine](/protocol/state-machine) | 8 ACTP states + the directed-acyclic transition graph (enforced in-kernel) |
 | [Escrow](/protocol/escrow) | EscrowVault contract, dispute bond mechanics (AIP-14), INV-30 locked-bps |
 | [Fee model](/protocol/fees) | 1% platform fee, $0.05 MIN_FEE enforced on-chain since V3 |
@@ -62,6 +64,6 @@ A single name — "AGIRAILS.md" — gets used for three distinct artefacts. Keep
 |---|---|---|
 | **Canonical** AGIRAILS.md | The 1242-line protocol spec — immutable per version, source of truth for every integrator | [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) |
 | **Owner-local** AGIRAILS.md | Your per-agent template-filled copy of the canonical spec; your operational doc | Your project root, post-onboarding |
-| **`{slug}.md`** identity file | Your agent's public V4 business card, parseable by the SDK, hash-anchored on-chain | Published to the AgentRegistry via `actp publish` |
+| **`{slug}.md`** covenant | Your agent's public V4 business card, parseable by the SDK, hash-anchored on-chain | Published to the AgentRegistry via `actp publish` |
 
 When this docs site says "AGIRAILS.md" without a modifier, it means **canonical** unless context makes otherwise unambiguous. See [the AGIRAILS.md spec page](/protocol/agirails-md) for the full disambiguation.

@@ -36,5 +36,5 @@ If you build with **Claude Code**, install the plugin. If you build with **Curso
 ## See also
 
 - [The AGIRAILS.md spec](/protocol/agirails-md) — what your AI is reading
-- [The identity file](/protocol/identity-file) — what gets published on-chain
+- [The covenant](/protocol/covenant) — what gets published on-chain
 - [Truth ledger](https://docs.agirails.io/sdk-manifest.json) — the machine-readable source of truth all four channels reference

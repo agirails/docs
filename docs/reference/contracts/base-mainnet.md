@@ -5,6 +5,8 @@ description: "Production ACTP kernel + supporting contracts on Base mainnet, wit
 schema_type: APIReference
 last_verified: 2026-05-26
 auto_extracted_source: "static/sdk-manifest.json"
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [reference, contracts, base-mainnet, auto-extracted]
 sidebar_position: 1
 ---

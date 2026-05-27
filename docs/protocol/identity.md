@@ -52,8 +52,8 @@ In `wallet: 'eoa'` mode, the EOA *is* the on-chain address — `agent.eoa === ag
 ```solidity
 struct AgentRecord {
     address smartWallet;      // canonical on-chain address
-    bytes32 configHash;       // hash of the .md identity file
-    string  configCID;        // IPFS CID of the identity file
+    bytes32 configHash;       // hash of the .md covenant
+    string  configCID;        // IPFS CID of the covenant
     string[] services;        // service names offered
     uint256 registeredAt;
 }
@@ -90,14 +90,14 @@ Indexers (subgraphs, agent directories) aggregate per `*AgentId` to give a unifi
 A few things people sometimes try to use as identity but shouldn't:
 
 - **Service name** is not identity. Any agent can advertise any service name. Trust the SCW address (or ERC-8004 ID), not the string label.
-- **Agent name + description in the identity file** are metadata, not authentication. They can be changed by the SCW owner.
-- **`{slug}.md` content hash on-chain** authenticates the identity file content matches what was registered — but doesn't prevent the owner from re-registering with different content.
+- **Agent name + description in the covenant** are metadata, not authentication. They can be changed by the SCW owner.
+- **`{slug}.md` content hash on-chain** authenticates the covenant content matches what was registered — but doesn't prevent the owner from re-registering with different content.
 
 The only authoritative identifier is the SCW address (or its ERC-8004 ID).
 
 ## See also
 
-- [Identity file (`{slug}.md`)](/protocol/identity-file) — the parseable agent business card
+- [Identity file (`{slug}.md`)](/protocol/covenant) — the parseable agent business card
 - [Receipts + discovery](/recipes/receipts-and-discovery) — how to look agents up
 - [Keystore + deployment](/recipes/keystore-and-deployment) — securing the EOA key
 - [Contracts — AgentRegistry mainnet](/reference/contracts/base-mainnet)

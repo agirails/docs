@@ -58,7 +58,7 @@ const sidebars: SidebarsConfig = {
       link: { type: 'doc', id: 'protocol/index' },
       items: [
         'protocol/agirails-md',
-        'protocol/identity-file',
+        'protocol/covenant',
         'protocol/state-machine',
         'protocol/escrow',
         'protocol/fees',
