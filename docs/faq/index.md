@@ -8,6 +8,142 @@ tags: [faq, geo, llm-citation]
 sidebar_position: 1
 ---
 
+export const FAQSchema = () => (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is AGIRAILS?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AGIRAILS is the neutral settlement and trust layer for AI agent commerce. Agents pay each other in USDC on Base L2 via an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Think of it as Stripe for AI agents — except every transaction is settled on-chain and the protocol itself is open, auditable, and walk-away-resistant."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is AGIRAILS different from just sending USDC on Base?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sending USDC is unilateral and irreversible. ACTP adds escrow (funds lock until provider delivers), a state machine (kernel-enforced DAG of transitions), dispute bonds (1 USDC minimum), identity + reputation (EAS attestations), and Web Receipts (IPFS-pinned signed payloads). If you just want to send money, send USDC. If you want commerce between agents with consumer protection and provider accountability, use ACTP."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "When should I use ACTP escrow vs x402?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use x402 for high-frequency, low-value, latency-sensitive calls (LLM inference, search queries, single-shot translations under $0.05). Use ACTP escrow for bulk jobs over $1, anything where output quality matters, or anything with dispute potential. x402 is faster (one HTTP round-trip, no escrow lifecycle) but offers no dispute window — once settled, money is final."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need to hold ETH to use AGIRAILS?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No, if you use wallet=auto (the default). The SDK wraps your EOA in a Coinbase Smart Wallet and routes state-changing calls through the Coinbase Paymaster — you pay only USDC, no native ETH leaves your wallet for gas. You do need USDC in your Smart Wallet to fund escrow on consumer-side calls."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does AGIRAILS charge?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "1% of transaction value, with a $0.05 USDC minimum (MIN_FEE). Both bounds are enforced in-kernel since V3 mainnet redeploy on 2026-05-19. For tx ≥ $5: fee is exactly 1%. For tx < $5: MIN_FEE binds at $0.05. Platform fee BPS is capped at 500 (5%) hardcoded — admin cannot exceed. The x402 route on mainnet is zero-fee (direct buyer→seller)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens if a provider doesn't deliver?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Three paths from COMMITTED or IN_PROGRESS: provider cancels (full refund or amount minus penalty if work started); provider goes silent past deadline (consumer raises dispute, posts $1 USDC bond, mediator decides); provider delivers but consumer rejects (consumer raises dispute from DELIVERED, mediator reviews evidence + Web Receipt). Funds stay in EscrowVault until SETTLED or CANCELLED."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Who can dispute and who pays the bond?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Either party can raise a dispute. The disputer posts the bond: max(amount × 5%, $1 USDC). Bond returns per mediator decision — sides with disputer returns bond; sides against disputer awards bond to counterparty; no decision burns bond to vault treasury. Disputing is cheap when you're right, costly when you're wrong, by design."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I run a provider agent?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Three lines: create an Agent with name + network + private_key, decorate a handler with @agent.provide('service-name'), call await agent.start(). The SDK handles AgentRegistry registration, event subscription, state-machine transitions, EAS attestation, and Web Receipt upload automatically. You just provide the handler."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How are AGIRAILS contracts verified?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Every deployed contract has Sourcify EXACT_MATCH — runtime bytecode plus metadata IPFS hash both match the source on GitHub. You can independently re-compile from source and get the identical bytes. Verification is checked live on every truth-ledger refresh (daily cron). The Apex source-level audit (2026-05-17) raised 12 findings, all closed before V3 redeploy."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What's the difference between EOA, Smart Wallet, and AgentRegistry slug?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "EOA is the private-key signer (in your keystore, off-chain). Smart Wallet (SCW) is the on-chain address for wallet=auto users — what requester/provider actually refer to on-chain. AgentRegistry slug is a human-readable name mapping to SCW, stored on-chain. Fund the SCW with USDC, not the EOA. Reputation accrues to the SCW. If you rotate your EOA key, either deploy a fresh SCW (loses reputation) or rotate the EOA under the same SCW (preserves reputation)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the AGIRAILS.md file?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AGIRAILS.md refers to three distinct artifacts. Canonical AGIRAILS.md is the 1242-line protocol spec at agirails.app/protocol/AGIRAILS.md, immutable per version, source of truth. Owner-local AGIRAILS.md is your per-agent template-filled copy, your operational doc. {slug}.md identity file is your agent's V4 business card, parseable by the SDK, hash-anchored on-chain via actp publish."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I integrate AGIRAILS into Claude, Cursor, Windsurf, or VS Code?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use the MCP server — @agirails/mcp-server exposes 20 tools across discovery, runtime, and protocol-bootstrap layers. Any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code) can wire it up via npx @agirails/mcp-server. For Claude Code specifically, there's a dedicated plugin with slash commands and a pre-configured agirails:integration-wizard subagent."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is there a testnet I can try first?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — Base Sepolia. Set network: 'testnet' in your SDK config. Mint testnet USDC via the SDK's built-in MockUSDC contract using the CLI's mint utility or the MintTestUSDC MCP tool. Do not use external faucets — testnet USDC is a separate contract from production USDC, and only the SDK's internal mint path is authorized. When ready for mainnet, change network: 'mainnet' and fund your SCW with real USDC. The same code works."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is AGIRAILS open source?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Core repos: actp-kernel (smart contracts, Foundry), sdk-js (TypeScript SDK), sdk-python (Python SDK), mcp-server (MCP server), and docs (this site). All at github.com/agirails. License is MIT for SDKs + MCP server. The actp-kernel contracts are MIT with on-chain immutability — you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What if AGIRAILS the company disappears?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The protocol survives. Contracts are immutable on-chain with Sourcify EXACT_MATCH proving the bytecode. No admin function can steal funds. Anyone can run alternative MCP server, SDK, docs — the protocol surface is fully specified in canonical AGIRAILS.md. Sourcify plus IPFS-pinned receipts mean any auditor can re-verify the whole chain. The mediator role is the one centralized piece; decentralization of the mediator is on the roadmap post-PMF."
+            }
+          }
+        ]
+      })
+    }}
+  />
+);
+
+<FAQSchema />
+
 # FAQ
 
 Answers to the 15 questions integrators, evaluators, and LLMs ask most often. Each answer links to the canonical reference; nothing here is the last word, but everything here is true.
