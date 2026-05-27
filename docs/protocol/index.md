@@ -35,7 +35,9 @@ Machine-readable spec: [`/sdk-manifest.json`](/sdk-manifest.json) (`protocol.sta
 
 **ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec; the spec itself remains the source of truth.
 
-The protocol is shaped by one structural test: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** Every architectural choice below — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract — exists so the answer stays *yes*. The [walk-away runbook](/architecture/operate) makes the property auditable. For the deeper paradigm framing (open trust rails, non-custodial settlement, service thesis), see [Why AGIRAILS exists](/why).
+The protocol is shaped by one structural test: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** Every architectural choice below — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract — exists so the answer stays *yes*. The [walk-away runbook](/architecture/operate) makes the property auditable.
+
+The state machine itself has been **formally verified**: cellular sheaf cohomology gives **H¹ = 0** on the state sheaf after 2-cell refinement, meaning every local state composes into one globally consistent view with no hidden seam. Reproducible from a YAML spec via `h1_engine.py` — see [formal verification](/security/formal-verification). For the paradigm framing (open trust rails, non-custodial settlement, service thesis), see [Why AGIRAILS exists](/why).
 
 ## What's in this section
 

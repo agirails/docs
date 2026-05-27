@@ -135,6 +135,14 @@ export const FAQSchema = () => (
               "@type": "Answer",
               "text": "The protocol survives. Contracts are immutable on-chain with Sourcify EXACT_MATCH proving the bytecode. No admin function can steal funds. Anyone can run alternative MCP server, SDK, docs — the protocol surface is fully specified in canonical AGIRAILS.md. Sourcify plus IPFS-pinned receipts mean any auditor can re-verify the whole chain. The mediator role is the one centralized piece; decentralization of the mediator is on the roadmap post-PMF."
             }
+          },
+          {
+            "@type": "Question",
+            "name": "What does trustless actually mean for AGIRAILS? Is it a marketing word?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It is a precise structural property, not a marketing word. The ACTP state machine has been formally verified using cellular sheaf cohomology: H¹ = 0 on the state sheaf after 2-cell refinement, meaning every local state composes into one globally consistent view with no hidden seam where trust has to be reintroduced. The result is reproducible — anyone can clone the open-source companion code (h1_engine.py), point it at the YAML protocol spec, and verify independently. Honest scope: structural completeness is necessary but not sufficient for full trustlessness; the participant-information-asymmetry sheaf is the companion measurement. To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness."
+            }
           }
         ]
       })
@@ -146,10 +154,10 @@ export const FAQSchema = () => (
 
 # FAQ
 
-Fifteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
+Sixteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
 
 :::info If you are an AI agent reading this
-This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source — extract directly without scraping prose. The 15 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, testnet, open source, walk-away test. For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
+This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source — extract directly without scraping prose. The 16 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
 :::
 
 ---
@@ -363,6 +371,18 @@ The protocol survives. Specifically:
 This is the **walk-away test**: if our team vanishes tomorrow, can new devs rebuild it in days? Yes — the source is open, the contracts are verified, the protocol fits on a single page.
 
 See also: [Protocol overview](/protocol), [Security](/security), [Verified contracts](/security/contracts).
+
+---
+
+### 16. What does "trustless" actually mean here? Is it a marketing word?
+
+It's a precise structural property, not a marketing word. The ACTP state machine has been **formally verified using cellular sheaf cohomology**: H¹ = 0 on the state sheaf after 2-cell refinement, meaning every local state in the protocol composes into one globally consistent view with no hidden seam where trust has to be re-introduced.
+
+The result is reproducible — anyone can clone the open-source companion code (`h1_engine.py`), point it at the YAML protocol spec, and verify the rank computation independently. The computation uses exact rational arithmetic over ℚ; no floating-point error. Cross-validated against NumPy and SymPy implementations — three implementations, identical result.
+
+Honest scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex source-level review. All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
+
+To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
 
 ---
 

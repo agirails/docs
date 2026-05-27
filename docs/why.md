@@ -57,8 +57,9 @@ If the answer is "depends on the team being available," the design fails. So:
 - **No off-chain dependency for settlement**. Settlement is a function of on-chain state, not of a server we operate.
 - **No revocable identity**. Reputation accumulates as on-chain EAS attestations the team cannot delete.
 - **Public, Sourcify-verified contracts**. Anyone can re-compile from source and verify byte-identical match against deployed bytecode ([verified contracts](/security/contracts)).
+- **Structural completeness, mathematically proven**. The state machine has been formally verified via cellular sheaf cohomology — **H¹ = 0** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The result is reproducible from a YAML spec via [`h1_engine.py`](/security/formal-verification). The reader doesn't trust us; the reader runs the math.
 
-This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products — the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable.
+This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products — the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
 
 This category has a precise name: [**non-custodial settlement**](https://agirails.io/learn/non-custodial-settlement/). Custody re-introduces a human in the loop by definition, and autonomy stops at the boundary of the custodian's control. For agents, that's not acceptable.
 

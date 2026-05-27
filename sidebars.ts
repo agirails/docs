@@ -134,6 +134,7 @@ const sidebars: SidebarsConfig = {
         'security/threat-model',
         'security/audits',
         'security/contracts',
+        'security/formal-verification',
         'security/testing',
         'security/disclosure',
       ],

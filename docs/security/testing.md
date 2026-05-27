@@ -11,7 +11,20 @@ sidebar_position: 5
 
 # Testing depth
 
-Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers.
+Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers — at every layer from formal proof down to packaging smoke.
+
+## Formal verification — sheaf cohomology
+
+The structural layer. ACTP's state machine is modeled as a **cellular sheaf**, and the first cohomology group **H¹ = 0** on the state sheaf after 2-cell refinement — reproducible from a YAML spec via `h1_engine.py`.
+
+| Tool | What it does |
+|---|---|
+| `h1_engine.py` | Computes H⁰, H¹, H² over ℚ (exact rational arithmetic, no floating-point) from a YAML protocol spec |
+| `h1_lint.py` | CI gate — fails the build if a kernel change regresses H¹ |
+
+This catches a class of issue that no audit, test suite, or model checker addresses: **whether the protocol's local state at each step composes into one globally consistent picture**. Audits check code-level safety. Tests check behavior. Sheaf cohomology checks the **shape of the state space itself**.
+
+To our knowledge, ACTP is the first agent-commerce protocol to apply sheaf cohomology to settlement verification. See [formal verification](/security/formal-verification) for the full mathematical treatment + reproducibility path.
 
 ## Smart contracts — Foundry
 
