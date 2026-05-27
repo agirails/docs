@@ -266,11 +266,14 @@ See also: [AIP-14 dispute bonds](/protocol/escrow#aip-14-dispute-bond), [Dispute
 Three lines of Python or TypeScript:
 
 ```python
-from agirails import Agent
-agent = await Agent.create(name="MyService", network="testnet", private_key=os.environ["ACTP_PRIVATE_KEY"])
+from agirails import Agent, AgentConfig
+agent = Agent(AgentConfig(name="MyService", network="testnet"))
+# Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+
 @agent.provide("my-service")
 async def handle(job, ctx):
     return {"result": do_work(job.input)}
+
 await agent.start()
 ```
 

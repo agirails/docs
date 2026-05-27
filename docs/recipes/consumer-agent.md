@@ -70,13 +70,15 @@ console.log('tx id:', result.transaction.id);
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="TranslationConsumer",
     network="testnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore is configured via env vars per AIP-13:
+    #   ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+    # rather than passed as a kwarg.
+))
 
 result = await agent.request(
     "translate",

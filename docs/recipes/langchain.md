@@ -83,12 +83,13 @@ The LLM decides when to call `translate`; each invocation costs you USDC. The to
 ```python
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agirails = await Agent.create(
+agirails = Agent(AgentConfig(
+    name="LangChainTool",
     network="mainnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore via env vars per AIP-13.
+))
 
 class TranslateInput(BaseModel):
     text: str = Field(description="text to translate")

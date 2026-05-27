@@ -64,12 +64,13 @@ class AgirailsServiceTool(BaseTool):
 
 ```python
 from crewai import Agent as CrewAgent, Task, Crew
-from agirails import Agent as AgirailsAgent
+from agirails import Agent as AgirailsAgent, AgentConfig
 
-agirails = await AgirailsAgent.create(
+agirails = AgirailsAgent(AgentConfig(
+    name="CrewWallet",
     network="mainnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore via env vars per AIP-13.
+))
 
 translate_tool = AgirailsServiceTool(agirails, "translate", budget=0.10)
 summarize_tool = AgirailsServiceTool(agirails, "summarize", budget=0.30)
@@ -124,24 +125,24 @@ from agirails import Agent as AgirailsAgent
 # separate reputations. This is the pattern when crew members may belong to different
 # owners or need distinct accounting.
 
-researcher_wallet = await AgirailsAgent.create(
+# Note: budget caps shown below are conceptual V2 patterns; the V1 AgentBehavior
+# dataclass exposes only auto_accept, concurrency, timeout, retry. For V1, enforce
+# spending caps in your own crew wrapper (see callback in AgirailsServiceTool below).
+
+researcher_wallet = AgirailsAgent(AgentConfig(
     name="Researcher",
     network="mainnet",
-    private_key=os.environ["RESEARCHER_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 0.50, "daily_spend_cap": 10.00}},
-)
-analyst_wallet = await AgirailsAgent.create(
+    # Keystore via env: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD (per AIP-13).
+    # Use distinct keystores per crew member to keep wallets separate.
+))
+analyst_wallet = AgirailsAgent(AgentConfig(
     name="Analyst",
     network="mainnet",
-    private_key=os.environ["ANALYST_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 1.00, "daily_spend_cap": 15.00}},
-)
-writer_wallet = await AgirailsAgent.create(
+))
+writer_wallet = AgirailsAgent(AgentConfig(
     name="Writer",
     network="mainnet",
-    private_key=os.environ["WRITER_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 0.30, "daily_spend_cap": 5.00}},
-)
+))
 
 class AgirailsServiceTool(BaseTool):
     name: str = "agirails_call"

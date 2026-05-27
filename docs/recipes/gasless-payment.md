@@ -60,14 +60,13 @@ The Smart Wallet address shows up as `agent.address`. Note: this differs from `a
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="BillingPayer",
     network="mainnet",
-    wallet="auto",                    # default
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    wallet="auto",                    # default; reads keystore env vars per AIP-13
+))
 
 result = await agent.request(
     "translate",

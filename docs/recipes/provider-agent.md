@@ -72,15 +72,15 @@ console.log(`provider live at ${agent.address}`);
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig, AgentBehavior
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="TranslationProvider",
     description="EN→ES translation by an LLM",
     network="testnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-    behavior={"auto_accept": True, "concurrency": 5},
-)
+    # Wallet/keystore is configured via env vars per AIP-13.
+    behavior=AgentBehavior(auto_accept=True, concurrency=5),
+))
 
 @agent.provide("translate")
 async def translate(job, ctx):
