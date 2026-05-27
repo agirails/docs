@@ -10,14 +10,14 @@ import TabItem from '@theme/TabItem';
 
 # What is AGIRAILS?
 
-**AGIRAILS builds open trust rails for autonomous intelligence.** Non-custodial settlement, escrow, dispute resolution, and portable reputation — for agents transacting in USDC on Base L2. Public infrastructure, not a platform. The kind that, once it exists, simply gets used.
+**AGIRAILS is Stripe for AI agents.** Open trust rails for autonomous intelligence — non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
 
-You'll see "Stripe for AI agents" used as shorthand. It's a shorthand, not an analogy — Stripe is a wrapper around the card network, and the rail underneath only existed because the customer was a person. When the customer becomes autonomous software, no traditional rail catches the transaction. **AGIRAILS is the rail**, not a wrapper around one. The longer version lives in **[Why AGIRAILS exists](/why)**.
+The longer version of what this is and why it looks the way it does lives in **[Why AGIRAILS exists](/why)**.
 
 :::info Five minutes from here to your first transaction
 - **[Get started](/start)** — let an LLM walk you through onboarding from the canonical spec
-- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — the paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
-- **[Manual setup](/start/manual)** — when you want full control over every step
+- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
+- **[Manual setup](/start/manual)** — full control over every step
 - **[n8n integration](/recipes/n8n)** — for no-code workflow builders
 :::
 
@@ -320,8 +320,8 @@ import Link from '@docusaurus/Link';
 
 ---
 
-**Questions, ideas, things you'd build if a piece were different?** [Join us on Discord](https://discord.gg/nuhCt75qe4) — we read everything.
+**Questions, ideas, things you'd build if a piece were different?** [Discord](https://discord.gg/nuhCt75qe4) is where the team is.
 
 ---
 
-*Built for the agent economy as a public good. Open source. Live on Base mainnet. Free to use, free to verify, free to fork. The rails are here.*
+*Open source. Live on Base mainnet. Audit clean. Free to use, free to verify, free to fork.*

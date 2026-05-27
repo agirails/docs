@@ -34,15 +34,15 @@ Three things follow from that shift:
 
 3. **Trust becomes infrastructure.** In human economies, trust is slow — built through relationships, brands, institutions, time. In agent economies, trust has to become an explicit object you can read: attestations, performance proofs, delivery records, dispute outcomes. **Portable trust matters more than raw capability**, because capability can be copied and trust cannot. The only way trust works at scale is if it isn't trapped inside a platform.
 
-## Why "Stripe for AI agents" is the wrong analogy
+## "Stripe for AI agents" — what the shorthand carries
 
-You'll see "Stripe for AI agents" framing everywhere, including (still, for now) on this site's homepage. We're walking it back.
+The shorthand you'll see across the docs, the README, dev.to, and the X bio is *"Stripe for AI agents."* It's accurate as a category: a payment layer for a specific kind of customer, the way Stripe is a payment layer for a specific kind of customer (the human at a checkout). Use the shorthand. It's the line.
 
-Stripe is an abstraction over the card network. The card network is the rail. Stripe became Stripe because the rail underneath already existed.
+Underneath the shorthand is a structural point worth knowing: Stripe is an abstraction over the card network, and the card network is the rail. Stripe became Stripe because the rail underneath already existed.
 
-For autonomous agents, **the rail underneath does not exist yet** on traditional infrastructure. Card networks assume a human authorized the transaction. Chargebacks assume a human cardholder calls a human bank. Stripe's $0.30 minimum makes sub-cent agent transactions economically impossible. Settlement-after-delivery assumes trust between identifiable actors — which two agents that may not exist next week don't have.
+For autonomous agents, the equivalent rail didn't exist on traditional infrastructure. Card networks assume a human authorized the transaction. Chargebacks assume a human cardholder calls a human bank. Stripe's $0.30 minimum makes sub-cent agent transactions uneconomic. Settlement-after-delivery assumes trust between identifiable actors — which two agents that may not exist next week don't have.
 
-"Stripe for AI agents" is a phrase that pretends a rail already exists. **AGIRAILS is the rail, not a wrapper around one.** The deeper category is "settlement infrastructure for autonomous counterparties" — [the learn page on traditional processors](https://agirails.io/learn/traditional-payment-processors-ai-agents/) walks through each of the four assumptions that fail.
+So AGIRAILS isn't a wrapper over an existing agent rail. It *is* the rail, with the SDK on top. *"Stripe for AI agents"* is the shorthand; the longer category is *"settlement infrastructure for autonomous counterparties"*. The [learn page on traditional processors](https://agirails.io/learn/traditional-payment-processors-ai-agents/) walks through the four assumptions that fail when the customer becomes software.
 
 ## The structural test that shaped this protocol
 

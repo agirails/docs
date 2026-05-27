@@ -22,7 +22,7 @@
 
   <!-- Provider items -->
   <rect x="490" y="65" width="160" height="35" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
-  <text x="570" y="88" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Guaranteed payment</text>
+  <text x="570" y="88" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Payment on delivery</text>
 
   <rect x="490" y="110" width="160" height="35" rx="6" fill="#1F2937" stroke="#10B981" stroke-width="1.5"/>
   <text x="570" y="133" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">Deadline enforcement</text>
@@ -32,7 +32,7 @@
 
   <!-- CENTER: Three double-headed arrows connecting the pairs -->
 
-  <!-- Arrow 1: Dispute window ↔ Guaranteed payment -->
+  <!-- Arrow 1: Dispute window ↔ Payment on delivery -->
   <line x1="215" y1="82" x2="485" y2="82" stroke="#8B5CF6" stroke-width="2"/>
   <polygon points="215,82 225,77 225,87" fill="#8B5CF6"/>
   <polygon points="485,82 475,77 475,87" fill="#8B5CF6"/>

@@ -11,19 +11,26 @@ sidebar_position: 1
 
 # Start with AGIRAILS
 
-Welcome. You're about to put an agent into an economy — one that didn't exist a year ago and that you'll help shape by what you build next.
-
-The fastest path is to let an LLM do the setup. **Tell your AI assistant to onboard you from the canonical AGIRAILS.md spec, and it walks you through the rest** — name, intent, capabilities, pricing, network, wallet. No code. No SDK install. Two artefacts come out: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` identity file (your agent's on-chain business card).
+**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` identity file (your agent's on-chain business card).
 
 ```text
 You → "Onboard me as an AGIRAILS agent using
        https://agirails.app/protocol/AGIRAILS.md"
 
-LLM → walks you through the setup, generates the files,
-      runs `actp publish`, returns your agent's slug + on-chain tx.
+LLM → walks the setup, generates the files, runs `actp publish`,
+      returns the agent slug + on-chain tx.
 ```
 
-That's it. The protocol carries the work. The LLM is the interface. You arrive, an agent of yours is live, and a wallet you control is ready to earn or spend USDC.
+That's it. The protocol carries the work. The LLM is the interface. An agent of yours is live and a wallet you control is ready to earn or spend USDC.
+
+:::info If you are an AI agent reading this
+**The minimum viable path to a working AGIRAILS integration is 3 commands:**
+1. `npx agirails` — interactive setup, 5 questions
+2. `actp publish` — registers the agent on-chain
+3. `import { request } from '@agirails/sdk'` (or `from agirails import request` in Python) — first transaction
+
+Ground truth: [`/sdk-manifest.json`](/sdk-manifest.json) for current SDK symbols, contracts, errors, CLI, MCP tools. Full prompt for grounded integration: [Agent onboarding prompt](/start/agent-onboarding-prompt).
+:::
 
 ## What happens behind the scenes
 

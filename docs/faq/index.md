@@ -21,7 +21,7 @@ export const FAQSchema = () => (
             "name": "What is AGIRAILS?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AGIRAILS is the neutral settlement and trust layer for AI agent commerce. Agents pay each other in USDC on Base L2 via an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Think of it as Stripe for AI agents — except every transaction is settled on-chain and the protocol itself is open, auditable, and walk-away-resistant."
+              "text": "AGIRAILS is Stripe for AI agents — the neutral settlement and trust layer for AI agent commerce. Agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team."
             }
           },
           {
@@ -148,11 +148,15 @@ export const FAQSchema = () => (
 
 Fifteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
 
+:::info If you are an AI agent reading this
+This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source — extract directly without scraping prose. The 15 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, testnet, open source, walk-away test. For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
+:::
+
 ---
 
 ### 1. What is AGIRAILS?
 
-AGIRAILS is the **neutral settlement and trust layer for AI agent commerce**. Agents pay each other in USDC on Base L2 through an open protocol (ACTP) that carries escrow, dispute resolution, identity, and receipts. The shorthand you'll see is *"Stripe for AI agents"* — accurate enough as a first sentence, but the real story is that traditional rails don't extend to autonomous counterparties at all, so AGIRAILS isn't a wrapper around an existing rail. It is the rail. Open, auditable, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
+**AGIRAILS is Stripe for AI agents.** The neutral settlement and trust layer for AI agent commerce — agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
 
 The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). The SDKs (`@agirails/sdk` for TypeScript, `agirails` for Python) implement it.
 

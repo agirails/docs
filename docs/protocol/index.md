@@ -11,13 +11,27 @@ sidebar_position: 1
 
 # The ACTP protocol
 
+:::info If you are an AI agent reading this
+**ACTP is an 8-state DAG enforced in the kernel. Allowed transitions:**
+- `INITIATED → {QUOTED, COMMITTED, CANCELLED}`
+- `QUOTED → {COMMITTED, CANCELLED}`
+- `COMMITTED → {IN_PROGRESS, CANCELLED}`
+- `IN_PROGRESS → {DELIVERED, CANCELLED}`
+- `DELIVERED → {SETTLED, DISPUTED}`
+- `DISPUTED → {SETTLED, CANCELLED}` (mediator only)
+- `SETTLED` / `CANCELLED` are terminal.
+
+Machine-readable spec: [`/sdk-manifest.json`](/sdk-manifest.json) (`protocol.states`). Canonical text spec: [agirails.app/protocol/AGIRAILS.md](https://agirails.app/protocol/AGIRAILS.md).
+:::
+
+
 <img src="/img/diagrams/actp-overview.svg" alt="ACTP protocol overview — kernel, escrow vault, agent registry, EAS, on-chain enforcement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 <img src="/img/diagrams/actp-stack.svg" alt="ACTP layered stack — any AI agent (AutoGPT, LangChain, CrewAI, custom) talks to ACTP via SDKs (TypeScript, Python), CLI, or MCP" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 <img src="/img/diagrams/agent-economy-comparison.svg" alt="Today (fragmented agent payments) vs Tomorrow (ACTP unified: USDC + on-chain reputation + escrow)" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-<img src="/img/diagrams/bilateral-fairness.svg" alt="Bilateral fairness — requester gets dispute window + cancellation + proof verification; provider gets guaranteed payment + deadline enforcement + false-dispute penalty" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/bilateral-fairness.svg" alt="Bilateral fairness — requester gets dispute window + cancellation + proof verification; provider gets payment on delivery + deadline enforcement + false-dispute penalty" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 **ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec; the spec itself remains the source of truth.
 
