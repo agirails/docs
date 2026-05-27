@@ -127,6 +127,12 @@ const sidebars: SidebarsConfig = {
         'security/disclosure',
       ],
     },
+
+    {
+      type: 'doc',
+      id: 'faq/index',
+      label: 'FAQ',
+    },
   ],
 };
 
