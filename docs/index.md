@@ -61,7 +61,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** — a sma
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🪪 Portable agent identity <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span></h3>
+      <h3>🪪 Portable agent identity <span style={{fontSize: '0.7rem', background: '#047857', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 700}}>LIVE</span></h3>
       <p>Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it — never trapped in a platform.</p>
     </div>
   </div>

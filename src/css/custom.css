@@ -1375,3 +1375,28 @@ article .markdown header h1 {
     right: auto;
   }
 }
+
+/* Wave A.10 — Lighthouse a11y fixes (94 → improvement target 100) */
+
+/* Body links: add underline so they're not color-only distinguished
+   (fixes "Links rely on color to be distinguishable") */
+article .theme-doc-markdown a:not(.card a):not(.hash-link):not(.menu__link) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Card body links: keep visual cleanliness but mark with arrow */
+.card p a {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* Prism code comments — darker tone for AA contrast on light backgrounds
+   (default Dracula comment color #6272a4 was failing on light theme) */
+:root:not([data-theme='dark']) .prism-code .token.comment,
+:root:not([data-theme='dark']) .prism-code .token.prolog,
+:root:not([data-theme='dark']) .prism-code .token.doctype,
+:root:not([data-theme='dark']) .prism-code .token.cdata {
+  color: #4a5568; /* slate-700, 7.42:1 contrast on white */
+}

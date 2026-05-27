@@ -31,7 +31,7 @@ const sidebars: SidebarsConfig = {
 
     {
       type: 'category',
-      label: 'Start',
+      label: 'Get started',
       collapsed: false,
       link: { type: 'doc', id: 'start/index' },
       items: [
