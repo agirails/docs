@@ -9,6 +9,16 @@ const config: Config = {
 
   future: {
     v4: true,
+    experimental_faster: {
+      swcJsLoader: true,
+      swcJsMinimizer: true,
+      swcHtmlMinimizer: true,
+      lightningCssMinimizer: true,
+      mdxCrossCompilerCache: true,
+      rspackBundler: true,
+      rspackPersistentCache: true,
+      ssgWorkerThreads: true,
+    },
   },
 
   // Suppress MetaMask auto-connect errors (extension behavior, not our code)

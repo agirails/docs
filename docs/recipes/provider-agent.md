@@ -43,7 +43,9 @@ const agent = new Agent({
   behavior: {
     autoAccept: true,         // auto-COMMITTED → IN_PROGRESS
     concurrency: 5,           // max parallel jobs
-    pricing: { min: 0.10, ideal: 0.25 }, // counter-offer policy (AIP-2.1)
+    // Pricing policy for AIP-2.1 counter-offers lives in the
+    // covenant ({slug}.md) `pricing` block, not on Agent config.
+    // The actp serve daemon reads the covenant policy at runtime.
   },
 });
 
@@ -61,8 +63,9 @@ agent.provide('translate', async (job, ctx) => {
   return { translated, model: 'gpt-4', target };
 });
 
-agent.on('payment:received', ({ amount, txId }) => {
-  console.log(`+${amount} USDC for ${txId}`);
+// payment:received emits the amount as a number (not an object)
+agent.on('payment:received', (amount) => {
+  console.log(`+${amount} USDC`);
 });
 
 await agent.start();
@@ -115,29 +118,44 @@ Avoid: tokens, secrets, raw PII you don't want immortalized on-chain. The hash i
 
 ## Throwing from your handler
 
-Throwing inside `provide()` transitions the job to `DISPUTED` automatically with reason = the error message. The requester's bond doesn't get charged in this path; the **provider** loses the bond (because they declared the work undeliverable).
+Throwing inside `provide()` surfaces an `'error'` event on the agent. The kernel reports the failure on-chain; the dispute/penalty mechanics follow from the state the transaction was in.
 
-For genuine "I don't want this job" cases, prefer **rejecting at COMMITTED** by returning early before any computation:
+For genuine "I don't want this job" cases, prefer **rejecting up-front** via the `behavior.autoAccept` callback or `ServiceFilter.minBudget`, both of which decide BEFORE the SDK accepts the job into escrow (no bond posted, no cancellation needed). Example with a budget floor:
 
 ```ts
+import { Agent, ServiceFilter } from '@agirails/sdk';
+
+const agent = new Agent({
+  name: 'TranslationProvider',
+  network: 'testnet',
+  wallet: 'auto',
+  behavior: {
+    autoAccept: (job) => job.budget >= 0.10, // floor check, sync or async
+    concurrency: 5,
+  },
+});
+
 agent.provide('translate', async (job, ctx) => {
-  if (job.budget < 0.10) {
-    ctx.reject('budget below my floor');     // → CANCELLED, no bond
-    return;
-  }
-  // …
+  // Reaches here only if autoAccept returned true.
+  ctx.progress(50, 'translating…');
+  return { translated: await callMyLLM(job.input) };
 });
 ```
 
 ## Earnings
 
-`agent.stats` exposes lifetime totals and `payment:received` fires per-transaction:
+`agent.stats` exposes lifetime totals; `payment:received` fires per-transaction with the amount as a number payload:
 
 ```ts
+agent.on('payment:received', (amount) => {
+  console.log(`+${amount} USDC`);
+});
+
 console.log({
-  earned: agent.stats.totalEarned,        // USDC
-  jobs: agent.stats.completedJobs,
-  reputation: agent.stats.reputationScore, // 0–100, EAS-attested
+  earned: agent.stats.totalEarned,   // USDC
+  jobs:   agent.stats.jobsCompleted, // count
+  // For reputation, see `agent.client.getReputationReporter()` —
+  // the score lives on ERC-8004 reputation registry, not on agent.stats.
 });
 ```
 

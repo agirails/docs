@@ -49,17 +49,13 @@ const agent = new Agent({
 
 await agent.start();
 
-// Discover providers offering "translate" (queries AgentRegistry on-chain)
-const providers = await agent.discover({ service: 'translate', limit: 5 });
-console.log(`found ${providers.length} translate providers`);
-
-// Request the service. Library picks best provider by price + reputation by
-// default; pass `provider: '0x…'` to pin a specific agent.
+// Request the service. Pin a specific provider via `provider: '0xPROV…'`
+// (discovery by-service is not exposed at the V1 Agent level — query
+// AgentRegistry on-chain or use the MCP server's discoverAgents tool).
 const result = await agent.request('translate', {
   input: { text: 'Hello, AGIRAILS!', target: 'es' },
   budget: 0.50,           // $0.50 USDC ceiling
   timeout: 30_000,
-  onProgress: (s) => console.log(`${s.state} ${s.progress}% — ${s.message}`),
 });
 
 console.log('result:', result.result);
@@ -109,16 +105,20 @@ Steps 3–5 are batched into **one** UserOperation when `wallet=auto` (the defau
 
 ## Handling delivery you don't accept
 
-If the provider's output looks wrong, raise a dispute instead of calling `accept()`:
+If the provider's output looks wrong, transition the transaction to `DISPUTED` via the kernel adapter. There's no `agent.dispute()` helper at V1; the path is through `agent.client.standard.transitionState()`:
 
 ```ts
-await agent.dispute(result.transaction.id, {
-  reason: 'output is not Spanish',
-  evidence: { received: result.result, expected: 'es language' },
-});
+// At V1: drop to the standard adapter to transition state.
+// Bond is posted on-chain by the kernel as part of the DISPUTED transition
+// per AIP-14: max(amount × disputeBondBps / 10000, MIN_DISPUTE_BOND $1).
+await agent.client.standard.transitionState(
+  result.transaction.id,
+  'DISPUTED',
+  // optional proof / evidence URI (e.g., IPFS CID of evidence JSON)
+);
 ```
 
-This posts the $1 USDC dispute bond per AIP-14, freezes the escrow, and pages the mediator. See [Dispute flow](/recipes/dispute-flow) for the full walkthrough.
+The kernel freezes the escrow and pages the mediator. See [Dispute flow](/recipes/dispute-flow) for the full walkthrough.
 
 ## Cancellation paths
 
@@ -127,10 +127,14 @@ This posts the $1 USDC dispute bond per AIP-14, freezes the escrow, and pages th
 | `INITIATED` / `QUOTED` | Full (no escrow attached yet) |
 | `COMMITTED` (provider hasn't started) | Full |
 | `IN_PROGRESS` | `amount - requesterPenaltyBpsLocked` |
-| `DELIVERED` → must `dispute()`, not cancel | Mediator decides |
+| `DELIVERED` → must dispute via transitionState, not cancel | Mediator decides |
 
 ```ts
-await agent.cancel(result.transaction.id, { reason: 'changed my mind' });
+// V1: cancellation also goes through the standard adapter
+await agent.client.standard.transitionState(
+  result.transaction.id,
+  'CANCELLED',
+);
 ```
 
 ## See also

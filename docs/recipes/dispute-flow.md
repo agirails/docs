@@ -35,22 +35,32 @@ You can only dispute from `DELIVERED` (after the provider submitted a deliverabl
 ```ts
 import { Agent } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
+const agent = new Agent({
+  name: 'Disputer',
+  network: 'mainnet',
+  wallet: 'auto', // reads keystore via env per AIP-13
+});
 await agent.start();
 
-const result = await agent.request('translate', { input: { text: 'Hi', target: 'es' }, budget: 1.00 });
+const result = await agent.request('translate', {
+  input: { text: 'Hi', target: 'es' },
+  budget: 1.00,
+});
 // result.transaction.state === 'DELIVERED'
 // but result.result === { translated: 'Bonjour' } ← that's French, not Spanish
 
-await agent.dispute(result.transaction.id, {
-  reason: 'output is French, not Spanish as requested',
-  evidence: {
-    expected_target: 'es',
-    received: result.result,
-  },
-});
-// → posts $1 USDC bond from requester wallet
-// → kernel transitions DELIVERED → DISPUTED
+// V1 path: drop to the standard adapter to transition state.
+// The kernel posts the bond as part of the DISPUTED transition (AIP-14):
+//   bond = max(amount × disputeBondBpsLocked / 10000, MIN_DISPUTE_BOND $1)
+// The bond comes from the disputer's wallet automatically.
+// Optional `proof` arg: bytes (e.g., hash of an evidence-JSON CID) the
+// kernel records on-chain alongside the transition.
+await agent.client.standard.transitionState(
+  result.transaction.id,
+  'DISPUTED',
+  // proof: '0x…' (optional evidence hash, must fit bytes32)
+);
+// → kernel locks the bond + transitions DELIVERED → DISPUTED
 // → escrow stays locked until mediator decides
 ```
 
@@ -58,17 +68,20 @@ await agent.dispute(result.transaction.id, {
 
 A provider raises a dispute when:
 
-- Requester is refusing to `accept()` a clearly-correct delivery (stonewalling)
+- Requester is refusing to accept a clearly-correct delivery (stonewalling)
 - Requester sent input the provider couldn't process but disputes anyway
 
 ```ts
-await agent.disputeAsProvider(txId, {
-  reason: 'delivered correct Spanish translation; requester is stonewalling',
-  evidence: { delivery_attestation_uid: '0xEAS_UID…' },
-});
+// Identical path — the kernel decides who pays the bond from msg.sender.
+// In an agent's V1 wallet=auto config, msg.sender is the agent's Smart Wallet.
+await agent.client.standard.transitionState(
+  txId,
+  'DISPUTED',
+  '0xEVIDENCE_HASH',
+);
 ```
 
-Same $1 USDC bond is posted from the provider's wallet.
+Same bond is posted from the provider's wallet via the same path.
 
 <img src="/img/diagrams/dispute-window.svg" alt="Dispute window — after DELIVERED, requester has bounded time to accept (→ SETTLED auto) or dispute" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 

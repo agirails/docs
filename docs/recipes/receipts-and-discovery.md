@@ -33,71 +33,59 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 
 ## Discovering agents
 
+Service-name discovery is **not** exposed at the V1 Agent level. The two V1 paths:
+
+**1. MCP server `discoverAgents` tool** — if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
+
+**2. Direct AgentRegistry query** — read the contract directly via `agent.client`:
+
 ```ts
 import { Agent } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
+const agent = new Agent({
+  name: 'ConsumerWithDiscovery',
+  network: 'mainnet',
+  wallet: 'auto',
+});
 await agent.start();
 
-const providers = await agent.discover({
-  service: 'translate',     // service name (free-form, matched exactly)
-  limit: 10,
-  sort: 'reputation',       // 'reputation' | 'price' | 'recency'
-  minReputation: 80,
-});
+// The Agent class doesn't expose a high-level discover() in V1.
+// Drop to the underlying AgentRegistry contract read:
+const contracts = agent.client.contracts;
+const registry = contracts.agentRegistry; // ethers.Contract instance
+const addresses = await registry.findByService('translate');
+console.log('providers offering translate:', addresses);
 
-for (const p of providers) {
-  console.log(p.address, p.name, p.reputation, p.completedJobs, p.recentPriceUSDC);
-}
+// For each address, you can pull config + reputation via additional reads.
 ```
 
-Under the hood, this calls `AgentRegistry.findByService(serviceName)` to get the address set, then enriches each entry with on-chain reputation (from EAS) and recent settlement prices (from event logs).
-
-You can also discover by **capability tag** if you don't know the exact service name:
-
-```ts
-const providers = await agent.discover({ capabilities: ['nlp', 'translation'], limit: 5 });
-```
+For ranking by reputation + price, layer your own logic on top. A first-class `agent.discover()` is on the V2 roadmap.
 
 ## Publishing your provider so others can find you
 
-`Agent.start()` registers automatically the first time. To update the registration (e.g., new services, new description):
-
-```ts
-const agent = new Agent({
-  name: 'MyTranslator',
-  description: 'EN/ES/FR/DE translation via Claude 4',
-  services: [
-    { name: 'translate', description: 'Single-shot text translation', basePrice: 0.05 },
-    { name: 'translate-batch', description: 'Batch of up to 100 strings', basePrice: 2.00 },
-  ],
-  network: 'mainnet',
-  wallet: 'auto', // reads keystore via env per AIP-13
-});
-
-await agent.start({ updateRegistry: true });
-```
-
-`updateRegistry: true` forces a write even when local config matches the on-chain record. Use sparingly — it costs ~80k gas per registration update.
+`Agent.start()` registers automatically the first time. Service registration happens via `agent.provide()` declarations + the V1 init flow (`actp publish`). The `services` config key, `Agent({ services })` constructor key, and `agent.start({ updateRegistry: true })` API shown in earlier doc revisions are not the V1 surface — use `actp publish` for explicit registry updates and `agent.provide('service', handler)` for runtime handlers.
 
 ## Reading a Web Receipt
 
-After settlement, the requester gets the IPFS CID embedded in the transaction's `delivery` field:
+After settlement, the receipt CID is on-chain in the transaction's delivery attestation. V1 path: fetch via `agent.client.standard.getTransaction(...)` and then fetch the receipt from IPFS by CID:
 
 ```ts
-const tx = await agent.getTransaction(txId);
-console.log('state:', tx.state);                 // 'SETTLED'
-console.log('attestation:', tx.deliveryAttestation.uid); // EAS UID
-console.log('receipt CID:', tx.deliveryAttestation.payloadCid);
+const tx = await agent.client.standard.getTransaction(txId);
+console.log('state:', tx?.state);
 
-const receipt = await agent.fetchReceipt(tx.deliveryAttestation.payloadCid);
-console.log('output:', receipt.output);          // the actual deliverable
-console.log('provider stated model:', receipt.metadata.model);
-console.log('timestamp:', receipt.metadata.deliveredAt);
-console.log('signature:', receipt.signature);    // EIP-712, signed by provider EOA
+// In V1, the SDK does not expose a uniform fetchReceipt() helper at the
+// Agent level. Fetch by CID directly from any IPFS gateway:
+const receiptCid = tx?.deliveryProofUri; // or wherever your version surfaces it
+if (receiptCid) {
+  const url = `https://gateway.filebase.io/ipfs/${receiptCid.replace('ipfs://','')}`;
+  const receipt = await fetch(url).then((r) => r.json());
+  console.log('output:', receipt.output);
+  console.log('metadata:', receipt.metadata);
+  console.log('signature:', receipt.signature);
+}
 ```
 
-The SDK verifies the receipt's signature against the on-chain provider address before returning. A receipt whose signature doesn't verify throws `ReceiptVerificationError` — surface that loudly, it means tampering.
+Verification of the receipt signature against the on-chain provider address is your responsibility at V1 — the SDK does not wrap this in a single fetchReceipt() call yet. The shape of the receipt is described below; signing follows EIP-712 with the provider's wallet.
 
 ## What's in a Web Receipt
 
@@ -126,19 +114,19 @@ Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). Th
 
 ## Reputation lookup
 
-Reputation lives entirely on-chain via EAS attestations:
+Reputation lives entirely on-chain via EAS attestations + the ERC-8004 reputation registry. In V1, access it through the client's `ReputationReporter`:
 
 ```ts
-const score = await agent.getReputation('0xPROV…');
-console.log({
-  score: score.value,            // 0–100, weighted by recency
-  attestationCount: score.count, // how many settled jobs back this number
-  disputeRate: score.disputeRate, // 0–1
-  lastUpdated: score.lastTxAt,
-});
+const reporter = agent.client.getReputationReporter();
+if (reporter) {
+  // ReputationReporter exposes methods to read on-chain reputation
+  // attestations for an ERC-8004 agent ID. See SDK reference for
+  // current method names: /reference/sdk-js
+  // (e.g., reporter.getReportedActivity(agentId) and similar)
+}
 ```
 
-The SDK queries the EAS schema deployed at the network-specific address (see [Base mainnet contracts](/reference/contracts/base-mainnet)).
+The reporter is only available when ERC-8004 registries are configured in the network config (default for mainnet + sepolia). Reads against the EAS schema deployed at the network-specific address (see [Base mainnet contracts](/reference/contracts/base-mainnet)).
 
 ## Privacy: what gets published vs stays private
 
