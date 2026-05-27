@@ -11,6 +11,19 @@ sidebar_position: 10
 
 # Keystore + deployment (AIP-13)
 
+
+:::caution V1 surface — verify before shipping
+Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
+
+- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
+- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
+
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+
+Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
+:::
 <img src="/img/diagrams/key-rotation-flow.svg" alt="Key rotation flow — keystore generation, base64 encoding for CI, rotation procedure" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 AIP-13 codifies how AGIRAILS handles private keys. The short version:

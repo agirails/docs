@@ -11,6 +11,19 @@ sidebar_position: 6
 
 # Per-call API billing (x402)
 
+
+:::caution V1 surface — verify before shipping
+Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
+
+- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
+- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
+
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+
+Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
+:::
 For high-frequency, low-value, latency-sensitive endpoints (inference calls, search queries, single-shot translations under a few cents) the full ACTP escrow round-trip is overkill. **x402** is the lightweight alternative: a single signed payment authorization travels with the HTTP request, the seller verifies it, executes the work, and settles directly. No INITIATED → COMMITTED → DELIVERED dance.
 
 x402 v2 (the version both SDKs support) is direct buyer→seller — no facilitator middleman, no escrow lock-up. Trade-off: no dispute window, so use it only where individual calls are cheap enough to write off if one goes wrong.

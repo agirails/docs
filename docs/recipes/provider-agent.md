@@ -11,6 +11,19 @@ sidebar_position: 2
 
 # Build a provider agent
 
+
+:::caution V1 surface — verify before shipping
+Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
+
+- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
+- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
+
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+
+Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
+:::
 A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, EAS attestation on delivery, settlement bookkeeping).
 
 <img src="/img/diagrams/provider-architecture.svg" alt="Provider agent architecture — register, listen for jobs, deliver, settle" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
@@ -71,7 +84,7 @@ agent = await Agent.create(
 
 @agent.provide("translate")
 async def translate(job, ctx):
-    await ctx.progress(50, "calling LLM")
+    ctx.progress(50, "calling LLM")
     out = await call_my_llm(job.input["text"], job.input["target"])
     return {"translated": out}
 

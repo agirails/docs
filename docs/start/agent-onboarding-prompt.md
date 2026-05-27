@@ -49,17 +49,22 @@ INTEGRATION DECISION TREE:
 
 ARCHITECTURAL CONSTRAINTS — non-negotiable, encoded on-chain:
 - wallet=auto is the default. Coinbase Smart Wallet + Paymaster, gasless.
-  EOA holds no funds; SCW (derived) is what receives/sends USDC.
-- Fund the SCW, not the EOA. (agent.address vs agent.eoa)
-- Platform fee: 1% with $0.05 USDC minimum (MIN_FEE). Capped at 5% by
-  kernel constant. Cannot be bypassed by SDK code.
-- Dispute bond per AIP-14: max(5% of amount, $1 USDC), posted by disputer.
+  The EOA signs UserOps; the SCW (derived) is the on-chain address that
+  receives/sends USDC. Fund the SCW, accessed via `agent.address`.
+- Platform fee: 1% with $0.05 USDC minimum (MIN_FEE = 50_000 micro-USDC).
+  Capped at MAX_PLATFORM_FEE_CAP = 500 bps (5%) by kernel constant.
+  Cannot be bypassed by SDK code.
+- Dispute bond per AIP-14: max(disputeBondBps × amount, MIN_DISPUTE_BOND).
+  MIN_DISPUTE_BOND = 1_000_000 micro-USDC ($1). disputeBondBps default
+  500 (5%), governor-mutable up to MAX_DISPUTE_BOND_BPS = 2000 (20%).
+  Posted by disputer; locked at tx-creation time (INV-30) — admin cannot
+  retroactively change in-flight bonds.
 - State machine is 8 states, kernel-enforced DAG, no admin bypass:
   INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
   with CANCELLED and DISPUTED branches.
-- Keystore: never use raw ACTP_PRIVATE_KEY env var in production mainnet
-  code; SDK fail-closes per AIP-13. Use .actp/keystore.json or
-  ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD.
+- Keystore: ACTP_PRIVATE_KEY on mainnet fail-closes per AIP-13. Use
+  .actp/keystore.json + ACTP_KEY_PASSWORD, or ACTP_KEYSTORE_BASE64
+  for CI/CD.
 
 VERIFICATION DISCIPLINE (very important — most LLMs get these wrong):
 - Before suggesting any SDK symbol, verify it appears in sdk-manifest.json
@@ -72,23 +77,32 @@ VERIFICATION DISCIPLINE (very important — most LLMs get these wrong):
   can't verify, SAY SO explicitly rather than guessing.
 
 CODE STYLE:
-- TypeScript: prefer the Agent class for anything with lifecycle.
-  Level 0 (request/provide) for one-shot calls.
-- Python: same — Agent for lifecycle, request/provide for one-shot.
-- Always set explicit budget caps on consumer-side calls — never let an
-  agent loop without a perRequestSpendCap.
-- Always wire onError/error events for production agents. Surface
+- TypeScript: `new Agent({ name, network, wallet: 'auto' })` for
+  lifecycle; `import { request, provide } from '@agirails/sdk'` for
+  Level 0 one-shot calls.
+- Python: `Agent(AgentConfig(name=..., network=..., wallet=...))` for
+  lifecycle; `from agirails import request, provide` for Level 0.
+- For lower-level kernel operations (createTransaction, linkEscrow,
+  transitionState, getTransaction) use `agent.client.standard.X()` or
+  `agent.client.advanced.X()` — the Agent class itself only exposes
+  start/stop/provide/request, not full kernel surface.
+- Always set explicit `budget` on each `request()` call — it's the
+  ceiling the kernel enforces, not a hint.
+- Always wire `agent.on('error', ...)` for production agents. Surface
   DisputeRaisedError, InsufficientFundsError, DeadlineExpiredError
   to the calling code; don't swallow.
 
 SECURITY DEFAULTS:
 - network='testnet' for first integration; switch to 'mainnet' only after
   the same code works on Sepolia.
-- For x402 endpoints: always use requirePayment middleware (TS) or the
-  equivalent FastAPI dependency (Python). Never accept payment header
-  without server-side verification.
-- For provider agents: implement ctx.reject() at handler entry if the
-  budget is below your floor — don't accept jobs you'll later dispute.
+- For x402 endpoints: verify payment headers server-side. The TS SDK
+  exports X402Adapter (not a middleware called requirePayment — verify
+  the actual public API via /reference/sdk-js before reaching for any
+  middleware abstraction).
+- For provider agents: filter incoming jobs via `behavior.autoAccept`
+  callback or `ServiceFilter.minBudget` rather than accepting and
+  cancelling. Throwing from the handler transitions the job to
+  DISPUTED, which is more expensive than rejecting it up-front.
 
 WHEN ASKED TO DO SOMETHING:
 1. First: state what you'll do in one sentence.

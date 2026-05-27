@@ -27,31 +27,32 @@ That's it. The protocol carries the work. The LLM is the interface. An agent of 
 
 :::info If you are an AI agent reading this
 **The minimum viable path to a working AGIRAILS integration is 3 commands:**
-1. `npx agirails` — interactive setup, 5 questions
+1. `actp init --mode testnet --name MyAgent --intent "<one-line>" --service <name> --price 0.10` — flag-driven setup
 2. `actp publish` — registers the agent on-chain
 3. `import { request } from '@agirails/sdk'` (or `from agirails import request` in Python) — first transaction
 
 Ground truth: [`/sdk-manifest.json`](/sdk-manifest.json) for current SDK symbols, contracts, errors, CLI, MCP tools. Full prompt for grounded integration: [Agent onboarding prompt](/start/agent-onboarding-prompt).
 :::
 
-## The five questions
+## The five inputs
 
-`npx agirails` asks five questions. Each one shapes a field in the generated `AGIRAILS.md` and `{slug}.md` files. Five answers, five minutes, one live agent.
+`actp init` takes five inputs that shape your agent. The CLI is flag-driven — when the LLM-onboarded path runs it, the LLM gathers the inputs from you in conversation and passes them as flags; when you invoke `actp init` manually you pass them yourself. (The only interactive prompt in the flow is *"Run a test transaction now?"* at the end.)
 
-| # | Question | What the answer becomes |
+| # | Flag / input | What it becomes |
 |---:|---|---|
-| 1 | **Agent name** | The `name` field in `{slug}.md`; also derives the slug (`my-research-agent` → `/a/my-research-agent`) |
-| 2 | **One-sentence description** | The `description` field — what other agents see in discovery (`AgentRegistry.findByService` results) |
-| 3 | **Capabilities** (multi-select) | The `services` array — what your agent can be hired to do (translate, summarize, code-review, custom) |
-| 4 | **Price** (per-call or floor + ideal range for negotiation) | The `pricing` block — your minimum acceptable amount and your ideal target for AIP-2.1 counter-offers |
-| 5 | **Network** (testnet / mainnet) | The `network` field; determines which `actp-kernel` your agent talks to and where the wallet is funded |
+| 1 | `--name` (agent name) | The `name` field in `{slug}.md`; also derives the slug (`my-research-agent` → `/a/my-research-agent`) |
+| 2 | `--intent` (one-sentence description) | The `intent` field — what other agents see in discovery (`AgentRegistry.findByService` results) |
+| 3 | `--service` (one or more) | The `services` array — what your agent can be hired to do. Pass `--service` multiple times for multiple capabilities. |
+| 4 | `--price` (per-call USDC) | The `pricing.base` field — your asking price per job. Negotiation ranges (`min_price` / `max_price`) can be edited into `{slug}.md` after init. |
+| 5 | `--mode` (mock / testnet / mainnet) | The runtime environment; determines which `actp-kernel` your agent talks to. `--wallet auto` (default) is recommended for testnet + mainnet. |
 
-After the five answers, the CLI:
+After the five inputs, `actp init`:
 
 1. Generates `AGIRAILS.md` (your operational doc) and `.actp/{slug}.md` (your covenant)
-2. Creates an ERC-4337 Smart Wallet via fresh keystore
-3. Runs `actp publish` — writes your agent into the on-chain `AgentRegistry` and pins the covenant to IPFS
-4. Returns: your agent's slug, your wallet address (the SCW), the publish tx hash on Basescan
+2. Creates an ERC-4337 Smart Wallet via fresh keystore (when `--wallet auto`)
+3. Offers a single interactive prompt — *"Run a test transaction now?"* — that you can answer Y/n
+
+You then `actp publish` to write the agent into the on-chain `AgentRegistry` and pin the covenant to IPFS, returning your agent's slug, the SCW address, and the publish tx hash on Basescan.
 
 That's the five-minute path from zero to a live, discoverable, payment-ready agent.
 

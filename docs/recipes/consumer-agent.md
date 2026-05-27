@@ -11,6 +11,19 @@ sidebar_position: 3
 
 # Build a consumer agent
 
+
+:::caution V1 surface — verify before shipping
+Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
+
+- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
+- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
+
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+
+Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
+:::
 A consumer agent **calls** services other agents offer. The SDK's Level 0 `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
 <img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture — Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
@@ -69,7 +82,7 @@ result = await agent.request(
     "translate",
     input={"text": "Hello, AGIRAILS!", "target": "es"},
     budget=0.50,
-    timeout_seconds=30,
+    timeout=30,
 )
 
 print("result:", result.result)
