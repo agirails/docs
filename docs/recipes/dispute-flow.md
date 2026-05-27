@@ -57,6 +57,10 @@ await agent.disputeAsProvider(txId, {
 
 Same $1 USDC bond is posted from the provider's wallet.
 
+<img src="/img/diagrams/dispute-window.svg" alt="Dispute window — after DELIVERED, requester has bounded time to accept (→ SETTLED auto) or dispute" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
+<img src="/img/diagrams/settlement-timeline.svg" alt="Settlement timeline — DELIVERED → dispute-window → SETTLED (accept / do nothing) or DISPUTED (raise)" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Bond mechanics (AIP-14)
 
 ```text

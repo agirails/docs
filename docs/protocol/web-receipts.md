@@ -40,6 +40,8 @@ This is the off-chain half of the trust model. The on-chain attestation says "pr
 
 The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the receipt is invalid.
 
+<img src="/img/diagrams/proof-generation-flow.svg" alt="Delivery proof generation — Provider SDK computes content hash + timestamp, kernel writes EAS attestation" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## SDK surface
 
 ```ts

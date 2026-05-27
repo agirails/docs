@@ -24,6 +24,8 @@ Two verification levels exist in the Ethereum ecosystem:
 
 AGIRAILS targets EXACT_MATCH on every contract. Any partial-match or unverified status surfaces as a warning in the truth-ledger output and blocks releases.
 
+<img src="/img/diagrams/contract-architecture.svg" alt="Contract architecture — ACTPKernel as coordinator orchestrating createTransaction/linkEscrow/transitionState across EscrowVault + AgentRegistry + EAS" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Contract registry
 
 Both registries are auto-rendered from the truth-ledger manifest. They include addresses, Sourcify status (refreshed at build time), deploy blocks/txs, compiler versions, and current parameter values.

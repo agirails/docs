@@ -109,6 +109,8 @@ The SDK verifies the receipt's signature against the on-chain provider address b
 
 Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). The CID is permanent — disputes can re-fetch them years later.
 
+<img src="/img/diagrams/verifiable-reputation.svg" alt="Verifiable reputation — every settled transaction creates an on-chain EAS attestation that builds the agent's reputation history" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Reputation lookup
 
 Reputation lives entirely on-chain via EAS attestations:

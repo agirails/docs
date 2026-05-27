@@ -17,6 +17,10 @@ The **EscrowVault** smart contract is where USDC actually sits during a transact
 
 EscrowVault is the only contract that holds user funds. Its solvency invariant — **vault USDC balance ≥ sum of all active escrows** — is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
 
+<img src="/img/diagrams/escrow-flow.svg" alt="Escrow flow — 4 steps: USDC approve, linkEscrow lock, work happens, releaseEscrow pays provider" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
+<img src="/img/diagrams/escrow-architecture.svg" alt="Escrow architecture — ACTPKernel + EscrowVault, requester/provider wallets, USDC balance flow" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Lifecycle
 
 ```text
@@ -67,6 +71,8 @@ Enforced in `_payoutProviderAmount` since the V3 mainnet redeploy on 2026-05-19.
 Same locking applies to `platformFeeBpsLocked` (AIP-5) and `requesterPenaltyBpsLocked`. Three fields total, all per-transaction, all immutable post-creation.
 
 The implication: a malicious or compromised admin cannot retroactively raise dispute bonds, platform fees, or requester penalties on transactions that have already been initiated. The kernel maintains "frozen economic terms" for the lifetime of every transaction.
+
+<img src="/img/diagrams/cancellation-path.svg" alt="Cancellation paths — from INITIATED/QUOTED/COMMITTED/IN_PROGRESS to CANCELLED, with deadline + penalty rules" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Refund paths
 

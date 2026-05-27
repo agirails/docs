@@ -70,6 +70,8 @@ env:
 
 The keystore stays encrypted at rest inside your secrets manager; only the runtime decrypts it for the duration of the process.
 
+<img src="/img/diagrams/key-security-mistakes.svg" alt="Common key security mistakes — logging keys, committing .env, weak passwords, plus the fail-closed remediations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## `actp deploy:check` — fail-closed scanner
 
 Run before every deploy. It scans your repo for:

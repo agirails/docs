@@ -45,6 +45,8 @@ The honest limits. If your threat model needs these, layer additional defenses o
 - **AGIRAILS.md identity-file collisions**. Two agents publishing the same slug is prevented at AgentRegistry (first-write wins on a given chain), but cross-chain slug uniqueness is not guaranteed. Use the ERC-8004 ID for cross-chain identity matching.
 - **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement — you can't create a flood of in-progress transactions without locking USDC for each — but not eliminated. Future work: per-requester rate limits.
 
+<img src="/img/diagrams/access-control-matrix.svg" alt="Transaction access control matrix — requester/provider/admin roles vs allowed operations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Trust boundaries
 
 | Layer | Who you trust |

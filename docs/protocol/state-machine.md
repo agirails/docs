@@ -38,6 +38,8 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
 | 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | — (terminal) |
 
+<img src="/img/diagrams/transaction-lifecycle.svg" alt="Transaction lifecycle — full path from INITIATED through QUOTED/COMMITTED/IN_PROGRESS/DELIVERED to terminal SETTLED, with CANCELLED + DISPUTED branches" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Why DAG-only on-chain
 
 State machine integrity is one of the three [critical invariants](https://github.com/agirails/actp-kernel/blob/main/.claude-docs/invariants.md) of ACTP. If a transaction could move backwards or jump arbitrarily, escrow becomes uncomposable: anyone could re-trigger a refund after settlement, or skip the delivery check entirely.

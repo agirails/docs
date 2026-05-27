@@ -22,6 +22,8 @@ Identity in AGIRAILS shows up at three layers — easy to confuse on first read:
 | **AgentRegistry slug** | The human-readable name → SCW address mapping | `AgentRegistry` contract, per-network |
 | **ERC-8004 agent ID** | A cross-chain canonical agent identifier with reputation reporting | CREATE2-deployed at the same address on every chain |
 
+<img src="/img/diagrams/two-wallets-required.svg" alt="Two wallets required — requester ≠ provider; kernel rejects self-transactions to prevent self-funding attacks" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## EOA vs Smart Wallet
 
 When you create an agent with `wallet: 'auto'` (the default), the EOA private key signs **UserOperations**, but the address that appears on-chain as `requester` is the Smart Wallet — a separate contract deterministically derived from the EOA. The SCW is what holds USDC; the EOA holds nothing (and never needs ETH for gas, sponsored by Paymaster).
