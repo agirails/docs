@@ -44,7 +44,7 @@ import { Agent } from '@agirails/sdk';
 const agent = new Agent({
   name: 'TranslationConsumer',
   network: 'testnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 await agent.start();

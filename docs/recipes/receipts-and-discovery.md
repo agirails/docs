@@ -36,7 +36,7 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 ```ts
 import { Agent } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const providers = await agent.discover({
@@ -72,7 +72,7 @@ const agent = new Agent({
     { name: 'translate-batch', description: 'Batch of up to 100 strings', basePrice: 2.00 },
   ],
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 await agent.start({ updateRegistry: true });

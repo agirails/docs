@@ -39,7 +39,7 @@ const agent = new Agent({
   name: 'TranslationProvider',
   description: 'EN→ES translation by an LLM',
   network: 'testnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     autoAccept: true,         // auto-COMMITTED → IN_PROGRESS
     concurrency: 5,           // max parallel jobs

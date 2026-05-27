@@ -74,7 +74,7 @@ Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
 ```ts
 import { CounterOfferBuilder, Agent } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const tx = await agent.createTransaction({ provider: '0xPROV…', service: 'translate' });

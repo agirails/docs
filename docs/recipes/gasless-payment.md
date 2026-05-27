@@ -37,8 +37,7 @@ const agent = new Agent({
   name: 'BillingPayer',
   network: 'mainnet',     // or 'testnet'
   // wallet: 'auto' is the default — explicit here for clarity
-  wallet: 'auto',
-  privateKey: process.env.ACTP_PRIVATE_KEY!, // the EOA that signs UserOps
+  wallet: 'auto', // default; reads keystore via env per AIP-13
 });
 
 await agent.start();

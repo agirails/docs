@@ -42,7 +42,7 @@ const agent = new Agent({
   name: 'ResearchSummarizer',
   description: 'Summarizes any URL into 200 words. Multi-language input supported.',
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     autoAccept: true,
     concurrency: 10,

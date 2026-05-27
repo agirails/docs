@@ -1556,7 +1556,7 @@ const agent = new Agent({
   name: 'TranslationProvider',
   description: 'EN→ES translation by an LLM',
   network: 'testnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     autoAccept: true,         // auto-COMMITTED → IN_PROGRESS
     concurrency: 5,           // max parallel jobs
@@ -1589,15 +1589,15 @@ console.log(`provider live at ${agent.address}`);
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig, AgentBehavior
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="TranslationProvider",
     description="EN→ES translation by an LLM",
     network="testnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-    behavior={"auto_accept": True, "concurrency": 5},
-)
+    # Wallet/keystore is configured via env vars per AIP-13.
+    behavior=AgentBehavior(auto_accept=True, concurrency=5),
+))
 
 @agent.provide("translate")
 async def translate(job, ctx):
@@ -1707,7 +1707,7 @@ This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'ma
 const agent = new Agent({
   name: 'TranslationConsumer',
   network: 'testnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 await agent.start();
@@ -1733,13 +1733,15 @@ console.log('tx id:', result.transaction.id);
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="TranslationConsumer",
     network="testnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore is configured via env vars per AIP-13:
+    #   ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+    # rather than passed as a kwarg.
+))
 
 result = await agent.request(
     "translate",
@@ -1837,7 +1839,7 @@ const agent = new Agent({
   name: 'ResearchSummarizer',
   description: 'Summarizes any URL into 200 words. Multi-language input supported.',
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     autoAccept: true,
     concurrency: 10,
@@ -1980,8 +1982,7 @@ const agent = new Agent({
   name: 'BillingPayer',
   network: 'mainnet',     // or 'testnet'
   // wallet: 'auto' is the default — explicit here for clarity
-  wallet: 'auto',
-  privateKey: process.env.ACTP_PRIVATE_KEY!, // the EOA that signs UserOps
+  wallet: 'auto', // default; reads keystore via env per AIP-13
 });
 
 await agent.start();
@@ -2003,14 +2004,13 @@ The Smart Wallet address shows up as `agent.address`. Note: this differs from `a
 ## Python
 
 ```python
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agent = await Agent.create(
+agent = Agent(AgentConfig(
     name="BillingPayer",
     network="mainnet",
-    wallet="auto",                    # default
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    wallet="auto",                    # default; reads keystore env vars per AIP-13
+))
 
 result = await agent.request(
     "translate",
@@ -2125,7 +2125,7 @@ The middleware does the verifier dance for you:
 
 const client = x402Client({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 const response = await client.fetch('https://provider.example.com/api/infer', {
@@ -2265,7 +2265,7 @@ Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
 ```ts
 
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const tx = await agent.createTransaction({ provider: '0xPROV…', service: 'translate' });
@@ -2353,7 +2353,7 @@ You can only dispute from `DELIVERED` (after the provider submitted a deliverabl
 ```ts
 
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const result = await agent.request('translate', { input: { text: 'Hi', target: 'es' }, budget: 1.00 });
@@ -2493,7 +2493,7 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 ```ts
 
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const providers = await agent.discover({
@@ -2529,7 +2529,7 @@ const agent = new Agent({
     { name: 'translate-batch', description: 'Batch of up to 100 strings', basePrice: 2.00 },
   ],
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 await agent.start({ updateRegistry: true });
@@ -3045,7 +3045,7 @@ There's no official `langchain-agirails` package; the integration is ten lines o
 
 const agirails = new Agent({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 await agirails.start();
 
@@ -3088,12 +3088,13 @@ The LLM decides when to call `translate`; each invocation costs you USDC. The to
 ```python
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
-from agirails import Agent
+from agirails import Agent, AgentConfig
 
-agirails = await Agent.create(
+agirails = Agent(AgentConfig(
+    name="LangChainTool",
     network="mainnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore via env vars per AIP-13.
+))
 
 class TranslateInput(BaseModel):
     text: str = Field(description="text to translate")
@@ -3135,7 +3136,7 @@ A LangGraph research workflow that decides which paid services to use, calls the
 
 const agirails = new Agent({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     budget: {
       perRequestSpendCap: 0.50, // never spend more than $0.50 per top-level query
@@ -3336,12 +3337,13 @@ class AgirailsServiceTool(BaseTool):
 
 ```python
 from crewai import Agent as CrewAgent, Task, Crew
-from agirails import Agent as AgirailsAgent
+from agirails import Agent as AgirailsAgent, AgentConfig
 
-agirails = await AgirailsAgent.create(
+agirails = AgirailsAgent(AgentConfig(
+    name="CrewWallet",
     network="mainnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
+    # Wallet/keystore via env vars per AIP-13.
+))
 
 translate_tool = AgirailsServiceTool(agirails, "translate", budget=0.10)
 summarize_tool = AgirailsServiceTool(agirails, "summarize", budget=0.30)
@@ -3396,24 +3398,24 @@ from agirails import Agent as AgirailsAgent
 # separate reputations. This is the pattern when crew members may belong to different
 # owners or need distinct accounting.
 
-researcher_wallet = await AgirailsAgent.create(
+# Note: budget caps shown below are conceptual V2 patterns; the V1 AgentBehavior
+# dataclass exposes only auto_accept, concurrency, timeout, retry. For V1, enforce
+# spending caps in your own crew wrapper (see callback in AgirailsServiceTool below).
+
+researcher_wallet = AgirailsAgent(AgentConfig(
     name="Researcher",
     network="mainnet",
-    private_key=os.environ["RESEARCHER_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 0.50, "daily_spend_cap": 10.00}},
-)
-analyst_wallet = await AgirailsAgent.create(
+    # Keystore via env: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD (per AIP-13).
+    # Use distinct keystores per crew member to keep wallets separate.
+))
+analyst_wallet = AgirailsAgent(AgentConfig(
     name="Analyst",
     network="mainnet",
-    private_key=os.environ["ANALYST_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 1.00, "daily_spend_cap": 15.00}},
-)
-writer_wallet = await AgirailsAgent.create(
+))
+writer_wallet = AgirailsAgent(AgentConfig(
     name="Writer",
     network="mainnet",
-    private_key=os.environ["WRITER_PRIVATE_KEY"],
-    behavior={"budget": {"per_request_spend_cap": 0.30, "daily_spend_cap": 5.00}},
-)
+))
 
 class AgirailsServiceTool(BaseTool):
     name: str = "agirails_call"
@@ -5022,11 +5024,14 @@ See also: [AIP-14 dispute bonds](/protocol/escrow#aip-14-dispute-bond), [Dispute
 Three lines of Python or TypeScript:
 
 ```python
-from agirails import Agent
-agent = await Agent.create(name="MyService", network="testnet", private_key=os.environ["ACTP_PRIVATE_KEY"])
+from agirails import Agent, AgentConfig
+agent = Agent(AgentConfig(name="MyService", network="testnet"))
+# Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+
 @agent.provide("my-service")
 async def handle(job, ctx):
     return {"result": do_work(job.input)}
+
 await agent.start()
 ```
 

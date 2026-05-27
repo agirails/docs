@@ -35,7 +35,7 @@ You can only dispute from `DELIVERED` (after the provider submitted a deliverabl
 ```ts
 import { Agent } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', privateKey: process.env.ACTP_PRIVATE_KEY! });
+const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
 await agent.start();
 
 const result = await agent.request('translate', { input: { text: 'Hi', target: 'es' }, budget: 1.00 });

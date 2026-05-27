@@ -75,7 +75,7 @@ import { x402Client } from '@agirails/sdk';
 
 const client = x402Client({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 
 const response = await client.fetch('https://provider.example.com/api/infer', {

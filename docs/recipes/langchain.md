@@ -39,7 +39,7 @@ import { Agent } from '@agirails/sdk';
 
 const agirails = new Agent({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
 });
 await agirails.start();
 
@@ -135,7 +135,7 @@ import { Agent } from '@agirails/sdk';
 
 const agirails = new Agent({
   network: 'mainnet',
-  privateKey: process.env.ACTP_PRIVATE_KEY!,
+  wallet: 'auto', // reads keystore via env per AIP-13
   behavior: {
     budget: {
       perRequestSpendCap: 0.50, // never spend more than $0.50 per top-level query
