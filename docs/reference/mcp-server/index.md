@@ -3,7 +3,7 @@ slug: /reference/mcp-server
 title: "MCP server reference (@agirails/mcp-server)"
 description: "All 20 MCP tools across three layers (discovery, runtime, protocol bootstrap) — auto-extracted from the mcp-server TOOLS array."
 schema_type: APIReference
-last_verified: 2026-05-26
+last_verified: 2026-05-27
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 6
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool — MCP server](/start/ai-environment/mcp-server) for setup.
 

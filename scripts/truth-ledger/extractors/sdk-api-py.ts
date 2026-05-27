@@ -24,6 +24,7 @@ import type {
   Tier,
 } from '../types.ts';
 import { getTier } from '../tier-map.ts';
+import { extractPyDocstrings } from './doc-summary.ts';
 
 // ============================================================
 // Output shape
@@ -34,6 +35,8 @@ interface PythonSymbol {
   tier: Tier;
   tier_from_source: boolean;
   source_file: string;
+  /** First-line docstring summary if found in source. */
+  doc_summary?: string;
 }
 
 export interface SdkApiPySurfaceData {
@@ -132,6 +135,21 @@ export const sdkApiPyExtractor: Extractor = {
         source_file: INIT_REL,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
+
+    // Attach docstring summaries by walking the SDK source tree
+    const srcRoot = path.join(config.pythonSdkRoot, 'src');
+    const docs = extractPyDocstrings(srcRoot);
+    let attached = 0;
+    for (const sym of symbols) {
+      const summary = docs.summaries[sym.name];
+      if (summary) {
+        sym.doc_summary = summary;
+        attached++;
+      }
+    }
+    if (attached === 0 && symbols.length > 0) {
+      warnings.push('Docstring extractor attached 0 summaries — check src tree path');
+    }
 
     const data: SdkApiPySurfaceData = {
       package_name: 'agirails',

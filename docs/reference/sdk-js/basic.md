@@ -3,7 +3,7 @@ slug: /reference/sdk-js/basic
 title: "TypeScript SDK — Basic + Level 0"
 description: "Convenience tier of @agirails/sdk@4.0.0 — Level 0 imports (`request`, `provide`) plus the `Agent` class and basic `pay()` flow."
 schema_type: APIReference
-last_verified: 2026-05-26
+last_verified: 2026-05-27
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # TypeScript SDK — Basic + Level 0
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -25,26 +25,26 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 
 The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start — three or four imports get you a fully functional consumer or provider agent.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ACTPClient` | _re-export_ | ✅ in-sync |
-| `ACTPClientConfig` | _re-export_ | ✅ in-sync |
-| `provide` | _re-export_ | ✅ in-sync |
-| `request` | _re-export_ | ✅ in-sync |
-| `serviceDirectory` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTPClient` | _re-export_ | ACTPClient - Main entry point for AGIRAILS SDK. | ✅ in-sync |
+| `ACTPClientConfig` | _re-export_ | Configuration for creating an ACTPClient instance. | ✅ in-sync |
+| `provide` | _re-export_ | Provide a service | ✅ in-sync |
+| `request` | _re-export_ | Request a service | ✅ in-sync |
+| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS ahead — Python parity pending |
 
 ## Basic tier — 6 symbols
 
 The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `Agent` | _re-export_ | ✅ in-sync |
-| `BasicAdapter` | _re-export_ | ✅ in-sync |
-| `BasicPayParams` | _re-export_ | ✅ in-sync |
-| `BasicPayResult` | _re-export_ | ✅ in-sync |
-| `MockRuntime` | _re-export_ | ✅ in-sync |
-| `StandardAdapter` | _re-export_ | ✅ in-sync |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `Agent` | _re-export_ | Agent class - Standard API | ✅ in-sync |
+| `BasicAdapter` | _re-export_ | BasicAdapter - High-level API for simple payment flows. | ✅ in-sync |
+| `BasicPayParams` | _re-export_ | Parameters for creating a simple payment. | ✅ in-sync |
+| `BasicPayResult` | _re-export_ | Result of creating a payment. | ✅ in-sync |
+| `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
+| `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
 
 ## See also
 

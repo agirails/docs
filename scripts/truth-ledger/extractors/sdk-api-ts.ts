@@ -22,6 +22,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { Extractor, ExtractorConfig, RawSurface, Tier } from '../types.ts';
 import { getTier } from '../tier-map.ts';
+import { extractTsDocSummaries } from './doc-summary.ts';
 
 // ============================================================
 // Output shape
@@ -32,6 +33,8 @@ interface TsSymbol {
   kind: 'export-from' | 'export-class' | 'export-function' | 'export-interface' | 'export-type' | 'export-enum' | 'export-const';
   tier: Tier;
   tier_from_source: boolean;
+  /** First-paragraph JSDoc summary if found in source. */
+  doc_summary?: string;
 }
 
 export interface SdkApiTsSurfaceData {
@@ -173,6 +176,21 @@ export const sdkApiTsExtractor: Extractor = {
 
     if (symbols.length === 0) {
       warnings.push('Zero symbols extracted from TS barrel — parser may have failed silently');
+    }
+
+    // Attach JSDoc summaries by walking the SDK source tree
+    const srcRoot = path.join(config.sdkJsRoot, 'src');
+    const docs = extractTsDocSummaries(srcRoot);
+    let attached = 0;
+    for (const sym of symbols) {
+      const summary = docs.summaries[sym.name];
+      if (summary) {
+        sym.doc_summary = summary;
+        attached++;
+      }
+    }
+    if (attached === 0 && symbols.length > 0) {
+      warnings.push('JSDoc extractor attached 0 summaries — check src tree path');
     }
 
     const data: SdkApiTsSurfaceData = {

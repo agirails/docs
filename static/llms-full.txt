@@ -3694,7 +3694,7 @@ actp CLI reference
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -3796,7 +3796,7 @@ Base mainnet contracts (chain 8453)
 
 Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcify exact-match verification.
 
-**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 ## USDC
 
@@ -3810,7 +3810,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842`](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3827,7 +3827,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5`](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3841,7 +3841,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009`](https://basescan.org/address/0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3855,7 +3855,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc`](https://basescan.org/address/0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3881,7 +3881,7 @@ Base Sepolia contracts (chain 84532)
 
 Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exact-match verification.
 
-**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 ## MockUSDC
 
@@ -3893,7 +3893,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x9d25A874f046185d9237Cd4954C88D2B74B0021b`](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3907,7 +3907,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB`](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3921,7 +3921,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656`](https://sepolia.basescan.org/address/0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3943,7 +3943,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb`](https://sepolia.basescan.org/address/0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 | Field | Value |
 |---|---|
@@ -3958,7 +3958,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b`](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-26 12:27:57 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-27 12:25:52 UTC)_
 
 [warning]
 This contract is marked deprecated and retained only for legacy integration paths. Do not use for new code.
@@ -4023,7 +4023,7 @@ TypeScript SDK — Basic + Level 0
 
 # TypeScript SDK — Basic + Level 0
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -4033,26 +4033,26 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 
 The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start — three or four imports get you a fully functional consumer or provider agent.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ACTPClient` | _re-export_ | ✅ in-sync |
-| `ACTPClientConfig` | _re-export_ | ✅ in-sync |
-| `provide` | _re-export_ | ✅ in-sync |
-| `request` | _re-export_ | ✅ in-sync |
-| `serviceDirectory` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTPClient` | _re-export_ | ACTPClient - Main entry point for AGIRAILS SDK. | ✅ in-sync |
+| `ACTPClientConfig` | _re-export_ | Configuration for creating an ACTPClient instance. | ✅ in-sync |
+| `provide` | _re-export_ | Provide a service | ✅ in-sync |
+| `request` | _re-export_ | Request a service | ✅ in-sync |
+| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS ahead — Python parity pending |
 
 ## Basic tier — 6 symbols
 
 The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `Agent` | _re-export_ | ✅ in-sync |
-| `BasicAdapter` | _re-export_ | ✅ in-sync |
-| `BasicPayParams` | _re-export_ | ✅ in-sync |
-| `BasicPayResult` | _re-export_ | ✅ in-sync |
-| `MockRuntime` | _re-export_ | ✅ in-sync |
-| `StandardAdapter` | _re-export_ | ✅ in-sync |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `Agent` | _re-export_ | Agent class - Standard API | ✅ in-sync |
+| `BasicAdapter` | _re-export_ | BasicAdapter - High-level API for simple payment flows. | ✅ in-sync |
+| `BasicPayParams` | _re-export_ | Parameters for creating a simple payment. | ✅ in-sync |
+| `BasicPayResult` | _re-export_ | Result of creating a payment. | ✅ in-sync |
+| `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
+| `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
 
 ## See also
 
@@ -4068,7 +4068,7 @@ TypeScript SDK — Standard + Advanced
 
 # TypeScript SDK — Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 153 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 153 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -4078,168 +4078,168 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 
 Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ACTP_FEEDBACK_TAGS` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ACTPClientInfo` | _re-export_ | ✅ in-sync |
-| `ACTPClientMode` | _re-export_ | ✅ in-sync |
-| `ACTPError` | _re-export_ | ✅ in-sync |
-| `ACTPKernel` | _re-export_ | ✅ in-sync |
-| `AdapterSelectionResult` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `AdapterTransactionState` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `Address` | _re-export_ | ✅ in-sync |
-| `AgentLifecycleError` | _re-export_ | ✅ in-sync |
-| `AgentRegistry` | _re-export_ | ✅ in-sync |
-| `ARCHIVE_BUNDLE_TYPE` | _re-export_ | ✅ in-sync |
-| `ArchiveBundleBuilder` | _re-export_ | ✅ in-sync |
-| `ArweaveDownloadError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ArweaveTimeoutError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ArweaveUploadError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `AutoWalletProvider` | _re-export_ | ✅ in-sync |
-| `BaseAdapter` | _re-export_ | ✅ in-sync |
-| `BlockchainRuntimeConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `buildChannelPath` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `Bytes32` | _re-export_ | ✅ in-sync |
-| `calculatePrice` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `computeContentHash` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ContentNotFoundError` | _re-export_ | ✅ in-sync |
-| `ContractPausedError` | _re-export_ | ✅ in-sync |
-| `CounterAcceptBuilder` | _re-export_ | ✅ in-sync |
-| `CounterOfferBuilder` | _re-export_ | ✅ in-sync |
-| `CreateTransactionParams` | _re-export_ | ✅ in-sync |
-| `createUsedAttestationTracker` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `Deadline` | _re-export_ | ✅ in-sync |
-| `DeadlineExpiredError` | _re-export_ | ⚠️ diverged (cross-SDK signature mismatch) |
-| `DeadlinePassedError` | _re-export_ | ⚠️ diverged (cross-SDK signature mismatch) |
-| `DEFAULT_DEADLINE_SECONDS` | _re-export_ | ✅ in-sync |
-| `DEFAULT_DISPUTE_WINDOW_SECONDS` | _re-export_ | ✅ in-sync |
-| `DEFAULT_PRICING_STRATEGY` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `DeliveryFailedError` | _re-export_ | ✅ in-sync |
-| `DeliveryProofBuilder` | _re-export_ | ✅ in-sync |
-| `DIDManager` | _re-export_ | ✅ in-sync |
-| `DIDResolver` | _re-export_ | ✅ in-sync |
-| `DisputeRaisedError` | _re-export_ | ✅ in-sync |
-| `DisputeWindow` | _re-export_ | ✅ in-sync |
-| `DisputeWindowActiveError` | _re-export_ | ✅ in-sync |
-| `DownloadTimeoutError` | _re-export_ | ✅ in-sync |
-| `EASConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `envelopeChainId` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `envelopeTxId` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `EOAWalletProvider` | _re-export_ | ✅ in-sync |
-| `ERC8004_DEFAULT_RPC` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ERC8004_IDENTITY_REGISTRY` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ERC8004_REPUTATION_REGISTRY` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ERC8004Bridge` | _re-export_ | ✅ in-sync |
-| `ERC8004Error` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ERC8004ErrorCode` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `EscrowNotFoundError` | _re-export_ | ✅ in-sync |
-| `EscrowVault` | _re-export_ | ✅ in-sync |
-| `EventMonitor` | _re-export_ | ✅ in-sync |
-| `FileBasedUsedAttestationTracker` | _re-export_ | ✅ in-sync |
-| `FileSizeLimitExceededError` | _re-export_ | ✅ in-sync |
-| `formatUSDC` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `generateSecureNonce` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `generateSecureNonces` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `getCachedAddress` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `getNetwork` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `hashServiceMetadata` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `IACTPRuntime` | _re-export_ | ✅ in-sync |
-| `IAdapter` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `IMockRuntime` | _re-export_ | ✅ in-sync |
-| `InMemoryNonceManager` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `InMemoryReceivedNonceTracker` | _re-export_ | ✅ in-sync |
-| `InMemoryUsedAttestationTracker` | _re-export_ | ✅ in-sync |
-| `InsufficientBalanceError` | _re-export_ | ✅ in-sync |
-| `InsufficientFundsError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `InvalidAddressError` | _re-export_ | ✅ in-sync |
-| `InvalidAmountError` | _re-export_ | ✅ in-sync |
-| `InvalidArweaveTxIdError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `InvalidCIDError` | _re-export_ | ✅ in-sync |
-| `InvalidStateTransitionError` | _re-export_ | ✅ in-sync |
-| `IReceivedNonceTracker` | _re-export_ | ✅ in-sync |
-| `isAdapter` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `isCounterAcceptEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `isCounterOfferEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `isQuoteEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `isValidNonce` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `IUsedAttestationTracker` | _re-export_ | ✅ in-sync |
-| `MAX_DEADLINE_DAYS` | _re-export_ | ✅ in-sync |
-| `MAX_DEADLINE_HOURS` | _re-export_ | ✅ in-sync |
-| `MIN_AMOUNT_WEI` | _re-export_ | ✅ in-sync |
-| `MockAccount` | _re-export_ | ✅ in-sync |
-| `MockBlockchain` | _re-export_ | ✅ in-sync |
-| `MockEscrow` | _re-export_ | ✅ in-sync |
-| `MockEvent` | _re-export_ | ✅ in-sync |
-| `MockState` | _re-export_ | ✅ in-sync |
-| `MockTransaction` | _re-export_ | ✅ in-sync |
-| `NetworkError` | _re-export_ | ✅ in-sync |
-| `NonceManager` | _re-export_ | ✅ in-sync |
-| `NoProviderFoundError` | _re-export_ | ✅ in-sync |
-| `parseUSDC` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ProviderPolicyEngine` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ProviderRejectedError` | _re-export_ | ✅ in-sync |
-| `QueryCapExceededError` | _re-export_ | ✅ in-sync |
-| `QuoteBuilder` | _re-export_ | ✅ in-sync |
-| `RateLimiter` | _re-export_ | ✅ in-sync |
-| `RelayChannel` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ReputationReporter` | _re-export_ | ✅ in-sync |
-| `resolvePrivateKey` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `Semaphore` | _re-export_ | ✅ in-sync |
-| `ServiceConfigError` | _re-export_ | ✅ in-sync |
-| `ServiceHash` | _re-export_ | ✅ in-sync |
-| `shortenAddress` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `SignatureVerificationError` | _re-export_ | ✅ in-sync |
-| `StandardTransactionParams` | _re-export_ | ✅ in-sync |
-| `StateHelpers` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `StorageAuthenticationError` | _re-export_ | ✅ in-sync |
-| `StorageError` | _re-export_ | ✅ in-sync |
-| `StorageInsufficientBalanceError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `StorageRateLimitError` | _re-export_ | ✅ in-sync |
-| `SwapExecutionError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `TimeoutError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `TransactionNotFoundError` | _re-export_ | ✅ in-sync |
-| `TransactionRevertedError` | _re-export_ | ✅ in-sync |
-| `TransactionState` | _re-export_ | ✅ in-sync |
-| `TransactionStateValue` | _re-export_ | ✅ in-sync |
-| `TransactionStatus` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `UploadTimeoutError` | _re-export_ | ✅ in-sync |
-| `URLValidationConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `USDC` | _re-export_ | ✅ in-sync |
-| `validateArchiveBundle` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `ValidationError` | _re-export_ | ✅ in-sync |
-| `verifyQuoteHashOnChain` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402Adapter` | _re-export_ | ✅ in-sync |
-| `X402AdapterConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402AmountExceededError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402ApprovalFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402ConfigError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402Error` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402NetworkNotAllowedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402PaymentFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402PublishRequiredError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402SettlementProofMissingError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402SignatureFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `X402UnsupportedWalletError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTP_FEEDBACK_TAGS` | _re-export_ | ACTP feedback tags for ERC-8004 Reputation. | 🟢 TS ahead — Python parity pending |
+| `ACTPClientInfo` | _re-export_ | Result of creating an ACTPClient. | ✅ in-sync |
+| `ACTPClientMode` | _re-export_ | Supported modes for ACTPClient. | ✅ in-sync |
+| `ACTPError` | _re-export_ | Base ACTP Error. | ✅ in-sync |
+| `ACTPKernel` | _re-export_ | ACTPKernel - Smart contract wrapper Reference: Yellow Paper §3 (ACTP Kernel Specification) | ✅ in-sync |
+| `AdapterSelectionResult` | _re-export_ | Result of adapter selection with potential ERC-8004 resolution. | 🟢 TS ahead — Python parity pending |
+| `AdapterTransactionState` | _re-export_ | Valid transaction states across all adapters. | 🟢 TS ahead — Python parity pending |
+| `Address` | _re-export_ | Address utilities | ✅ in-sync |
+| `AgentLifecycleError` | _re-export_ | Agent lifecycle error | ✅ in-sync |
+| `AgentRegistry` | _re-export_ | AgentRegistry - Agent Identity & Reputation SDK Module (AIP-7) | ✅ in-sync |
+| `ARCHIVE_BUNDLE_TYPE` | _re-export_ | Archive bundle type identifier | ✅ in-sync |
+| `ArchiveBundleBuilder` | _re-export_ | ArchiveBundleBuilder - Fluent builder for archive bundles | ✅ in-sync |
+| `ArweaveDownloadError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ArweaveTimeoutError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ArweaveUploadError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `AutoWalletProvider` | _re-export_ | _—_ | ✅ in-sync |
+| `BaseAdapter` | _re-export_ | Abstract base adapter with shared parsing utilities. | ✅ in-sync |
+| `BlockchainRuntimeConfig` | _re-export_ | Configuration for BlockchainRuntime | 🟢 TS ahead — Python parity pending |
+| `buildChannelPath` | _re-export_ | Path pattern builders use / handlers expect. | 🟢 TS ahead — Python parity pending |
+| `Bytes32` | _re-export_ | Bytes32 utilities | ✅ in-sync |
+| `calculatePrice` | _re-export_ | Calculate price for a job based on pricing strategy | 🟢 TS ahead — Python parity pending |
+| `computeContentHash` | _re-export_ | Compute keccak256 hash of canonical JSON | 🟢 TS ahead — Python parity pending |
+| `ContentNotFoundError` | _re-export_ | _—_ | ✅ in-sync |
+| `ContractPausedError` | _re-export_ | Error thrown when the contract is paused. | ✅ in-sync |
+| `CounterAcceptBuilder` | _re-export_ | _—_ | ✅ in-sync |
+| `CounterOfferBuilder` | _re-export_ | _—_ | ✅ in-sync |
+| `CreateTransactionParams` | _re-export_ | Parameters for creating a new transaction. | ✅ in-sync |
+| `createUsedAttestationTracker` | _re-export_ | Factory to create attestation tracker | 🟢 TS ahead — Python parity pending |
+| `Deadline` | _re-export_ | Deadline utilities | ✅ in-sync |
+| `DeadlineExpiredError` | _re-export_ | _—_ | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DeadlinePassedError` | _re-export_ | Error thrown when the deadline has passed. | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DEFAULT_DEADLINE_SECONDS` | _re-export_ | Default deadline offset in seconds (24 hours). Used when no deadline is specified in transaction parameters. | ✅ in-sync |
+| `DEFAULT_DISPUTE_WINDOW_SECONDS` | _re-export_ | Default dispute window in seconds (2 days). Used when no dispute window is specified in transaction parameters. | ✅ in-sync |
+| `DEFAULT_PRICING_STRATEGY` | _re-export_ | Default pricing strategy | 🟢 TS ahead — Python parity pending |
+| `DeliveryFailedError` | _re-export_ | Provider failed to deliver result | ✅ in-sync |
+| `DeliveryProofBuilder` | _re-export_ | DeliveryProofBuilder - Main Builder Class | ✅ in-sync |
+| `DIDManager` | _re-export_ | DIDManager - Manage DID attributes and delegates (AIP-7 §2.2) | ✅ in-sync |
+| `DIDResolver` | _re-export_ | DIDResolver - Resolve DIDs to DID Documents (AIP-7 §2.2) | ✅ in-sync |
+| `DisputeRaisedError` | _re-export_ | Dispute raised on transaction | ✅ in-sync |
+| `DisputeWindow` | _re-export_ | Dispute window utilities | ✅ in-sync |
+| `DisputeWindowActiveError` | _re-export_ | Error thrown when dispute window is still active. | ✅ in-sync |
+| `DownloadTimeoutError` | _re-export_ | _—_ | ✅ in-sync |
+| `EASConfig` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `envelopeChainId` | _re-export_ | Extract the chainId carried inside the envelope's signed message. | 🟢 TS ahead — Python parity pending |
+| `envelopeTxId` | _re-export_ | Extract the txId carried inside the envelope's signed message. Useful for impls that need to dispatch by txId without parsing. | 🟢 TS ahead — Python parity pending |
+| `EOAWalletProvider` | _re-export_ | _—_ | ✅ in-sync |
+| `ERC8004_DEFAULT_RPC` | _re-export_ | Default RPC URLs for each network. Used when no custom RPC is provided. | 🟢 TS ahead — Python parity pending |
+| `ERC8004_IDENTITY_REGISTRY` | _re-export_ | ERC-8004 Identity Registry addresses per network. | 🟢 TS ahead — Python parity pending |
+| `ERC8004_REPUTATION_REGISTRY` | _re-export_ | ERC-8004 Reputation Registry addresses per network. | 🟢 TS ahead — Python parity pending |
+| `ERC8004Bridge` | _re-export_ | Bridge for reading from ERC-8004 Identity Registry. | ✅ in-sync |
+| `ERC8004Error` | _re-export_ | Custom error for ERC-8004 operations. | 🟢 TS ahead — Python parity pending |
+| `ERC8004ErrorCode` | _re-export_ | ERC-8004 error codes. | 🟢 TS ahead — Python parity pending |
+| `EscrowNotFoundError` | _re-export_ | Error thrown when an escrow is not found. | ✅ in-sync |
+| `EscrowVault` | _re-export_ | EscrowVault - Escrow contract wrapper | ✅ in-sync |
+| `EventMonitor` | _re-export_ | EventMonitor - Listen to blockchain events | ✅ in-sync |
+| `FileBasedUsedAttestationTracker` | _re-export_ | File-based Used Attestation Tracker for persistence | ✅ in-sync |
+| `FileSizeLimitExceededError` | _re-export_ | _—_ | ✅ in-sync |
+| `formatUSDC` | _re-export_ | Format USDC wei to human-readable string | 🟢 TS ahead — Python parity pending |
+| `generateSecureNonce` | _re-export_ | Generate a cryptographically secure random nonce (bytes32) | 🟢 TS ahead — Python parity pending |
+| `generateSecureNonces` | _re-export_ | Generate an array of secure nonces | 🟢 TS ahead — Python parity pending |
+| `getCachedAddress` | _re-export_ | Get cached address from last resolvePrivateKey() call. Works for env-var, base64, and keystore resolution paths. | 🟢 TS ahead — Python parity pending |
+| `getNetwork` | _re-export_ | Get network configuration by name (returns deep clone to prevent mutation) | 🟢 TS ahead — Python parity pending |
+| `hashServiceMetadata` | _re-export_ | Hash service description for on-chain storage | 🟢 TS ahead — Python parity pending |
+| `IACTPRuntime` | _re-export_ | Runtime interface for ACTP protocol operations. | ✅ in-sync |
+| `IAdapter` | _re-export_ | Common interface for all payment adapters. | 🟢 TS ahead — Python parity pending |
+| `IMockRuntime` | _re-export_ | Extended runtime interface for mock mode. | ✅ in-sync |
+| `InMemoryNonceManager` | _re-export_ | In-Memory Nonce Manager Simple implementation using Map for per-message-type nonce tracking | 🟢 TS ahead — Python parity pending |
+| `InMemoryReceivedNonceTracker` | _re-export_ | In-Memory Received Nonce Tracker | ✅ in-sync |
+| `InMemoryUsedAttestationTracker` | _re-export_ | In-Memory Used Attestation Tracker | ✅ in-sync |
+| `InsufficientBalanceError` | _re-export_ | Error thrown when there are insufficient funds for an operation. | ✅ in-sync |
+| `InsufficientFundsError` | _re-export_ | Transaction Errors | 🟢 TS ahead — Python parity pending |
+| `InvalidAddressError` | _re-export_ | _—_ | ✅ in-sync |
+| `InvalidAmountError` | _re-export_ | Error thrown when an invalid amount is provided. | ✅ in-sync |
+| `InvalidArweaveTxIdError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `InvalidCIDError` | _re-export_ | _—_ | ✅ in-sync |
+| `InvalidStateTransitionError` | _re-export_ | State Machine Errors | ✅ in-sync |
+| `IReceivedNonceTracker` | _re-export_ | Interface for tracking received nonces | ✅ in-sync |
+| `isAdapter` | _re-export_ | Type guard to check if an object implements IAdapter. | 🟢 TS ahead — Python parity pending |
+| `isCounterAcceptEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `isCounterOfferEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `isQuoteEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `isValidNonce` | _re-export_ | Validate nonce format (must be bytes32) | 🟢 TS ahead — Python parity pending |
+| `IUsedAttestationTracker` | _re-export_ | Interface for tracking used attestations | ✅ in-sync |
+| `MAX_DEADLINE_DAYS` | _re-export_ | Maximum deadline in days (10 years). Prevents integer overflow in deadline calculations. | ✅ in-sync |
+| `MAX_DEADLINE_HOURS` | _re-export_ | Maximum deadline in hours (10 years). Prevents integer overflow in deadline calculations. | ✅ in-sync |
+| `MIN_AMOUNT_WEI` | _re-export_ | Minimum transaction amount in USDC wei (6 decimals). $0.05 minimum per AGIRAILS protocol specification. | ✅ in-sync |
+| `MockAccount` | _re-export_ | Mock account representing a user's wallet state. | ✅ in-sync |
+| `MockBlockchain` | _re-export_ | Mock blockchain state simulating chain parameters. | ✅ in-sync |
+| `MockEscrow` | _re-export_ | Mock escrow representing funds locked for a transaction. | ✅ in-sync |
+| `MockEvent` | _re-export_ | Mock blockchain event recorded during transaction lifecycle. | ✅ in-sync |
+| `MockState` | _re-export_ | Complete mock state persisted to `.actp/mock-state.json`. | ✅ in-sync |
+| `MockTransaction` | _re-export_ | Mock transaction representing an ACTP transaction in the mock blockchain. | ✅ in-sync |
+| `NetworkError` | _re-export_ | _—_ | ✅ in-sync |
+| `NonceManager` | _re-export_ | Nonce Manager Interface (from DeliveryProofBuilder) | ✅ in-sync |
+| `NoProviderFoundError` | _re-export_ | No provider found for the requested service | ✅ in-sync |
+| `parseUSDC` | _re-export_ | Parse USDC amount string to wei (6 decimals) | 🟢 TS ahead — Python parity pending |
+| `ProviderPolicyEngine` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ProviderRejectedError` | _re-export_ | Provider rejected the job | ✅ in-sync |
+| `QueryCapExceededError` | _re-export_ | Registry Query Cap Exceeded Error (L-4) | ✅ in-sync |
+| `QuoteBuilder` | _re-export_ | QuoteBuilder - Main Builder Class Reference: AIP-2 §6.1 | ✅ in-sync |
+| `RateLimiter` | _re-export_ | Simple sliding window rate limiter | ✅ in-sync |
+| `RelayChannel` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ReputationReporter` | _re-export_ | Reporter for submitting ACTP settlement outcomes to ERC-8004 Reputation. | ✅ in-sync |
+| `resolvePrivateKey` | _re-export_ | Auto-resolve private key: env var → base64 keystore → file keystore → undefined. Never logs or prints the key itself. | 🟢 TS ahead — Python parity pending |
+| `Semaphore` | _re-export_ | Simple semaphore for limiting concurrent operations | ✅ in-sync |
+| `ServiceConfigError` | _re-export_ | Service configuration error | ✅ in-sync |
+| `ServiceHash` | _re-export_ | Service metadata utilities for ACTP transactions | ✅ in-sync |
+| `shortenAddress` | _re-export_ | Shorten Ethereum address for display | 🟢 TS ahead — Python parity pending |
+| `SignatureVerificationError` | _re-export_ | Signature Errors | ✅ in-sync |
+| `StandardTransactionParams` | _re-export_ | Parameters for creating a transaction (standard level). | ✅ in-sync |
+| `StateHelpers` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `StorageAuthenticationError` | _re-export_ | _—_ | ✅ in-sync |
+| `StorageError` | _re-export_ | Storage Errors (AIP-7) | ✅ in-sync |
+| `StorageInsufficientBalanceError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `StorageRateLimitError` | _re-export_ | _—_ | ✅ in-sync |
+| `SwapExecutionError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `TimeoutError` | _re-export_ | Request timeout error | 🟢 TS ahead — Python parity pending |
+| `TransactionNotFoundError` | _re-export_ | Error thrown when a transaction is not found. | ✅ in-sync |
+| `TransactionRevertedError` | _re-export_ | Blockchain Errors | ✅ in-sync |
+| `TransactionState` | _re-export_ | ACTP Transaction State enum matching the smart contract states. | ✅ in-sync |
+| `TransactionStateValue` | _re-export_ | Numeric state values matching the smart contract enum. | ✅ in-sync |
+| `TransactionStatus` | _re-export_ | Transaction status returned by getStatus(). | 🟢 TS ahead — Python parity pending |
+| `UploadTimeoutError` | _re-export_ | _—_ | ✅ in-sync |
+| `URLValidationConfig` | _re-export_ | Security: URL validation configuration for SSRF prevention | 🟢 TS ahead — Python parity pending |
+| `USDC` | _re-export_ | USDC amount utilities (6 decimal places) | ✅ in-sync |
+| `validateArchiveBundle` | _re-export_ | Validate archive bundle structure | 🟢 TS ahead — Python parity pending |
+| `ValidationError` | _re-export_ | Adapter-layer ValidationError — extends ACTPError-based ValidationError so that `instanceof` checks work against the public SDK export. Accepts a single message string for convenience in adapter code. | ✅ in-sync |
+| `verifyQuoteHashOnChain` | _re-export_ | Cross-reference an off-chain QuoteMessage against the hash stored on chain in `tx.metadata` (or equivalent — MockTransaction.quoteHash). | 🟢 TS ahead — Python parity pending |
+| `X402Adapter` | _re-export_ | _—_ | ✅ in-sync |
+| `X402AdapterConfig` | _re-export_ | Configuration for X402Adapter. | 🟢 TS ahead — Python parity pending |
+| `X402AmountExceededError` | _re-export_ | Thrown when the server's required payment amount exceeds the client's `maxAmountPerTx` safety cap. Default cap is $1 USDC. | 🟢 TS ahead — Python parity pending |
+| `X402ApprovalFailedError` | _re-export_ | Thrown when the one-time Permit2 approve transaction fails for any reason other than paymaster gate (which throws X402PublishRequiredError instead). | 🟢 TS ahead — Python parity pending |
+| `X402ConfigError` | _re-export_ | Thrown when X402Adapter constructor receives invalid config. | 🟢 TS ahead — Python parity pending |
+| `X402Error` | _re-export_ | Base class for all x402-related errors. Catch this to handle any x402 failure in one clause. | 🟢 TS ahead — Python parity pending |
+| `X402NetworkNotAllowedError` | _re-export_ | Thrown when the server's payment-required response offers no network that the client's `allowedNetworks` configuration accepts. | 🟢 TS ahead — Python parity pending |
+| `X402PaymentFailedError` | _re-export_ | Thrown when the payment attempt returns a non-2xx HTTP status after signing and submitting the payment payload. | 🟢 TS ahead — Python parity pending |
+| `X402PublishRequiredError` | _re-export_ | Thrown when paymaster rejects sponsored tx because agent isn't published in AgentRegistry. The one-time Permit2 approve needed to enable Smart Wallet x402 payments requires the agent to pass the paymaster policy gate. | 🟢 TS ahead — Python parity pending |
+| `X402SettlementProofMissingError` | _re-export_ | Thrown when HTTP payment completes (200 OK) but the server did not return a `payment-response` header confirming on-chain settlement. | 🟢 TS ahead — Python parity pending |
+| `X402SignatureFailedError` | _re-export_ | Thrown when walletProvider.signTypedData() fails to produce a signature. | 🟢 TS ahead — Python parity pending |
+| `X402UnsupportedWalletError` | _re-export_ | Thrown when a Smart Wallet tries to pay a server that only offers the EIP-3009 transferWithAuthorization scheme. | 🟢 TS ahead — Python parity pending |
 
 ## Advanced tier — 13 symbols
 
 Lower-level building blocks rarely needed in application code: orchestrators, dedup stores, policy engines, raw runtime interfaces. Stable APIs but the contract is "you know what you're doing." Reach here only when the standard tier is genuinely insufficient.
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ArweaveClient` | _re-export_ | ✅ in-sync |
-| `BlockchainRuntime` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `BuyerOrchestrator` | _re-export_ | ✅ in-sync |
-| `DecisionEngine` | _re-export_ | ✅ in-sync |
-| `EASHelper` | _re-export_ | ✅ in-sync |
-| `FilebaseClient` | _re-export_ | ✅ in-sync |
-| `MessageSigner` | _re-export_ | ✅ in-sync |
-| `PolicyEngine` | _re-export_ | ✅ in-sync |
-| `ProofGenerator` | _re-export_ | ✅ in-sync |
-| `ProviderOrchestrator` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `QuoteChannelClient` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `QuoteChannelHandler` | _re-export_ | 🟢 TS ahead — Python parity pending |
-| `SessionStore` | _re-export_ | ✅ in-sync |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ArweaveClient` | _re-export_ | ArweaveClient - Permanent storage on Arweave via Irys | ✅ in-sync |
+| `BlockchainRuntime` | _re-export_ | BlockchainRuntime - Production blockchain implementation | 🟢 TS ahead — Python parity pending |
+| `BuyerOrchestrator` | _re-export_ | _—_ | ✅ in-sync |
+| `DecisionEngine` | _re-export_ | _—_ | ✅ in-sync |
+| `EASHelper` | _re-export_ | EASHelper - utility wrapper for Ethereum Attestation Service interactions | ✅ in-sync |
+| `FilebaseClient` | _re-export_ | FilebaseClient - IPFS storage via Filebase S3 API | ✅ in-sync |
+| `MessageSigner` | _re-export_ | MessageSigner - Cryptographic signing for ACTP messages with EIP-712 Reference: Yellow Paper §11.4.2 | ✅ in-sync |
+| `PolicyEngine` | _re-export_ | _—_ | ✅ in-sync |
+| `ProofGenerator` | _re-export_ | ProofGenerator - Content hashing and delivery proofs Reference: Yellow Paper §11.4.1 | ✅ in-sync |
+| `ProviderOrchestrator` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `QuoteChannelClient` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `QuoteChannelHandler` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `SessionStore` | _re-export_ | _—_ | ✅ in-sync |
 
 ## See also
 
@@ -4255,7 +4255,7 @@ Python SDK reference
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 
@@ -4290,12 +4290,12 @@ The smallest surface that produces a working transaction. If you're integrating 
 
 **4 symbols.**
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ACTPClient` | `undefined` | ✅ in-sync |
-| `ACTPClientConfig` | `undefined` | ✅ in-sync |
-| `provide` | `undefined` | ✅ in-sync |
-| `request` | `undefined` | ✅ in-sync |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTPClient` | `undefined` | Main client for AGIRAILS SDK. | ✅ in-sync |
+| `ACTPClientConfig` | `undefined` | Configuration for ACTPClient.create(). | ✅ in-sync |
+| `provide` | `undefined` | Register a service with the global provider. | ✅ in-sync |
+| `request` | `undefined` | Request a service from a provider. | ✅ in-sync |
 
 ## Basic tier {#basic-tier}
 
@@ -4303,22 +4303,22 @@ The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` —
 
 **14 symbols.**
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `Agent` | `undefined` | ✅ in-sync |
-| `AgentConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `BasicAdapter` | `undefined` | ✅ in-sync |
-| `BasicPayParams` | `undefined` | ✅ in-sync |
-| `BasicPayResult` | `undefined` | ✅ in-sync |
-| `Job` | `undefined` | 🟡 TS has it; Python pending |
-| `JobContext` | `undefined` | 🟡 TS has it; Python pending |
-| `JobHandler` | `undefined` | 🟡 TS has it; Python pending |
-| `MockRuntime` | `undefined` | ✅ in-sync |
-| `ProvideOptions` | `undefined` | 🟡 TS has it; Python pending |
-| `RequestOptions` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `StandardAdapter` | `undefined` | ✅ in-sync |
-| `State` | `undefined` | 🟡 TS has it; Python pending |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `Agent` | `undefined` | Agent for processing jobs via ACTP protocol. | ✅ in-sync |
+| `AgentConfig` | `undefined` | Main agent configuration. | 🟡 TS has it; Python pending |
+| `BasicAdapter` | `undefined` | Basic-level adapter for ACTP transactions. | ✅ in-sync |
+| `BasicPayParams` | `undefined` | Parameters for basic pay() method. | ✅ in-sync |
+| `BasicPayResult` | `undefined` | Result from basic pay() method. | ✅ in-sync |
+| `Job` | `undefined` | Represents a job to be processed by an agent. | 🟡 TS has it; Python pending |
+| `JobContext` | `undefined` | Context passed to job handlers. | 🟡 TS has it; Python pending |
+| `JobHandler` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `MockRuntime` | `undefined` | Mock runtime implementation for ACTP protocol. | ✅ in-sync |
+| `ProvideOptions` | `undefined` | Options for the provide function. | 🟡 TS has it; Python pending |
+| `RequestOptions` | `undefined` | Options for the request function. | 🟡 TS has it; Python pending |
+| `ServiceConfig` | `undefined` | Configuration for a specific service. | 🟡 TS has it; Python pending |
+| `StandardAdapter` | `undefined` | Standard adapter for granular ACTP transaction control. | ✅ in-sync |
+| `State` | `undefined` | ACTP transaction states. | 🟡 TS has it; Python pending |
 
 ## Standard tier {#standard-tier}
 
@@ -4326,253 +4326,253 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 
 **245 symbols.**
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ACTPClientInfo` | `undefined` | ✅ in-sync |
-| `ACTPClientMode` | `undefined` | ✅ in-sync |
-| `ACTPError` | `undefined` | ✅ in-sync |
-| `ACTPEvent` | `undefined` | 🟡 TS has it; Python pending |
-| `ACTPKernel` | `undefined` | ✅ in-sync |
-| `ACTPTimeoutError` | `undefined` | 🟡 TS has it; Python pending |
-| `Address` | `undefined` | ✅ in-sync |
-| `AgentBalance` | `undefined` | 🟡 TS has it; Python pending |
-| `AgentBehavior` | `undefined` | 🟡 TS has it; Python pending |
-| `AgentDID` | `undefined` | 🟡 TS has it; Python pending |
-| `AgentLifecycleError` | `undefined` | ✅ in-sync |
-| `AgentProfile` | `undefined` | 🟡 TS has it; Python pending |
-| `AgentRegistry` | `undefined` | ✅ in-sync |
-| `AgentStats` | `undefined` | 🟡 TS has it; Python pending |
-| `AgentStatus` | `undefined` | 🟡 TS has it; Python pending |
-| `ARCHIVE_BUNDLE_TYPE` | `undefined` | ✅ in-sync |
-| `ARCHIVE_SCHEMA_VERSION` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveAttestation` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveBundle` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveBundleBuilder` | `undefined` | ✅ in-sync |
-| `ArchiveChainId` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveFinalState` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveHashes` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveParticipants` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveReferences` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveSettlement` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveSignatures` | `undefined` | 🟡 TS has it; Python pending |
-| `ArchiveTags` | `undefined` | 🟡 TS has it; Python pending |
-| `ArweaveConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `ArweaveUploadResult` | `undefined` | 🟡 TS has it; Python pending |
-| `Attestation` | `undefined` | 🟡 TS has it; Python pending |
-| `AutoWalletProvider` | `undefined` | ✅ in-sync |
-| `BaseAdapter` | `undefined` | ✅ in-sync |
-| `BuyerPolicy` | `undefined` | 🟡 TS has it; Python pending |
-| `Bytes32` | `undefined` | ✅ in-sync |
-| `calculate_price` | `undefined` | 🟡 TS has it; Python pending |
-| `CandidateStats` | `undefined` | 🟡 TS has it; Python pending |
-| `canonical_json_dumps` | `undefined` | 🟡 TS has it; Python pending |
-| `CheckStatusResult` | `undefined` | 🟡 TS has it; Python pending |
-| `CircuitBreakerConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_content_hash` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_domain_separator` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_json_hash` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_result_hash` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_service_type_hash` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_transaction_id` | `undefined` | 🟡 TS has it; Python pending |
-| `compute_type_hash` | `undefined` | 🟡 TS has it; Python pending |
-| `Constraints` | `undefined` | 🟡 TS has it; Python pending |
-| `ContentNotFoundError` | `undefined` | ✅ in-sync |
-| `ContentProof` | `undefined` | 🟡 TS has it; Python pending |
-| `ContractPausedError` | `undefined` | ✅ in-sync |
-| `CostModel` | `undefined` | 🟡 TS has it; Python pending |
-| `CounterAcceptBuilder` | `undefined` | ✅ in-sync |
-| `CounterAcceptMessage` | `undefined` | 🟡 TS has it; Python pending |
-| `CounterAcceptParams` | `undefined` | 🟡 TS has it; Python pending |
-| `CounterOfferBuilder` | `undefined` | ✅ in-sync |
-| `CounterOfferJustification` | `undefined` | 🟡 TS has it; Python pending |
-| `CounterOfferMessage` | `undefined` | 🟡 TS has it; Python pending |
-| `CounterOfferParams` | `undefined` | 🟡 TS has it; Python pending |
-| `create_did_from_address` | `undefined` | 🟡 TS has it; Python pending |
-| `create_received_nonce_tracker` | `undefined` | 🟡 TS has it; Python pending |
-| `create_typed_data` | `undefined` | 🟡 TS has it; Python pending |
-| `create_used_attestation_tracker` | `undefined` | 🟡 TS has it; Python pending |
-| `CreateEscrowParams` | `undefined` | 🟡 TS has it; Python pending |
-| `CreateTransactionParams` | `undefined` | ✅ in-sync |
-| `Deadline` | `undefined` | ✅ in-sync |
-| `DeadlineExpiredError` | `undefined` | ⚠️ diverged (cross-SDK signature mismatch) |
-| `DeadlinePassedError` | `undefined` | ⚠️ diverged (cross-SDK signature mismatch) |
-| `DEFAULT_DEADLINE_SECONDS` | `undefined` | ✅ in-sync |
-| `DEFAULT_DISPUTE_WINDOW_SECONDS` | `undefined` | ✅ in-sync |
-| `DEFAULT_WEIGHTS` | `undefined` | 🟡 TS has it; Python pending |
-| `DELIVERY_SCHEMA` | `undefined` | 🟡 TS has it; Python pending |
-| `DeliveryAttestationData` | `undefined` | 🟡 TS has it; Python pending |
-| `DeliveryFailedError` | `undefined` | ✅ in-sync |
-| `DeliveryProof` | `undefined` | 🟡 TS has it; Python pending |
-| `DeliveryProofBuilder` | `undefined` | ✅ in-sync |
-| `DeliveryProofMessage` | `undefined` | 🟡 TS has it; Python pending |
-| `DeliveryProofMetadata` | `undefined` | 🟡 TS has it; Python pending |
-| `did_to_address` | `undefined` | 🟡 TS has it; Python pending |
-| `DIDDocument` | `undefined` | 🟡 TS has it; Python pending |
-| `DIDManager` | `undefined` | ✅ in-sync |
-| `DIDResolver` | `undefined` | ✅ in-sync |
-| `discover_agents` | `undefined` | 🟡 TS has it; Python pending |
-| `DisputeRaisedError` | `undefined` | ✅ in-sync |
-| `DisputeWindow` | `undefined` | ✅ in-sync |
-| `DisputeWindowActiveError` | `undefined` | ✅ in-sync |
-| `DownloadResult` | `undefined` | 🟡 TS has it; Python pending |
-| `DownloadTimeoutError` | `undefined` | ✅ in-sync |
-| `EIP712Domain` | `undefined` | 🟡 TS has it; Python pending |
-| `EOAWalletProvider` | `undefined` | ✅ in-sync |
-| `ERC8004Bridge` | `undefined` | ✅ in-sync |
-| `EscrowCreatedEvent` | `undefined` | 🟡 TS has it; Python pending |
-| `EscrowInfo` | `undefined` | 🟡 TS has it; Python pending |
-| `EscrowNotFoundError` | `undefined` | ✅ in-sync |
-| `EscrowPayoutEvent` | `undefined` | 🟡 TS has it; Python pending |
-| `EscrowRelease` | `undefined` | 🟡 TS has it; Python pending |
-| `EscrowVault` | `undefined` | ✅ in-sync |
-| `EventFilter` | `undefined` | 🟡 TS has it; Python pending |
-| `EventMonitor` | `undefined` | ✅ in-sync |
-| `EventType` | `undefined` | 🟡 TS has it; Python pending |
-| `FilebaseConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `FileBasedUsedAttestationTracker` | `undefined` | ✅ in-sync |
-| `FileSizeLimitExceededError` | `undefined` | ✅ in-sync |
-| `format_usdc` | `undefined` | 🟡 TS has it; Python pending |
-| `generate_escrow_id` | `undefined` | 🟡 TS has it; Python pending |
-| `generate_secure_nonce` | `undefined` | 🟡 TS has it; Python pending |
-| `generate_secure_nonces` | `undefined` | 🟡 TS has it; Python pending |
-| `HAS_MESSAGES` | `undefined` | 🟡 TS has it; Python pending |
-| `HAS_WEB3_PROTOCOL` | `undefined` | 🟡 TS has it; Python pending |
-| `hash_service_input` | `undefined` | 🟡 TS has it; Python pending |
-| `hash_service_metadata` | `undefined` | 🟡 TS has it; Python pending |
-| `hash_service_output` | `undefined` | 🟡 TS has it; Python pending |
-| `hash_struct` | `undefined` | 🟡 TS has it; Python pending |
-| `hash_typed_data` | `undefined` | 🟡 TS has it; Python pending |
-| `IACTPRuntime` | `undefined` | ✅ in-sync |
-| `IMockRuntime` | `undefined` | ✅ in-sync |
-| `InMemoryReceivedNonceTracker` | `undefined` | ✅ in-sync |
-| `InMemoryUsedAttestationTracker` | `undefined` | ✅ in-sync |
-| `InsufficientBalanceError` | `undefined` | ✅ in-sync |
-| `InvalidAddressError` | `undefined` | ✅ in-sync |
-| `InvalidAmountError` | `undefined` | ✅ in-sync |
-| `InvalidCIDError` | `undefined` | ✅ in-sync |
-| `InvalidStateTransitionError` | `undefined` | ✅ in-sync |
-| `IPFSUploadResult` | `undefined` | 🟡 TS has it; Python pending |
-| `IReceivedNonceTracker` | `undefined` | ✅ in-sync |
-| `IrysCurrency` | `undefined` | 🟡 TS has it; Python pending |
-| `IrysNetwork` | `undefined` | 🟡 TS has it; Python pending |
-| `is_mock_runtime` | `undefined` | 🟡 TS has it; Python pending |
-| `is_terminal_state` | `undefined` | 🟡 TS has it; Python pending |
-| `is_valid_address` | `undefined` | 🟡 TS has it; Python pending |
-| `is_valid_nonce` | `undefined` | 🟡 TS has it; Python pending |
-| `is_valid_transition` | `undefined` | 🟡 TS has it; Python pending |
-| `IUsedAttestationTracker` | `undefined` | ✅ in-sync |
-| `IWalletProvider` | `undefined` | 🟡 TS has it; Python pending |
-| `JobResult` | `undefined` | 🟡 TS has it; Python pending |
-| `Logger` | `undefined` | 🟡 TS has it; Python pending |
-| `LRUCache` | `undefined` | 🟡 TS has it; Python pending |
-| `MAX_DEADLINE_DAYS` | `undefined` | ✅ in-sync |
-| `MAX_DEADLINE_HOURS` | `undefined` | ✅ in-sync |
-| `MaxDailySpend` | `undefined` | 🟡 TS has it; Python pending |
-| `MaxUnitPrice` | `undefined` | 🟡 TS has it; Python pending |
-| `MerkleProof` | `undefined` | 🟡 TS has it; Python pending |
-| `MessageNonceManager` | `undefined` | 🟡 TS has it; Python pending |
-| `MIN_AMOUNT_WEI` | `undefined` | ✅ in-sync |
-| `MockAccount` | `undefined` | ✅ in-sync |
-| `MockBlockchain` | `undefined` | ✅ in-sync |
-| `MockEscrow` | `undefined` | ✅ in-sync |
-| `MockEvent` | `undefined` | ✅ in-sync |
-| `MockState` | `undefined` | ✅ in-sync |
-| `MockTransaction` | `undefined` | ✅ in-sync |
-| `Negotiation` | `undefined` | 🟡 TS has it; Python pending |
-| `NegotiationResult` | `undefined` | 🟡 TS has it; Python pending |
-| `NetworkError` | `undefined` | ✅ in-sync |
-| `NonceManager` | `undefined` | ✅ in-sync |
-| `NonceManagerPool` | `undefined` | 🟡 TS has it; Python pending |
-| `NonceValidationResult` | `undefined` | 🟡 TS has it; Python pending |
-| `NoProviderFoundError` | `undefined` | ✅ in-sync |
-| `OrchestratorConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `parse_usdc` | `undefined` | 🟡 TS has it; Python pending |
-| `PolicyResult` | `undefined` | 🟡 TS has it; Python pending |
-| `PolicyViolation` | `undefined` | 🟡 TS has it; Python pending |
-| `PriceCalculation` | `undefined` | 🟡 TS has it; Python pending |
-| `PricingStrategy` | `undefined` | 🟡 TS has it; Python pending |
-| `PROTOCOL_VERSION` | `undefined` | 🟡 TS has it; Python pending |
-| `Provider` | `undefined` | 🟡 TS has it; Python pending |
-| `ProviderConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `ProviderRejectedError` | `undefined` | ✅ in-sync |
-| `ProviderStatus` | `undefined` | 🟡 TS has it; Python pending |
-| `QueryCapExceededError` | `undefined` | ✅ in-sync |
-| `QuoteBuilder` | `undefined` | ✅ in-sync |
-| `QuoteOffer` | `undefined` | 🟡 TS has it; Python pending |
-| `RateLimiter` | `undefined` | ✅ in-sync |
-| `ReceiptUploadFailure` | `undefined` | 🟡 TS has it; Python pending |
-| `ReceiptUploadOptions` | `undefined` | 🟡 TS has it; Python pending |
-| `ReceiptUploadPayload` | `undefined` | 🟡 TS has it; Python pending |
-| `ReceiptUploadResult` | `undefined` | 🟡 TS has it; Python pending |
-| `ReceiptUploadSuccess` | `undefined` | 🟡 TS has it; Python pending |
-| `ReputationReporter` | `undefined` | ✅ in-sync |
-| `RequestResult` | `undefined` | 🟡 TS has it; Python pending |
-| `RetryConfig` | `undefined` | 🟡 TS has it; Python pending |
-| `RoundResult` | `undefined` | 🟡 TS has it; Python pending |
-| `safe_json_parse` | `undefined` | 🟡 TS has it; Python pending |
-| `Schema` | `undefined` | 🟡 TS has it; Python pending |
-| `ScoreBreakdown` | `undefined` | 🟡 TS has it; Python pending |
-| `ScoredCandidate` | `undefined` | 🟡 TS has it; Python pending |
-| `ScoringWeights` | `undefined` | 🟡 TS has it; Python pending |
-| `Selection` | `undefined` | 🟡 TS has it; Python pending |
-| `Semaphore` | `undefined` | ✅ in-sync |
-| `ServiceConfigError` | `undefined` | ✅ in-sync |
-| `ServiceDescriptor` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceDirectory` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceEndpoint` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceEntry` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceFilter` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceHash` | `undefined` | ✅ in-sync |
-| `ServiceMetadata` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceQuery` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceRequest` | `undefined` | 🟡 TS has it; Python pending |
-| `ServiceResponse` | `undefined` | 🟡 TS has it; Python pending |
-| `SessionMapping` | `undefined` | 🟡 TS has it; Python pending |
-| `SetBasedReceivedNonceTracker` | `undefined` | 🟡 TS has it; Python pending |
-| `shorten_address` | `undefined` | 🟡 TS has it; Python pending |
-| `SignatureComponents` | `undefined` | 🟡 TS has it; Python pending |
-| `SignatureVerificationError` | `undefined` | ✅ in-sync |
-| `SignedMessage` | `undefined` | 🟡 TS has it; Python pending |
-| `StandardTransactionParams` | `undefined` | ✅ in-sync |
-| `STATE_TRANSITIONS` | `undefined` | 🟡 TS has it; Python pending |
-| `StateHelper` | `undefined` | 🟡 TS has it; Python pending |
-| `StateTransitionedEvent` | `undefined` | 🟡 TS has it; Python pending |
-| `StorageAuthenticationError` | `undefined` | ✅ in-sync |
-| `StorageError` | `undefined` | ✅ in-sync |
-| `StorageRateLimitError` | `undefined` | ✅ in-sync |
-| `TimeInterface` | `undefined` | 🟡 TS has it; Python pending |
-| `timing_safe_equal` | `undefined` | 🟡 TS has it; Python pending |
-| `Transaction` | `undefined` | 🟡 TS has it; Python pending |
-| `TransactionCreatedEvent` | `undefined` | 🟡 TS has it; Python pending |
-| `TransactionDetails` | `undefined` | 🟡 TS has it; Python pending |
-| `TransactionFilter` | `undefined` | 🟡 TS has it; Python pending |
-| `TransactionNotFoundError` | `undefined` | ✅ in-sync |
-| `TransactionReceipt` | `undefined` | 🟡 TS has it; Python pending |
-| `TransactionRevertedError` | `undefined` | ✅ in-sync |
-| `TransactionState` | `undefined` | ✅ in-sync |
-| `TransactionStateValue` | `undefined` | ✅ in-sync |
-| `TransactionView` | `undefined` | 🟡 TS has it; Python pending |
-| `TypedData` | `undefined` | 🟡 TS has it; Python pending |
-| `upload_receipt` | `undefined` | 🟡 TS has it; Python pending |
-| `UploadTimeoutError` | `undefined` | ✅ in-sync |
-| `USDC` | `undefined` | ✅ in-sync |
-| `validate_address` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_amount` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_archive_bundle` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_bytes32` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_deadline` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_dispute_window` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_endpoint_url` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_path` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_service_name` | `undefined` | 🟡 TS has it; Python pending |
-| `validate_tx_id` | `undefined` | 🟡 TS has it; Python pending |
-| `ValidationError` | `undefined` | ✅ in-sync |
-| `VerificationMethod` | `undefined` | 🟡 TS has it; Python pending |
-| `verify_merkle_proof` | `undefined` | 🟡 TS has it; Python pending |
-| `WalletInfo` | `undefined` | 🟡 TS has it; Python pending |
-| `WalletTier` | `undefined` | 🟡 TS has it; Python pending |
-| `X402Adapter` | `undefined` | ✅ in-sync |
-| `ZERO_BYTES32` | `undefined` | 🟡 TS has it; Python pending |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTPClientInfo` | `undefined` | Client information. | ✅ in-sync |
+| `ACTPClientMode` | `undefined` | _—_ | ✅ in-sync |
+| `ACTPError` | `undefined` | Base exception for all ACTP protocol errors. | ✅ in-sync |
+| `ACTPEvent` | `undefined` | Base class for ACTP protocol events. | 🟡 TS has it; Python pending |
+| `ACTPKernel` | `undefined` | ACTPKernel contract wrapper for ACTP protocol interactions. | ✅ in-sync |
+| `ACTPTimeoutError` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `Address` | `undefined` | Ethereum address utilities. | ✅ in-sync |
+| `AgentBalance` | `undefined` | Agent balance information. | 🟡 TS has it; Python pending |
+| `AgentBehavior` | `undefined` | Agent behavior configuration. | 🟡 TS has it; Python pending |
+| `AgentDID` | `undefined` | Decentralized Identifier for an agent. | 🟡 TS has it; Python pending |
+| `AgentLifecycleError` | `undefined` | Raised when an agent lifecycle operation fails. | ✅ in-sync |
+| `AgentProfile` | `undefined` | Agent profile from the registry. | 🟡 TS has it; Python pending |
+| `AgentRegistry` | `undefined` | AgentRegistry contract wrapper for agent discovery and management. | ✅ in-sync |
+| `AgentStats` | `undefined` | Agent statistics. | 🟡 TS has it; Python pending |
+| `AgentStatus` | `undefined` | Agent lifecycle status. | 🟡 TS has it; Python pending |
+| `ARCHIVE_BUNDLE_TYPE` | `undefined` | _—_ | ✅ in-sync |
+| `ARCHIVE_SCHEMA_VERSION` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ArchiveAttestation` | `undefined` | EAS attestation reference. | 🟡 TS has it; Python pending |
+| `ArchiveBundle` | `undefined` | Archive Bundle (AIP-7 §4.4 - Minimal Hash-First). | 🟡 TS has it; Python pending |
+| `ArchiveBundleBuilder` | `undefined` | Fluent builder for creating archive bundles. | ✅ in-sync |
+| `ArchiveChainId` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ArchiveFinalState` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ArchiveHashes` | `undefined` | Cryptographic hashes for verification. | 🟡 TS has it; Python pending |
+| `ArchiveParticipants` | `undefined` | Transaction participants (addresses only, not full profiles). | 🟡 TS has it; Python pending |
+| `ArchiveReferences` | `undefined` | IPFS CID references to full content. | 🟡 TS has it; Python pending |
+| `ArchiveSettlement` | `undefined` | Settlement information. | 🟡 TS has it; Python pending |
+| `ArchiveSignatures` | `undefined` | Cryptographic signatures for self-verification. | 🟡 TS has it; Python pending |
+| `ArchiveTags` | `undefined` | Arweave/Irys tags for archive bundles. | 🟡 TS has it; Python pending |
+| `ArweaveConfig` | `undefined` | Configuration for Arweave client via Irys. | 🟡 TS has it; Python pending |
+| `ArweaveUploadResult` | `undefined` | Result of uploading to Arweave. | 🟡 TS has it; Python pending |
+| `Attestation` | `undefined` | EAS Attestation data. | 🟡 TS has it; Python pending |
+| `AutoWalletProvider` | `undefined` | Tier 1 (Auto) wallet provider with CoinbaseSmartWallet + Paymaster. | ✅ in-sync |
+| `BaseAdapter` | `undefined` | Base adapter providing shared utilities for all adapters. | ✅ in-sync |
+| `BuyerPolicy` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `Bytes32` | `undefined` | Bytes32 utilities for transaction IDs and hashes. | ✅ in-sync |
+| `calculate_price` | `undefined` | Calculate pricing for a job. | 🟡 TS has it; Python pending |
+| `CandidateStats` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `canonical_json_dumps` | `undefined` | Serialize object to canonical JSON string. | 🟡 TS has it; Python pending |
+| `CheckStatusResult` | `undefined` | Result from check_status() method. | 🟡 TS has it; Python pending |
+| `CircuitBreakerConfig` | `undefined` | Circuit breaker configuration for gateway health tracking. | 🟡 TS has it; Python pending |
+| `compute_content_hash` | `undefined` | Compute keccak256 hash of content (Ethereum-compatible). | 🟡 TS has it; Python pending |
+| `compute_domain_separator` | `undefined` | Compute EIP-712 domain separator. | 🟡 TS has it; Python pending |
+| `compute_json_hash` | `undefined` | Compute keccak256 hash of canonical JSON. | 🟡 TS has it; Python pending |
+| `compute_result_hash` | `undefined` | Compute result hash using keccak256 over canonical JSON. | 🟡 TS has it; Python pending |
+| `compute_service_type_hash` | `undefined` | Compute keccak256 hash of service type. | 🟡 TS has it; Python pending |
+| `compute_transaction_id` | `undefined` | Pre-compute ACTP transaction ID. | 🟡 TS has it; Python pending |
+| `compute_type_hash` | `undefined` | Compute EIP-712 type hash. | 🟡 TS has it; Python pending |
+| `Constraints` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ContentNotFoundError` | `undefined` | Raised when content cannot be found in storage. | ✅ in-sync |
+| `ContentProof` | `undefined` | Proof for content authenticity. | 🟡 TS has it; Python pending |
+| `ContractPausedError` | `undefined` | Raised when attempting an operation on a paused contract. | ✅ in-sync |
+| `CostModel` | `undefined` | Cost model for service pricing. | 🟡 TS has it; Python pending |
+| `CounterAcceptBuilder` | `undefined` | Build and verify AIP-2.1 counter-accept messages. | ✅ in-sync |
+| `CounterAcceptMessage` | `undefined` | Provider-signed acceptance of a buyer's counter-offer. | 🟡 TS has it; Python pending |
+| `CounterAcceptParams` | `undefined` | Parameters to build a counter-accept message. | 🟡 TS has it; Python pending |
+| `CounterOfferBuilder` | `undefined` | Build and verify AIP-2.1 counter-offer messages. | ✅ in-sync |
+| `CounterOfferJustification` | `undefined` | Optional human-readable reasoning + market data. | 🟡 TS has it; Python pending |
+| `CounterOfferMessage` | `undefined` | Counter-offer message — buyer's reply to a provider quote. | 🟡 TS has it; Python pending |
+| `CounterOfferParams` | `undefined` | Parameters to build a counter-offer. | 🟡 TS has it; Python pending |
+| `create_did_from_address` | `undefined` | Create a DID string from an Ethereum address. | 🟡 TS has it; Python pending |
+| `create_received_nonce_tracker` | `undefined` | Factory function to create a nonce tracker. | 🟡 TS has it; Python pending |
+| `create_typed_data` | `undefined` | Create EIP-712 typed data from a message. | 🟡 TS has it; Python pending |
+| `create_used_attestation_tracker` | `undefined` | Factory to create attestation tracker. | 🟡 TS has it; Python pending |
+| `CreateEscrowParams` | `undefined` | Parameters for creating a new escrow. | 🟡 TS has it; Python pending |
+| `CreateTransactionParams` | `undefined` | Parameters for creating a new transaction. | ✅ in-sync |
+| `Deadline` | `undefined` | Deadline utilities for transaction timing. | ✅ in-sync |
+| `DeadlineExpiredError` | `undefined` | _—_ | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DeadlinePassedError` | `undefined` | Raised when attempting an operation after the deadline has passed. | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DEFAULT_DEADLINE_SECONDS` | `undefined` | _—_ | ✅ in-sync |
+| `DEFAULT_DISPUTE_WINDOW_SECONDS` | `undefined` | _—_ | ✅ in-sync |
+| `DEFAULT_WEIGHTS` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `DELIVERY_SCHEMA` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `DeliveryAttestationData` | `undefined` | Decoded delivery attestation data. | 🟡 TS has it; Python pending |
+| `DeliveryFailedError` | `undefined` | Raised when service delivery fails. | ✅ in-sync |
+| `DeliveryProof` | `undefined` | Proof of service delivery. | 🟡 TS has it; Python pending |
+| `DeliveryProofBuilder` | `undefined` | Fluent builder for constructing delivery proofs. | ✅ in-sync |
+| `DeliveryProofMessage` | `undefined` | AIP-4 v1.1 Delivery proof message for EIP-712 signing. | 🟡 TS has it; Python pending |
+| `DeliveryProofMetadata` | `undefined` | Optional metadata for delivery proof (NOT included in EIP-712 signing). | 🟡 TS has it; Python pending |
+| `did_to_address` | `undefined` | Extract Ethereum address from a DID. | 🟡 TS has it; Python pending |
+| `DIDDocument` | `undefined` | DID Document containing agent identity information. | 🟡 TS has it; Python pending |
+| `DIDManager` | `undefined` | DID Manager for creating and managing agent identities. | ✅ in-sync |
+| `DIDResolver` | `undefined` | DID Resolver for looking up DID Documents. | ✅ in-sync |
+| `discover_agents` | `undefined` | Discover published agents on agirails.app. | 🟡 TS has it; Python pending |
+| `DisputeRaisedError` | `undefined` | Raised when a dispute is raised on a transaction. | ✅ in-sync |
+| `DisputeWindow` | `undefined` | Dispute window utilities. | ✅ in-sync |
+| `DisputeWindowActiveError` | `undefined` | Raised when attempting to finalize during an active dispute window. | ✅ in-sync |
+| `DownloadResult` | `undefined` | Result of downloading content. | 🟡 TS has it; Python pending |
+| `DownloadTimeoutError` | `undefined` | Raised when a storage download times out. | ✅ in-sync |
+| `EIP712Domain` | `undefined` | EIP-712 domain separator. | 🟡 TS has it; Python pending |
+| `EOAWalletProvider` | `undefined` | Tier 2 (BYOW) wallet provider using traditional EOA signing. | ✅ in-sync |
+| `ERC8004Bridge` | `undefined` | Bridge to the ERC-8004 Identity Registry. | ✅ in-sync |
+| `EscrowCreatedEvent` | `undefined` | Event emitted when a new escrow is created. | 🟡 TS has it; Python pending |
+| `EscrowInfo` | `undefined` | Information about an escrow from the contract. | 🟡 TS has it; Python pending |
+| `EscrowNotFoundError` | `undefined` | Raised when an escrow cannot be found. | ✅ in-sync |
+| `EscrowPayoutEvent` | `undefined` | Event emitted when escrow funds are released. | 🟡 TS has it; Python pending |
+| `EscrowRelease` | `undefined` | Escrow release details. | 🟡 TS has it; Python pending |
+| `EscrowVault` | `undefined` | EscrowVault contract wrapper for fund management. | ✅ in-sync |
+| `EventFilter` | `undefined` | Filter for event queries. | 🟡 TS has it; Python pending |
+| `EventMonitor` | `undefined` | Monitor for ACTP protocol events. | ✅ in-sync |
+| `EventType` | `undefined` | Types of events emitted by ACTP contracts. | 🟡 TS has it; Python pending |
+| `FilebaseConfig` | `undefined` | Configuration for Filebase S3-compatible IPFS client. | 🟡 TS has it; Python pending |
+| `FileBasedUsedAttestationTracker` | `undefined` | File-based Used Attestation Tracker for persistence. | ✅ in-sync |
+| `FileSizeLimitExceededError` | `undefined` | Raised when a file exceeds the maximum allowed size. | ✅ in-sync |
+| `format_usdc` | `undefined` | Format wei amount as USDC display string. | 🟡 TS has it; Python pending |
+| `generate_escrow_id` | `undefined` | Generate a cryptographically secure escrow ID (bytes32 hex string). | 🟡 TS has it; Python pending |
+| `generate_secure_nonce` | `undefined` | Generate a cryptographically secure random nonce (bytes32). | 🟡 TS has it; Python pending |
+| `generate_secure_nonces` | `undefined` | Generate an array of secure nonces. | 🟡 TS has it; Python pending |
+| `HAS_MESSAGES` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `HAS_WEB3_PROTOCOL` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `hash_service_input` | `undefined` | Create a deterministic hash for a service input. | 🟡 TS has it; Python pending |
+| `hash_service_metadata` | `undefined` | Hash service description for on-chain storage. | 🟡 TS has it; Python pending |
+| `hash_service_output` | `undefined` | Create a deterministic hash for a service output. | 🟡 TS has it; Python pending |
+| `hash_struct` | `undefined` | Compute EIP-712 struct hash. | 🟡 TS has it; Python pending |
+| `hash_typed_data` | `undefined` | Compute the EIP-712 hash of typed data. | 🟡 TS has it; Python pending |
+| `IACTPRuntime` | `undefined` | Runtime interface for ACTP protocol operations. | ✅ in-sync |
+| `IMockRuntime` | `undefined` | Extended runtime interface for mock mode. | ✅ in-sync |
+| `InMemoryReceivedNonceTracker` | `undefined` | In-Memory Received Nonce Tracker. | ✅ in-sync |
+| `InMemoryUsedAttestationTracker` | `undefined` | In-Memory Used Attestation Tracker. | ✅ in-sync |
+| `InsufficientBalanceError` | `undefined` | Raised when an account has insufficient balance for an operation. | ✅ in-sync |
+| `InvalidAddressError` | `undefined` | Raised when an Ethereum address is invalid. | ✅ in-sync |
+| `InvalidAmountError` | `undefined` | Raised when a transaction amount is invalid. | ✅ in-sync |
+| `InvalidCIDError` | `undefined` | Raised when a Content Identifier (CID) is invalid. | ✅ in-sync |
+| `InvalidStateTransitionError` | `undefined` | Raised when attempting an invalid state transition. | ✅ in-sync |
+| `IPFSUploadResult` | `undefined` | Result of uploading to IPFS. | 🟡 TS has it; Python pending |
+| `IReceivedNonceTracker` | `undefined` | Interface for tracking received nonces. | ✅ in-sync |
+| `IrysCurrency` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `IrysNetwork` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `is_mock_runtime` | `undefined` | Type guard to check if runtime is MockRuntime. | 🟡 TS has it; Python pending |
+| `is_terminal_state` | `undefined` | Check if a state is terminal (no further transitions). | 🟡 TS has it; Python pending |
+| `is_valid_address` | `undefined` | Check if address matches 0x + 40 hex chars. | 🟡 TS has it; Python pending |
+| `is_valid_nonce` | `undefined` | Validate nonce format (must be bytes32). | 🟡 TS has it; Python pending |
+| `is_valid_transition` | `undefined` | Check if a state transition is valid. | 🟡 TS has it; Python pending |
+| `IUsedAttestationTracker` | `undefined` | Interface for tracking used attestations. | ✅ in-sync |
+| `IWalletProvider` | `undefined` | Wallet provider interface. | 🟡 TS has it; Python pending |
+| `JobResult` | `undefined` | Result of job processing. | 🟡 TS has it; Python pending |
+| `Logger` | `undefined` | Structured logger for AGIRAILS SDK. | 🟡 TS has it; Python pending |
+| `LRUCache` | `undefined` | Thread-safe Least Recently Used (LRU) cache. | 🟡 TS has it; Python pending |
+| `MAX_DEADLINE_DAYS` | `undefined` | _—_ | ✅ in-sync |
+| `MAX_DEADLINE_HOURS` | `undefined` | _—_ | ✅ in-sync |
+| `MaxDailySpend` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `MaxUnitPrice` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `MerkleProof` | `undefined` | Merkle tree proof for batch verification. | 🟡 TS has it; Python pending |
+| `MessageNonceManager` | `undefined` | Thread-safe per-message-type monotonic nonce counter. | 🟡 TS has it; Python pending |
+| `MIN_AMOUNT_WEI` | `undefined` | _—_ | ✅ in-sync |
+| `MockAccount` | `undefined` | Represents an account balance in the mock runtime. | ✅ in-sync |
+| `MockBlockchain` | `undefined` | Simulated blockchain state for mock runtime. | ✅ in-sync |
+| `MockEscrow` | `undefined` | Represents an escrow in the mock runtime. | ✅ in-sync |
+| `MockEvent` | `undefined` | Represents an event emitted by the mock runtime. | ✅ in-sync |
+| `MockState` | `undefined` | Root state object for the mock runtime. | ✅ in-sync |
+| `MockTransaction` | `undefined` | Represents a transaction in the mock runtime. | ✅ in-sync |
+| `Negotiation` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `NegotiationResult` | `undefined` | Result of a full negotiation flow. | 🟡 TS has it; Python pending |
+| `NetworkError` | `undefined` | Raised when a network or RPC error occurs. | ✅ in-sync |
+| `NonceManager` | `undefined` | Thread-safe nonce manager for blockchain transactions. | ✅ in-sync |
+| `NonceManagerPool` | `undefined` | Pool of NonceManagers for multiple accounts. | 🟡 TS has it; Python pending |
+| `NonceValidationResult` | `undefined` | Nonce validation result. | 🟡 TS has it; Python pending |
+| `NoProviderFoundError` | `undefined` | Raised when no provider can be found for a service. | ✅ in-sync |
+| `OrchestratorConfig` | `undefined` | Configuration for the negotiation orchestrator. | 🟡 TS has it; Python pending |
+| `parse_usdc` | `undefined` | Parse USDC amount string to wei (6 decimals). | 🟡 TS has it; Python pending |
+| `PolicyResult` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `PolicyViolation` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `PriceCalculation` | `undefined` | Result of price calculation for a job. | 🟡 TS has it; Python pending |
+| `PricingStrategy` | `undefined` | Complete pricing strategy for a service. | 🟡 TS has it; Python pending |
+| `PROTOCOL_VERSION` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `Provider` | `undefined` | Base class for service providers. | 🟡 TS has it; Python pending |
+| `ProviderConfig` | `undefined` | Provider configuration. | 🟡 TS has it; Python pending |
+| `ProviderRejectedError` | `undefined` | Raised when a provider rejects a request. | ✅ in-sync |
+| `ProviderStatus` | `undefined` | Provider lifecycle status. | 🟡 TS has it; Python pending |
+| `QueryCapExceededError` | `undefined` | Raised when a query exceeds the configured cap limit. | ✅ in-sync |
+| `QuoteBuilder` | `undefined` | Fluent builder for constructing quotes. | ✅ in-sync |
+| `QuoteOffer` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `RateLimiter` | `undefined` | Token bucket rate limiter for controlling request rates. | ✅ in-sync |
+| `ReceiptUploadFailure` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ReceiptUploadOptions` | `undefined` | Caller-supplied auth + endpoint overrides. | 🟡 TS has it; Python pending |
+| `ReceiptUploadPayload` | `undefined` | Public receipt payload uploaded to agirails.app. | 🟡 TS has it; Python pending |
+| `ReceiptUploadResult` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ReceiptUploadSuccess` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ReputationReporter` | `undefined` | Reports ACTP transaction outcomes to the ERC-8004 Reputation Registry. | ✅ in-sync |
+| `RequestResult` | `undefined` | Result of a service request. | 🟡 TS has it; Python pending |
+| `RetryConfig` | `undefined` | Configuration for retry behavior. | 🟡 TS has it; Python pending |
+| `RoundResult` | `undefined` | Per-round details for traceability. | 🟡 TS has it; Python pending |
+| `safe_json_parse` | `undefined` | Safely parse JSON with prototype pollution prevention and optional schema validation. | 🟡 TS has it; Python pending |
+| `Schema` | `undefined` | EAS Schema data. | 🟡 TS has it; Python pending |
+| `ScoreBreakdown` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ScoredCandidate` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `ScoringWeights` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `Selection` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `Semaphore` | `undefined` | Async semaphore for limiting concurrent operations. | ✅ in-sync |
+| `ServiceConfigError` | `undefined` | Raised when service configuration is invalid. | ✅ in-sync |
+| `ServiceDescriptor` | `undefined` | Service descriptor for agent capabilities. | 🟡 TS has it; Python pending |
+| `ServiceDirectory` | `undefined` | Registry for service discovery. | 🟡 TS has it; Python pending |
+| `ServiceEndpoint` | `undefined` | DID Service Endpoint. | 🟡 TS has it; Python pending |
+| `ServiceEntry` | `undefined` | Metadata about a registered service. | 🟡 TS has it; Python pending |
+| `ServiceFilter` | `undefined` | Filter rules for incoming jobs. | 🟡 TS has it; Python pending |
+| `ServiceHash` | `undefined` | Service metadata utilities for ACTP transactions. | ✅ in-sync |
+| `ServiceMetadata` | `undefined` | Service metadata structure. | 🟡 TS has it; Python pending |
+| `ServiceQuery` | `undefined` | Query parameters for finding services. | 🟡 TS has it; Python pending |
+| `ServiceRequest` | `undefined` | Service request message for signing. | 🟡 TS has it; Python pending |
+| `ServiceResponse` | `undefined` | Service response message for signing. | 🟡 TS has it; Python pending |
+| `SessionMapping` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `SetBasedReceivedNonceTracker` | `undefined` | Set-Based Received Nonce Tracker. | 🟡 TS has it; Python pending |
+| `shorten_address` | `undefined` | Shorten Ethereum address for display. | 🟡 TS has it; Python pending |
+| `SignatureComponents` | `undefined` | EIP-712 signature components. | 🟡 TS has it; Python pending |
+| `SignatureVerificationError` | `undefined` | Raised when a cryptographic signature verification fails. | ✅ in-sync |
+| `SignedMessage` | `undefined` | Container for a signed EIP-712 message. | 🟡 TS has it; Python pending |
+| `StandardTransactionParams` | `undefined` | Parameters for standard create_transaction(). | ✅ in-sync |
+| `STATE_TRANSITIONS` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `StateHelper` | `undefined` | State machine utilities. | 🟡 TS has it; Python pending |
+| `StateTransitionedEvent` | `undefined` | Event emitted when a transaction state changes. | 🟡 TS has it; Python pending |
+| `StorageAuthenticationError` | `undefined` | Raised when storage authentication fails. | ✅ in-sync |
+| `StorageError` | `undefined` | Base exception for storage operations. | ✅ in-sync |
+| `StorageRateLimitError` | `undefined` | Raised when storage rate limit is exceeded. | ✅ in-sync |
+| `TimeInterface` | `undefined` | Time management interface for runtime. | 🟡 TS has it; Python pending |
+| `timing_safe_equal` | `undefined` | Constant-time string comparison to prevent timing attacks. | 🟡 TS has it; Python pending |
+| `Transaction` | `undefined` | ACTP protocol transaction. | 🟡 TS has it; Python pending |
+| `TransactionCreatedEvent` | `undefined` | Event emitted when a new transaction is created. | 🟡 TS has it; Python pending |
+| `TransactionDetails` | `undefined` | Detailed transaction information. | 🟡 TS has it; Python pending |
+| `TransactionFilter` | `undefined` | Filter for querying transactions. | 🟡 TS has it; Python pending |
+| `TransactionNotFoundError` | `undefined` | Raised when a transaction cannot be found by its ID. | ✅ in-sync |
+| `TransactionReceipt` | `undefined` | Receipt for a blockchain transaction. | 🟡 TS has it; Python pending |
+| `TransactionRevertedError` | `undefined` | Raised when a blockchain transaction reverts. | ✅ in-sync |
+| `TransactionState` | `undefined` | ACTP transaction states. | ✅ in-sync |
+| `TransactionStateValue` | `undefined` | _—_ | ✅ in-sync |
+| `TransactionView` | `undefined` | On-chain transaction view from getTransaction(). | 🟡 TS has it; Python pending |
+| `TypedData` | `undefined` | Complete EIP-712 typed data structure. | 🟡 TS has it; Python pending |
+| `upload_receipt` | `undefined` | Upload a settled receipt to agirails.app. | 🟡 TS has it; Python pending |
+| `UploadTimeoutError` | `undefined` | Raised when a storage upload times out. | ✅ in-sync |
+| `USDC` | `undefined` | USDC amount utilities (6 decimal places). | ✅ in-sync |
+| `validate_address` | `undefined` | Validate Ethereum address. | 🟡 TS has it; Python pending |
+| `validate_amount` | `undefined` | Validate USDC amount format. | 🟡 TS has it; Python pending |
+| `validate_archive_bundle` | `undefined` | Validate archive bundle structure and required fields. | 🟡 TS has it; Python pending |
+| `validate_bytes32` | `undefined` | Validate bytes32 hex format. | 🟡 TS has it; Python pending |
+| `validate_deadline` | `undefined` | Validate transaction deadline. | 🟡 TS has it; Python pending |
+| `validate_dispute_window` | `undefined` | Validate dispute window duration. | 🟡 TS has it; Python pending |
+| `validate_endpoint_url` | `undefined` | Validate endpoint URL with comprehensive SSRF protection. | 🟡 TS has it; Python pending |
+| `validate_path` | `undefined` | Validate and resolve path, preventing traversal attacks. | 🟡 TS has it; Python pending |
+| `validate_service_name` | `undefined` | Validate and sanitize a service name. | 🟡 TS has it; Python pending |
+| `validate_tx_id` | `undefined` | Validate transaction ID format (bytes32). | 🟡 TS has it; Python pending |
+| `ValidationError` | `undefined` | Base exception for input validation failures. | ✅ in-sync |
+| `VerificationMethod` | `undefined` | DID Verification Method. | 🟡 TS has it; Python pending |
+| `verify_merkle_proof` | `undefined` | Verify a Merkle proof. | 🟡 TS has it; Python pending |
+| `WalletInfo` | `undefined` | Information about the wallet provider. | 🟡 TS has it; Python pending |
+| `WalletTier` | `undefined` | _—_ | 🟡 TS has it; Python pending |
+| `X402Adapter` | `undefined` | X402Adapter - Atomic HTTP payment protocol. | ✅ in-sync |
+| `ZERO_BYTES32` | `undefined` | _—_ | 🟡 TS has it; Python pending |
 
 ## Advanced tier {#advanced-tier}
 
@@ -4580,17 +4580,17 @@ Lower-level building blocks rarely needed in application code: orchestrators, de
 
 **9 symbols.**
 
-| Symbol | Kind | Cross-SDK status |
-|---|---|---|
-| `ArweaveClient` | `undefined` | ✅ in-sync |
-| `BuyerOrchestrator` | `undefined` | ✅ in-sync |
-| `DecisionEngine` | `undefined` | ✅ in-sync |
-| `EASHelper` | `undefined` | ✅ in-sync |
-| `FilebaseClient` | `undefined` | ✅ in-sync |
-| `MessageSigner` | `undefined` | ✅ in-sync |
-| `PolicyEngine` | `undefined` | ✅ in-sync |
-| `ProofGenerator` | `undefined` | ✅ in-sync |
-| `SessionStore` | `undefined` | ✅ in-sync |
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ArweaveClient` | `undefined` | Permanent storage client using Arweave via Irys. | ✅ in-sync |
+| `BuyerOrchestrator` | `undefined` | Autonomous buyer-side negotiation orchestrator. | ✅ in-sync |
+| `DecisionEngine` | `undefined` | _—_ | ✅ in-sync |
+| `EASHelper` | `undefined` | Ethereum Attestation Service helper for ACTP protocol. | ✅ in-sync |
+| `FilebaseClient` | `undefined` | IPFS hot storage client using Filebase S3-compatible API. | ✅ in-sync |
+| `MessageSigner` | `undefined` | EIP-712 Message Signer for ACTP protocol. | ✅ in-sync |
+| `PolicyEngine` | `undefined` | _—_ | ✅ in-sync |
+| `ProofGenerator` | `undefined` | Generates cryptographic proofs for ACTP protocol. | ✅ in-sync |
+| `SessionStore` | `undefined` | _—_ | ✅ in-sync |
 
 ## See also
 
@@ -4607,7 +4607,7 @@ Error reference
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks — preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
@@ -4740,7 +4740,7 @@ MCP server reference (@agirails/mcp-server)
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool — MCP server](/start/ai-environment/mcp-server) for setup.
 

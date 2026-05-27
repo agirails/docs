@@ -2,7 +2,7 @@
   "_generated": true,
   "_doNotEdit": true,
   "_generator": "scripts/truth-ledger/build-truth-ledger.ts",
-  "_generatedAt": "2026-05-26T12:27:57.733Z",
+  "_generatedAt": "2026-05-27T12:25:52.674Z",
   "_sourceVersions": {
     "sdk-js": "4.0.0",
     "agirails-python": "3.0.1",
@@ -2874,7 +2874,7 @@
         "ACTPKernel": {
           "address": "0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.542Z",
+          "verified_at": "2026-05-27T12:25:52.516Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212266,
           "deploy_tx": "0x0ec9bec21a33f3f316993e3b85e550132ef082651e0be0a75eb5237f08ee1104",
@@ -2888,7 +2888,7 @@
         "EscrowVault": {
           "address": "0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.542Z",
+          "verified_at": "2026-05-27T12:25:52.516Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212268,
           "deploy_tx": "0x55b44cd01b57ef7a9bf5c3672dd439c6261899880b60ac1ef9a570a415b81e64",
@@ -2899,7 +2899,7 @@
         "AgentRegistry": {
           "address": "0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.542Z",
+          "verified_at": "2026-05-27T12:25:52.516Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212269,
           "deploy_tx": "0xdbf9158ef85f8d064e2f6624e7d34ed5852b720edb7af7d0dfe548b19ba66c89",
@@ -2910,7 +2910,7 @@
         "ArchiveTreasury": {
           "address": "0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.542Z",
+          "verified_at": "2026-05-27T12:25:52.516Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212270,
           "deploy_tx": "0x4ebddaebd203afceb5d3592a927787061b8b2981d0a289bb740c397ef1ab5481",
@@ -2934,7 +2934,7 @@
         "ACTPKernel": {
           "address": "0x9d25A874f046185d9237Cd4954C88D2B74B0021b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.733Z",
+          "verified_at": "2026-05-27T12:25:52.674Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725686,
           "deploy_tx": "0xe976b7005b4a35f066fedb782d69974f2f491b3608d2803375fa46987546db5c",
@@ -2945,7 +2945,7 @@
         "EscrowVault": {
           "address": "0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.733Z",
+          "verified_at": "2026-05-27T12:25:52.674Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725687,
           "deploy_tx": "0x0194b83d02fe31482d346db0d445a1245ec8ac35d66995a465af217c22beca59",
@@ -2956,7 +2956,7 @@
         "AgentRegistry": {
           "address": "0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.733Z",
+          "verified_at": "2026-05-27T12:25:52.674Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725688,
           "deploy_tx": "0xa0b7ac96550590f8269ca245e7f6ba618ab5821dfe33d3e48f919d7bd650484c",
@@ -2974,7 +2974,7 @@
         "ArchiveTreasury": {
           "address": "0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.733Z",
+          "verified_at": "2026-05-27T12:25:52.674Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725689,
           "deploy_tx": "0xd3dc0dd2f630abb32480061a51522efde9234539687ccbae037f56ef2da36808",
@@ -2986,7 +2986,7 @@
         "X402Relay": {
           "address": "0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-26T12:27:57.733Z",
+          "verified_at": "2026-05-27T12:25:52.674Z",
           "deployment_claimed_verified": true,
           "deploy_block": 40239726,
           "explorer_url": "https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
@@ -3346,109 +3346,127 @@
           "name": "ACTP_FEEDBACK_TAGS",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ACTP feedback tags for ERC-8004 Reputation."
         },
         {
           "name": "ACTPClient",
           "kind": "export-from",
           "tier": "level0",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ACTPClient - Main entry point for AGIRAILS SDK."
         },
         {
           "name": "ACTPClientConfig",
           "kind": "export-from",
           "tier": "level0",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Configuration for creating an ACTPClient instance."
         },
         {
           "name": "ACTPClientInfo",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Result of creating an ACTPClient."
         },
         {
           "name": "ACTPClientMode",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Supported modes for ACTPClient."
         },
         {
           "name": "ACTPError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Base ACTP Error."
         },
         {
           "name": "ACTPKernel",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ACTPKernel - Smart contract wrapper Reference: Yellow Paper §3 (ACTP Kernel Specification)"
         },
         {
           "name": "AdapterRegistry",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "AdapterRegistry - Central registry for managing available adapters."
         },
         {
           "name": "AdapterRouter",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "AdapterRouter - Intelligent adapter selection with guard-rails."
         },
         {
           "name": "AdapterSelectionResult",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Result of adapter selection with potential ERC-8004 resolution."
         },
         {
           "name": "AdapterTransactionState",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Valid transaction states across all adapters."
         },
         {
           "name": "Address",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Address utilities"
         },
         {
           "name": "Agent",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Agent class - Standard API"
         },
         {
           "name": "AgentLifecycleError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Agent lifecycle error"
         },
         {
           "name": "AgentRegistry",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "AgentRegistry - Agent Identity & Reputation SDK Module (AIP-7)"
         },
         {
           "name": "ARCHIVE_BUNDLE_TYPE",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Archive bundle type identifier"
         },
         {
           "name": "ArchiveBundleBuilder",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ArchiveBundleBuilder - Fluent builder for archive bundles"
         },
         {
           "name": "ArweaveClient",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ArweaveClient - Permanent storage on Arweave via Irys"
         },
         {
           "name": "ArweaveDownloadError",
@@ -3478,43 +3496,50 @@
           "name": "BaseAdapter",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Abstract base adapter with shared parsing utilities."
         },
         {
           "name": "BasicAdapter",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "BasicAdapter - High-level API for simple payment flows."
         },
         {
           "name": "BasicPayParams",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Parameters for creating a simple payment."
         },
         {
           "name": "BasicPayResult",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Result of creating a payment."
         },
         {
           "name": "BlockchainRuntime",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "BlockchainRuntime - Production blockchain implementation"
         },
         {
           "name": "BlockchainRuntimeConfig",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Configuration for BlockchainRuntime"
         },
         {
           "name": "buildChannelPath",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Path pattern builders use / handlers expect."
         },
         {
           "name": "BuyerOrchestrator",
@@ -3526,19 +3551,22 @@
           "name": "Bytes32",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Bytes32 utilities"
         },
         {
           "name": "calculatePrice",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Calculate price for a job based on pricing strategy"
         },
         {
           "name": "computeContentHash",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Compute keccak256 hash of canonical JSON"
         },
         {
           "name": "ContentNotFoundError",
@@ -3550,7 +3578,8 @@
           "name": "ContractPausedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when the contract is paused."
         },
         {
           "name": "CounterAcceptBuilder",
@@ -3568,19 +3597,22 @@
           "name": "CreateTransactionParams",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Parameters for creating a new transaction."
         },
         {
           "name": "createUsedAttestationTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Factory to create attestation tracker"
         },
         {
           "name": "Deadline",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Deadline utilities"
         },
         {
           "name": "DeadlineExpiredError",
@@ -3592,7 +3624,8 @@
           "name": "DeadlinePassedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when the deadline has passed."
         },
         {
           "name": "DecisionEngine",
@@ -3604,61 +3637,71 @@
           "name": "DEFAULT_DEADLINE_SECONDS",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Default deadline offset in seconds (24 hours). Used when no deadline is specified in transaction parameters."
         },
         {
           "name": "DEFAULT_DISPUTE_WINDOW_SECONDS",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Default dispute window in seconds (2 days). Used when no dispute window is specified in transaction parameters."
         },
         {
           "name": "DEFAULT_PRICING_STRATEGY",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Default pricing strategy"
         },
         {
           "name": "DeliveryFailedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Provider failed to deliver result"
         },
         {
           "name": "DeliveryProofBuilder",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "DeliveryProofBuilder - Main Builder Class"
         },
         {
           "name": "DIDManager",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "DIDManager - Manage DID attributes and delegates (AIP-7 §2.2)"
         },
         {
           "name": "DIDResolver",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "DIDResolver - Resolve DIDs to DID Documents (AIP-7 §2.2)"
         },
         {
           "name": "DisputeRaisedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Dispute raised on transaction"
         },
         {
           "name": "DisputeWindow",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Dispute window utilities"
         },
         {
           "name": "DisputeWindowActiveError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when dispute window is still active."
         },
         {
           "name": "DownloadTimeoutError",
@@ -3676,19 +3719,22 @@
           "name": "EASHelper",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "EASHelper - utility wrapper for Ethereum Attestation Service interactions"
         },
         {
           "name": "envelopeChainId",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Extract the chainId carried inside the envelope's signed message."
         },
         {
           "name": "envelopeTxId",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Extract the txId carried inside the envelope's signed message. Useful for impls that need to dispatch by txId without parsing."
         },
         {
           "name": "EOAWalletProvider",
@@ -3700,67 +3746,78 @@
           "name": "ERC8004_DEFAULT_RPC",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Default RPC URLs for each network. Used when no custom RPC is provided."
         },
         {
           "name": "ERC8004_IDENTITY_REGISTRY",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ERC-8004 Identity Registry addresses per network."
         },
         {
           "name": "ERC8004_REPUTATION_REGISTRY",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ERC-8004 Reputation Registry addresses per network."
         },
         {
           "name": "ERC8004Bridge",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Bridge for reading from ERC-8004 Identity Registry."
         },
         {
           "name": "ERC8004Error",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Custom error for ERC-8004 operations."
         },
         {
           "name": "ERC8004ErrorCode",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ERC-8004 error codes."
         },
         {
           "name": "EscrowNotFoundError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when an escrow is not found."
         },
         {
           "name": "EscrowVault",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "EscrowVault - Escrow contract wrapper"
         },
         {
           "name": "EventMonitor",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "EventMonitor - Listen to blockchain events"
         },
         {
           "name": "FilebaseClient",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "FilebaseClient - IPFS storage via Filebase S3 API"
         },
         {
           "name": "FileBasedUsedAttestationTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "File-based Used Attestation Tracker for persistence"
         },
         {
           "name": "FileSizeLimitExceededError",
@@ -3772,91 +3829,106 @@
           "name": "formatUSDC",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Format USDC wei to human-readable string"
         },
         {
           "name": "generateSecureNonce",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Generate a cryptographically secure random nonce (bytes32)"
         },
         {
           "name": "generateSecureNonces",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Generate an array of secure nonces"
         },
         {
           "name": "getCachedAddress",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Get cached address from last resolvePrivateKey() call. Works for env-var, base64, and keystore resolution paths."
         },
         {
           "name": "getNetwork",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Get network configuration by name (returns deep clone to prevent mutation)"
         },
         {
           "name": "hashServiceMetadata",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Hash service description for on-chain storage"
         },
         {
           "name": "IACTPRuntime",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Runtime interface for ACTP protocol operations."
         },
         {
           "name": "IAdapter",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Common interface for all payment adapters."
         },
         {
           "name": "IMockRuntime",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Extended runtime interface for mock mode."
         },
         {
           "name": "InMemoryDedupStore",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Single-process in-memory LRU. Callers replace this in production with a distributed store (Redis SET NX EX, DynamoDB conditional put, Postgres INSERT ... ON CONFLICT DO NOTHING, etc)."
         },
         {
           "name": "InMemoryNonceManager",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "In-Memory Nonce Manager Simple implementation using Map for per-message-type nonce tracking"
         },
         {
           "name": "InMemoryReceivedNonceTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "In-Memory Received Nonce Tracker"
         },
         {
           "name": "InMemoryUsedAttestationTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "In-Memory Used Attestation Tracker"
         },
         {
           "name": "InsufficientBalanceError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when there are insufficient funds for an operation."
         },
         {
           "name": "InsufficientFundsError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Transaction Errors"
         },
         {
           "name": "InvalidAddressError",
@@ -3868,7 +3940,8 @@
           "name": "InvalidAmountError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when an invalid amount is provided."
         },
         {
           "name": "InvalidArweaveTxIdError",
@@ -3886,19 +3959,22 @@
           "name": "InvalidStateTransitionError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "State Machine Errors"
         },
         {
           "name": "IReceivedNonceTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Interface for tracking received nonces"
         },
         {
           "name": "isAdapter",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Type guard to check if an object implements IAdapter."
         },
         {
           "name": "isCounterAcceptEnvelope",
@@ -3922,115 +3998,134 @@
           "name": "isValidNonce",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Validate nonce format (must be bytes32)"
         },
         {
           "name": "IUsedAttestationTracker",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Interface for tracking used attestations"
         },
         {
           "name": "MAX_DEADLINE_DAYS",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Maximum deadline in days (10 years). Prevents integer overflow in deadline calculations."
         },
         {
           "name": "MAX_DEADLINE_HOURS",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Maximum deadline in hours (10 years). Prevents integer overflow in deadline calculations."
         },
         {
           "name": "MessageSigner",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "MessageSigner - Cryptographic signing for ACTP messages with EIP-712 Reference: Yellow Paper §11.4.2"
         },
         {
           "name": "MIN_AMOUNT_WEI",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Minimum transaction amount in USDC wei (6 decimals). $0.05 minimum per AGIRAILS protocol specification."
         },
         {
           "name": "MOCK_STATE_DEFAULTS",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Default values for creating new mock state."
         },
         {
           "name": "MockAccount",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Mock account representing a user's wallet state."
         },
         {
           "name": "MockBlockchain",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Mock blockchain state simulating chain parameters."
         },
         {
           "name": "MockChannel",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "In-memory channel. Multiple orchestrators can share one instance to simulate \"both parties on the same relay\"."
         },
         {
           "name": "MockEscrow",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Mock escrow representing funds locked for a transaction."
         },
         {
           "name": "MockEvent",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Mock blockchain event recorded during transaction lifecycle."
         },
         {
           "name": "MockRuntime",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "MockRuntime - Core mock blockchain engine for ACTP protocol testing."
         },
         {
           "name": "MockState",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Complete mock state persisted to `.actp/mock-state.json`."
         },
         {
           "name": "MockStateCorruptedError",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when mock state file is corrupted."
         },
         {
           "name": "MockStateLockError",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when lock cannot be acquired."
         },
         {
           "name": "MockStateManager",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "MockStateManager handles persistence of mock blockchain state."
         },
         {
           "name": "MockStateVersionError",
           "kind": "export-from",
           "tier": "internal",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when state version is unsupported."
         },
         {
           "name": "MockTransaction",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Mock transaction representing an ACTP transaction in the mock blockchain."
         },
         {
           "name": "NetworkError",
@@ -4042,19 +4137,22 @@
           "name": "NonceManager",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Nonce Manager Interface (from DeliveryProofBuilder)"
         },
         {
           "name": "NoProviderFoundError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "No provider found for the requested service"
         },
         {
           "name": "parseUSDC",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Parse USDC amount string to wei (6 decimals)"
         },
         {
           "name": "PolicyEngine",
@@ -4066,13 +4164,15 @@
           "name": "ProofGenerator",
           "kind": "export-from",
           "tier": "advanced",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ProofGenerator - Content hashing and delivery proofs Reference: Yellow Paper §11.4.1"
         },
         {
           "name": "provide",
           "kind": "export-from",
           "tier": "level0",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Provide a service"
         },
         {
           "name": "ProviderOrchestrator",
@@ -4090,19 +4190,22 @@
           "name": "ProviderRejectedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Provider rejected the job"
         },
         {
           "name": "QueryCapExceededError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Registry Query Cap Exceeded Error (L-4)"
         },
         {
           "name": "QuoteBuilder",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "QuoteBuilder - Main Builder Class Reference: AIP-2 §6.1"
         },
         {
           "name": "QuoteChannelClient",
@@ -4120,7 +4223,8 @@
           "name": "RateLimiter",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Simple sliding window rate limiter"
         },
         {
           "name": "RelayChannel",
@@ -4132,43 +4236,50 @@
           "name": "ReputationReporter",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Reporter for submitting ACTP settlement outcomes to ERC-8004 Reputation."
         },
         {
           "name": "request",
           "kind": "export-from",
           "tier": "level0",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Request a service"
         },
         {
           "name": "resolvePrivateKey",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Auto-resolve private key: env var → base64 keystore → file keystore → undefined. Never logs or prints the key itself."
         },
         {
           "name": "Semaphore",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Simple semaphore for limiting concurrent operations"
         },
         {
           "name": "ServiceConfigError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Service configuration error"
         },
         {
           "name": "serviceDirectory",
           "kind": "export-from",
           "tier": "level0",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Singleton instance"
         },
         {
           "name": "ServiceHash",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Service metadata utilities for ACTP transactions"
         },
         {
           "name": "SessionStore",
@@ -4180,25 +4291,29 @@
           "name": "shortenAddress",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Shorten Ethereum address for display"
         },
         {
           "name": "SignatureVerificationError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Signature Errors"
         },
         {
           "name": "StandardAdapter",
           "kind": "export-from",
           "tier": "basic",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "StandardAdapter - Balanced API for transaction lifecycle control."
         },
         {
           "name": "StandardTransactionParams",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Parameters for creating a transaction (standard level)."
         },
         {
           "name": "StateHelpers",
@@ -4216,7 +4331,8 @@
           "name": "StorageError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Storage Errors (AIP-7)"
         },
         {
           "name": "StorageInsufficientBalanceError",
@@ -4240,37 +4356,43 @@
           "name": "TimeoutError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Request timeout error"
         },
         {
           "name": "TransactionNotFoundError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Error thrown when a transaction is not found."
         },
         {
           "name": "TransactionRevertedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Blockchain Errors"
         },
         {
           "name": "TransactionState",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "ACTP Transaction State enum matching the smart contract states."
         },
         {
           "name": "TransactionStateValue",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Numeric state values matching the smart contract enum."
         },
         {
           "name": "TransactionStatus",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Transaction status returned by getStatus()."
         },
         {
           "name": "UploadTimeoutError",
@@ -4282,31 +4404,36 @@
           "name": "URLValidationConfig",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Security: URL validation configuration for SSRF prevention"
         },
         {
           "name": "USDC",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "USDC amount utilities (6 decimal places)"
         },
         {
           "name": "validateArchiveBundle",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Validate archive bundle structure"
         },
         {
           "name": "ValidationError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Adapter-layer ValidationError — extends ACTPError-based ValidationError so that `instanceof` checks work against the public SDK export. Accepts a single message string for convenience in adapter code."
         },
         {
           "name": "verifyQuoteHashOnChain",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Cross-reference an off-chain QuoteMessage against the hash stored on chain in `tx.metadata` (or equivalent — MockTransaction.quoteHash)."
         },
         {
           "name": "X402Adapter",
@@ -4318,67 +4445,78 @@
           "name": "X402AdapterConfig",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Configuration for X402Adapter."
         },
         {
           "name": "X402AmountExceededError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when the server's required payment amount exceeds the client's `maxAmountPerTx` safety cap. Default cap is $1 USDC."
         },
         {
           "name": "X402ApprovalFailedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when the one-time Permit2 approve transaction fails for any reason other than paymaster gate (which throws X402PublishRequiredError instead)."
         },
         {
           "name": "X402ConfigError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when X402Adapter constructor receives invalid config."
         },
         {
           "name": "X402Error",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Base class for all x402-related errors. Catch this to handle any x402 failure in one clause."
         },
         {
           "name": "X402NetworkNotAllowedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when the server's payment-required response offers no network that the client's `allowedNetworks` configuration accepts."
         },
         {
           "name": "X402PaymentFailedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when the payment attempt returns a non-2xx HTTP status after signing and submitting the payment payload."
         },
         {
           "name": "X402PublishRequiredError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when paymaster rejects sponsored tx because agent isn't published in AgentRegistry. The one-time Permit2 approve needed to enable Smart Wallet x402 payments requires the agent to pass the paymaster policy gate."
         },
         {
           "name": "X402SettlementProofMissingError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when HTTP payment completes (200 OK) but the server did not return a `payment-response` header confirming on-chain settlement."
         },
         {
           "name": "X402SignatureFailedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when walletProvider.signTypedData() fails to produce a signature."
         },
         {
           "name": "X402UnsupportedWalletError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false
+          "tier_from_source": false,
+          "doc_summary": "Thrown when a Smart Wallet tries to pay a server that only offers the EIP-3009 transferWithAuthorization scheme."
         }
       ],
       "count": 173
@@ -4391,19 +4529,22 @@
           "name": "ACTPClient",
           "tier": "level0",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Main client for AGIRAILS SDK."
         },
         {
           "name": "ACTPClientConfig",
           "tier": "level0",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for ACTPClient.create()."
         },
         {
           "name": "ACTPClientInfo",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Client information."
         },
         {
           "name": "ACTPClientMode",
@@ -4415,19 +4556,22 @@
           "name": "ACTPError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base exception for all ACTP protocol errors."
         },
         {
           "name": "ACTPEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base class for ACTP protocol events."
         },
         {
           "name": "ACTPKernel",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "ACTPKernel contract wrapper for ACTP protocol interactions."
         },
         {
           "name": "ACTPTimeoutError",
@@ -4439,67 +4583,78 @@
           "name": "Address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Ethereum address utilities."
         },
         {
           "name": "Agent",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent for processing jobs via ACTP protocol."
         },
         {
           "name": "AgentBalance",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent balance information."
         },
         {
           "name": "AgentBehavior",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent behavior configuration."
         },
         {
           "name": "AgentConfig",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Main agent configuration."
         },
         {
           "name": "AgentDID",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Decentralized Identifier for an agent."
         },
         {
           "name": "AgentLifecycleError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when an agent lifecycle operation fails."
         },
         {
           "name": "AgentProfile",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent profile from the registry."
         },
         {
           "name": "AgentRegistry",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "AgentRegistry contract wrapper for agent discovery and management."
         },
         {
           "name": "AgentStats",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent statistics."
         },
         {
           "name": "AgentStatus",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Agent lifecycle status."
         },
         {
           "name": "ARCHIVE_BUNDLE_TYPE",
@@ -4517,19 +4672,22 @@
           "name": "ArchiveAttestation",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EAS attestation reference."
         },
         {
           "name": "ArchiveBundle",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Archive Bundle (AIP-7 §4.4 - Minimal Hash-First)."
         },
         {
           "name": "ArchiveBundleBuilder",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Fluent builder for creating archive bundles."
         },
         {
           "name": "ArchiveChainId",
@@ -4547,97 +4705,113 @@
           "name": "ArchiveHashes",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Cryptographic hashes for verification."
         },
         {
           "name": "ArchiveParticipants",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Transaction participants (addresses only, not full profiles)."
         },
         {
           "name": "ArchiveReferences",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "IPFS CID references to full content."
         },
         {
           "name": "ArchiveSettlement",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Settlement information."
         },
         {
           "name": "ArchiveSignatures",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Cryptographic signatures for self-verification."
         },
         {
           "name": "ArchiveTags",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Arweave/Irys tags for archive bundles."
         },
         {
           "name": "ArweaveClient",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Permanent storage client using Arweave via Irys."
         },
         {
           "name": "ArweaveConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for Arweave client via Irys."
         },
         {
           "name": "ArweaveUploadResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of uploading to Arweave."
         },
         {
           "name": "Attestation",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EAS Attestation data."
         },
         {
           "name": "AutoWalletProvider",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Tier 1 (Auto) wallet provider with CoinbaseSmartWallet + Paymaster."
         },
         {
           "name": "BaseAdapter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base adapter providing shared utilities for all adapters."
         },
         {
           "name": "BasicAdapter",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Basic-level adapter for ACTP transactions."
         },
         {
           "name": "BasicPayParams",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters for basic pay() method."
         },
         {
           "name": "BasicPayResult",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result from basic pay() method."
         },
         {
           "name": "BuyerOrchestrator",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Autonomous buyer-side negotiation orchestrator."
         },
         {
           "name": "BuyerPolicy",
@@ -4649,13 +4823,15 @@
           "name": "Bytes32",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Bytes32 utilities for transaction IDs and hashes."
         },
         {
           "name": "calculate_price",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Calculate pricing for a job."
         },
         {
           "name": "CandidateStats",
@@ -4667,61 +4843,71 @@
           "name": "canonical_json_dumps",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Serialize object to canonical JSON string."
         },
         {
           "name": "CheckStatusResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result from check_status() method."
         },
         {
           "name": "CircuitBreakerConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Circuit breaker configuration for gateway health tracking."
         },
         {
           "name": "compute_content_hash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute keccak256 hash of content (Ethereum-compatible)."
         },
         {
           "name": "compute_domain_separator",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute EIP-712 domain separator."
         },
         {
           "name": "compute_json_hash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute keccak256 hash of canonical JSON."
         },
         {
           "name": "compute_result_hash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute result hash using keccak256 over canonical JSON."
         },
         {
           "name": "compute_service_type_hash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute keccak256 hash of service type."
         },
         {
           "name": "compute_transaction_id",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Pre-compute ACTP transaction ID."
         },
         {
           "name": "compute_type_hash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute EIP-712 type hash."
         },
         {
           "name": "Constraints",
@@ -4733,109 +4919,127 @@
           "name": "ContentNotFoundError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when content cannot be found in storage."
         },
         {
           "name": "ContentProof",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Proof for content authenticity."
         },
         {
           "name": "ContractPausedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when attempting an operation on a paused contract."
         },
         {
           "name": "CostModel",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Cost model for service pricing."
         },
         {
           "name": "CounterAcceptBuilder",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Build and verify AIP-2.1 counter-accept messages."
         },
         {
           "name": "CounterAcceptMessage",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Provider-signed acceptance of a buyer's counter-offer."
         },
         {
           "name": "CounterAcceptParams",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters to build a counter-accept message."
         },
         {
           "name": "CounterOfferBuilder",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Build and verify AIP-2.1 counter-offer messages."
         },
         {
           "name": "CounterOfferJustification",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Optional human-readable reasoning + market data."
         },
         {
           "name": "CounterOfferMessage",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Counter-offer message — buyer's reply to a provider quote."
         },
         {
           "name": "CounterOfferParams",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters to build a counter-offer."
         },
         {
           "name": "create_did_from_address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Create a DID string from an Ethereum address."
         },
         {
           "name": "create_received_nonce_tracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Factory function to create a nonce tracker."
         },
         {
           "name": "create_typed_data",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Create EIP-712 typed data from a message."
         },
         {
           "name": "create_used_attestation_tracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Factory to create attestation tracker."
         },
         {
           "name": "CreateEscrowParams",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters for creating a new escrow."
         },
         {
           "name": "CreateTransactionParams",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters for creating a new transaction."
         },
         {
           "name": "Deadline",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Deadline utilities for transaction timing."
         },
         {
           "name": "DeadlineExpiredError",
@@ -4847,7 +5051,8 @@
           "name": "DeadlinePassedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when attempting an operation after the deadline has passed."
         },
         {
           "name": "DecisionEngine",
@@ -4883,223 +5088,260 @@
           "name": "DeliveryAttestationData",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Decoded delivery attestation data."
         },
         {
           "name": "DeliveryFailedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when service delivery fails."
         },
         {
           "name": "DeliveryProof",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Proof of service delivery."
         },
         {
           "name": "DeliveryProofBuilder",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Fluent builder for constructing delivery proofs."
         },
         {
           "name": "DeliveryProofMessage",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "AIP-4 v1.1 Delivery proof message for EIP-712 signing."
         },
         {
           "name": "DeliveryProofMetadata",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Optional metadata for delivery proof (NOT included in EIP-712 signing)."
         },
         {
           "name": "did_to_address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Extract Ethereum address from a DID."
         },
         {
           "name": "DIDDocument",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "DID Document containing agent identity information."
         },
         {
           "name": "DIDManager",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "DID Manager for creating and managing agent identities."
         },
         {
           "name": "DIDResolver",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "DID Resolver for looking up DID Documents."
         },
         {
           "name": "discover_agents",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Discover published agents on agirails.app."
         },
         {
           "name": "DisputeRaisedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a dispute is raised on a transaction."
         },
         {
           "name": "DisputeWindow",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Dispute window utilities."
         },
         {
           "name": "DisputeWindowActiveError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when attempting to finalize during an active dispute window."
         },
         {
           "name": "DownloadResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of downloading content."
         },
         {
           "name": "DownloadTimeoutError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a storage download times out."
         },
         {
           "name": "EASHelper",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Ethereum Attestation Service helper for ACTP protocol."
         },
         {
           "name": "EIP712Domain",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EIP-712 domain separator."
         },
         {
           "name": "EOAWalletProvider",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Tier 2 (BYOW) wallet provider using traditional EOA signing."
         },
         {
           "name": "ERC8004Bridge",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Bridge to the ERC-8004 Identity Registry."
         },
         {
           "name": "EscrowCreatedEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Event emitted when a new escrow is created."
         },
         {
           "name": "EscrowInfo",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Information about an escrow from the contract."
         },
         {
           "name": "EscrowNotFoundError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when an escrow cannot be found."
         },
         {
           "name": "EscrowPayoutEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Event emitted when escrow funds are released."
         },
         {
           "name": "EscrowRelease",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Escrow release details."
         },
         {
           "name": "EscrowVault",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EscrowVault contract wrapper for fund management."
         },
         {
           "name": "EventFilter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Filter for event queries."
         },
         {
           "name": "EventMonitor",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Monitor for ACTP protocol events."
         },
         {
           "name": "EventType",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Types of events emitted by ACTP contracts."
         },
         {
           "name": "FilebaseClient",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "IPFS hot storage client using Filebase S3-compatible API."
         },
         {
           "name": "FilebaseConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for Filebase S3-compatible IPFS client."
         },
         {
           "name": "FileBasedUsedAttestationTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "File-based Used Attestation Tracker for persistence."
         },
         {
           "name": "FileSizeLimitExceededError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a file exceeds the maximum allowed size."
         },
         {
           "name": "format_usdc",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Format wei amount as USDC display string."
         },
         {
           "name": "generate_escrow_id",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Generate a cryptographically secure escrow ID (bytes32 hex string)."
         },
         {
           "name": "generate_secure_nonce",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Generate a cryptographically secure random nonce (bytes32)."
         },
         {
           "name": "generate_secure_nonces",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Generate an array of secure nonces."
         },
         {
           "name": "HAS_MESSAGES",
@@ -5117,97 +5359,113 @@
           "name": "hash_service_input",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Create a deterministic hash for a service input."
         },
         {
           "name": "hash_service_metadata",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Hash service description for on-chain storage."
         },
         {
           "name": "hash_service_output",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Create a deterministic hash for a service output."
         },
         {
           "name": "hash_struct",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute EIP-712 struct hash."
         },
         {
           "name": "hash_typed_data",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Compute the EIP-712 hash of typed data."
         },
         {
           "name": "IACTPRuntime",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Runtime interface for ACTP protocol operations."
         },
         {
           "name": "IMockRuntime",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Extended runtime interface for mock mode."
         },
         {
           "name": "InMemoryReceivedNonceTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "In-Memory Received Nonce Tracker."
         },
         {
           "name": "InMemoryUsedAttestationTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "In-Memory Used Attestation Tracker."
         },
         {
           "name": "InsufficientBalanceError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when an account has insufficient balance for an operation."
         },
         {
           "name": "InvalidAddressError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when an Ethereum address is invalid."
         },
         {
           "name": "InvalidAmountError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a transaction amount is invalid."
         },
         {
           "name": "InvalidCIDError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a Content Identifier (CID) is invalid."
         },
         {
           "name": "InvalidStateTransitionError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when attempting an invalid state transition."
         },
         {
           "name": "IPFSUploadResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of uploading to IPFS."
         },
         {
           "name": "IReceivedNonceTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Interface for tracking received nonces."
         },
         {
           "name": "IrysCurrency",
@@ -5225,55 +5483,64 @@
           "name": "is_mock_runtime",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Type guard to check if runtime is MockRuntime."
         },
         {
           "name": "is_terminal_state",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Check if a state is terminal (no further transitions)."
         },
         {
           "name": "is_valid_address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Check if address matches 0x + 40 hex chars."
         },
         {
           "name": "is_valid_nonce",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate nonce format (must be bytes32)."
         },
         {
           "name": "is_valid_transition",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Check if a state transition is valid."
         },
         {
           "name": "IUsedAttestationTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Interface for tracking used attestations."
         },
         {
           "name": "IWalletProvider",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Wallet provider interface."
         },
         {
           "name": "Job",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Represents a job to be processed by an agent."
         },
         {
           "name": "JobContext",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Context passed to job handlers."
         },
         {
           "name": "JobHandler",
@@ -5285,19 +5552,22 @@
           "name": "JobResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of job processing."
         },
         {
           "name": "Logger",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Structured logger for AGIRAILS SDK."
         },
         {
           "name": "LRUCache",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Thread-safe Least Recently Used (LRU) cache."
         },
         {
           "name": "MAX_DEADLINE_DAYS",
@@ -5327,19 +5597,22 @@
           "name": "MerkleProof",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Merkle tree proof for batch verification."
         },
         {
           "name": "MessageNonceManager",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Thread-safe per-message-type monotonic nonce counter."
         },
         {
           "name": "MessageSigner",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EIP-712 Message Signer for ACTP protocol."
         },
         {
           "name": "MIN_AMOUNT_WEI",
@@ -5357,67 +5630,78 @@
           "name": "MockAccount",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Represents an account balance in the mock runtime."
         },
         {
           "name": "MockBlockchain",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Simulated blockchain state for mock runtime."
         },
         {
           "name": "MockEscrow",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Represents an escrow in the mock runtime."
         },
         {
           "name": "MockEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Represents an event emitted by the mock runtime."
         },
         {
           "name": "MockRuntime",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Mock runtime implementation for ACTP protocol."
         },
         {
           "name": "MockState",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Root state object for the mock runtime."
         },
         {
           "name": "MockStateCorruptedError",
           "tier": "internal",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when the mock state file is corrupted or invalid."
         },
         {
           "name": "MockStateLockError",
           "tier": "internal",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when unable to acquire a lock on the mock state file."
         },
         {
           "name": "MockStateManager",
           "tier": "internal",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "File-based state persistence for MockRuntime."
         },
         {
           "name": "MockStateVersionError",
           "tier": "internal",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when the mock state file version is incompatible."
         },
         {
           "name": "MockTransaction",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Represents a transaction in the mock runtime."
         },
         {
           "name": "Negotiation",
@@ -5429,49 +5713,57 @@
           "name": "NegotiationResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of a full negotiation flow."
         },
         {
           "name": "NetworkError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a network or RPC error occurs."
         },
         {
           "name": "NonceManager",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Thread-safe nonce manager for blockchain transactions."
         },
         {
           "name": "NonceManagerPool",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Pool of NonceManagers for multiple accounts."
         },
         {
           "name": "NonceValidationResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Nonce validation result."
         },
         {
           "name": "NoProviderFoundError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when no provider can be found for a service."
         },
         {
           "name": "OrchestratorConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for the negotiation orchestrator."
         },
         {
           "name": "parse_usdc",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parse USDC amount string to wei (6 decimals)."
         },
         {
           "name": "PolicyEngine",
@@ -5495,19 +5787,22 @@
           "name": "PriceCalculation",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of price calculation for a job."
         },
         {
           "name": "PricingStrategy",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Complete pricing strategy for a service."
         },
         {
           "name": "ProofGenerator",
           "tier": "advanced",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Generates cryptographic proofs for ACTP protocol."
         },
         {
           "name": "PROTOCOL_VERSION",
@@ -5519,49 +5814,57 @@
           "name": "provide",
           "tier": "level0",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Register a service with the global provider."
         },
         {
           "name": "ProvideOptions",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Options for the provide function."
         },
         {
           "name": "Provider",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base class for service providers."
         },
         {
           "name": "ProviderConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Provider configuration."
         },
         {
           "name": "ProviderRejectedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a provider rejects a request."
         },
         {
           "name": "ProviderStatus",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Provider lifecycle status."
         },
         {
           "name": "QueryCapExceededError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a query exceeds the configured cap limit."
         },
         {
           "name": "QuoteBuilder",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Fluent builder for constructing quotes."
         },
         {
           "name": "QuoteOffer",
@@ -5573,7 +5876,8 @@
           "name": "RateLimiter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Token bucket rate limiter for controlling request rates."
         },
         {
           "name": "ReceiptUploadFailure",
@@ -5585,13 +5889,15 @@
           "name": "ReceiptUploadOptions",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Caller-supplied auth + endpoint overrides."
         },
         {
           "name": "ReceiptUploadPayload",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Public receipt payload uploaded to agirails.app."
         },
         {
           "name": "ReceiptUploadResult",
@@ -5609,49 +5915,57 @@
           "name": "ReputationReporter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Reports ACTP transaction outcomes to the ERC-8004 Reputation Registry."
         },
         {
           "name": "request",
           "tier": "level0",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Request a service from a provider."
         },
         {
           "name": "RequestOptions",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Options for the request function."
         },
         {
           "name": "RequestResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Result of a service request."
         },
         {
           "name": "RetryConfig",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for retry behavior."
         },
         {
           "name": "RoundResult",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Per-round details for traceability."
         },
         {
           "name": "safe_json_parse",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Safely parse JSON with prototype pollution prevention and optional schema validation."
         },
         {
           "name": "Schema",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EAS Schema data."
         },
         {
           "name": "ScoreBreakdown",
@@ -5681,79 +5995,92 @@
           "name": "Semaphore",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Async semaphore for limiting concurrent operations."
         },
         {
           "name": "ServiceConfig",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Configuration for a specific service."
         },
         {
           "name": "ServiceConfigError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when service configuration is invalid."
         },
         {
           "name": "ServiceDescriptor",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Service descriptor for agent capabilities."
         },
         {
           "name": "ServiceDirectory",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Registry for service discovery."
         },
         {
           "name": "ServiceEndpoint",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "DID Service Endpoint."
         },
         {
           "name": "ServiceEntry",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Metadata about a registered service."
         },
         {
           "name": "ServiceFilter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Filter rules for incoming jobs."
         },
         {
           "name": "ServiceHash",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Service metadata utilities for ACTP transactions."
         },
         {
           "name": "ServiceMetadata",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Service metadata structure."
         },
         {
           "name": "ServiceQuery",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Query parameters for finding services."
         },
         {
           "name": "ServiceRequest",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Service request message for signing."
         },
         {
           "name": "ServiceResponse",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Service response message for signing."
         },
         {
           "name": "SessionMapping",
@@ -5771,49 +6098,57 @@
           "name": "SetBasedReceivedNonceTracker",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Set-Based Received Nonce Tracker."
         },
         {
           "name": "shorten_address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Shorten Ethereum address for display."
         },
         {
           "name": "SignatureComponents",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "EIP-712 signature components."
         },
         {
           "name": "SignatureVerificationError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a cryptographic signature verification fails."
         },
         {
           "name": "SignedMessage",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Container for a signed EIP-712 message."
         },
         {
           "name": "StandardAdapter",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Standard adapter for granular ACTP transaction control."
         },
         {
           "name": "StandardTransactionParams",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Parameters for standard create_transaction()."
         },
         {
           "name": "State",
           "tier": "basic",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "ACTP transaction states."
         },
         {
           "name": "STATE_TRANSITIONS",
@@ -5825,91 +6160,106 @@
           "name": "StateHelper",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "State machine utilities."
         },
         {
           "name": "StateTransitionedEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Event emitted when a transaction state changes."
         },
         {
           "name": "StorageAuthenticationError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when storage authentication fails."
         },
         {
           "name": "StorageError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base exception for storage operations."
         },
         {
           "name": "StorageRateLimitError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when storage rate limit is exceeded."
         },
         {
           "name": "TimeInterface",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Time management interface for runtime."
         },
         {
           "name": "timing_safe_equal",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Constant-time string comparison to prevent timing attacks."
         },
         {
           "name": "Transaction",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "ACTP protocol transaction."
         },
         {
           "name": "TransactionCreatedEvent",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Event emitted when a new transaction is created."
         },
         {
           "name": "TransactionDetails",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Detailed transaction information."
         },
         {
           "name": "TransactionFilter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Filter for querying transactions."
         },
         {
           "name": "TransactionNotFoundError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a transaction cannot be found by its ID."
         },
         {
           "name": "TransactionReceipt",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Receipt for a blockchain transaction."
         },
         {
           "name": "TransactionRevertedError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a blockchain transaction reverts."
         },
         {
           "name": "TransactionState",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "ACTP transaction states."
         },
         {
           "name": "TransactionStateValue",
@@ -5921,115 +6271,134 @@
           "name": "TransactionView",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "On-chain transaction view from getTransaction()."
         },
         {
           "name": "TypedData",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Complete EIP-712 typed data structure."
         },
         {
           "name": "upload_receipt",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Upload a settled receipt to agirails.app."
         },
         {
           "name": "UploadTimeoutError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Raised when a storage upload times out."
         },
         {
           "name": "USDC",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "USDC amount utilities (6 decimal places)."
         },
         {
           "name": "validate_address",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate Ethereum address."
         },
         {
           "name": "validate_amount",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate USDC amount format."
         },
         {
           "name": "validate_archive_bundle",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate archive bundle structure and required fields."
         },
         {
           "name": "validate_bytes32",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate bytes32 hex format."
         },
         {
           "name": "validate_deadline",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate transaction deadline."
         },
         {
           "name": "validate_dispute_window",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate dispute window duration."
         },
         {
           "name": "validate_endpoint_url",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate endpoint URL with comprehensive SSRF protection."
         },
         {
           "name": "validate_path",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate and resolve path, preventing traversal attacks."
         },
         {
           "name": "validate_service_name",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate and sanitize a service name."
         },
         {
           "name": "validate_tx_id",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Validate transaction ID format (bytes32)."
         },
         {
           "name": "ValidationError",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Base exception for input validation failures."
         },
         {
           "name": "VerificationMethod",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "DID Verification Method."
         },
         {
           "name": "verify_merkle_proof",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Verify a Merkle proof."
         },
         {
           "name": "WalletInfo",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "Information about the wallet provider."
         },
         {
           "name": "WalletTier",
@@ -6041,7 +6410,8 @@
           "name": "X402Adapter",
           "tier": "standard",
           "tier_from_source": false,
-          "source_file": "src/agirails/__init__.py"
+          "source_file": "src/agirails/__init__.py",
+          "doc_summary": "X402Adapter - Atomic HTTP payment protocol."
         },
         {
           "name": "ZERO_BYTES32",

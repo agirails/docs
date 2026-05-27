@@ -58,6 +58,7 @@ interface SdkSymbol {
   kind: string;
   tier: string;
   tier_from_source?: boolean;
+  doc_summary?: string;
 }
 
 interface TierEntry {
@@ -413,14 +414,18 @@ function tierIntro(tier: string): string {
   }
 }
 
+function escapeMd(s: string): string {
+  return s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+}
+
 function renderSymbolTable(
   symbols: SdkSymbol[],
   tiers: Manifest['tiers'],
   sdk: 'ts' | 'python',
 ): string[] {
   const lines: string[] = [];
-  lines.push('| Symbol | Kind | Cross-SDK status |');
-  lines.push('|---|---|---|');
+  lines.push('| Symbol | Kind | Summary | Cross-SDK status |');
+  lines.push('|---|---|---|---|');
   const sorted = [...symbols].sort((a, b) => a.name.localeCompare(b.name));
   for (const s of sorted) {
     const t = tiers[s.name];
@@ -438,7 +443,8 @@ function renderSymbolTable(
       else status = syncBadge(t.sync_status);
     }
     const kind = s.kind === 'export-from' ? '_re-export_' : (s.kind === 'unknown' ? '_(unknown)_' : `\`${s.kind}\``);
-    lines.push(`| \`${s.name}\` | ${kind} | ${status} |`);
+    const summary = s.doc_summary ? escapeMd(s.doc_summary) : '_—_';
+    lines.push(`| \`${s.name}\` | ${kind} | ${summary} | ${status} |`);
   }
   return lines;
 }

@@ -3,7 +3,7 @@ slug: /reference/errors
 title: "Error reference"
 description: "All 47 TypeScript + 47 Python error classes — auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."
 schema_type: APIReference
-last_verified: 2026-05-26
+last_verified: 2026-05-27
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 5
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-26 12:27:57 UTC
+**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-27 12:25:52 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks — preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
