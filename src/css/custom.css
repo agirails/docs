@@ -1400,3 +1400,12 @@ article .theme-doc-markdown a:not(.card a):not(.hash-link):not(.menu__link) {
 :root:not([data-theme='dark']) .prism-code .token.cdata {
   color: #4a5568; /* slate-700, 7.42:1 contrast on white */
 }
+
+/* Wave A.10.f — extend Prism comment fix to dark theme
+   (Lighthouse caught 3.32:1 contrast for #6272a4 on dark code bg #0d272c) */
+[data-theme='dark'] .prism-code .token.comment,
+[data-theme='dark'] .prism-code .token.prolog,
+[data-theme='dark'] .prism-code .token.doctype,
+[data-theme='dark'] .prism-code .token.cdata {
+  color: #9ca3af; /* slate-400, 6.05:1 on #0d272c */
+}
