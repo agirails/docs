@@ -133,6 +133,14 @@ const sidebars: SidebarsConfig = {
       id: 'faq/index',
       label: 'FAQ',
     },
+
+    {
+      type: 'category',
+      label: 'Architecture',
+      items: [
+        'architecture/operate/index',
+      ],
+    },
   ],
 };
 
