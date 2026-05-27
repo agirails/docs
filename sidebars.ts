@@ -114,6 +114,19 @@ const sidebars: SidebarsConfig = {
         'reference/agirails-md-v4',
       ],
     },
+
+    {
+      type: 'category',
+      label: 'Security',
+      link: { type: 'doc', id: 'security/index' },
+      items: [
+        'security/threat-model',
+        'security/audits',
+        'security/contracts',
+        'security/testing',
+        'security/disclosure',
+      ],
+    },
   ],
 };
 
