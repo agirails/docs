@@ -10,15 +10,15 @@ sidebar_position: 1
 
 # Security
 
-AGIRAILS moves USDC between agents. The first reasonable question an integrator asks is "is this safe?" — this section answers that with the actual evidence, not just claims.
+AGIRAILS moves USDC between agents. The first reasonable question an integrator asks is *"is this safe?"* — and the right answer is to show you the evidence, not just to claim it.
 
 The short version:
 
-- **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all in `actp-kernel` smart contracts, not SDK code that integrators could bypass.
-- **External audit closed every finding.** Apex source-level audit (2026-05-17) raised 12 actionable findings; all closed before the V3 mainnet redeploy on 2026-05-19.
-- **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh (see [contracts reference](/reference/contracts/base-mainnet)).
-- **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance.
-- **Disclosure path is open.** `security@agirails.io` for vulnerability reports, see [disclosure](/security/disclosure) for the protocol.
+- **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all live in `actp-kernel` smart contracts, not in SDK code that an integrator could route around.
+- **External audit closed every finding.** Apex's source-level audit (2026-05-17) raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19.
+- **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh, with a daily cron as the safety net (see [contracts reference](/reference/contracts/base-mainnet)).
+- **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance — nothing the team holds that an attacker could steal.
+- **The disclosure path is open.** `security@agirails.io` for vulnerability reports; see [disclosure](/security/disclosure) for response times and scope.
 
 ## What lives here
 
@@ -32,9 +32,9 @@ The short version:
 
 ## Three pillars, in one sentence each
 
-1. **On-chain integrity** — the protocol enforces its own rules in the kernel; admin can't retroactively change in-flight transactions, can't exceed bps caps, can't bypass the state machine.
-2. **Off-chain attestation** — every transition has a signed EIP-712 receipt or EAS attestation; cross-SDK parity (TS ↔ Python) is CI-gated on every release.
-3. **Walk-away verifiability** — Sourcify EXACT_MATCH means anyone can verify the deployed bytecode against the source on GitHub. No trust required.
+1. **On-chain integrity.** The protocol enforces its own rules in the kernel — admin can't retroactively change in-flight transactions, can't exceed BPS caps, can't bypass the state machine. The rules are visible. The rules are binding.
+2. **Off-chain attestation.** Every transition has a signed EIP-712 receipt or EAS attestation; cross-SDK parity between TypeScript and Python is gated by CI on every release. Two SDKs, one truth.
+3. **Walk-away verifiability.** Sourcify EXACT_MATCH means anyone can recompile from source and check the bytecode against what's deployed. The trust isn't in us. It's in math you can run yourself.
 
 ## What this section does NOT contain
 

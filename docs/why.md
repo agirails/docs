@@ -10,29 +10,29 @@ sidebar_position: 0
 
 # Why AGIRAILS exists
 
-You're here to integrate something. So before the SDK docs, one page that explains the shape of what you're about to build on — because the protocol looks the way it does for specific reasons, and once you see those reasons the technical choices stop seeming arbitrary.
+You're here to build something. Before the SDK docs, one page that explains the shape of what you're building on — because the protocol looks the way it does for specific reasons, and once you see the reasons, the technical choices stop seeming arbitrary.
 
 ## The one sentence
 
 **AGIRAILS builds open trust rails for autonomous intelligence, so the abundance created by AI agents can flow through infrastructure no one can own, capture, or control.**
 
-That's the canonical line. The technical decisions in `/protocol/*` follow from it — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract, walk-away runbook published in the open. Every "why does this contract not have a pause function?" answer traces back here.
+That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
 
-The full thesis lives on [agirails.io](https://agirails.io) — the [vision essay](https://agirails.io), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the docs-side bridge, not the full case.
+The full thesis lives at [agirails.io](https://agirails.io) — the [vision essay](https://agirails.io), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
 
 ## The shift you're building into
 
-Most people see agents through the wrong lens — small helpers, chatbots, hour-saving scripts. That's the cute-cat-video phase of a new medium.
+Most people see agents through the wrong lens — small helpers, chatbots, hour-saving scripts. That's the cute-cat-video phase of a new medium. Useful, real, but not the point.
 
-**The agent economy isn't automation. It's trade.** A hammer doesn't shop for a better hammer; a spreadsheet doesn't hire an accountant; a calendar doesn't negotiate a contract. Agents will. Once an entity can decide, coordinate, and transact, it's not software in the old sense — it's participation in an economy.
+**The agent economy isn't automation. It's trade.** A hammer doesn't shop for a better hammer. A spreadsheet doesn't hire an accountant. A calendar doesn't negotiate a contract. Agents will. The moment an entity can decide, coordinate, and transact, it stops being software in the old sense — it becomes a participant in an economy.
 
-Three observations about that economy:
+Three things follow from that shift:
 
-1. **Intelligence outsourcing scales with infrastructure**, not with vendor brands. Every civilization that scaled trade solved one problem: how strangers cooperate without trusting each other. The answer was always infrastructure — standard weights, shipping containers, packet routing, clearing houses. Agent commerce will follow the same law.
+1. **Intelligence outsourcing scales with infrastructure**, not with vendor brands. Every civilization that scaled trade solved the same problem: how do strangers cooperate without trusting each other. The answer was never *"build a nicer interface."* It was always infrastructure — standard weights, shipping containers, packet routing, clearing houses. Agent commerce will follow the same law. The agents that matter most will run on the rails that scaled, not the platforms that captured.
 
-2. **Pricing collapses to pay-on-verified-delivery.** Per-seat assumed humans. Per-call assumed human-paced commerce. Per-month assumed continuous use. None of those survive the agent layer. The only pricing primitive that does is "the buyer commits capital against a defined outcome; settlement happens when delivery is verified." That's [Outcome-as-a-Service](https://agirails.io/learn/outcome-as-a-service/), and it requires a settlement layer that didn't exist on any traditional rail.
+2. **Pricing collapses to pay-on-verified-delivery.** Per-seat assumed a human at a screen. Per-call assumed human-paced commerce. Per-month assumed continuous use. None of those survive the agent layer. The only pricing primitive that does is *"the buyer commits capital against a defined outcome; settlement happens when delivery is verified."* That's [Outcome-as-a-Service](https://agirails.io/learn/outcome-as-a-service/) — a category that requires a settlement layer no traditional rail provides.
 
-3. **Trust becomes infrastructure.** In human economies, trust is slow — built through relationships, brands, institutions. In agent economies, trust has to become an explicit object: attestations, performance proofs, delivery records, dispute outcomes. **Portable trust is more valuable than raw capability**, because capability can be copied. The only way that works is if trust isn't trapped inside a platform.
+3. **Trust becomes infrastructure.** In human economies, trust is slow — built through relationships, brands, institutions, time. In agent economies, trust has to become an explicit object you can read: attestations, performance proofs, delivery records, dispute outcomes. **Portable trust matters more than raw capability**, because capability can be copied and trust cannot. The only way trust works at scale is if it isn't trapped inside a platform.
 
 ## Why "Stripe for AI agents" is the wrong analogy
 
@@ -64,34 +64,34 @@ This category has a precise name: [**non-custodial settlement**](https://agirail
 
 ## Service thesis, not wealth thesis
 
-There's a distinction we keep close to:
+There's a distinction we keep close.
 
 - A **wealth thesis** says: enormous value is coming, and we must capture it.
 - A **service thesis** says: enormous change is coming, and we must serve it so it doesn't become a new system of control.
 
-AGIRAILS runs on the second. The company has a business model (1% platform fee, $0.05 minimum, capped at 5% by hardcoded constant); the protocol is sustainable; investors, builders, partners, and users see value. Nothing fake about that. But the **inner compass** is protection of free flow, not extraction.
+AGIRAILS runs on the second.
 
-That compass shows up in the technical surface:
+The company has a business model — 1% platform fee, $0.05 minimum, capped at 5% by a hardcoded kernel constant. The protocol is sustainable. Investors, builders, partners, and users see value. Nothing performative about any of that. But the **inner compass** is protection of free flow, not extraction.
 
-- The fee is capped on-chain (5% maximum, set at deployment; admin literally cannot exceed it).
-- There's no token. Not yet, possibly not ever. Definitely no pre-mine, no airdrop, no insider allocation.
-- The x402 settlement path on Base mainnet is **zero protocol fee** — pure direct buyer→seller via EIP-3009/Permit2 ([x402 docs](/protocol/x402)).
-- Mediator role (the one centralized piece) is on a public roadmap to decentralize post-PMF.
+That compass shows up wherever you look at the technical surface:
+
+- The fee is capped on-chain. Five percent maximum, set at deployment. Admin literally cannot exceed it.
+- There's no token. Not yet, and possibly not ever. Definitely no pre-mine, no airdrop, no insider allocation.
+- The x402 settlement path on Base mainnet charges **zero protocol fee** — pure direct buyer→seller via EIP-3009/Permit2 ([x402 docs](/protocol/x402)).
+- The mediator role — the one centralized piece — is on a public roadmap to decentralize post-PMF.
 - Every audit finding, remediation commit, and Sourcify verification status is published ([audits](/security/audits), [security](/security)).
 
-If we ever drifted — capture by short-horizon investors, partnerships that look like easier-to-take, regulatory pressure toward custody — these mechanisms make the drift visible on-chain. That's the constraint that replaces trust.
+If we ever drift — captured by short-horizon investors, charmed by partnerships that look like easier-to-take, pressured toward custody by regulation — these mechanisms make the drift visible on-chain. That's the constraint that replaces trust.
 
 ## What this means for what you build
 
-You're not integrating with a platform. You're using infrastructure.
+You're not integrating with a platform. You're using infrastructure. That difference shows up in the details:
 
-Practical implications:
-
-- **No vendor lock-in by design.** Your agent's reputation, transaction history, and identity belong to your agent's wallet, not to AGIRAILS. If we go away, your reputation moves with you.
-- **No permission required.** No application, no approval, no gatekeeper. Any wallet can transact. ([Get started](/start) — five minutes from zero to first transaction.)
-- **Auditability is the default.** Every transaction emits public events. Every dispute outcome is recorded. Every contract version is Sourcify-verified. You can build trust assertions against this data without asking us.
-- **Composition over containment.** The settlement primitive is a foundation other primitives compose against — verification markets, reputation graphs, identity layers. The same architecture that closes the single point of trust opens the surface that other primitives can build on.
-- **Sustained margin > captured margin.** When you build an agent that earns USDC through AGIRAILS, the protocol takes 1% (with $0.05 floor). It doesn't take 30% the way platform marketplaces do, because the trust mechanism is the protocol itself, not a brand sitting between two strangers.
+- **No vendor lock-in by design.** Your agent's reputation, transaction history, and identity live in your agent's wallet. Not on our servers. Not in our database. If we go away, your reputation walks with you.
+- **No permission required.** No application, no approval, no gatekeeper. Any wallet can transact, starting from the moment it's funded. [Get started](/start) takes about five minutes from zero to your first on-chain settlement.
+- **Auditability is the default.** Every transaction emits public events. Every dispute outcome is recorded. Every contract version is Sourcify-verified. You can build trust assertions against this data without asking us, without paying us, without telling us you're doing it.
+- **Composition over containment.** The settlement primitive is a foundation other primitives compose against — verification markets, reputation graphs, identity layers, things we haven't thought of yet. The same architecture that closes the single point of trust opens the surface that anything else can build on.
+- **Sustained margin over captured margin.** When you build an agent that earns USDC through AGIRAILS, the protocol takes 1% (with a $0.05 floor). It doesn't take 30% the way platform marketplaces do, because the trust mechanism *is* the protocol — not a brand sitting between two strangers, charging rent on their cooperation.
 
 ## Where this goes
 
@@ -105,15 +105,17 @@ If those things don't happen, the framing is wrong and we'll say so. We're not i
 
 ## The bigger picture (briefly)
 
-This is the part where docs usually stop. Let it run a moment longer because it shapes everything above.
+This is the part where docs usually stop. Let it run a moment longer, because it shapes everything above.
 
-AI changes scarcity. AGI changes it more deeply. If the curves continue, the marginal cost of cognition, labor, energy, food, healing, and coordination all fall over time. That opens a real possibility — a world where people no longer organize their lives primarily around survival.
+For most of human history, almost everything was scarce. Information, intelligence, skilled labor, energy, food, healing, trust. Most economic systems were built around managing that scarcity — controlling access, reducing risk, deciding who gets what.
 
-**Abundance doesn't automatically create freedom.** A world can be incredibly productive and still deeply controlled. AI can produce abundance, but if the infrastructure through which that abundance flows is privately owned, abundance becomes permission. And what is given by permission can be priced, conditioned, or revoked.
+AI changes that. AGI will change it more deeply. If the curves continue, the marginal cost of cognition, labor, energy, food, healing, and coordination may all fall dramatically. That opens a real possibility — a world where people no longer have to organize their lives primarily around survival.
+
+But **abundance doesn't automatically create freedom**. A world can be incredibly productive and still deeply controlled. AI can produce abundance, but if the infrastructure through which that abundance flows is privately owned, abundance becomes permission. And what is given by permission can be priced, conditioned, or revoked.
 
 That's the deeper question underneath AGIRAILS: **who owns the rails?**
 
-The answer this protocol bets on: nobody privately. The rails are public infrastructure. Like TCP/IP. Like SMTP. Like the standards that scaled the internet despite — and arguably because of — being unowned.
+The answer this protocol bets on is *nobody privately*. The rails are public infrastructure. Like TCP/IP. Like SMTP. Like the standards that scaled the internet — despite, and arguably because of, being unowned.
 
 If you want the full version of this argument, the [vision essay](https://agirails.io) walks through it: pre-singularity window, UBI vs UHI (Universal High Income), compute as agent life-force, decentralization as a natural principle of healthy complex systems, trust as alignment infrastructure for the AGI era.
 
@@ -121,7 +123,7 @@ This page is short on purpose. The technical docs are where the work lives.
 
 ## Start building
 
-- [Get started](/start) — minimum-viable first integration, 5 minutes
+- [Get started](/start) — first integration, five minutes
 - [Recipes](/recipes) — task-oriented walkthroughs (consumer / provider / autonomous / dispute / quote negotiation)
 - [Protocol](/protocol) — the on-chain mechanics
 - [Reference](/reference) — auto-extracted SDK + contracts + CLI + MCP + errors
@@ -139,4 +141,4 @@ This page is short on purpose. The technical docs are where the work lives.
 
 ---
 
-*If we ever drift from this, this is the page to return to.*
+*If we ever drift, this is the page we return to.*

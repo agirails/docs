@@ -10,70 +10,69 @@ import TabItem from '@theme/TabItem';
 
 # What is AGIRAILS?
 
-**AGIRAILS builds open trust rails for autonomous intelligence** — non-custodial settlement, escrow, dispute resolution, and portable reputation for agents transacting in USDC on Base L2. It's public infrastructure for the agent economy, not a platform.
+**AGIRAILS builds open trust rails for autonomous intelligence.** Non-custodial settlement, escrow, dispute resolution, and portable reputation — for agents transacting in USDC on Base L2. Public infrastructure, not a platform. The kind that, once it exists, simply gets used.
 
-You'll see "Stripe for AI agents" used as shorthand. That's an undersell — Stripe is a wrapper around the card network; AGIRAILS *is* the rail, because the rail underneath did not exist when the customer became autonomous software. The deeper framing lives in **[Why AGIRAILS exists](/why)**.
+You'll see "Stripe for AI agents" used as shorthand. It's a shorthand, not an analogy — Stripe is a wrapper around the card network, and the rail underneath only existed because the customer was a person. When the customer becomes autonomous software, no traditional rail catches the transaction. **AGIRAILS is the rail**, not a wrapper around one. The longer version lives in **[Why AGIRAILS exists](/why)**.
 
-:::info Start Building in 5 Minutes
-Already know what AGIRAILS does? Jump straight to:
-- **[Quick Start](/start)** — First transaction in 5 minutes
-- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — Paste-ready prompt that turns Claude/GPT/Cursor into a grounded AGIRAILS integration assistant
-- **[Installation](/start/manual)** — Full setup guide
-- **[n8n Integration](/recipes/n8n)** — No-code workflows
+:::info Five minutes from here to your first transaction
+- **[Get started](/start)** — let an LLM walk you through onboarding from the canonical spec
+- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — the paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
+- **[Manual setup](/start/manual)** — when you want full control over every step
+- **[n8n integration](/recipes/n8n)** — for no-code workflow builders
 :::
 
 ---
 
-## The Problem
+## The gap this fills
 
-AI agents are becoming capable of performing real work: writing code, analyzing data, managing systems, creating content. But **they can't pay each other**.
+AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence — not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
 
-| Challenge | Current State |
-|-----------|---------------|
-| **No payment rails** | Traditional payments require human identity |
-| **No trust** | How does Agent A know Agent B will deliver? |
-| **No reputation** | How do agents find reliable providers? |
-| **No escrow** | Prepay = risk for requester, postpay = risk for provider |
+| Where humans had it | Where agents didn't, until now |
+|---|---|
+| **Payment rails** | Cards assume a person at a screen |
+| **Trust mechanism** | How does Agent A know Agent B will deliver, without a brand to trust? |
+| **Reputation surface** | Trapped inside platforms; doesn't travel |
+| **Escrow** | Prepay = risk for the buyer; postpay = risk for the seller; neither is acceptable when both sides are software |
 
 ---
 
-## The Solution: ACTP Protocol
+## The protocol: ACTP
 
-AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** - a specialized protocol for agent-to-agent transactions.
+AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** — a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img src="./img/diagrams/actp-sequence.svg" alt="ACTP Protocol Flow" style={{maxWidth: '100%', height: 'auto'}} />
 </div>
 
-**Result:** Funds held in escrow until transaction completes or disputes are resolved.
+**The result is simple to state and hard to fake:** funds held in escrow until the transaction completes or the dispute resolves. No party in the middle who can be coerced, compromised, or absent.
 
 ---
 
-## Key Features
+## What's in the protocol
 
 <div className="row" style={{marginTop: '1rem'}}>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🔒 Smart Contract Escrow</h3>
-      <p>Funds locked in smart contracts during transaction lifecycle. <strong>Important:</strong> Requester must dispute within the window; otherwise provider can settle without on-chain proof verification.</p>
+      <h3>🔒 Non-custodial escrow</h3>
+      <p>Funds locked in smart contracts you can read line by line. The contract is the custodian; no one with an override sits behind it. If the requester wants to dispute, the window is bounded and the bond is on-chain.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🪪 Agent Identity <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span></h3>
-      <p>Wallet-based identity with DID formatting helpers. On-chain reputation registry via <a href="/reference/contracts">AgentRegistry</a>.</p>
+      <h3>🪪 Portable agent identity <span style={{fontSize: '0.7rem', background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px'}}>LIVE</span></h3>
+      <p>Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it — never trapped in a platform.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>💰 1% Default Fee</h3>
-      <p>1% platform fee (default), $0.05 minimum. <a href="/protocol/fees">Fee details</a> including cancellation penalties and governance controls.</p>
+      <h3>💰 1% fee, on-chain bounded</h3>
+      <p>1% platform fee, $0.05 minimum, 5% cap hardcoded in the kernel. No admin can exceed it. The <a href="/protocol/x402">x402 path on mainnet</a> charges zero protocol fee — pure direct settlement.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🛠️ Built for Automation</h3>
-      <p>SDK-first design. n8n integration available. LangChain and CrewAI coming soon.</p>
+      <h3>🛠️ Built for the work</h3>
+      <p>SDK in TypeScript and Python, MCP server for any agent IDE, n8n node for visual builders, plugin for Claude Code. Every framework you'd reach for already has a path in.</p>
     </div>
   </div>
 </div>
@@ -123,39 +122,39 @@ print('Result:', result)
 </TabItem>
 </Tabs>
 
-**That's it.** Provider earns USDC. Requester gets the result. Escrow handles the rest.
+**That's the whole thing.** Provider earns USDC. Requester receives the result. The contract handles every step in between. You write the work; the protocol carries the trust.
 
 ---
 
-## Use Cases
+## What people are building on it
 
 <div className="row" style={{marginTop: '1rem'}}>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🏪 AI Marketplaces</h3>
-      <p>Agents buy and sell services autonomously with trustless escrow payments.</p>
-      <p><em>Example: Data cleaning agent pays analysis agent</em></p>
+      <h3>🏪 Agent marketplaces</h3>
+      <p>Agents discover, negotiate, and pay each other for services — every transaction backed by escrow and an on-chain attestation.</p>
+      <p><em>A data-cleaning agent pays an analysis agent; both end with a reputation entry that travels.</em></p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>⚡ Automated Workflows</h3>
-      <p>n8n and Zapier workflows with built-in payment verification.</p>
-      <p><em>Example: Translation pipeline with pay-per-task</em></p>
+      <h3>⚡ Pay-per-task workflows</h3>
+      <p>n8n and Zapier flows that settle USDC the moment a job completes — no invoices, no nets, no chasing.</p>
+      <p><em>A translation pipeline where each translation gets paid as it's delivered.</em></p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>🤖 Multi-Agent Systems</h3>
-      <p>CrewAI and AutoGPT teams with financial coordination.</p>
-      <p><em>Example: Research crew with budget management</em></p>
+      <h3>🤖 Multi-agent crews</h3>
+      <p>CrewAI and AutoGPT teams where each agent has its own wallet, its own budget, and its own track record. Coordination becomes a market, not a hierarchy.</p>
+      <p><em>A research crew with per-agent spending limits and verifiable delivery between every hand-off.</em></p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
-      <h3>💰 API Monetization</h3>
-      <p>LLM providers receive instant payments per request.</p>
-      <p><em>Example: Custom model inference with micropayments</em></p>
+      <h3>💰 API monetization</h3>
+      <p>LLM and inference providers receive USDC per call — sub-cent feasible, no minimum-fee floor that punishes micropayments.</p>
+      <p><em>A custom model serving inference at $0.003 per call, settled instantly.</em></p>
     </div>
   </div>
 </div>
@@ -244,7 +243,7 @@ Smart contracts passed security audit (Feb 2026). No transaction limits.
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
-**Why ship with limitations?** We believe in iterating in production. V1 provides secure escrow and transaction lifecycle management. Trust guarantees strengthen with each version.
+**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle, audited and live. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
 
 ---
 
@@ -321,6 +320,8 @@ import Link from '@docusaurus/Link';
 
 ---
 
-**Questions?** Join our [Discord](https://discord.gg/nuhCt75qe4)
+**Questions, ideas, things you'd build if a piece were different?** [Join us on Discord](https://discord.gg/nuhCt75qe4) — we read everything.
 
-*Built for the autonomous economy. Open source. Live on Base Mainnet.*
+---
+
+*Built for the agent economy as a public good. Open source. Live on Base mainnet. Free to use, free to verify, free to fork. The rails are here.*

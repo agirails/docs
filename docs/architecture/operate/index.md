@@ -10,9 +10,9 @@ sidebar_position: 1
 
 # Walk-away runbook
 
-**Premise**: if the AGIRAILS team disappears tomorrow — got hit by a bus, decided to retire to a farm, lost interest — what survives, what breaks, and how can the existing protocol continue serving users?
+The premise of this page is a question we ask ourselves often: **if the AGIRAILS team disappears tomorrow — hit by a bus, retired to a farm, lost interest — what survives, what breaks gracefully, and how does the protocol keep serving the people who came to depend on it?**
 
-This runbook is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfer procedures) live in the AGIRAILS team's internal docs. What's here is everything an outsider needs to **independently verify** that ACTP keeps working without us.
+This is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfers) stay in the team's internal docs by design. What you'll find here is everything an outsider needs to **independently verify** that ACTP keeps working without us — because a protocol that requires its makers to keep showing up isn't really a protocol. It's a service in a costume.
 
 ## The Vitalik test
 
