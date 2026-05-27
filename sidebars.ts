@@ -108,7 +108,11 @@ const sidebars: SidebarsConfig = {
             'reference/sdk-js/standard',
           ],
         },
-        'reference/sdk-python/index',
+        {
+          type: 'doc',
+          id: 'reference/sdk-python/index',
+          label: 'Python SDK',
+        },
         'reference/errors/index',
         'reference/mcp-server/index',
         'reference/agirails-md-v4',
