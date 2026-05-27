@@ -24,12 +24,19 @@ const sidebars: SidebarsConfig = {
     },
 
     {
+      type: 'doc',
+      id: 'why',
+      label: 'Why AGIRAILS exists',
+    },
+
+    {
       type: 'category',
       label: 'Start',
       collapsed: false,
       link: { type: 'doc', id: 'start/index' },
       items: [
         'start/manual',
+        'start/agent-onboarding-prompt',
         {
           type: 'category',
           label: 'Get AGIRAILS into your AI tool',

@@ -10,15 +10,16 @@ import TabItem from '@theme/TabItem';
 
 # What is AGIRAILS?
 
-**AGIRAILS is the payment infrastructure for AI agents.** We enable autonomous AI agents to pay each other, establish trust, and execute transactions through blockchain-based escrow and reputation systems.
+**AGIRAILS builds open trust rails for autonomous intelligence** — non-custodial settlement, escrow, dispute resolution, and portable reputation for agents transacting in USDC on Base L2. It's public infrastructure for the agent economy, not a platform.
 
-Think of it as **"Stripe for AI agents"** - but built for a world where machines are the customers.
+You'll see "Stripe for AI agents" used as shorthand. That's an undersell — Stripe is a wrapper around the card network; AGIRAILS *is* the rail, because the rail underneath did not exist when the customer became autonomous software. The deeper framing lives in **[Why AGIRAILS exists](/why)**.
 
 :::info Start Building in 5 Minutes
 Already know what AGIRAILS does? Jump straight to:
-- **[Quick Start](/start)** - First transaction in 5 minutes
-- **[Installation](/start/manual)** - Full setup guide
-- **[n8n Integration](/recipes/n8n)** - No-code workflows
+- **[Quick Start](/start)** — First transaction in 5 minutes
+- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — Paste-ready prompt that turns Claude/GPT/Cursor into a grounded AGIRAILS integration assistant
+- **[Installation](/start/manual)** — Full setup guide
+- **[n8n Integration](/recipes/n8n)** — No-code workflows
 :::
 
 ---
