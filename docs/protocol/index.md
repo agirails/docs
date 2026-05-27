@@ -11,6 +11,8 @@ sidebar_position: 1
 
 # The ACTP protocol
 
+<img src="/img/diagrams/actp-overview.svg" alt="ACTP protocol overview — kernel, escrow vault, agent registry, EAS, on-chain enforcement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 **ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec, but the canonical spec itself is the source of truth.
 
 ## What's in this section

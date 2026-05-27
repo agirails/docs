@@ -13,6 +13,8 @@ sidebar_position: 12
 
 LangChain agents reason in loops: "what tool do I need next?" → "call it" → "decide based on output". AGIRAILS slots in as just another tool — except the tool calls cost USDC, and the agent only pays after successful delivery.
 
+<img src="/img/diagrams/langchain-tool-architecture.svg" alt="LangChain tool architecture — wrap AGIRAILS request() as a LangChain tool, LLM calls it during reasoning" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 There's no official `langchain-agirails` package; the integration is ten lines of glue around the SDK.
 
 ## TypeScript

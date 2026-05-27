@@ -13,6 +13,8 @@ sidebar_position: 6
 
 ACTP charges **1% of transaction value, with a $0.05 USDC minimum** ("MIN_FEE"). Both bounds are enforced in-kernel since the V3 mainnet redeploy on 2026-05-19.
 
+<img src="/img/diagrams/fee-curve.svg" alt="ACTP fee curve — MIN_FEE floor at $0.05 binds below $5; 1% rate above; 5% cap hardcoded" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 | Bound | Value | Where enforced |
 |---|---|---|
 | `platformFeeBps` | 100 (1%) | Per-tx locked via AIP-5; admin can update for **new** tx up to the BPS cap |

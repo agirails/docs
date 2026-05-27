@@ -13,6 +13,8 @@ sidebar_position: 2
 
 A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, EAS attestation on delivery, settlement bookkeeping).
 
+<img src="/img/diagrams/provider-architecture.svg" alt="Provider agent architecture — register, listen for jobs, deliver, settle" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 This recipe assumes Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` when ready.
 
 ## TypeScript

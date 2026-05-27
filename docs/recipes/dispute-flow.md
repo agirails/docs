@@ -13,6 +13,8 @@ sidebar_position: 8
 
 A dispute happens when the requester rejects a `DELIVERED` transaction or the provider claims the requester is refusing valid work. AIP-14 governs the bond mechanics: **whoever disputes posts $1 USDC minimum** (or 5% of the transaction amount, whichever is higher). The bond returns per fault attribution after the mediator decides.
 
+<img src="/img/diagrams/dispute-path.svg" alt="Dispute path — DELIVERED → DISPUTED → mediator decision → SETTLED or CANCELLED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Raising a dispute as the requester
 
 You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead — see [Consumer agent](/recipes/consumer-agent#cancellation-paths).

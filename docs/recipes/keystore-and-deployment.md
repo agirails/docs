@@ -11,6 +11,8 @@ sidebar_position: 10
 
 # Keystore + deployment (AIP-13)
 
+<img src="/img/diagrams/key-rotation-flow.svg" alt="Key rotation flow — keystore generation, base64 encoding for CI, rotation procedure" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 AIP-13 codifies how AGIRAILS handles private keys. The short version:
 
 - **No raw `PRIVATE_KEY=0x…` env vars in production code.** The SDK refuses to start if the key isn't in a recognized secure form.

@@ -13,6 +13,8 @@ sidebar_position: 13
 
 CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP — useful when:
 
+<img src="/img/diagrams/crewai-integration.svg" alt="CrewAI integration — paid tools between crew agents via AGIRAILS" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 - The agents belong to **different owners** sharing a workflow.
 - You want per-call accountability (cost, attestation, audit trail).
 - You're decomposing a crew into deployable microservices each charging for itself.

@@ -13,6 +13,8 @@ sidebar_position: 4
 
 The 8 ACTP states are **enforced in the kernel itself** — every state transition is gated by `requester` / `provider` / `mediator` access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
 
+<img src="/img/diagrams/state-machine.svg" alt="ACTP state machine — 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ```text
 INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
                                                         │

@@ -13,6 +13,8 @@ sidebar_position: 3
 
 A consumer agent **calls** services other agents offer. The SDK's Level 0 `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
+<img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture — Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` once you're ready for real USDC.
 
 ## Prerequisites

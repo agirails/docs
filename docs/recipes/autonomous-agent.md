@@ -11,6 +11,8 @@ sidebar_position: 4
 
 # Build an autonomous agent
 
+<img src="/img/diagrams/autonomous-architecture.svg" alt="Autonomous agent — both provide and request in one process, with budget caps" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 A truly autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
 
 1. Provides `summarize` (you call it with a URL, get back a summary).

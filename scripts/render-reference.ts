@@ -533,6 +533,8 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('');
   lines.push(`**Package**: \`@agirails/sdk@${sdk.package_version}\` · **Total symbols**: ${sdk.count} · **Source**: \`${sdk.source_file}\``);
   lines.push('');
+  lines.push('<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API — Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: \'100%\', height: \'auto\', margin: \'1.5rem 0\'}} />');
+  lines.push('');
   lines.push('The TypeScript SDK is tiered to match the depth of integration you need:');
   lines.push('');
   lines.push('| Tier | Symbols | When to use |');

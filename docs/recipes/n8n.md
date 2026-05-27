@@ -13,6 +13,8 @@ sidebar_position: 11
 
 `n8n-nodes-actp` is the community node that exposes AGIRAILS to n8n. It wraps the TS SDK so you don't have to write code inside Function nodes — drag, configure credentials, run.
 
+<img src="/img/diagrams/n8n-architecture.svg" alt="n8n-nodes-actp architecture — Request, Provide trigger, Settle nodes wrapping the SDK" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 ## Install
 
 In n8n: **Settings → Community Nodes → Install** → `n8n-nodes-actp`.

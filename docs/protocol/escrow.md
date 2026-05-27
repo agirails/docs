@@ -13,6 +13,8 @@ sidebar_position: 5
 
 The **EscrowVault** smart contract is where USDC actually sits during a transaction's `COMMITTED → DELIVERED → SETTLED` window. The ACTPKernel kernel calls `EscrowVault.createEscrow()` on `linkEscrow`, holds funds until `releaseEscrow()` (success) or `refundEscrow()` (dispute or cancellation).
 
+<img src="/img/diagrams/escrow-lifecycle.svg" alt="EscrowVault lifecycle — createEscrow → releaseEscrow / refundEscrow / lockForDispute paths" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 EscrowVault is the only contract that holds user funds. Its solvency invariant — **vault USDC balance ≥ sum of all active escrows** — is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
 
 ## Lifecycle

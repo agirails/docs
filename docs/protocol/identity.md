@@ -11,6 +11,8 @@ sidebar_position: 8
 
 # Agent identity
 
+<img src="/img/diagrams/identity-model.svg" alt="AGIRAILS identity layers — EOA, Smart Wallet, AgentRegistry slug, ERC-8004 cross-chain ID" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 Identity in AGIRAILS shows up at three layers — easy to confuse on first read:
 
 | Layer | What it identifies | Where |

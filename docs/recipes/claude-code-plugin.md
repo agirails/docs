@@ -11,6 +11,8 @@ sidebar_position: 14
 
 # Claude Code plugin recipes
 
+<img src="/img/diagrams/claude-plugin-architecture.svg" alt="Claude Code plugin architecture — slash commands, skills, agents wrapping the SDK" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 The `agirails` Claude Code plugin gives Claude Code three things:
 
 1. **Slash commands** for common ACTP dev tasks (`/agirails:agent-new`, `/agirails:wallet-check`, `/agirails:audit`).

@@ -15,6 +15,8 @@ sidebar_position: 0
 
 **Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 173 · **Source**: `src/index.ts`
 
+<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API — Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+
 The TypeScript SDK is tiered to match the depth of integration you need:
 
 | Tier | Symbols | When to use |

@@ -663,6 +663,7 @@ The ACTP protocol
 
 # The ACTP protocol
 
+
 **ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) — every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec, but the canonical spec itself is the source of truth.
 
 ## What's in this section
@@ -825,6 +826,7 @@ ACTP state machine
 
 The 8 ACTP states are **enforced in the kernel itself** — every state transition is gated by `requester` / `provider` / `mediator` access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
 
+
 ```text
 INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
                                                         │
@@ -885,6 +887,7 @@ Escrow mechanism
 # Escrow
 
 The **EscrowVault** smart contract is where USDC actually sits during a transaction's `COMMITTED → DELIVERED → SETTLED` window. The ACTPKernel kernel calls `EscrowVault.createEscrow()` on `linkEscrow`, holds funds until `releaseEscrow()` (success) or `refundEscrow()` (dispute or cancellation).
+
 
 EscrowVault is the only contract that holds user funds. Its solvency invariant — **vault USDC balance ≥ sum of all active escrows** — is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
 
@@ -967,6 +970,7 @@ Fee model
 
 ACTP charges **1% of transaction value, with a $0.05 USDC minimum** ("MIN_FEE"). Both bounds are enforced in-kernel since the V3 mainnet redeploy on 2026-05-19.
 
+
 | Bound | Value | Where enforced |
 |---|---|---|
 | `platformFeeBps` | 100 (1%) | Per-tx locked via AIP-5; admin can update for **new** tx up to the BPS cap |
@@ -1042,6 +1046,7 @@ AIP-2.1 quote channel
 # AIP-2.1 quote channel
 
 ACTP supports a **signed off-chain negotiation phase** between INITIATED and COMMITTED. Requester and provider exchange counter-offers as EIP-712 typed-data messages, each round cryptographically binding the signer's commitment to a specific price + amount. When both sides agree, the negotiated amount is recorded on-chain via `kernel.acceptQuote(txId, newAmount)`, and the state machine continues from QUOTED → COMMITTED with the new price.
+
 
 The off-chain part is the key — negotiation doesn't burn gas per round. Only the final commitment touches the chain.
 
@@ -1129,6 +1134,7 @@ Agent identity (ERC-8004 + AgentRegistry)
 ============================================================
 
 # Agent identity
+
 
 Identity in AGIRAILS shows up at three layers — easy to confuse on first read:
 
@@ -1528,6 +1534,7 @@ Build a provider agent
 
 A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, EAS attestation on delivery, settlement bookkeeping).
 
+
 This recipe assumes Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` when ready.
 
 ## TypeScript
@@ -1660,6 +1667,7 @@ Build a consumer agent
 
 A consumer agent **calls** services other agents offer. The SDK's Level 0 `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
+
 This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` once you're ready for real USDC.
 
 ## Prerequisites
@@ -1775,6 +1783,7 @@ Build an autonomous agent
 ============================================================
 
 # Build an autonomous agent
+
 
 A truly autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
 
@@ -2248,6 +2257,7 @@ Dispute flow
 
 A dispute happens when the requester rejects a `DELIVERED` transaction or the provider claims the requester is refusing valid work. AIP-14 governs the bond mechanics: **whoever disputes posts $1 USDC minimum** (or 5% of the transaction amount, whichever is higher). The bond returns per fault attribution after the mediator decides.
 
+
 ## Raising a dispute as the requester
 
 You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead — see [Consumer agent](/recipes/consumer-agent#cancellation-paths).
@@ -2508,6 +2518,7 @@ Keystore + deployment (AIP-13)
 
 # Keystore + deployment (AIP-13)
 
+
 AIP-13 codifies how AGIRAILS handles private keys. The short version:
 
 - **No raw `PRIVATE_KEY=0x…` env vars in production code.** The SDK refuses to start if the key isn't in a recognized secure form.
@@ -2644,6 +2655,7 @@ n8n workflow
 
 `n8n-nodes-actp` is the community node that exposes AGIRAILS to n8n. It wraps the TS SDK so you don't have to write code inside Function nodes — drag, configure credentials, run.
 
+
 ## Install
 
 In n8n: **Settings → Community Nodes → Install** → `n8n-nodes-actp`.
@@ -2758,6 +2770,7 @@ LangChain integration
 # LangChain integration
 
 LangChain agents reason in loops: "what tool do I need next?" → "call it" → "decide based on output". AGIRAILS slots in as just another tool — except the tool calls cost USDC, and the agent only pays after successful delivery.
+
 
 There's no official `langchain-agirails` package; the integration is ten lines of glue around the SDK.
 
@@ -2895,6 +2908,7 @@ CrewAI integration
 
 CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP — useful when:
 
+
 - The agents belong to **different owners** sharing a workflow.
 - You want per-call accountability (cost, attestation, audit trail).
 - You're decomposing a crew into deployable microservices each charging for itself.
@@ -3013,6 +3027,7 @@ Claude Code plugin recipes
 ============================================================
 
 # Claude Code plugin recipes
+
 
 The `agirails` Claude Code plugin gives Claude Code three things:
 
@@ -3451,44 +3466,273 @@ TypeScript SDK reference
 
 # TypeScript SDK reference
 
-@agirails/sdk@4.0.0 — tier-tagged public API surface from sdk-js barrel.
+**Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 173 · **Source**: `src/index.ts`
 
-This page will render content from the truth-ledger manifest. Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
 
-## See also
+The TypeScript SDK is tiered to match the depth of integration you need:
 
-- [Reference overview](/reference)
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
+| Tier | Symbols | When to use |
+|---|---|---|
+| **[Level 0 + Basic](/reference/sdk-js/basic)** | 11 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
+| **[Standard + Advanced](/reference/sdk-js/standard)** | 153 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
+| _Internal_ | 9 | Not part of the public API contract; documented separately if at all |
 
-============================================================
-Basic API (TS)
-============================================================
+## Quick orientation
 
-# Basic API (TS)
+Three entry points cover most real code:
 
-provide / request / serviceDirectory + ACTPClient.create — the level0 surface.
+```ts
+// 1. Level 0 — one-shot request / provide, no Agent lifecycle
 
-This page will render content from the truth-ledger manifest. Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
 
-## See also
+// 2. Basic — long-lived agent with handlers
 
-- [Reference overview](/reference)
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
 
-============================================================
-Standard API (TS)
-============================================================
+// 3. Standard — direct adapter / builder usage
 
-# Standard API (TS)
+```
 
-Adapters, builders, runtime helpers — the standard tier.
-
-This page will render content from the truth-ledger manifest. Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
+Pick the lowest tier that covers your use case; you can always drop deeper if needed.
 
 ## See also
 
-- [Reference overview](/reference)
+- [Python SDK reference](/reference/sdk-python)
+- [Errors reference](/reference/errors)
+- [CLI reference](/reference/cli)
+- [Consumer agent recipe](/recipes/consumer-agent) — Level 0 / Basic in practice
+- [Provider agent recipe](/recipes/provider-agent) — Level 0 / Basic in practice
+
+============================================================
+TypeScript SDK — Basic + Level 0
+============================================================
+
+# TypeScript SDK — Basic + Level 0
+
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+
+Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
+
+For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.
+
+## Level0 tier — 5 symbols
+
+The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start — three or four imports get you a fully functional consumer or provider agent.
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ACTPClient` | _re-export_ | ✅ in-sync |
+| `ACTPClientConfig` | _re-export_ | ✅ in-sync |
+| `provide` | _re-export_ | ✅ in-sync |
+| `request` | _re-export_ | ✅ in-sync |
+| `serviceDirectory` | _re-export_ | 🟢 TS ahead — Python parity pending |
+
+## Basic tier — 6 symbols
+
+The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `Agent` | _re-export_ | ✅ in-sync |
+| `BasicAdapter` | _re-export_ | ✅ in-sync |
+| `BasicPayParams` | _re-export_ | ✅ in-sync |
+| `BasicPayResult` | _re-export_ | ✅ in-sync |
+| `MockRuntime` | _re-export_ | ✅ in-sync |
+| `StandardAdapter` | _re-export_ | ✅ in-sync |
+
+## See also
+
+- [Python SDK reference](/reference/sdk-python)
+- [TypeScript Standard + Advanced](/reference/sdk-js/standard)
+- [Errors reference](/reference/errors) — exception class catalog
 - [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
+- [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)
+
+============================================================
+TypeScript SDK — Standard + Advanced
+============================================================
+
+# TypeScript SDK — Standard + Advanced
+
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 153 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-26 12:27:57 UTC
+
+Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
+
+For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.
+
+## Standard tier — 140 symbols
+
+Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ACTP_FEEDBACK_TAGS` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ACTPClientInfo` | _re-export_ | ✅ in-sync |
+| `ACTPClientMode` | _re-export_ | ✅ in-sync |
+| `ACTPError` | _re-export_ | ✅ in-sync |
+| `ACTPKernel` | _re-export_ | ✅ in-sync |
+| `AdapterSelectionResult` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `AdapterTransactionState` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `Address` | _re-export_ | ✅ in-sync |
+| `AgentLifecycleError` | _re-export_ | ✅ in-sync |
+| `AgentRegistry` | _re-export_ | ✅ in-sync |
+| `ARCHIVE_BUNDLE_TYPE` | _re-export_ | ✅ in-sync |
+| `ArchiveBundleBuilder` | _re-export_ | ✅ in-sync |
+| `ArweaveDownloadError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ArweaveTimeoutError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ArweaveUploadError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `AutoWalletProvider` | _re-export_ | ✅ in-sync |
+| `BaseAdapter` | _re-export_ | ✅ in-sync |
+| `BlockchainRuntimeConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `buildChannelPath` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `Bytes32` | _re-export_ | ✅ in-sync |
+| `calculatePrice` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `computeContentHash` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ContentNotFoundError` | _re-export_ | ✅ in-sync |
+| `ContractPausedError` | _re-export_ | ✅ in-sync |
+| `CounterAcceptBuilder` | _re-export_ | ✅ in-sync |
+| `CounterOfferBuilder` | _re-export_ | ✅ in-sync |
+| `CreateTransactionParams` | _re-export_ | ✅ in-sync |
+| `createUsedAttestationTracker` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `Deadline` | _re-export_ | ✅ in-sync |
+| `DeadlineExpiredError` | _re-export_ | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DeadlinePassedError` | _re-export_ | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DEFAULT_DEADLINE_SECONDS` | _re-export_ | ✅ in-sync |
+| `DEFAULT_DISPUTE_WINDOW_SECONDS` | _re-export_ | ✅ in-sync |
+| `DEFAULT_PRICING_STRATEGY` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `DeliveryFailedError` | _re-export_ | ✅ in-sync |
+| `DeliveryProofBuilder` | _re-export_ | ✅ in-sync |
+| `DIDManager` | _re-export_ | ✅ in-sync |
+| `DIDResolver` | _re-export_ | ✅ in-sync |
+| `DisputeRaisedError` | _re-export_ | ✅ in-sync |
+| `DisputeWindow` | _re-export_ | ✅ in-sync |
+| `DisputeWindowActiveError` | _re-export_ | ✅ in-sync |
+| `DownloadTimeoutError` | _re-export_ | ✅ in-sync |
+| `EASConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `envelopeChainId` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `envelopeTxId` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `EOAWalletProvider` | _re-export_ | ✅ in-sync |
+| `ERC8004_DEFAULT_RPC` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ERC8004_IDENTITY_REGISTRY` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ERC8004_REPUTATION_REGISTRY` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ERC8004Bridge` | _re-export_ | ✅ in-sync |
+| `ERC8004Error` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ERC8004ErrorCode` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `EscrowNotFoundError` | _re-export_ | ✅ in-sync |
+| `EscrowVault` | _re-export_ | ✅ in-sync |
+| `EventMonitor` | _re-export_ | ✅ in-sync |
+| `FileBasedUsedAttestationTracker` | _re-export_ | ✅ in-sync |
+| `FileSizeLimitExceededError` | _re-export_ | ✅ in-sync |
+| `formatUSDC` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `generateSecureNonce` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `generateSecureNonces` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `getCachedAddress` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `getNetwork` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `hashServiceMetadata` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `IACTPRuntime` | _re-export_ | ✅ in-sync |
+| `IAdapter` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `IMockRuntime` | _re-export_ | ✅ in-sync |
+| `InMemoryNonceManager` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `InMemoryReceivedNonceTracker` | _re-export_ | ✅ in-sync |
+| `InMemoryUsedAttestationTracker` | _re-export_ | ✅ in-sync |
+| `InsufficientBalanceError` | _re-export_ | ✅ in-sync |
+| `InsufficientFundsError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `InvalidAddressError` | _re-export_ | ✅ in-sync |
+| `InvalidAmountError` | _re-export_ | ✅ in-sync |
+| `InvalidArweaveTxIdError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `InvalidCIDError` | _re-export_ | ✅ in-sync |
+| `InvalidStateTransitionError` | _re-export_ | ✅ in-sync |
+| `IReceivedNonceTracker` | _re-export_ | ✅ in-sync |
+| `isAdapter` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `isCounterAcceptEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `isCounterOfferEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `isQuoteEnvelope` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `isValidNonce` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `IUsedAttestationTracker` | _re-export_ | ✅ in-sync |
+| `MAX_DEADLINE_DAYS` | _re-export_ | ✅ in-sync |
+| `MAX_DEADLINE_HOURS` | _re-export_ | ✅ in-sync |
+| `MIN_AMOUNT_WEI` | _re-export_ | ✅ in-sync |
+| `MockAccount` | _re-export_ | ✅ in-sync |
+| `MockBlockchain` | _re-export_ | ✅ in-sync |
+| `MockEscrow` | _re-export_ | ✅ in-sync |
+| `MockEvent` | _re-export_ | ✅ in-sync |
+| `MockState` | _re-export_ | ✅ in-sync |
+| `MockTransaction` | _re-export_ | ✅ in-sync |
+| `NetworkError` | _re-export_ | ✅ in-sync |
+| `NonceManager` | _re-export_ | ✅ in-sync |
+| `NoProviderFoundError` | _re-export_ | ✅ in-sync |
+| `parseUSDC` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ProviderPolicyEngine` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ProviderRejectedError` | _re-export_ | ✅ in-sync |
+| `QueryCapExceededError` | _re-export_ | ✅ in-sync |
+| `QuoteBuilder` | _re-export_ | ✅ in-sync |
+| `RateLimiter` | _re-export_ | ✅ in-sync |
+| `RelayChannel` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ReputationReporter` | _re-export_ | ✅ in-sync |
+| `resolvePrivateKey` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `Semaphore` | _re-export_ | ✅ in-sync |
+| `ServiceConfigError` | _re-export_ | ✅ in-sync |
+| `ServiceHash` | _re-export_ | ✅ in-sync |
+| `shortenAddress` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `SignatureVerificationError` | _re-export_ | ✅ in-sync |
+| `StandardTransactionParams` | _re-export_ | ✅ in-sync |
+| `StateHelpers` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `StorageAuthenticationError` | _re-export_ | ✅ in-sync |
+| `StorageError` | _re-export_ | ✅ in-sync |
+| `StorageInsufficientBalanceError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `StorageRateLimitError` | _re-export_ | ✅ in-sync |
+| `SwapExecutionError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `TimeoutError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `TransactionNotFoundError` | _re-export_ | ✅ in-sync |
+| `TransactionRevertedError` | _re-export_ | ✅ in-sync |
+| `TransactionState` | _re-export_ | ✅ in-sync |
+| `TransactionStateValue` | _re-export_ | ✅ in-sync |
+| `TransactionStatus` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `UploadTimeoutError` | _re-export_ | ✅ in-sync |
+| `URLValidationConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `USDC` | _re-export_ | ✅ in-sync |
+| `validateArchiveBundle` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `ValidationError` | _re-export_ | ✅ in-sync |
+| `verifyQuoteHashOnChain` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402Adapter` | _re-export_ | ✅ in-sync |
+| `X402AdapterConfig` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402AmountExceededError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402ApprovalFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402ConfigError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402Error` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402NetworkNotAllowedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402PaymentFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402PublishRequiredError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402SettlementProofMissingError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402SignatureFailedError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `X402UnsupportedWalletError` | _re-export_ | 🟢 TS ahead — Python parity pending |
+
+## Advanced tier — 13 symbols
+
+Lower-level building blocks rarely needed in application code: orchestrators, dedup stores, policy engines, raw runtime interfaces. Stable APIs but the contract is "you know what you're doing." Reach here only when the standard tier is genuinely insufficient.
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ArweaveClient` | _re-export_ | ✅ in-sync |
+| `BlockchainRuntime` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `BuyerOrchestrator` | _re-export_ | ✅ in-sync |
+| `DecisionEngine` | _re-export_ | ✅ in-sync |
+| `EASHelper` | _re-export_ | ✅ in-sync |
+| `FilebaseClient` | _re-export_ | ✅ in-sync |
+| `MessageSigner` | _re-export_ | ✅ in-sync |
+| `PolicyEngine` | _re-export_ | ✅ in-sync |
+| `ProofGenerator` | _re-export_ | ✅ in-sync |
+| `ProviderOrchestrator` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `QuoteChannelClient` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `QuoteChannelHandler` | _re-export_ | 🟢 TS ahead — Python parity pending |
+| `SessionStore` | _re-export_ | ✅ in-sync |
+
+## See also
+
+- [Python SDK reference](/reference/sdk-python)
+- [TypeScript Basic + Level 0](/reference/sdk-js/basic)
+- [Errors reference](/reference/errors) — exception class catalog
+- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
+- [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)
 
 ============================================================
 Python SDK reference
@@ -3496,14 +3740,351 @@ Python SDK reference
 
 # Python SDK reference
 
-agirails@3.0.1 — tier-tagged public API surface from __all__ + tier-map.
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-26 12:27:57 UTC
 
-This page will render content from the truth-ledger manifest. Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
+Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
+
+For detailed per-symbol docs (parameters, return types, examples) consult the source docstrings in [`agirails/sdk-python`](https://github.com/agirails/sdk-python). Auto-extraction of docstrings into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.
+
+## Tier distribution
+
+| Tier | Symbols |
+|---|---|
+| [Level0](#level0-tier) | 4 |
+| [Basic](#basic-tier) | 14 |
+| [Standard](#standard-tier) | 245 |
+| [Advanced](#advanced-tier) | 9 |
+| _Internal_ (not in this view) | 5 |
+
+## Quick orientation
+
+```python
+# Level 0 — one-shot request / provide
+from agirails import request, provide
+
+# Basic — long-lived agent with handlers
+from agirails import Agent
+
+# Standard — direct kernel / adapter usage
+from agirails import ACTPClient, CounterOfferMessage
+```
+
+## Level0 tier {#level0-tier}
+
+The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start — three or four imports get you a fully functional consumer or provider agent.
+
+**4 symbols.**
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ACTPClient` | `undefined` | ✅ in-sync |
+| `ACTPClientConfig` | `undefined` | ✅ in-sync |
+| `provide` | `undefined` | ✅ in-sync |
+| `request` | `undefined` | ✅ in-sync |
+
+## Basic tier {#basic-tier}
+
+The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
+
+**14 symbols.**
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `Agent` | `undefined` | ✅ in-sync |
+| `AgentConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `BasicAdapter` | `undefined` | ✅ in-sync |
+| `BasicPayParams` | `undefined` | ✅ in-sync |
+| `BasicPayResult` | `undefined` | ✅ in-sync |
+| `Job` | `undefined` | 🟡 TS has it; Python pending |
+| `JobContext` | `undefined` | 🟡 TS has it; Python pending |
+| `JobHandler` | `undefined` | 🟡 TS has it; Python pending |
+| `MockRuntime` | `undefined` | ✅ in-sync |
+| `ProvideOptions` | `undefined` | 🟡 TS has it; Python pending |
+| `RequestOptions` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `StandardAdapter` | `undefined` | ✅ in-sync |
+| `State` | `undefined` | 🟡 TS has it; Python pending |
+
+## Standard tier {#standard-tier}
+
+Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.
+
+**245 symbols.**
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ACTPClientInfo` | `undefined` | ✅ in-sync |
+| `ACTPClientMode` | `undefined` | ✅ in-sync |
+| `ACTPError` | `undefined` | ✅ in-sync |
+| `ACTPEvent` | `undefined` | 🟡 TS has it; Python pending |
+| `ACTPKernel` | `undefined` | ✅ in-sync |
+| `ACTPTimeoutError` | `undefined` | 🟡 TS has it; Python pending |
+| `Address` | `undefined` | ✅ in-sync |
+| `AgentBalance` | `undefined` | 🟡 TS has it; Python pending |
+| `AgentBehavior` | `undefined` | 🟡 TS has it; Python pending |
+| `AgentDID` | `undefined` | 🟡 TS has it; Python pending |
+| `AgentLifecycleError` | `undefined` | ✅ in-sync |
+| `AgentProfile` | `undefined` | 🟡 TS has it; Python pending |
+| `AgentRegistry` | `undefined` | ✅ in-sync |
+| `AgentStats` | `undefined` | 🟡 TS has it; Python pending |
+| `AgentStatus` | `undefined` | 🟡 TS has it; Python pending |
+| `ARCHIVE_BUNDLE_TYPE` | `undefined` | ✅ in-sync |
+| `ARCHIVE_SCHEMA_VERSION` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveAttestation` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveBundle` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveBundleBuilder` | `undefined` | ✅ in-sync |
+| `ArchiveChainId` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveFinalState` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveHashes` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveParticipants` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveReferences` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveSettlement` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveSignatures` | `undefined` | 🟡 TS has it; Python pending |
+| `ArchiveTags` | `undefined` | 🟡 TS has it; Python pending |
+| `ArweaveConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `ArweaveUploadResult` | `undefined` | 🟡 TS has it; Python pending |
+| `Attestation` | `undefined` | 🟡 TS has it; Python pending |
+| `AutoWalletProvider` | `undefined` | ✅ in-sync |
+| `BaseAdapter` | `undefined` | ✅ in-sync |
+| `BuyerPolicy` | `undefined` | 🟡 TS has it; Python pending |
+| `Bytes32` | `undefined` | ✅ in-sync |
+| `calculate_price` | `undefined` | 🟡 TS has it; Python pending |
+| `CandidateStats` | `undefined` | 🟡 TS has it; Python pending |
+| `canonical_json_dumps` | `undefined` | 🟡 TS has it; Python pending |
+| `CheckStatusResult` | `undefined` | 🟡 TS has it; Python pending |
+| `CircuitBreakerConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_content_hash` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_domain_separator` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_json_hash` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_result_hash` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_service_type_hash` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_transaction_id` | `undefined` | 🟡 TS has it; Python pending |
+| `compute_type_hash` | `undefined` | 🟡 TS has it; Python pending |
+| `Constraints` | `undefined` | 🟡 TS has it; Python pending |
+| `ContentNotFoundError` | `undefined` | ✅ in-sync |
+| `ContentProof` | `undefined` | 🟡 TS has it; Python pending |
+| `ContractPausedError` | `undefined` | ✅ in-sync |
+| `CostModel` | `undefined` | 🟡 TS has it; Python pending |
+| `CounterAcceptBuilder` | `undefined` | ✅ in-sync |
+| `CounterAcceptMessage` | `undefined` | 🟡 TS has it; Python pending |
+| `CounterAcceptParams` | `undefined` | 🟡 TS has it; Python pending |
+| `CounterOfferBuilder` | `undefined` | ✅ in-sync |
+| `CounterOfferJustification` | `undefined` | 🟡 TS has it; Python pending |
+| `CounterOfferMessage` | `undefined` | 🟡 TS has it; Python pending |
+| `CounterOfferParams` | `undefined` | 🟡 TS has it; Python pending |
+| `create_did_from_address` | `undefined` | 🟡 TS has it; Python pending |
+| `create_received_nonce_tracker` | `undefined` | 🟡 TS has it; Python pending |
+| `create_typed_data` | `undefined` | 🟡 TS has it; Python pending |
+| `create_used_attestation_tracker` | `undefined` | 🟡 TS has it; Python pending |
+| `CreateEscrowParams` | `undefined` | 🟡 TS has it; Python pending |
+| `CreateTransactionParams` | `undefined` | ✅ in-sync |
+| `Deadline` | `undefined` | ✅ in-sync |
+| `DeadlineExpiredError` | `undefined` | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DeadlinePassedError` | `undefined` | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DEFAULT_DEADLINE_SECONDS` | `undefined` | ✅ in-sync |
+| `DEFAULT_DISPUTE_WINDOW_SECONDS` | `undefined` | ✅ in-sync |
+| `DEFAULT_WEIGHTS` | `undefined` | 🟡 TS has it; Python pending |
+| `DELIVERY_SCHEMA` | `undefined` | 🟡 TS has it; Python pending |
+| `DeliveryAttestationData` | `undefined` | 🟡 TS has it; Python pending |
+| `DeliveryFailedError` | `undefined` | ✅ in-sync |
+| `DeliveryProof` | `undefined` | 🟡 TS has it; Python pending |
+| `DeliveryProofBuilder` | `undefined` | ✅ in-sync |
+| `DeliveryProofMessage` | `undefined` | 🟡 TS has it; Python pending |
+| `DeliveryProofMetadata` | `undefined` | 🟡 TS has it; Python pending |
+| `did_to_address` | `undefined` | 🟡 TS has it; Python pending |
+| `DIDDocument` | `undefined` | 🟡 TS has it; Python pending |
+| `DIDManager` | `undefined` | ✅ in-sync |
+| `DIDResolver` | `undefined` | ✅ in-sync |
+| `discover_agents` | `undefined` | 🟡 TS has it; Python pending |
+| `DisputeRaisedError` | `undefined` | ✅ in-sync |
+| `DisputeWindow` | `undefined` | ✅ in-sync |
+| `DisputeWindowActiveError` | `undefined` | ✅ in-sync |
+| `DownloadResult` | `undefined` | 🟡 TS has it; Python pending |
+| `DownloadTimeoutError` | `undefined` | ✅ in-sync |
+| `EIP712Domain` | `undefined` | 🟡 TS has it; Python pending |
+| `EOAWalletProvider` | `undefined` | ✅ in-sync |
+| `ERC8004Bridge` | `undefined` | ✅ in-sync |
+| `EscrowCreatedEvent` | `undefined` | 🟡 TS has it; Python pending |
+| `EscrowInfo` | `undefined` | 🟡 TS has it; Python pending |
+| `EscrowNotFoundError` | `undefined` | ✅ in-sync |
+| `EscrowPayoutEvent` | `undefined` | 🟡 TS has it; Python pending |
+| `EscrowRelease` | `undefined` | 🟡 TS has it; Python pending |
+| `EscrowVault` | `undefined` | ✅ in-sync |
+| `EventFilter` | `undefined` | 🟡 TS has it; Python pending |
+| `EventMonitor` | `undefined` | ✅ in-sync |
+| `EventType` | `undefined` | 🟡 TS has it; Python pending |
+| `FilebaseConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `FileBasedUsedAttestationTracker` | `undefined` | ✅ in-sync |
+| `FileSizeLimitExceededError` | `undefined` | ✅ in-sync |
+| `format_usdc` | `undefined` | 🟡 TS has it; Python pending |
+| `generate_escrow_id` | `undefined` | 🟡 TS has it; Python pending |
+| `generate_secure_nonce` | `undefined` | 🟡 TS has it; Python pending |
+| `generate_secure_nonces` | `undefined` | 🟡 TS has it; Python pending |
+| `HAS_MESSAGES` | `undefined` | 🟡 TS has it; Python pending |
+| `HAS_WEB3_PROTOCOL` | `undefined` | 🟡 TS has it; Python pending |
+| `hash_service_input` | `undefined` | 🟡 TS has it; Python pending |
+| `hash_service_metadata` | `undefined` | 🟡 TS has it; Python pending |
+| `hash_service_output` | `undefined` | 🟡 TS has it; Python pending |
+| `hash_struct` | `undefined` | 🟡 TS has it; Python pending |
+| `hash_typed_data` | `undefined` | 🟡 TS has it; Python pending |
+| `IACTPRuntime` | `undefined` | ✅ in-sync |
+| `IMockRuntime` | `undefined` | ✅ in-sync |
+| `InMemoryReceivedNonceTracker` | `undefined` | ✅ in-sync |
+| `InMemoryUsedAttestationTracker` | `undefined` | ✅ in-sync |
+| `InsufficientBalanceError` | `undefined` | ✅ in-sync |
+| `InvalidAddressError` | `undefined` | ✅ in-sync |
+| `InvalidAmountError` | `undefined` | ✅ in-sync |
+| `InvalidCIDError` | `undefined` | ✅ in-sync |
+| `InvalidStateTransitionError` | `undefined` | ✅ in-sync |
+| `IPFSUploadResult` | `undefined` | 🟡 TS has it; Python pending |
+| `IReceivedNonceTracker` | `undefined` | ✅ in-sync |
+| `IrysCurrency` | `undefined` | 🟡 TS has it; Python pending |
+| `IrysNetwork` | `undefined` | 🟡 TS has it; Python pending |
+| `is_mock_runtime` | `undefined` | 🟡 TS has it; Python pending |
+| `is_terminal_state` | `undefined` | 🟡 TS has it; Python pending |
+| `is_valid_address` | `undefined` | 🟡 TS has it; Python pending |
+| `is_valid_nonce` | `undefined` | 🟡 TS has it; Python pending |
+| `is_valid_transition` | `undefined` | 🟡 TS has it; Python pending |
+| `IUsedAttestationTracker` | `undefined` | ✅ in-sync |
+| `IWalletProvider` | `undefined` | 🟡 TS has it; Python pending |
+| `JobResult` | `undefined` | 🟡 TS has it; Python pending |
+| `Logger` | `undefined` | 🟡 TS has it; Python pending |
+| `LRUCache` | `undefined` | 🟡 TS has it; Python pending |
+| `MAX_DEADLINE_DAYS` | `undefined` | ✅ in-sync |
+| `MAX_DEADLINE_HOURS` | `undefined` | ✅ in-sync |
+| `MaxDailySpend` | `undefined` | 🟡 TS has it; Python pending |
+| `MaxUnitPrice` | `undefined` | 🟡 TS has it; Python pending |
+| `MerkleProof` | `undefined` | 🟡 TS has it; Python pending |
+| `MessageNonceManager` | `undefined` | 🟡 TS has it; Python pending |
+| `MIN_AMOUNT_WEI` | `undefined` | ✅ in-sync |
+| `MockAccount` | `undefined` | ✅ in-sync |
+| `MockBlockchain` | `undefined` | ✅ in-sync |
+| `MockEscrow` | `undefined` | ✅ in-sync |
+| `MockEvent` | `undefined` | ✅ in-sync |
+| `MockState` | `undefined` | ✅ in-sync |
+| `MockTransaction` | `undefined` | ✅ in-sync |
+| `Negotiation` | `undefined` | 🟡 TS has it; Python pending |
+| `NegotiationResult` | `undefined` | 🟡 TS has it; Python pending |
+| `NetworkError` | `undefined` | ✅ in-sync |
+| `NonceManager` | `undefined` | ✅ in-sync |
+| `NonceManagerPool` | `undefined` | 🟡 TS has it; Python pending |
+| `NonceValidationResult` | `undefined` | 🟡 TS has it; Python pending |
+| `NoProviderFoundError` | `undefined` | ✅ in-sync |
+| `OrchestratorConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `parse_usdc` | `undefined` | 🟡 TS has it; Python pending |
+| `PolicyResult` | `undefined` | 🟡 TS has it; Python pending |
+| `PolicyViolation` | `undefined` | 🟡 TS has it; Python pending |
+| `PriceCalculation` | `undefined` | 🟡 TS has it; Python pending |
+| `PricingStrategy` | `undefined` | 🟡 TS has it; Python pending |
+| `PROTOCOL_VERSION` | `undefined` | 🟡 TS has it; Python pending |
+| `Provider` | `undefined` | 🟡 TS has it; Python pending |
+| `ProviderConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `ProviderRejectedError` | `undefined` | ✅ in-sync |
+| `ProviderStatus` | `undefined` | 🟡 TS has it; Python pending |
+| `QueryCapExceededError` | `undefined` | ✅ in-sync |
+| `QuoteBuilder` | `undefined` | ✅ in-sync |
+| `QuoteOffer` | `undefined` | 🟡 TS has it; Python pending |
+| `RateLimiter` | `undefined` | ✅ in-sync |
+| `ReceiptUploadFailure` | `undefined` | 🟡 TS has it; Python pending |
+| `ReceiptUploadOptions` | `undefined` | 🟡 TS has it; Python pending |
+| `ReceiptUploadPayload` | `undefined` | 🟡 TS has it; Python pending |
+| `ReceiptUploadResult` | `undefined` | 🟡 TS has it; Python pending |
+| `ReceiptUploadSuccess` | `undefined` | 🟡 TS has it; Python pending |
+| `ReputationReporter` | `undefined` | ✅ in-sync |
+| `RequestResult` | `undefined` | 🟡 TS has it; Python pending |
+| `RetryConfig` | `undefined` | 🟡 TS has it; Python pending |
+| `RoundResult` | `undefined` | 🟡 TS has it; Python pending |
+| `safe_json_parse` | `undefined` | 🟡 TS has it; Python pending |
+| `Schema` | `undefined` | 🟡 TS has it; Python pending |
+| `ScoreBreakdown` | `undefined` | 🟡 TS has it; Python pending |
+| `ScoredCandidate` | `undefined` | 🟡 TS has it; Python pending |
+| `ScoringWeights` | `undefined` | 🟡 TS has it; Python pending |
+| `Selection` | `undefined` | 🟡 TS has it; Python pending |
+| `Semaphore` | `undefined` | ✅ in-sync |
+| `ServiceConfigError` | `undefined` | ✅ in-sync |
+| `ServiceDescriptor` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceDirectory` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceEndpoint` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceEntry` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceFilter` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceHash` | `undefined` | ✅ in-sync |
+| `ServiceMetadata` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceQuery` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceRequest` | `undefined` | 🟡 TS has it; Python pending |
+| `ServiceResponse` | `undefined` | 🟡 TS has it; Python pending |
+| `SessionMapping` | `undefined` | 🟡 TS has it; Python pending |
+| `SetBasedReceivedNonceTracker` | `undefined` | 🟡 TS has it; Python pending |
+| `shorten_address` | `undefined` | 🟡 TS has it; Python pending |
+| `SignatureComponents` | `undefined` | 🟡 TS has it; Python pending |
+| `SignatureVerificationError` | `undefined` | ✅ in-sync |
+| `SignedMessage` | `undefined` | 🟡 TS has it; Python pending |
+| `StandardTransactionParams` | `undefined` | ✅ in-sync |
+| `STATE_TRANSITIONS` | `undefined` | 🟡 TS has it; Python pending |
+| `StateHelper` | `undefined` | 🟡 TS has it; Python pending |
+| `StateTransitionedEvent` | `undefined` | 🟡 TS has it; Python pending |
+| `StorageAuthenticationError` | `undefined` | ✅ in-sync |
+| `StorageError` | `undefined` | ✅ in-sync |
+| `StorageRateLimitError` | `undefined` | ✅ in-sync |
+| `TimeInterface` | `undefined` | 🟡 TS has it; Python pending |
+| `timing_safe_equal` | `undefined` | 🟡 TS has it; Python pending |
+| `Transaction` | `undefined` | 🟡 TS has it; Python pending |
+| `TransactionCreatedEvent` | `undefined` | 🟡 TS has it; Python pending |
+| `TransactionDetails` | `undefined` | 🟡 TS has it; Python pending |
+| `TransactionFilter` | `undefined` | 🟡 TS has it; Python pending |
+| `TransactionNotFoundError` | `undefined` | ✅ in-sync |
+| `TransactionReceipt` | `undefined` | 🟡 TS has it; Python pending |
+| `TransactionRevertedError` | `undefined` | ✅ in-sync |
+| `TransactionState` | `undefined` | ✅ in-sync |
+| `TransactionStateValue` | `undefined` | ✅ in-sync |
+| `TransactionView` | `undefined` | 🟡 TS has it; Python pending |
+| `TypedData` | `undefined` | 🟡 TS has it; Python pending |
+| `upload_receipt` | `undefined` | 🟡 TS has it; Python pending |
+| `UploadTimeoutError` | `undefined` | ✅ in-sync |
+| `USDC` | `undefined` | ✅ in-sync |
+| `validate_address` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_amount` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_archive_bundle` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_bytes32` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_deadline` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_dispute_window` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_endpoint_url` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_path` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_service_name` | `undefined` | 🟡 TS has it; Python pending |
+| `validate_tx_id` | `undefined` | 🟡 TS has it; Python pending |
+| `ValidationError` | `undefined` | ✅ in-sync |
+| `VerificationMethod` | `undefined` | 🟡 TS has it; Python pending |
+| `verify_merkle_proof` | `undefined` | 🟡 TS has it; Python pending |
+| `WalletInfo` | `undefined` | 🟡 TS has it; Python pending |
+| `WalletTier` | `undefined` | 🟡 TS has it; Python pending |
+| `X402Adapter` | `undefined` | ✅ in-sync |
+| `ZERO_BYTES32` | `undefined` | 🟡 TS has it; Python pending |
+
+## Advanced tier {#advanced-tier}
+
+Lower-level building blocks rarely needed in application code: orchestrators, dedup stores, policy engines, raw runtime interfaces. Stable APIs but the contract is "you know what you're doing." Reach here only when the standard tier is genuinely insufficient.
+
+**9 symbols.**
+
+| Symbol | Kind | Cross-SDK status |
+|---|---|---|
+| `ArweaveClient` | `undefined` | ✅ in-sync |
+| `BuyerOrchestrator` | `undefined` | ✅ in-sync |
+| `DecisionEngine` | `undefined` | ✅ in-sync |
+| `EASHelper` | `undefined` | ✅ in-sync |
+| `FilebaseClient` | `undefined` | ✅ in-sync |
+| `MessageSigner` | `undefined` | ✅ in-sync |
+| `PolicyEngine` | `undefined` | ✅ in-sync |
+| `ProofGenerator` | `undefined` | ✅ in-sync |
+| `SessionStore` | `undefined` | ✅ in-sync |
 
 ## See also
 
-- [Reference overview](/reference)
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
+- [TypeScript SDK reference](/reference/sdk-js)
+- [Errors reference](/reference/errors)
+- [CLI reference](/reference/cli)
+- [Consumer agent recipe](/recipes/consumer-agent)
+- [Provider agent recipe](/recipes/provider-agent)
+- [Source: `agirails@3.0.1`](https://github.com/agirails/sdk-python)
 
 ============================================================
 Error reference
@@ -3810,6 +4391,11 @@ None of these steps require any AGIRAILS-controlled infrastructure. The trust is
 ============================================================
 FAQ
 ============================================================
+
+export const FAQSchema = () => (
+  
+);
+
 
 # FAQ
 
