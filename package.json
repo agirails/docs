@@ -10,6 +10,7 @@
     "truth-ledger:dry": "tsx scripts/build-truth-ledger.ts --dry-run",
     "truth-ledger:check": "tsx scripts/build-truth-ledger.ts --check",
     "render-reference": "tsx scripts/render-reference.ts",
+    "verify:recipes": "tsx scripts/verify-recipes.ts",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",

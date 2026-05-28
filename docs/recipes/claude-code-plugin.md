@@ -77,8 +77,8 @@ The agent has internal knowledge of:
 The auditor looks for:
 
 - Committed private keys (any 64-char hex matching `0x[a-f0-9]{64}`)
-- Missing budget caps on `agent.request()` calls
-- x402 endpoints without `requirePayment` middleware
+- Missing budget caps on `agent.request()` calls (V1: app-level enforcement)
+- x402 server endpoints that accept the `X-Payment` header without on-server signature verification
 - Hardcoded recipient addresses (should be config)
 - `wallet: 'eoa'` in production code (warns; you might have a reason)
 - Missing dispute handlers in long-running providers
@@ -132,3 +132,9 @@ If you're integrating against an older SDK (e.g. `@agirails/sdk@3.x`) explicitly
 - [Consumer agent](/recipes/consumer-agent) — what the wizard generates for the consumer side
 - [Provider agent](/recipes/provider-agent) — same for providers
 - [Plugin source on GitHub](https://github.com/agirails/claude-code-plugin)
+
+---
+
+<!-- VERIFIED FOOTER -->
+
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

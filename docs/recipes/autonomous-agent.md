@@ -178,3 +178,9 @@ A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees.
 - [Consumer agent](/recipes/consumer-agent) — spending side in isolation
 - [Gasless payment](/recipes/gasless-payment) — why concurrent earn+spend is fine on a single SCW
 - [Quote negotiation](/recipes/quote-negotiation) — covenant `pricing:` block + `actp serve` AIP-2.1 counter-offers
+
+---
+
+<!-- VERIFIED FOOTER -->
+
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

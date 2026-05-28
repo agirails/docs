@@ -44,30 +44,43 @@ The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the 
 
 ## SDK surface
 
+In V1, receipt upload happens **automatically** as part of the `DELIVERED` transition on the provider side — no explicit call needed. The CLI tooling lives at `src/cli/receiptUpload.ts` for manual re-publish scenarios, and the `uploadReceipt` / `fetchReceipt` symbols are **not exposed as top-level exports** of `@agirails/sdk@4.0.0`. Fetching is done by IPFS CID directly:
+
 ```ts
-import { uploadReceipt, fetchReceipt } from '@agirails/sdk';
+// V1 provider side: receipt upload is auto on DELIVERED. To re-publish
+// manually, use the CLI: `npx actp receipt:upload --tx <txId> ...`
+// or import the internal helper if your version exposes it.
 
-// Provider side — happens automatically inside DELIVERED transition,
-// but you can call it explicitly to re-publish:
-const cid = await uploadReceipt({
-  txId,
-  output: handlerResult,
-  metadata: { model: 'claude-4-sonnet' },
-});
+// V1 consumer side: fetch by CID from any IPFS gateway
+const txId = '0xTRANSACTION…';
+const tx = await agent.client.standard.getTransaction(txId);
+const cid = tx?.deliveryProofUri; // shape depends on SDK version; check via /reference
 
-// Consumer side — fetch + verify
-const receipt = await fetchReceipt(cid);
-// → verifies signature against on-chain provider address
-// → verifies signedHash matches the attestation UID
-// → throws ReceiptVerificationError if either check fails
+if (cid) {
+  const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
+  const receipt = await fetch(url).then((r) => r.json());
+
+  // Verify signature against on-chain provider address yourself —
+  // signature recovery + signedHash comparison against
+  // tx.deliveryAttestation.uid is not wrapped in a single helper in V1.
+}
 ```
 
 ```python
-from agirails import upload_receipt, fetch_receipt
+# V1 Python: upload_receipt is exported; fetch_receipt is not yet in the
+# public API. Fetch by CID via aiohttp / httpx against an IPFS gateway.
+from agirails import upload_receipt
 
 cid = await upload_receipt(tx_id=tx_id, output=result, metadata={...})
-receipt = await fetch_receipt(cid)   # raises ReceiptVerificationError on tamper
+
+# Fetch:
+import httpx
+url = f"https://gateway.filebase.io/ipfs/{cid.replace('ipfs://', '')}"
+async with httpx.AsyncClient() as http:
+    receipt = (await http.get(url)).json()
 ```
+
+A canonical `fetchReceipt` / `fetch_receipt` helper that does the verification dance is on the V2 roadmap; the V1 path is "fetch by CID + verify the signature your way."
 
 ## How it's pinned
 

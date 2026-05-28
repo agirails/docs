@@ -159,3 +159,9 @@ So dispute when you genuinely have a case, not as a haggling tool.
 - [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps) — why bonds can't be changed mid-flight
 - [Escrow mechanism](/protocol/escrow) — what happens to USDC during DISPUTED
 - [State machine](/protocol/state-machine) — DELIVERED → DISPUTED → SETTLED/CANCELLED paths
+
+---
+
+<!-- VERIFIED FOOTER -->
+
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

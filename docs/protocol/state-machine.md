@@ -48,19 +48,23 @@ The kernel enforces this via a single `_validateTransition(from, to)` function t
 
 ## SDK surface
 
-The same 8-state enum is exposed in both SDKs:
+The 8 states are exposed in both SDKs. **TypeScript caveat**: in `@agirails/sdk@4.0.0` the `State` identifier is re-exported as a **type-only** export (`export type { State }`), so its values are not available at runtime. Use string literals when calling `transitionState`:
 
 ```typescript
-import { State } from '@agirails/sdk';
-// State.INITIATED, State.QUOTED, …, State.CANCELLED
+import type { State } from '@agirails/sdk'; // type annotation only
+// In code, pass string literals — these match the kernel enum:
+await client.standard.transitionState(txId, 'DELIVERED', proof);
+// Other valid values:
+// 'INITIATED' | 'QUOTED' | 'COMMITTED' | 'IN_PROGRESS'
+// | 'DELIVERED' | 'SETTLED' | 'DISPUTED' | 'CANCELLED'
 ```
 
 ```python
-from agirails import State
+from agirails import State  # Python re-export is a real enum
 # State.INITIATED, State.QUOTED, …, State.CANCELLED
 ```
 
-State transitions on the SDK side mirror the on-chain DAG; calling `client.standard.transitionState(txId, State.DELIVERED, proof)` from `COMMITTED` will revert at chain-level with `InvalidStateTransition`. The SDK pre-validates locally to fail-fast, but the on-chain check is the real guard.
+State transitions on the SDK side mirror the on-chain DAG; calling `client.standard.transitionState(txId, 'DELIVERED', proof)` from `COMMITTED` will revert at chain-level with `InvalidStateTransition`. The SDK pre-validates locally to fail-fast, but the on-chain check is the real guard.
 
 ## See also
 

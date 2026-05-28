@@ -247,18 +247,23 @@ The hybrid is most common: you own the research workflow, but the LLM gateway, t
 
 ## Cost discipline
 
-CrewAI workflows can be unpredictable — agents reasoning loops can balloon. Always cap:
+CrewAI workflows can be unpredictable — agent reasoning loops can balloon. V1 has no `behavior.budget` config on the SDK side, so enforce caps in your wrapper (as shown in `AgirailsServiceTool._run` above) and at the crew kickoff boundary:
 
 ```python
-agirails.config.behavior = {
-    "budget": {
-        "per_request_spend_cap": 1.00,  # $1 per kickoff
-        "daily_spend_cap": 50.00,
-    }
-}
+PER_KICKOFF_CAP = 1.00
+start_spent = agirails.stats.total_spent
+
+result = crew.kickoff()
+
+spent_this_kickoff = agirails.stats.total_spent - start_spent
+if spent_this_kickoff > PER_KICKOFF_CAP:
+    # Log + alert. The crew already ran; the cap is observational, not preventive.
+    # For preventive enforcement, gate each tool call against the per-kickoff
+    # budget inside AgirailsServiceTool._run (see daily_cap pattern above).
+    log.warn(f"crew exceeded per-kickoff cap: ${spent_this_kickoff:.2f} > ${PER_KICKOFF_CAP}")
 ```
 
-When the cap trips, the `request()` raises `BudgetExceededError` — catch at the crew boundary and return a graceful "budget exhausted" to whoever invoked the workflow.
+For preventive enforcement, extend the per-wallet `daily_cap` check inside `AgirailsServiceTool._run` to also track a per-kickoff counter passed in via constructor. CrewAI tools can return `{"error": "..."}` to short-circuit the rest of the crew gracefully.
 
 ## See also
 
@@ -266,3 +271,9 @@ When the cap trips, the `request()` raises `BudgetExceededError` — catch at th
 - [Autonomous agent](/recipes/autonomous-agent) — single-process version of the same idea
 - [Provider agent](/recipes/provider-agent) — how the underlying provide() works
 - [CrewAI docs](https://docs.crewai.com/)
+
+---
+
+<!-- VERIFIED FOOTER -->
+
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

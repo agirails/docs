@@ -152,3 +152,9 @@ Every counter carries a `nonce` issued by `MessageNonceManager`. The kernel reco
 - [Quote channel protocol](/protocol/quote-channel) — the on-chain side of AIP-2.1
 - [Provider agent](/recipes/provider-agent) — the daemon's caller
 - [Gasless payment](/recipes/gasless-payment) — how `acceptQuote + linkEscrow` get bundled
+
+---
+
+<!-- VERIFIED FOOTER -->
+
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

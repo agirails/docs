@@ -1,0 +1,43 @@
+name: Verify recipes against V1 SDK surface
+
+# Gate stub for Wave A.13.c.
+#
+# Runs scripts/verify-recipes.ts which scans docs/recipes/*.md for
+# known-invented patterns flagged by the Wave A.10 verifier sweep
+# (Agent.create, behavior.budget, x402Client, requirePayment, etc.).
+#
+# Any regression on a future PR — e.g., someone re-introduces an
+# aspirational API that doesn't exist in V1 — fails this job and blocks
+# merge. The rule set is in scripts/verify-recipes.ts under BAD_PATTERNS.
+#
+# To extend the rule set: edit BAD_PATTERNS and EXPLANATORY_PHRASES.
+# To run locally: `npm run verify:recipes`.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/recipes/**.md'
+      - 'scripts/verify-recipes.ts'
+  pull_request:
+    paths:
+      - 'docs/recipes/**.md'
+      - 'scripts/verify-recipes.ts'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify recipes against V1 surface
+        run: npm run verify:recipes

@@ -67,9 +67,39 @@ interface TierEntry {
   sync_status: string;
 }
 
+interface AgirailsState {
+  name: string;
+  value: number;
+  description: string;
+}
+
+interface OnboardingQuestion {
+  id: string;
+  ask: string;
+  type: string;
+  options?: string[];
+  default?: string | number;
+  condition?: string;
+  advanced?: boolean;
+}
+
+interface ProtocolData {
+  protocol: string;
+  version: string;
+  spec: string;
+  network: string;
+  currency: string;
+  fee: string;
+  sdk: { npm?: string; pip?: string };
+  capabilities: string[];
+  states: AgirailsState[];
+  onboarding: { execution: string; questions: OnboardingQuestion[] };
+}
+
 interface Manifest {
   _generatedAt: string;
   _sourceVersions: Record<string, string>;
+  protocol: ProtocolData;
   contracts: Record<string, {
     chainId: number;
     blockExplorer: string;
@@ -678,6 +708,93 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
   return lines.join('\n');
 }
 
+function renderAgirailsMdV4Page(p: ProtocolData, generatedAt: string): string {
+  const lines: string[] = [];
+  lines.push('---');
+  lines.push('slug: /reference/agirails-md-v4');
+  lines.push('title: "AGIRAILS.md V4 schema"');
+  lines.push(`description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4 — auto-extracted from the canonical AGIRAILS.md spec (${p.protocol} v${p.version}, spec=${p.spec})."`);
+  lines.push('schema_type: APIReference');
+  lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
+  lines.push('auto_extracted_source: "static/sdk-manifest.json (protocol surface)"');
+  lines.push('stability: stable');
+  lines.push('last_breaking_change: 2026-05-19');
+  lines.push('tags: [reference, agirails-md, V4-schema, auto-extracted]');
+  lines.push('sidebar_position: 7');
+  lines.push('---');
+  lines.push('');
+  lines.push(GENERATED_BANNER);
+  lines.push('');
+  lines.push('# AGIRAILS.md V4 schema');
+  lines.push('');
+  lines.push(`**${p.protocol} v${p.version}** · spec \`${p.spec}\` · network \`${p.network}\` · currency \`${p.currency}\` · fee \`${p.fee}\` · **Manifest generated**: ${generatedAt.slice(0, 19).replace('T', ' ')} UTC`);
+  lines.push('');
+  lines.push('This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter — the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:');
+  lines.push('');
+  lines.push('- **Owner-local AGIRAILS.md** — template-filled copy of the canonical spec, kept locally per agent.');
+  lines.push('- **`{slug}.md` covenant** — public business card, V4-schema'  + ', hash-anchored on-chain via AgentRegistry.');
+  lines.push('');
+  lines.push('See [the covenant page](/protocol/covenant) for the mental model + the [AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation (canonical / owner-local / covenant).');
+  lines.push('');
+
+  // SDK pins
+  lines.push('## SDK pins');
+  lines.push('');
+  lines.push('| SDK | Package | Version |');
+  lines.push('|---|---|---|');
+  if (p.sdk.npm) lines.push(`| TypeScript | \`${p.sdk.npm}\` | per [/reference/sdk-js](/reference/sdk-js) |`);
+  if (p.sdk.pip) lines.push(`| Python | \`${p.sdk.pip}\` | per [/reference/sdk-python](/reference/sdk-python) |`);
+  lines.push('');
+
+  // States
+  lines.push(`## State machine (${p.states.length} states)`);
+  lines.push('');
+  lines.push('| Value | Name | Description |');
+  lines.push('|---:|---|---|');
+  for (const s of p.states) {
+    lines.push(`| ${s.value} | \`${s.name}\` | ${s.description} |`);
+  }
+  lines.push('');
+  lines.push('See [State machine](/protocol/state-machine) for the DAG (transitions + access control).');
+  lines.push('');
+
+  // Capabilities
+  lines.push(`## Capabilities (${p.capabilities.length})`);
+  lines.push('');
+  lines.push('Free-form `services` array values that the canonical spec recognises as well-known capability tags. Agents may declare additional service names; these are the curated list:');
+  lines.push('');
+  lines.push(p.capabilities.map((c) => `\`${c}\``).join(', ') + '.');
+  lines.push('');
+
+  // Onboarding questions
+  lines.push(`## Onboarding questions (${p.onboarding.questions.length})`);
+  lines.push('');
+  lines.push(`Execution mode: \`${p.onboarding.execution}\`. The canonical spec defines these questions that the LLM-onboarded path walks to fill the covenant. The CLI \`actp init\` accepts the same data via flags rather than prompts.`);
+  lines.push('');
+  lines.push('| # | ID | Question | Type | Default | Condition | Advanced |');
+  lines.push('|---:|---|---|---|---|---|---|');
+  p.onboarding.questions.forEach((q, i) => {
+    const def = q.default !== undefined ? `\`${q.default}\`` : '—';
+    const cond = q.condition ? `\`${q.condition}\`` : '—';
+    const adv = q.advanced ? '✓' : '';
+    const typeWithOpts = q.options ? `${q.type} (${q.options.join(' / ')})` : q.type;
+    lines.push(`| ${i + 1} | \`${q.id}\` | ${q.ask} | \`${typeWithOpts}\` | ${def} | ${cond} | ${adv} |`);
+  });
+  lines.push('');
+
+  // See also
+  lines.push('## See also');
+  lines.push('');
+  lines.push('- [Canonical AGIRAILS.md spec](/protocol/agirails-md) — three-form disambiguation');
+  lines.push('- [The `{slug}.md` covenant](/protocol/covenant) — V4 business card');
+  lines.push('- [State machine](/protocol/state-machine) — 8-state DAG');
+  lines.push('- [Get started](/start) — 5-input flow that fills the covenant');
+  lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json) — `protocol` section');
+  lines.push('');
+
+  return lines.join('\n');
+}
+
 function writeFile(relPath: string, content: string): void {
   const fullPath = path.join(DOCS_DIR, relPath);
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -699,6 +816,7 @@ function main(): void {
   writeFile('reference/sdk-js/basic.md', renderSdkTsPage('basic', m, m._generatedAt));
   writeFile('reference/sdk-js/standard.md', renderSdkTsPage('standard', m, m._generatedAt));
   writeFile('reference/sdk-python/index.md', renderSdkPythonPage(m, m._generatedAt));
+  writeFile('reference/agirails-md-v4.md', renderAgirailsMdV4Page(m.protocol, m._generatedAt));
 
   console.log('[render-reference] done');
 }
