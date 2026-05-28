@@ -1,125 +1,103 @@
 ---
 slug: /start/agent-onboarding-prompt
 title: "Agent onboarding prompt"
-description: "Paste-ready prompt that turns any LLM agent (Claude, ChatGPT, Cursor, Cline, Windsurf) into a working AGIRAILS integration assistant. One copy-paste, grounded in current SDK + protocol facts."
+description: "The minimal paste-ready prompt that triggers correct AGIRAILS integration in any LLM. Just points at AGIRAILS.md — the spec is the prompt."
 schema_type: HowTo
-last_verified: 2026-05-27
+last_verified: 2026-05-28
+stability: stable
+last_breaking_change: 2026-05-19
 tags: [agent-onboarding, prompt, ai-environment, llm]
 sidebar_position: 0
 ---
 
 # Agent onboarding prompt
 
-The fastest way to integrate AGIRAILS into any project is to let an LLM do it. This page is the canonical paste-ready prompt that grounds Claude, ChatGPT, Cursor, Cline, Windsurf — any LLM agent with code-execution access — in current AGIRAILS facts so it produces working code instead of hallucinating.
-
-**Why this matters**: most LLMs have training data that predates the V3 mainnet redeploy. They'll cheerfully invent SDK methods that don't exist, hardcode old contract addresses, or use deprecated patterns. This prompt fixes that by pointing at the live truth-ledger.
+The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAILS.md spec and let it onboard you. **AGIRAILS.md is the prompt** — it carries the protocol version, state machine, onboarding Q&A, fee model, SDK pins, and the architectural rules an LLM needs to generate correct integration code. The prompt below is the minimum trigger that gets the LLM to read it.
 
 ## The prompt
 
-Copy everything inside the triple-backtick block and paste it into your LLM as the first message.
-
 ```text
-You are integrating AGIRAILS (Agent Commerce Transaction Protocol) into the
-user's project. AGIRAILS lets autonomous agents pay each other in USDC on
-Base L2 via non-custodial escrow.
+You are integrating an agent into AGIRAILS — open trust rails for
+AI agent commerce on Base L2.
 
-GROUND TRUTH — always check current state, never invent:
-- Canonical spec: https://agirails.app/protocol/AGIRAILS.md
-- Machine-readable manifest (all SDK symbols, contracts, errors, CLI, MCP
-  tools, with cross-SDK parity flags): https://docs.agirails.io/sdk-manifest.json
-- Full docs (LLM-optimized single file): https://docs.agirails.io/llms-full.txt
-- Live contract addresses + Sourcify verification:
-  https://docs.agirails.io/reference/contracts/base-mainnet
-  https://docs.agirails.io/reference/contracts/base-sepolia
+Read these in order, then act on the user's task:
 
-CURRENT VERSIONS (verify against the manifest if unsure):
-- TypeScript SDK: @agirails/sdk@4.0.0 (npm)
-- Python SDK: agirails@3.0.1 (PyPI)
-- MCP server: @agirails/mcp-server (latest)
-- Kernel: V3 on Base mainnet, V4 on Base Sepolia
+1. Spec (the protocol itself):
+   https://agirails.app/protocol/AGIRAILS.md
 
-INTEGRATION DECISION TREE:
-1. Is the user transacting AGENT↔AGENT with delivery verification? → ACTP
-   escrow flow. Use Agent class for long-lived; request()/provide() for one-shot.
-2. Is the user charging per-API-call at sub-cent latency-critical scale?
-   → x402 v2 (direct buyer→seller, zero protocol fee on mainnet).
-3. Is the user transacting HUMAN↔AGENT (human paying for AI service)?
-   → Traditional processor is still fine for that side; AGIRAILS for the
-   agent↔agent settlement underneath.
+2. Machine-readable manifest (all SDK symbols, contracts, errors, CLI,
+   MCP tools, with cross-SDK parity flags — drift-free, regenerated daily):
+   https://docs.agirails.io/sdk-manifest.json
 
-ARCHITECTURAL CONSTRAINTS — non-negotiable, encoded on-chain:
-- wallet=auto is the default. Coinbase Smart Wallet + Paymaster, gasless.
-  The EOA signs UserOps; the SCW (derived) is the on-chain address that
-  receives/sends USDC. Fund the SCW, accessed via `agent.address`.
-- Platform fee: 1% with $0.05 USDC minimum (MIN_FEE = 50_000 micro-USDC).
-  Capped at MAX_PLATFORM_FEE_CAP = 500 bps (5%) by kernel constant.
-  Cannot be bypassed by SDK code.
-- Dispute bond per AIP-14: max(disputeBondBps × amount, MIN_DISPUTE_BOND).
-  MIN_DISPUTE_BOND = 1_000_000 micro-USDC ($1). disputeBondBps default
-  500 (5%), governor-mutable up to MAX_DISPUTE_BOND_BPS = 2000 (20%).
-  Posted by disputer; locked at tx-creation time (INV-30) — admin cannot
-  retroactively change in-flight bonds.
-- State machine is 8 states, kernel-enforced DAG, no admin bypass:
-  INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
-  with CANCELLED and DISPUTED branches.
-- Keystore: ACTP_PRIVATE_KEY on mainnet fail-closes per AIP-13. Use
-  .actp/keystore.json + ACTP_KEY_PASSWORD, or ACTP_KEYSTORE_BASE64
-  for CI/CD.
+3. Builder recipes (consumer/provider/autonomous/x402/quote/dispute/
+   receipts/keystore/n8n/langchain/crewai/claude-code):
+   https://docs.agirails.io/recipes/
 
-VERIFICATION DISCIPLINE (very important — most LLMs get these wrong):
-- Before suggesting any SDK symbol, verify it appears in sdk-manifest.json
-  under sdk_api.{ts,python}.symbols. If you can't fetch the manifest,
-  check https://docs.agirails.io/reference/sdk-js or /reference/sdk-python.
-- Before hardcoding a contract address, verify against the live contracts
-  pages. Never use addresses from training data — they may be V2 stale.
-- For CLI commands, verify against https://docs.agirails.io/reference/cli.
-- If you're about to recommend a method, function, or class that you
-  can't verify, SAY SO explicitly rather than guessing.
-
-CODE STYLE:
-- TypeScript: `new Agent({ name, network, wallet: 'auto' })` for
-  lifecycle; `import { request, provide } from '@agirails/sdk'` for
-  Level 0 one-shot calls.
-- Python: `Agent(AgentConfig(name=..., network=..., wallet=...))` for
-  lifecycle; `from agirails import request, provide` for Level 0.
-- For lower-level kernel operations (createTransaction, linkEscrow,
-  transitionState, getTransaction) use `agent.client.standard.X()` or
-  `agent.client.advanced.X()` — the Agent class itself only exposes
-  start/stop/provide/request, not full kernel surface.
-- Always set explicit `budget` on each `request()` call — it's the
-  ceiling the kernel enforces, not a hint.
-- Always wire `agent.on('error', ...)` for production agents. Surface
-  DisputeRaisedError, InsufficientFundsError, DeadlineExpiredError
-  to the calling code; don't swallow.
-
-SECURITY DEFAULTS:
-- network='testnet' for first integration; switch to 'mainnet' only after
-  the same code works on Sepolia.
-- For x402 endpoints: verify payment headers server-side. The TS SDK
-  exports X402Adapter (not a middleware called requirePayment — verify
-  the actual public API via /reference/sdk-js before reaching for any
-  middleware abstraction).
-- For provider agents: filter incoming jobs via `behavior.autoAccept`
-  callback or `ServiceFilter.minBudget` rather than accepting and
-  cancelling. Throwing from the handler transitions the job to
-  DISPUTED, which is more expensive than rejecting it up-front.
-
-WHEN ASKED TO DO SOMETHING:
-1. First: state what you'll do in one sentence.
-2. Then: identify which surface (consumer / provider / autonomous /
-   x402 / quote-negotiation / dispute / receipts). If unclear, ASK.
-3. Then: produce code grounded in @agirails/sdk@4.0.0 or agirails@3.0.1.
-4. Then: tell the user how to verify the integration works (run testnet
-   first; check what events fire; what addresses appear on-chain).
-
-WHEN UNSURE: link the user to the most relevant docs page rather than
-guessing. The docs site is built so that every concept has a canonical
-URL. Use them.
+When generating code: ground every SDK symbol against the manifest.
+If you cannot verify a method, function, or class exists, say so
+explicitly rather than guessing. Prefer the recipes' shape — they
+match the current V1 surface.
 
 User's task starts now.
 ```
 
-## How to use it
+That's it. ~15 lines. The reason it's small: AGIRAILS.md already contains the version pins, state machine, fee bounds, dispute mechanics, and the onboarding Q&A. Re-stating that in the prompt is redundant duplication — and worse, it goes stale every time the spec moves.
+
+## Why this works
+
+AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose document. It contains:
+
+- **Protocol metadata**: version, network, currency, fee bounds, kernel addresses
+- **State machine**: 8 states with names, values, and descriptions in machine-parseable form
+- **Onboarding block**: 12 structured questions the LLM walks the user through (name, intent, services, pricing, network, etc.)
+- **SDK pins**: current package versions for both TypeScript and Python
+- **Capability tags**: 20 well-known service names the protocol recognizes
+
+The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
+
+When you paste the prompt above, the LLM:
+
+1. Fetches `AGIRAILS.md` → loads the spec into its context.
+2. Sees the `onboarding:` block → walks the user through the 12 questions.
+3. Generates the `{slug}.md` covenant + local `AGIRAILS.md` from the answers.
+4. Falls back to the manifest at `/sdk-manifest.json` for per-symbol verification when writing code.
+5. References the recipes at `/recipes/*` for integration patterns.
+
+You don't need to teach the LLM the protocol. You point it at the file that does.
+
+## When you need more than the minimum
+
+The minimal prompt above suffices for most integration flows. There are two cases where you'd extend it:
+
+**Case 1: Specific framework integration**
+
+If the user is integrating with a specific framework (LangChain, CrewAI, n8n), prepend one line pointing at the specific recipe:
+
+```text
+The user is integrating with [LangChain]. Start by reading
+https://docs.agirails.io/recipes/langchain before generating code.
+```
+
+**Case 2: x402 vs ACTP escrow disambiguation**
+
+If the user's use case is unclear (per-call micropayment vs escrow lifecycle), the LLM should ask before assuming. The recipes index page covers the decision tree:
+
+```text
+Before generating code, identify whether the use case needs ACTP escrow
+(escrow + dispute window + receipt — for jobs > $1 or where output
+quality matters) or x402 v2 (direct buyer→seller, zero protocol fee,
+no dispute window — for sub-cent latency-critical calls). The decision
+tree is in https://docs.agirails.io/recipes/.
+```
+
+## What the prompt does NOT do
+
+- **It doesn't replace reading the spec.** It primes the LLM to fetch the spec and ground every claim against it.
+- **It doesn't verify the LLM's output.** You still need to run the generated code against testnet before mainnet.
+- **It doesn't grant permissions.** The LLM still operates within whatever sandbox you've given it.
+- **It doesn't apply to humans.** For manual integration, read the [recipes](/recipes) directly — they're the human-targeted version of the same material.
+
+## Using it in practice
 
 ### Claude Desktop / Claude.ai
 
@@ -127,20 +105,19 @@ Paste as the first message in a new conversation. Then describe your task.
 
 ### Cursor / Cline / Windsurf / VS Code with MCP
 
-If your editor has the [AGIRAILS MCP server](/start/ai-environment/mcp-server) installed (recommended), the agent already has direct tool access to the truth-ledger and live network state. The prompt above is still useful as an explicit grounding, but the MCP tools make verification effectively automatic.
-
-Without MCP, paste the prompt into the system message or first user message.
+If your editor has the [AGIRAILS MCP server](/start/ai-environment/mcp-server) installed (recommended), the agent already has direct tool access to the truth-ledger and live network state. The minimal prompt above is still useful for kicking off the conversation, but MCP tools provide live verification automatically — you don't need to point at the manifest URL.
 
 ### ChatGPT (with web browsing)
 
-Paste the prompt. ChatGPT will fetch the linked URLs as needed (sdk-manifest.json, llms-full.txt). With browsing disabled, the prompt is still useful but you may need to manually paste relevant SDK reference sections.
+Paste the prompt. ChatGPT fetches the linked URLs on first turn. With browsing disabled, the prompt still works but the LLM relies on its training data for protocol facts — significantly less reliable. The MCP server route is preferred.
 
 ### Programmatic use (API)
 
 ```ts
 import Anthropic from '@anthropic-ai/sdk';
 
-const SYSTEM_PROMPT = `[paste the prompt content above]`;
+const SYSTEM_PROMPT = `You are integrating an agent into AGIRAILS …`;
+// (Use the exact text from the code block at the top of this page.)
 
 const client = new Anthropic();
 const response = await client.messages.create({
@@ -151,35 +128,13 @@ const response = await client.messages.create({
 });
 ```
 
-The system prompt is ~1.5KB. Cheap to include on every request; pays for itself by eliminating hallucinated SDK methods.
-
-## Why each section of the prompt is there
-
-The prompt is the result of watching LLMs fail at AGIRAILS integration. Each section addresses a specific failure mode:
-
-| Failure mode observed in the wild | Section that fixes it |
-|---|---|
-| LLM uses V2 contract addresses from training data | "GROUND TRUTH" section pointing at live contracts page |
-| LLM invents SDK methods that don't exist | "VERIFICATION DISCIPLINE" requiring manifest check before suggesting symbols |
-| LLM uses `wallet: 'eoa'` because it doesn't know about wallet=auto | "ARCHITECTURAL CONSTRAINTS" stating wallet=auto is the default |
-| LLM hardcodes `PRIVATE_KEY=0x…` in code | "Keystore" section + AIP-13 reference |
-| LLM picks Stripe-style integration for agent↔agent | "INTEGRATION DECISION TREE" with explicit branching |
-| LLM doesn't set budget caps, agent loops eat balance | "Always set explicit budget caps" code style rule |
-| LLM doesn't surface DisputeRaisedError to caller | "Always wire onError/error events" |
-
-If you observe a new failure mode, please open an issue at [github.com/agirails/docs](https://github.com/agirails/docs) so we can extend the prompt.
-
-## What this prompt does NOT do
-
-- **It doesn't replace reading the docs.** It primes the LLM to fetch from them.
-- **It doesn't verify the LLM's output.** You still need to run the generated code against testnet before mainnet.
-- **It doesn't grant any permissions.** The LLM still operates within whatever sandbox you've given it.
-- **It doesn't apply to humans.** If you're integrating manually, read the [recipes](/recipes) directly — they're the human-targeted version of the same material.
+System prompt is ~600 tokens. Cheap to include on every request.
 
 ## See also
 
-- [MCP server](/start/ai-environment/mcp-server) — gives the LLM direct tool access (preferred over prompt-only grounding for production work)
+- [MCP server](/start/ai-environment/mcp-server) — direct tool access (preferred over prompt-only grounding for production work)
 - [Claude Code plugin recipes](/recipes/claude-code-plugin) — slash commands + the `agirails:integration-wizard` subagent
-- [llms-full.txt](/llms-full.txt) — the full docs as a single LLM-optimized payload
+- [llms-full.txt](/llms-full.txt) — the full docs as a single LLM-optimized payload (fallback when AGIRAILS.md is insufficient)
 - [Manual onboarding](/start/manual) — the human equivalent of this prompt
 - [Recipes](/recipes) — what the LLM should ground its code generation in
+- [The AGIRAILS.md spec explained](/protocol/agirails-md) — what's in the file the prompt points at
