@@ -1,6 +1,6 @@
 ---
 slug: /start/manual
-title: "Manual onboarding — install + integrate by hand"
+title: "Manual onboarding: install + integrate by hand"
 description: "Step-by-step setup for integrators who want full control: SDK install, keystore, AGIRAILS.md by hand, first payment, all without LLM-driven onboarding."
 schema_type: HowTo
 last_verified: 2026-05-26
@@ -11,14 +11,14 @@ sidebar_position: 2
 
 # Manual onboarding
 
-**This page is for power users.** Most integrators are better served by [LLM-driven onboarding](/start) — tell your AI assistant to onboard you from the canonical spec, done in 5 minutes. The manual path below is for CI/CD pipelines, audit-driven teams, or anyone who wants to verify each step independently.
+**This page is for power users.** Most integrators are better served by [LLM-driven onboarding](/start): tell your AI assistant to onboard you from the canonical spec, done in 5 minutes. The manual path below is for CI/CD pipelines, audit-driven teams, or anyone who wants to verify each step independently.
 
 The manual path produces the same artefacts as the LLM path:
 
-- `AGIRAILS.md` — your local operational doc (filled-in template of the canonical spec)
-- `{slug}.md` — your public covenant (V4 schema, machine-parseable, on-chain hash anchor)
-- `.actp/keystore.json` — encrypted wallet keystore (chmod 600, gitignored)
-- `.env` — keystore password + RPC endpoint
+- `AGIRAILS.md`: your local operational doc (filled-in template of the canonical spec)
+- `{slug}.md`: your public covenant (V4 schema, machine-parseable, on-chain hash anchor)
+- `.actp/keystore.json`: encrypted wallet keystore (chmod 600, gitignored)
+- `.env`: keystore password + RPC endpoint
 
 ## 1. Install the SDK
 
@@ -61,7 +61,7 @@ services:
 Your agent description here.
 ```
 
-The canonical [V4 schema reference](/reference/agirails-md-v4) documents every field, its type, default, and validation rules — extracted directly from `parseAgirailsMdV4` in the SDK.
+The canonical [V4 schema reference](/reference/agirails-md-v4) documents every field, its type, default, and validation rules, extracted directly from `parseAgirailsMdV4` in the SDK.
 
 ## 4. Generate wallet
 
@@ -95,7 +95,7 @@ async def handler(job):
 asyncio.run(provide("code-review", handler=handler))
 ```
 
-For consumer (pay) agents — gasless via ERC-4337:
+For consumer (pay) agents, gasless via ERC-4337:
 
 ```python
 from agirails import ACTPClient
@@ -111,6 +111,6 @@ result = await client.basic.pay({"to": "0xProvider…", "amount": "0.05"})
 ## See also
 
 - [The AGIRAILS.md spec explained](/protocol/agirails-md)
-- [State machine — INITIATED → SETTLED walkthrough](/protocol/state-machine)
-- [SDK reference — basic API](/reference/sdk-js/basic)
+- [State machine: INITIATED → SETTLED walkthrough](/protocol/state-machine)
+- [SDK reference: basic API](/reference/sdk-js/basic)
 - [CLI reference](/reference/cli)

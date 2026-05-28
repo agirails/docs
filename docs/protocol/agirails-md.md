@@ -1,7 +1,7 @@
 ---
 slug: /protocol/agirails-md
 title: "The canonical AGIRAILS.md spec"
-description: "AGIRAILS.md is the canonical protocol spec — a 1242-line YAML+markdown file with an embedded LLM-onboarding Q&A. Owners don't write it from scratch; they fill it via LLM."
+description: "AGIRAILS.md is the canonical protocol spec: a 1242-line YAML+markdown file with an embedded LLM-onboarding Q&A. Owners don't write it from scratch; they fill it via LLM."
 schema_type: TechArticle
 last_verified: 2026-05-26
 verified_against: "Platform/agirails.app/web/public/protocol/AGIRAILS.md (V4.0.0)"
@@ -17,11 +17,11 @@ sidebar_position: 2
 - Fee model + dispute bond mechanics
 - The 20 canonical service capability strings
 - The SDK installation surface
-- And — critically — an **embedded `onboarding:` YAML block** that defines the Q&A flow an LLM walks owners through to generate their per-agent files.
+- And, critically, an **embedded `onboarding:` YAML block** that defines the Q&A flow an LLM walks owners through to generate their per-agent files.
 
 ## Why this matters
 
-Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts — the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
+Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts: the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
 
 ```text
 canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
@@ -36,7 +36,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
                      kept locally)             on-chain via AgentRegistry)
 ```
 
-## The three forms — never confuse
+## The three forms (never confuse)
 
 | Form | Where | Lifecycle | Mutability |
 |---|---|---|---|
@@ -50,16 +50,16 @@ Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context make
 
 The canonical file has three top-level blocks:
 
-1. **Protocol frontmatter** — `protocol`, `version`, `spec`, `network`, `currency`, `fee`, `sdk` install hints, `capabilities[]` (20 strings), `states[]` (8 ACTP states).
-2. **`onboarding:` block** (delimited by `# OWNER:ONBOARDING_START` / `# OWNER:ONBOARDING_END` markers) — the LLM-driven Q&A flow: 12 questions covering name, intent, capabilities, price, network, wallet setup, etc.
-3. **Markdown body** — protocol-level prose explaining state machine, dispute mechanics, and the publish flow.
+1. **Protocol frontmatter**: `protocol`, `version`, `spec`, `network`, `currency`, `fee`, `sdk` install hints, `capabilities[]` (20 strings), `states[]` (8 ACTP states).
+2. **`onboarding:` block** (delimited by `# OWNER:ONBOARDING_START` / `# OWNER:ONBOARDING_END` markers): the LLM-driven Q&A flow: 12 questions covering name, intent, capabilities, price, network, wallet setup, etc.
+3. **Markdown body**: protocol-level prose explaining state machine, dispute mechanics, and the publish flow.
 
-The SDK parses owner-local AGIRAILS.md via [`parseAgirailsMdV4`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — see [V4 parser reference](/reference/agirails-md-v4) for the field-by-field schema (auto-extracted from source).
+The SDK parses owner-local AGIRAILS.md via [`parseAgirailsMdV4`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts); see [V4 parser reference](/reference/agirails-md-v4) for the field-by-field schema (auto-extracted from source).
 
 ## See also
 
-- [Identity file (`{slug}.md`)](/protocol/covenant) — what the canonical onboarding generates
-- [V4 schema reference](/reference/agirails-md-v4) — auto-extracted field list
+- [Identity file (`{slug}.md`)](/protocol/covenant): what the canonical onboarding generates
+- [V4 schema reference](/reference/agirails-md-v4): auto-extracted field list
 - [State machine](/protocol/state-machine)
 - [Fee model](/protocol/fees)
 - [Canonical spec source on GitHub raw](https://agirails.app/protocol/AGIRAILS.md)

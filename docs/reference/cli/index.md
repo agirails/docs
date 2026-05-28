@@ -1,7 +1,7 @@
 ---
 slug: /reference/cli
 title: "actp CLI reference"
-description: "All actp subcommands, args, and options — auto-extracted from sdk-js (Commander) + python-sdk-v2 (Typer) sources via the truth-ledger pipeline."
+description: "All actp subcommands, args, and options. Auto-extracted from sdk-js (Commander) + python-sdk-v2 (Typer) sources via the truth-ledger pipeline."
 schema_type: APIReference
 last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-28 10:47:44 UTC
+**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-28 12:51:50 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -23,65 +23,65 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 
 | Command | Subcommands |
 |---|---|
-| `actp agent` | — |
-| `actp autopublish` | — |
-| `actp balance` | — |
-| `actp batch` | — |
-| `actp claim` | — |
-| `actp claim-code` | — |
-| `actp config` | — |
-| `actp deploy:check` | — |
-| `actp deploy:env` | — |
-| `actp diff` | — |
-| `actp find` | — |
-| `actp health` | — |
-| `actp init` | — |
-| `actp mint` | — |
-| `actp negotiate` | — |
-| `actp pay` | — |
-| `actp publish` | — |
-| `actp pull` | — |
-| `actp register` | — |
-| `actp repair` | — |
-| `actp request` | — |
-| `actp serve` | — |
-| `actp simulate` | — |
-| `actp test` | — |
-| `actp time` | — |
-| `actp tx` | — |
-| `actp verify` | — |
-| `actp watch` | — |
+| `actp agent` | _(none)_ |
+| `actp autopublish` | _(none)_ |
+| `actp balance` | _(none)_ |
+| `actp batch` | _(none)_ |
+| `actp claim` | _(none)_ |
+| `actp claim-code` | _(none)_ |
+| `actp config` | _(none)_ |
+| `actp deploy:check` | _(none)_ |
+| `actp deploy:env` | _(none)_ |
+| `actp diff` | _(none)_ |
+| `actp find` | _(none)_ |
+| `actp health` | _(none)_ |
+| `actp init` | _(none)_ |
+| `actp mint` | _(none)_ |
+| `actp negotiate` | _(none)_ |
+| `actp pay` | _(none)_ |
+| `actp publish` | _(none)_ |
+| `actp pull` | _(none)_ |
+| `actp register` | _(none)_ |
+| `actp repair` | _(none)_ |
+| `actp request` | _(none)_ |
+| `actp serve` | _(none)_ |
+| `actp simulate` | _(none)_ |
+| `actp test` | _(none)_ |
+| `actp time` | _(none)_ |
+| `actp tx` | _(none)_ |
+| `actp verify` | _(none)_ |
+| `actp watch` | _(none)_ |
 
 ## Python CLI commands
 
 | Command | Subcommands |
 |---|---|
-| `actp autopublish` | — |
-| `actp balance` | — |
-| `actp batch` | — |
-| `actp claim` | — |
-| `actp claim-code` | — |
+| `actp autopublish` | _(none)_ |
+| `actp balance` | _(none)_ |
+| `actp batch` | _(none)_ |
+| `actp claim` | _(none)_ |
+| `actp claim-code` | _(none)_ |
 | `actp config` | `config show`, `config set`, `config get` |
 | `actp deploy` | `deploy env`, `deploy check` |
-| `actp diff` | — |
-| `actp find` | — |
-| `actp health` | — |
-| `actp init` | — |
-| `actp mint` | — |
-| `actp negotiate` | — |
-| `actp pay` | — |
-| `actp publish` | — |
-| `actp pull` | — |
-| `actp register` | — |
-| `actp repair` | — |
-| `actp request` | — |
-| `actp serve` | — |
+| `actp diff` | _(none)_ |
+| `actp find` | _(none)_ |
+| `actp health` | _(none)_ |
+| `actp init` | _(none)_ |
+| `actp mint` | _(none)_ |
+| `actp negotiate` | _(none)_ |
+| `actp pay` | _(none)_ |
+| `actp publish` | _(none)_ |
+| `actp pull` | _(none)_ |
+| `actp register` | _(none)_ |
+| `actp repair` | _(none)_ |
+| `actp request` | _(none)_ |
+| `actp serve` | _(none)_ |
 | `actp simulate` | `simulate pay`, `simulate fee` |
-| `actp test` | — |
+| `actp test` | _(none)_ |
 | `actp time` | `time show`, `time advance`, `time set` |
 | `actp tx` | `tx status`, `tx list`, `tx transition` |
-| `actp verify` | — |
-| `actp watch` | — |
+| `actp verify` | _(none)_ |
+| `actp watch` | _(none)_ |
 
 ## Cross-SDK divergences
 

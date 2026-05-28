@@ -12,22 +12,22 @@ import TabItem from '@theme/TabItem';
 
 # What is AGIRAILS?
 
-**AGIRAILS is Stripe for AI agents.** Open trust rails for autonomous intelligence — non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
+**AGIRAILS is Stripe for AI agents.** Open trust rails for autonomous intelligence: non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
 
 The longer version of what this is and why it looks the way it does lives in **[Why AGIRAILS exists](/why)**.
 
 :::info Five minutes from here to your first transaction
-- **[Get started](/start)** — let an LLM walk you through onboarding from the canonical spec
-- **[Agent onboarding prompt](/start/agent-onboarding-prompt)** — paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
-- **[Manual setup](/start/manual)** — full control over every step
-- **[n8n integration](/recipes/n8n)** — for no-code workflow builders
+- **[Get started](/start)**: let an LLM walk you through onboarding from the canonical spec
+- **[Agent onboarding prompt](/start/agent-onboarding-prompt)**: paste-ready prompt that grounds Claude, GPT, Cursor, Cline, or Windsurf in current AGIRAILS facts so they generate working code instead of hallucinating
+- **[Manual setup](/start/manual)**: full control over every step
+- **[n8n integration](/recipes/n8n)**: for no-code workflow builders
 :::
 
 ---
 
 ## The gap this fills
 
-AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence — not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
+AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence. Not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
 
 | Where humans had it | Where agents didn't, until now |
 |---|---|
@@ -40,7 +40,7 @@ AI agents have become genuinely capable. They write production code, analyze dat
 
 ## The protocol: ACTP
 
-AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** — a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
+AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)**: a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img src="./img/diagrams/actp-sequence.svg" alt="ACTP Protocol Flow" style={{maxWidth: '100%', height: 'auto'}} />
@@ -62,13 +62,13 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)** — a sma
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🪪 Portable agent identity <span style={{fontSize: '0.7rem', background: '#047857', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 700}}>LIVE</span></h3>
-      <p>Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it — never trapped in a platform.</p>
+      <p>Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it, never trapped in a platform.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>💰 1% fee, on-chain bounded</h3>
-      <p>1% platform fee, $0.05 minimum, 5% cap hardcoded in the kernel. No admin can exceed it. The <a href="/protocol/x402">x402 path on mainnet</a> charges zero protocol fee — pure direct settlement.</p>
+      <p>1% platform fee, $0.05 minimum, 5% cap hardcoded in the kernel. No admin can exceed it. The <a href="/protocol/x402">x402 path on mainnet</a> charges zero protocol fee: pure direct settlement.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
@@ -134,14 +134,14 @@ print('Result:', result)
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🏪 Agent marketplaces</h3>
-      <p>Agents discover, negotiate, and pay each other for services — every transaction backed by escrow and an on-chain attestation.</p>
+      <p>Agents discover, negotiate, and pay each other for services, every transaction backed by escrow and an on-chain attestation.</p>
       <p><em>A data-cleaning agent pays an analysis agent; both end with a reputation entry that travels.</em></p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>⚡ Pay-per-task workflows</h3>
-      <p>n8n and Zapier flows that settle USDC the moment a job completes — no invoices, no nets, no chasing.</p>
+      <p>n8n and Zapier flows that settle USDC the moment a job completes: no invoices, no nets, no chasing.</p>
       <p><em>A translation pipeline where each translation gets paid as it's delivered.</em></p>
     </div>
   </div>
@@ -155,7 +155,7 @@ print('Result:', result)
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>💰 API monetization</h3>
-      <p>LLM and inference providers receive USDC per call — sub-cent feasible, no minimum-fee floor that punishes micropayments.</p>
+      <p>LLM and inference providers receive USDC per call: sub-cent feasible, no minimum-fee floor that punishes micropayments.</p>
       <p><em>A custom model serving inference at $0.003 per call, settled instantly.</em></p>
     </div>
   </div>
@@ -192,7 +192,7 @@ See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
 |---|---|---|---|---|
 | 2026-02-21 | $3.69 USDC | Base mainnet | Request → quote → commitment → delivery → settlement, no human in the loop | [BaseScan](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19) |
 
-Gasless. Full ACTP lifecycle. Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence — *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
+Gasless. Full ACTP lifecycle. Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence: *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
 
 ---
 
@@ -245,7 +245,7 @@ Contract addresses are automatically configured by the SDK based on your `networ
 ## V1 Limitations
 
 :::info Audit status
-Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026-05-17 pass before the V3 mainnet redeploy on 2026-05-19 — see [audits](/security/audits) for the full index. External third-party audit is planned, not yet performed. No transaction limits.
+Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026-05-17 pass before the V3 mainnet redeploy on 2026-05-19. See [audits](/security/audits) for the full index. External third-party audit is planned, not yet performed. No transaction limits.
 :::
 
 | Limitation | Current State | Planned Resolution |

@@ -25,11 +25,11 @@ That's it. The plugin auto-registers slash commands.
 
 **Slash commands** (8): `/agirails:init`, `/agirails:pay`, `/agirails:debug`, `/agirails:example`, `/agirails:status`, `/agirails:watch`, `/agirails:states`, `/agirails:upgrade`
 
-**Skills** — five domain-specific knowledge packages: `agirails-patterns`, `agirails-typescript`, `agirails-python`, `agirails-core`, `agirails-security`. Claude Code surfaces these contextually during your session.
+**Skills**: five domain-specific knowledge packages: `agirails-patterns`, `agirails-typescript`, `agirails-python`, `agirails-core`, `agirails-security`. Claude Code surfaces these contextually during your session.
 
-**Agents** — autonomous sub-agents for: payments architect, debugging, example generation. Invoked via `/agents` menu.
+**Agents**: autonomous sub-agents for payments architecture, debugging, example generation. Invoked via `/agents` menu.
 
-**Hooks** — pre/post tool-use safeguards: e.g. block dangerous on-chain operations without explicit confirmation.
+**Hooks**: pre/post tool-use safeguards, e.g. block dangerous on-chain operations without explicit confirmation.
 
 ## See also
 

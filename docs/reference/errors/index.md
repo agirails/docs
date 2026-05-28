@@ -1,7 +1,7 @@
 ---
 slug: /reference/errors
 title: "Error reference"
-description: "All 47 TypeScript + 47 Python error classes — auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."
+description: "All 47 TypeScript + 47 Python error classes. Auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."
 schema_type: APIReference
 last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,9 +15,9 @@ sidebar_position: 5
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-28 10:47:44 UTC
+**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-28 12:51:50 UTC
 
-Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks — preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
+Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
 ## TypeScript SDK errors
 
@@ -138,6 +138,6 @@ Errors that exist in one SDK but not the other. Some are intentional (TypeScript
 ## See also
 
 - [Reference overview](/reference)
-- [SDK reference — TypeScript](/reference/sdk-js)
-- [SDK reference — Python](/reference/sdk-python)
+- [SDK reference: TypeScript](/reference/sdk-js)
+- [SDK reference: Python](/reference/sdk-python)
 - [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)

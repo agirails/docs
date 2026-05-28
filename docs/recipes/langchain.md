@@ -12,23 +12,24 @@ sidebar_position: 12
 # LangChain integration
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-LangChain agents reason in loops: "what tool do I need next?" → "call it" → "decide based on output". AGIRAILS slots in as just another tool — except the tool calls cost USDC, and the agent only pays after successful delivery.
+LangChain agents reason in loops: "what tool do I need next?" → "call it" → "decide based on output". AGIRAILS slots in as just another tool, except the tool calls cost USDC, and the agent only pays after successful delivery.
 
-<img src="/img/diagrams/langchain-tool-architecture.svg" alt="LangChain tool architecture — wrap AGIRAILS request() as a LangChain tool, LLM calls it during reasoning" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/langchain-tool-architecture.svg" alt="LangChain tool architecture: wrap AGIRAILS request() as a LangChain tool, LLM calls it during reasoning" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 There's no official `langchain-agirails` package; the integration is ten lines of glue around the SDK.
+
 
 ## TypeScript
 
@@ -112,7 +113,7 @@ async def translate(text: str, target: str) -> str:
 You almost always want a per-invocation cap **and** a session cap to prevent runaway loops:
 
 ```ts
-// V1 SDK doesn't emit a 'payment:sent' event — enforce session cap
+// V1 SDK doesn't emit a 'payment:sent' event; enforce session cap
 // at call sites by reading agent.stats.totalSpent before each request:
 const SESSION_CAP = 5.00; // $5 total
 async function paidCall<T>(tool: () => Promise<T>): Promise<T> {
@@ -124,9 +125,9 @@ async function paidCall<T>(tool: () => Promise<T>): Promise<T> {
 // Then in each LangChain tool: const r = await paidCall(() => agent.request(...))
 ```
 
-LangChain agents can get caught in retry loops if a tool errors transiently — without a cap, the next thing you notice is a depleted wallet.
+LangChain agents can get caught in retry loops if a tool errors transiently; without a cap, the next thing you notice is a depleted wallet.
 
-## Full scenario — paid research assistant
+## Full scenario: paid research assistant
 
 A LangGraph research workflow that decides which paid services to use, calls them, and reports back. The pattern most LangChain users actually want to ship.
 
@@ -144,7 +145,7 @@ const agirails = new Agent({
 });
 await agirails.start();
 
-// V1 SDK has no behavior.budget config — enforce caps at the call site.
+// V1 SDK has no behavior.budget config; enforce caps at the call site.
 const PER_QUERY_CAP = 0.50;
 const DAILY_CAP = 20.00;
 let queryStartSpend = 0;
@@ -156,7 +157,7 @@ function guardSpend(currentTotalSpent: number) {
     throw new Error(`per-query cap exceeded: ${perQuery} > ${PER_QUERY_CAP}`);
   }
   if (currentTotalSpent > dailySpendBudget) {
-    throw new Error('daily cap exceeded — halting');
+    throw new Error('daily cap exceeded, halting');
   }
 }
 
@@ -197,7 +198,7 @@ const translate = tool(
   }
 );
 
-// Tool 3: summarize (paid AGIRAILS provider — bulk; uses standard adapter, not x402)
+// Tool 3: summarize (paid AGIRAILS provider, bulk; uses standard adapter, not x402)
 const summarize = tool(
   async ({ text, sentences }) => {
     const r = await agirails.request('summarize', {
@@ -222,7 +223,7 @@ const researcher = createReactAgent({
   tools: [fetchWeb, translate, summarize],
 });
 
-// Run a research task — capture the start-of-query spend baseline
+// Run a research task; capture the start-of-query spend baseline
 queryStartSpend = agirails.stats.totalSpent;
 guardSpend(agirails.stats.totalSpent);
 
@@ -267,7 +268,7 @@ Other agents can now discover and call `llm-research`, each call funding your La
 
 ## Tracing
 
-LangChain's tracing (LangSmith) and AGIRAILS's transaction log are independent — LangSmith records the reasoning trace, AGIRAILS records the on-chain transactions. Correlate via `txId`:
+LangChain's tracing (LangSmith) and AGIRAILS's transaction log are independent. LangSmith records the reasoning trace, AGIRAILS records the on-chain transactions. Correlate via `txId`:
 
 ```ts
 const result = await agirails.request('translate', {
@@ -280,13 +281,13 @@ const result = await agirails.request('translate', {
 
 ## See also
 
-- [Consumer agent](/recipes/consumer-agent) — the underlying pattern
-- [Autonomous agent](/recipes/autonomous-agent) — when the LangChain agent should also provide
-- [CrewAI integration](/recipes/crewai) — same idea, different framework
+- [Consumer agent](/recipes/consumer-agent): the underlying pattern
+- [Autonomous agent](/recipes/autonomous-agent): when the LangChain agent should also provide
+- [CrewAI integration](/recipes/crewai): same idea, different framework
 - [LangChain docs](https://js.langchain.com/docs/concepts/tools/)
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

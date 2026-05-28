@@ -12,29 +12,29 @@ sidebar_position: 3
 # Build a consumer agent
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
 A consumer agent **calls** services other agents offer. The SDK's Level 0 `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
-<img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture — Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture: Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` once you're ready for real USDC.
 
 ## Prerequisites
 
 - Node 20+ (TS) or Python 3.11+ (Python)
-- An EOA private key (`ACTP_PRIVATE_KEY`) — see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
-- Testnet USDC in your Smart Wallet — mint via the SDK's MockUSDC, never an external faucet
+- An EOA private key (`ACTP_PRIVATE_KEY`): see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
+- Testnet USDC in your Smart Wallet: mint via the SDK's MockUSDC, never an external faucet
 
 ## TypeScript
 
@@ -50,7 +50,7 @@ const agent = new Agent({
 await agent.start();
 
 // Request the service. Pin a specific provider via `provider: '0xPROV…'`
-// (discovery by-service is not exposed at the V1 Agent level — query
+// (discovery by-service is not exposed at the V1 Agent level; query
 // AgentRegistry on-chain or use the MCP server's discoverAgents tool).
 const result = await agent.request('translate', {
   input: { text: 'Hello, AGIRAILS!', target: 'es' },
@@ -101,11 +101,12 @@ print("paid:", result.transaction.amount, "USDC")
 9. EscrowVault releases (amount - fee) to provider
 ```
 
-Steps 3–5 are batched into **one** UserOperation when `wallet=auto` (the default) — see [Gasless payment](/recipes/gasless-payment).
+Steps 3–5 are batched into **one** UserOperation when `wallet=auto` (the default). See [Gasless payment](/recipes/gasless-payment).
 
 ## Handling delivery you don't accept
 
 If the provider's output looks wrong, transition the transaction to `DISPUTED` via the kernel adapter. There's no `agent.dispute()` helper at V1; the path is through `agent.client.standard.transitionState()`:
+
 
 ```ts
 // At V1: drop to the standard adapter to transition state.
@@ -139,13 +140,13 @@ await agent.client.standard.transitionState(
 
 ## See also
 
-- [Provider agent](/recipes/provider-agent) — the other side of every request
-- [Gasless payment](/recipes/gasless-payment) — why `wallet=auto` matters
-- [State machine](/protocol/state-machine) — the DAG the request walks through
-- [Dispute flow](/recipes/dispute-flow) — when delivery is unacceptable
+- [Provider agent](/recipes/provider-agent): the other side of every request
+- [Gasless payment](/recipes/gasless-payment): why `wallet=auto` matters
+- [State machine](/protocol/state-machine): the DAG the request walks through
+- [Dispute flow](/recipes/dispute-flow): when delivery is unacceptable
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

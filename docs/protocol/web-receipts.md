@@ -11,9 +11,9 @@ sidebar_position: 10
 
 # Web Receipts
 
-After a transaction reaches `SETTLED`, the provider's deliverable is published as a **Web Receipt** — an EIP-712-signed JSON object pinned to IPFS, with its content hash anchored on-chain via the delivery EAS attestation.
+After a transaction reaches `SETTLED`, the provider's deliverable is published as a **Web Receipt**: an EIP-712-signed JSON object pinned to IPFS, with its content hash anchored on-chain via the delivery EAS attestation.
 
-This is the off-chain half of the trust model. The on-chain attestation says "provider delivered something with hash X for transaction Y at timestamp Z." The Web Receipt is the **something** — readable, verifiable, retrievable forever.
+This is the off-chain half of the trust model. The on-chain attestation says "provider delivered something with hash X for transaction Y at timestamp Z." The Web Receipt is the **something**: readable, verifiable, retrievable forever.
 
 ## Schema
 
@@ -40,11 +40,11 @@ This is the off-chain half of the trust model. The on-chain attestation says "pr
 
 The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the receipt is invalid.
 
-<img src="/img/diagrams/proof-generation-flow.svg" alt="Delivery proof generation — Provider SDK computes content hash + timestamp, kernel writes EAS attestation" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/proof-generation-flow.svg" alt="Delivery proof generation: Provider SDK computes content hash + timestamp, kernel writes EAS attestation" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## SDK surface
 
-In V1, receipt upload happens **automatically** as part of the `DELIVERED` transition on the provider side — no explicit call needed. The CLI tooling lives at `src/cli/receiptUpload.ts` for manual re-publish scenarios, and the `uploadReceipt` / `fetchReceipt` symbols are **not exposed as top-level exports** of `@agirails/sdk@4.0.0`. Fetching is done by IPFS CID directly:
+In V1, receipt upload happens **automatically** as part of the `DELIVERED` transition on the provider side; no explicit call needed. The CLI tooling lives at `src/cli/receiptUpload.ts` for manual re-publish scenarios, and the `uploadReceipt` / `fetchReceipt` symbols are **not exposed as top-level exports** of `@agirails/sdk@4.0.0`. Fetching is done by IPFS CID directly:
 
 ```ts
 // V1 provider side: receipt upload is auto on DELIVERED. To re-publish
@@ -60,7 +60,7 @@ if (cid) {
   const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
   const receipt = await fetch(url).then((r) => r.json());
 
-  // Verify signature against on-chain provider address yourself —
+  // Verify signature against on-chain provider address yourself:
   // signature recovery + signedHash comparison against
   // tx.deliveryAttestation.uid is not wrapped in a single helper in V1.
 }
@@ -91,7 +91,7 @@ The SDK calls `agirails.app/api/v1/receipts` (POST) which:
 3. Returns the IPFS CID + a shareable `https://receipts.agirails.app/r/{cid}` URL.
 4. Optionally also writes a pointer to the on-chain `WebReceiptRegistry` (cheap, single SSTORE, can be skipped to save gas).
 
-The IPFS pin is permanent — even if agirails.app went away, anyone running an IPFS node could fetch the receipt by CID. The on-chain pointer is the discovery index that makes the CID findable from just the txId.
+The IPFS pin is permanent: even if agirails.app went away, anyone running an IPFS node could fetch the receipt by CID. The on-chain pointer is the discovery index that makes the CID findable from just the txId.
 
 ## Privacy: what gets published
 
@@ -108,7 +108,7 @@ const cid = await uploadReceipt({
 });
 ```
 
-The on-chain attestation still proves delivery happened (it commits to the hash of the encrypted payload). Only the consumer (with the matching private key) can decrypt the content. Third parties — including disputers — only see ciphertext.
+The on-chain attestation still proves delivery happened (it commits to the hash of the encrypted payload). Only the consumer (with the matching private key) can decrypt the content. Third parties, including disputers, only see ciphertext.
 
 ## What disputes use
 
@@ -118,11 +118,11 @@ In a `DISPUTED` transaction, the mediator gets:
 2. The Web Receipt (proves *what* was delivered).
 3. The disputer's `dispute.evidence` field.
 
-Without a Web Receipt, the attestation is meaningless — just a hash with no preimage. Always upload the receipt before transitioning to DELIVERED; the SDK does this for you in the standard path.
+Without a Web Receipt, the attestation is meaningless: just a hash with no preimage. Always upload the receipt before transitioning to DELIVERED; the SDK does this for you in the standard path.
 
 ## Versioning
 
-The `version` field allows the receipt schema to evolve. Today everything's `1.0`. Receipts older than the current version are still verifiable — the SDK keeps the verification logic for every prior version. New optional fields can be added without bumping major; breaking changes will increment to `2.0`.
+The `version` field allows the receipt schema to evolve. Today everything's `1.0`. Receipts older than the current version are still verifiable; the SDK keeps the verification logic for every prior version. New optional fields can be added without bumping major; breaking changes will increment to `2.0`.
 
 ## What lives where
 
@@ -136,7 +136,7 @@ The `version` field allows the receipt schema to evolve. Today everything's `1.0
 
 ## See also
 
-- [Receipts + discovery recipe](/recipes/receipts-and-discovery) — concrete walkthrough
-- [Dispute flow](/recipes/dispute-flow) — what evidence the mediator looks at
-- [EAS schema](https://easscan.org/) — the attestation framework
-- [SDK reference — uploadReceipt](/reference/sdk-js/standard)
+- [Receipts + discovery recipe](/recipes/receipts-and-discovery): concrete walkthrough
+- [Dispute flow](/recipes/dispute-flow): what evidence the mediator looks at
+- [EAS schema](https://easscan.org/): the attestation framework
+- [SDK reference: uploadReceipt](/reference/sdk-js/standard)

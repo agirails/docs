@@ -1,7 +1,7 @@
 ---
 slug: /recipes/per-call-api
 title: "Per-call API billing (x402)"
-description: "Charge USDC per API call with x402 v2 — direct buyer→seller flow, no escrow round-trip. For latency-sensitive endpoints where the dispute window is overkill."
+description: "Charge USDC per API call with x402 v2: direct buyer→seller flow, no escrow round-trip. For latency-sensitive endpoints where the dispute window is overkill."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "@agirails/sdk@4.0.0 (x402 client) + agirails@3.0.1"
@@ -12,21 +12,21 @@ sidebar_position: 6
 # Per-call API billing (x402)
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
 For high-frequency, low-value, latency-sensitive endpoints (inference calls, search queries, single-shot translations under a few cents) the full ACTP escrow round-trip is overkill. **x402** is the lightweight alternative: a single signed payment authorization travels with the HTTP request, the seller verifies it, executes the work, and settles directly. No INITIATED → COMMITTED → DELIVERED dance.
 
-x402 v2 (the version both SDKs support) is direct buyer→seller — no facilitator middleman, no escrow lock-up. Trade-off: no dispute window, so use it only where individual calls are cheap enough to write off if one goes wrong.
+x402 v2 (the version both SDKs support) is direct buyer→seller, with no facilitator middleman and no escrow lock-up. Trade-off: no dispute window, so use it only where individual calls are cheap enough to write off if one goes wrong.
 
 When to pick which:
 
@@ -40,7 +40,7 @@ When to pick which:
 
 ## Client-side (consumer): paying for a call
 
-In V1, the TS SDK exposes the x402 path via the `X402Adapter` registered on the `ACTPClient` router. The high-level entry point is `client.pay()` with an HTTPS target — the router dispatches to `X402Adapter` automatically when the destination is a URL:
+In V1, the TS SDK exposes the x402 path via the `X402Adapter` registered on the `ACTPClient` router. The high-level entry point is `client.pay()` with an HTTPS target; the router dispatches to `X402Adapter` automatically when the destination is a URL:
 
 ```ts
 import { ACTPClient } from '@agirails/sdk';
@@ -62,7 +62,7 @@ const result = await client.pay({
 console.log('answer:', result);
 ```
 
-There is no separate `x402Client` export in V1 — the unified `ACTPClient` router is the entry point. If you need lower-level control (manual signing, custom retry policy), import `X402Adapter` from the SDK and instantiate it directly — see [SDK reference](/reference/sdk-js).
+There is no separate `x402Client` export in V1; the unified `ACTPClient` router is the entry point. If you need lower-level control (manual signing, custom retry policy), import `X402Adapter` from the SDK and instantiate it directly. See [SDK reference](/reference/sdk-js).
 
 ## Server-side (provider): exposing an x402 endpoint
 
@@ -84,7 +84,7 @@ app.post('/api/infer', async (req, res) => {
   const paymentHeader = req.header('x-payment');
 
   if (!paymentHeader) {
-    // No payment yet — respond 402 with the price quote
+    // No payment yet; respond 402 with the price quote
     res.status(402).set({
       'x-payment-request': JSON.stringify({
         amount: PRICE_USDC.toString(),
@@ -97,7 +97,7 @@ app.post('/api/infer', async (req, res) => {
   }
 
   // Verify the signed EIP-3009 authorization in paymentHeader.
-  // (Pseudocode — implement against your chosen x402 library.)
+  // (Pseudocode; implement against your chosen x402 library.)
   // 1. Parse the typed-data payload
   // 2. Recover signer with verifyTypedData(...)
   // 3. Check nonce not used + amount ≥ PRICE_USDC + recipient matches
@@ -113,7 +113,7 @@ A canonical Express middleware will land in the SDK before x402 graduates from V
 
 ## Python equivalent
 
-Python's `agirails` package does not currently expose an `X402Client` — the `X402Adapter` is available via `agirails.adapters.x402_adapter`. The high-level pattern routes through `ACTPClient`:
+Python's `agirails` package does not currently expose an `X402Client`; the `X402Adapter` is available via `agirails.adapters.x402_adapter`. The high-level pattern routes through `ACTPClient`:
 
 ```python
 from agirails import ACTPClient
@@ -127,17 +127,18 @@ async with ACTPClient.create(network="mainnet", wallet="auto") as client:
 
 Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
 
+
 ## Errors you should handle
 
 | Error | What it means | What to do |
 |---|---|---|
 | `X402AmountExceededError` | Server asked for more than your `maxAmount` | Bump the cap or skip this provider |
 | `X402SettlementProofMissingError` | Server returned 200 but no settlement header | Treat as fraud, drop provider from your registry |
-| `X402SignatureFailedError` | Buyer signature didn't verify (server-side) | Bug in your client signer — check key/network |
+| `X402SignatureFailedError` | Buyer signature didn't verify (server-side) | Bug in your client signer; check key/network |
 | `X402NetworkNotAllowedError` | Buyer + seller disagree on network | Both must use the same Base mainnet/sepolia |
 | `X402PublishRequiredError` | Buyer's wallet not yet on-chain (no first tx) | Trigger one ACTP tx first, or fund SCW manually |
 
-Full list: [Error reference](/reference/errors) (x402 errors are TS-only — Python has its own subset).
+Full list: [Error reference](/reference/errors) (x402 errors are TS-only; Python has its own subset).
 
 ## What x402 doesn't give you
 
@@ -147,13 +148,13 @@ Full list: [Error reference](/reference/errors) (x402 errors are TS-only — Pyt
 
 ## See also
 
-- [x402 protocol overview](/protocol/x402) — the full spec + when to use it
-- [Gasless payment](/recipes/gasless-payment) — how x402 settlements get sponsored too
-- [Consumer agent](/recipes/consumer-agent) — the ACTP escrow alternative
-- [x402 error reference](/reference/errors) — full TS error catalog
+- [x402 protocol overview](/protocol/x402): the full spec + when to use it
+- [Gasless payment](/recipes/gasless-payment): how x402 settlements get sponsored too
+- [Consumer agent](/recipes/consumer-agent): the ACTP escrow alternative
+- [x402 error reference](/reference/errors): full TS error catalog
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

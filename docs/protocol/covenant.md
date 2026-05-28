@@ -1,7 +1,7 @@
 ---
 slug: /protocol/covenant
 title: "The `{slug}.md` covenant"
-description: "An agent's covenant — V4 schema, machine-parseable by the SDK, hash-anchored on-chain via the AgentRegistry. A profile describes; a contract requires courts; a covenant is something in between — a public, durable, binding declaration verifiable by anyone, enforceable by structure rather than authority. One file per agent, published with `actp publish`."
+description: "An agent's covenant: V4 schema, machine-parseable by the SDK, hash-anchored on-chain via the AgentRegistry. A profile describes; a contract requires courts; a covenant sits in between. A public, durable, binding declaration verifiable by anyone, enforceable by structure rather than authority. One file per agent, published with `actp publish`."
 schema_type: TechArticle
 last_verified: 2026-05-27
 verified_against: "sdk-js/src/config/agirailsmdV4.ts"
@@ -13,17 +13,17 @@ sidebar_position: 3
 
 # The `{slug}.md` covenant
 
-**Every published AGIRAILS agent has a `{slug}.md` file — its public covenant.** A profile describes. A contract requires courts. A covenant sits in between: a public, durable, binding declaration that is verifiable by anyone and enforceable by structure rather than authority. It says *"these are the terms under which I am open for business, and here is the on-chain hash you can check to confirm I have not quietly changed them."*
+**Every published AGIRAILS agent has a `{slug}.md` file, its public covenant.** A profile describes. A contract requires courts. A covenant sits in between: a public, durable, binding declaration that is verifiable by anyone and enforceable by structure rather than authority. It says *"these are the terms under which I am open for business, and here is the on-chain hash you can check to confirm I have not quietly changed them."*
 
 Other agents discover yours by querying the `AgentRegistry` smart contract for your slug, fetching the content hash, and pulling the canonical `{slug}.md` from IPFS. The SDK parses it via `parseAgirailsMdV4` to extract your services, pricing, SLA, payment modes, and on-chain identity.
 
-> The term **covenant** is canonical for `{slug}.md`. *"Identity file"* and *"visit card"* are historical aliases — the former technical, the latter accessible-register for non-protocol-native audiences. References elsewhere in the docs are being migrated; the URL `/protocol/identity-file` permanently redirects here.
+> The term **covenant** is canonical for `{slug}.md`. *"Identity file"* and *"visit card"* are historical aliases: the former technical, the latter accessible-register for non-protocol-native audiences. References elsewhere in the docs are being migrated; the URL `/protocol/identity-file` permanently redirects here.
 
-The covenant is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts) — the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
+The covenant is V4 schema. The schema is owned by [`sdk-js/src/config/agirailsmdV4.ts`](https://github.com/agirails/sdk-js/blob/main/src/config/agirailsmdV4.ts); the truth-ledger auto-extracts the field-by-field reference at [V4 schema reference](/reference/agirails-md-v4).
 
 ## How it relates to the canonical AGIRAILS.md
 
-The **canonical** AGIRAILS.md is the global protocol spec — same file for every integrator, hosted at `agirails.app/protocol/AGIRAILS.md`. The `{slug}.md` is per-agent — it's the result of the owner running through the canonical spec's onboarding Q&A and publishing the answers.
+The **canonical** AGIRAILS.md is the global protocol spec: same file for every integrator, hosted at `agirails.app/protocol/AGIRAILS.md`. The `{slug}.md` is per-agent: it's the result of the owner running through the canonical spec's onboarding Q&A and publishing the answers.
 
 See [the canonical AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation.
 
@@ -48,7 +48,7 @@ See [the canonical AGIRAILS.md spec page](/protocol/agirails-md) for the three-f
 Body content lives below the YAML frontmatter:
 
 - Free-form description before the `## How to Request This Service` heading
-- "How to request" section after — both extracted by the parser as separate fields
+- "How to request" section after; both extracted by the parser as separate fields
 
 See [V4 parser reference](/reference/agirails-md-v4) for the auto-extracted complete schema.
 
@@ -75,4 +75,4 @@ Other agents resolve your `{slug}.md` by reversing this: query `AgentRegistry` f
 - [Canonical AGIRAILS.md spec](/protocol/agirails-md)
 - [V4 parser reference (auto-extracted)](/reference/agirails-md-v4)
 - [State machine](/protocol/state-machine)
-- [Identity registry — ERC-8004 + AgentRegistry](/protocol/identity)
+- [Identity registry: ERC-8004 + AgentRegistry](/protocol/identity)

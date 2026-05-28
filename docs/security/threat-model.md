@@ -1,7 +1,7 @@
 ---
 slug: /security/threat-model
 title: "Threat model"
-description: "What ACTP protects against and what it doesn't. Provider non-delivery, fee gaming, admin abuse, replay attacks — each mapped to the on-chain or off-chain mechanism that addresses it. Plus what falls outside the protocol's scope."
+description: "What ACTP protects against and what it doesn't. Provider non-delivery, fee gaming, admin abuse, replay attacks, each mapped to the on-chain or off-chain mechanism that addresses it. Plus what falls outside the protocol's scope."
 schema_type: TechArticle
 last_verified: 2026-05-26
 verified_against: "actp-kernel V3 mainnet + AGIRAILS.md spec"
@@ -34,7 +34,7 @@ The precise version: what ACTP **does** protect against, what it **doesn't**, an
 
 ## What ACTP does NOT protect against
 
-The limits. If your threat model needs these, layer additional defenses on top of ACTP — don't expect the protocol to handle them.
+The limits. If your threat model needs these, layer additional defenses on top of ACTP. Don't expect the protocol to handle them.
 
 - **Provider delivering low-quality work**. The dispute system has limits: a mediator can decide who's right when work is *clearly* off-spec, but for "the output is technically correct but not what I hoped for" there's no automated remedy. Reputation accumulation is the long-term defense; one-shot integrations don't get that.
 - **Off-chain identity claims**. ERC-8004 + AgentRegistry tell you what an address *claims* about itself; they don't tell you whether the operator is who they say they are. If you need KYC, do it outside the protocol.
@@ -43,9 +43,9 @@ The limits. If your threat model needs these, layer additional defenses on top o
 - **L2 / Base sequencer failure**. Base L2 is operated by Coinbase; sequencer downtime affects ACTP just as it affects everything else on Base. Cross-rollup or self-custodial fallbacks are out of v1 scope.
 - **Smart Wallet implementation bugs**. The Coinbase Smart Wallet is audited and widely deployed, but it's still external code. We pin known-good versions in `aa.factory` config and re-evaluate on every release.
 - **AGIRAILS.md identity-file collisions**. Two agents publishing the same slug is prevented at AgentRegistry (first-write wins on a given chain), but cross-chain slug uniqueness is not guaranteed. Use the ERC-8004 ID for cross-chain identity matching.
-- **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement — you can't create a flood of in-progress transactions without locking USDC for each — but not eliminated. Future work: per-requester rate limits.
+- **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement (you can't create a flood of in-progress transactions without locking USDC for each) but not eliminated. Future work: per-requester rate limits.
 
-<img src="/img/diagrams/access-control-matrix.svg" alt="Transaction access control matrix — requester/provider/admin roles vs allowed operations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/access-control-matrix.svg" alt="Transaction access control matrix: requester/provider/admin roles vs allowed operations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Trust boundaries
 
@@ -55,7 +55,7 @@ The limits. If your threat model needs these, layer additional defenses on top o
 | USDC | Circle (you'd trust this anyway if you're holding USDC at all) |
 | Base L2 | Coinbase (sequencer); reverts to L1 within the rollup's withdrawal window |
 | Coinbase Smart Wallet | Coinbase (factory contract); see their audit + Sourcify status |
-| Coinbase Paymaster | Coinbase (gas sponsorship); failure mode is graceful — your tx falls back to `wallet=eoa` |
+| Coinbase Paymaster | Coinbase (gas sponsorship); failure mode is graceful, your tx falls back to `wallet=eoa` |
 | EAS attestation infrastructure | EAS protocol + the schema deployed at the network-specific address |
 | Filebase / Pinata for receipt pinning | The IPFS network (any pinning service can fetch by CID); single-provider failure doesn't break verification, only convenience |
 
@@ -66,7 +66,7 @@ If you can't trust an item in that list, ACTP isn't the right tool for your use 
 For someone who genuinely wants to verify, not just trust:
 
 1. **Read the source** at [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel) (V3).
-2. **Verify Sourcify match** on each deployed address — every contract in [Base mainnet contracts](/reference/contracts/base-mainnet) has a live status badge updated on every truth-ledger refresh.
+2. **Verify Sourcify match** on each deployed address. Every contract in [Base mainnet contracts](/reference/contracts/base-mainnet) has a live status badge updated on every truth-ledger refresh.
 3. **Re-run the Foundry suite**: `forge test` on a fresh clone reproduces all 486 tests (including invariants + fuzz).
 4. **Cross-check the internal audit**: the Apex 2026-05-17 pass findings + their remediation commits live in the `actp-kernel` and `sdk-js` repo history. (External third-party audit is planned; not yet performed.)
 5. **Verify package provenance**: every npm + PyPI package ships with sigstore signatures; `npm audit signatures` / `pypi-attestations verify` proves the published bytes came from the GitHub workflow that built them.
@@ -75,8 +75,8 @@ There is no "trust me bro" step anywhere in this chain. That's the design.
 
 ## See also
 
-- [Audits](/security/audits) — Apex internal audit findings + remediation index, plus external-audit roadmap
-- [Verified contracts](/security/contracts) — Sourcify status per address
-- [Testing](/security/testing) — what the test suite actually covers
-- [Escrow mechanism](/protocol/escrow) — AIP-14 + INV-30 details
-- [State machine](/protocol/state-machine) — the DAG enforced in-kernel
+- [Audits](/security/audits): Apex internal audit findings + remediation index, plus external-audit roadmap
+- [Verified contracts](/security/contracts): Sourcify status per address
+- [Testing](/security/testing): what the test suite actually covers
+- [Escrow mechanism](/protocol/escrow): AIP-14 + INV-30 details
+- [State machine](/protocol/state-machine): the DAG enforced in-kernel

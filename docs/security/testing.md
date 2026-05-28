@@ -11,22 +11,22 @@ sidebar_position: 5
 
 # Testing depth
 
-Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers — at every layer from formal proof down to packaging smoke.
+Defensive testing is what catches bugs **before** they're deployed. Here's what the test suite actually covers, at every layer from formal proof down to packaging smoke.
 
-## Formal verification — sheaf cohomology
+## Formal verification: sheaf cohomology
 
-The structural layer. ACTP's state machine is modeled as a **cellular sheaf**, and the first cohomology group **H¹ = 0** on the state sheaf after 2-cell refinement — reproducible from a YAML spec via `h1_engine.py`.
+The structural layer. ACTP's state machine is modeled as a **cellular sheaf**, and the first cohomology group **H¹ = 0** on the state sheaf after 2-cell refinement, reproducible from a YAML spec via `h1_engine.py`.
 
 | Tool | What it does |
 |---|---|
 | `h1_engine.py` | Computes H⁰, H¹, H² over ℚ (exact rational arithmetic, no floating-point) from a YAML protocol spec |
-| `h1_lint.py` | CI gate — fails the build if a kernel change regresses H¹ |
+| `h1_lint.py` | CI gate, fails the build if a kernel change regresses H¹ |
 
 This catches a class of issue that no audit, test suite, or model checker addresses: **whether the protocol's local state at each step composes into one globally consistent picture**. Audits check code-level safety. Tests check behavior. Sheaf cohomology checks the **shape of the state space itself**.
 
 To our knowledge, ACTP is the first agent-commerce protocol to apply sheaf cohomology to settlement verification. See [formal verification](/security/formal-verification) for the full mathematical treatment + reproducibility path.
 
-## Smart contracts — Foundry
+## Smart contracts: Foundry
 
 [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel)
 
@@ -41,23 +41,23 @@ Total: **486 tests** passing on V3 mainnet code. CI runs the full suite on every
 
 ### What the invariant tests assert
 
-- **Escrow solvency** — `EscrowVault.usdc.balanceOf(vault) >= sum(escrows[t].amount for t in active)` after any reachable sequence of kernel calls.
-- **State-machine integrity** — terminal states (SETTLED, CANCELLED) are sticky; once reached, no further transition.
-- **Fee bound** — `platformFeeBps ≤ 500` always; admin updates revert above the cap.
-- **Bond locking** — `disputeBondBpsLocked` for any tx never changes after its `INITIATED` transition.
-- **Mediator authority** — only the active mediator (post-timelock, post-approval) can resolve disputes.
+- **Escrow solvency**: `EscrowVault.usdc.balanceOf(vault) >= sum(escrows[t].amount for t in active)` after any reachable sequence of kernel calls.
+- **State-machine integrity**: terminal states (SETTLED, CANCELLED) are sticky; once reached, no further transition.
+- **Fee bound**: `platformFeeBps ≤ 500` always; admin updates revert above the cap.
+- **Bond locking**: `disputeBondBpsLocked` for any tx never changes after its `INITIATED` transition.
+- **Mediator authority**: only the active mediator (post-timelock, post-approval) can resolve disputes.
 
-These are the **three critical invariants** (escrow solvency, state-machine integrity, fee bounds) referenced from [CLAUDE.md](/protocol) — checked continuously, not just at release time.
+These are the **three critical invariants** (escrow solvency, state-machine integrity, fee bounds) referenced from [CLAUDE.md](/protocol), checked continuously, not just at release time.
 
-## SDK — Hypothesis stateful + cross-boundary parity
+## SDK: Hypothesis stateful + cross-boundary parity
 
 ### Hypothesis stateful exerciser (Python SDK)
 
 `hypothesis` runs random sequences of agent operations against the SDK's mock runtime to catch state-machine edge cases the unit tests miss:
 
-- **~600 random op sequences per CI run** — combinations of create, accept, link, transition, cancel, dispute, settle.
-- **Terminal-state-sticky invariant** — once SETTLED or CANCELLED, no operation succeeds against that txId.
-- **Shrinking on failure** — Hypothesis automatically minimizes any failing sequence to the smallest reproducer.
+- **~600 random op sequences per CI run**: combinations of create, accept, link, transition, cancel, dispute, settle.
+- **Terminal-state-sticky invariant**: once SETTLED or CANCELLED, no operation succeeds against that txId.
+- **Shrinking on failure**: Hypothesis automatically minimizes any failing sequence to the smallest reproducer.
 
 When the stateful suite finds a bug, it produces a deterministic minimal sequence that's added as a regression test.
 
@@ -72,7 +72,7 @@ Both SDKs sign EIP-712 typed data for AIP-2.1 counter-offers, Web Receipts, and 
 
 Test fixtures: [tests/fixtures/cross_sdk](https://github.com/agirails/sdk-python/tree/main/tests/fixtures/cross_sdk).
 
-A byte-level divergence in EIP-712 encoding would be silent (signatures still verify but produce different recovered addresses) — without this gate, one SDK could quietly produce messages the other can't verify, breaking inter-agent commerce.
+A byte-level divergence in EIP-712 encoding would be silent (signatures still verify but produce different recovered addresses). Without this gate, one SDK could quietly produce messages the other can't verify, breaking inter-agent commerce.
 
 ## Live network integration
 
@@ -86,24 +86,24 @@ The SDK CI runs a **live Base Sepolia integration suite** before any release:
 | EAS attestation publish | Real attestation appears on-chain |
 | Dispute flow with bond posting | AIP-14 bond mechanics work end-to-end |
 
-This suite gates publication. Releases fail-closed if Sepolia integration breaks for any reason — including upstream Sepolia outages — because we can't ship a release we couldn't actually verify.
+This suite gates publication. Releases fail-closed if Sepolia integration breaks for any reason (including upstream Sepolia outages) because we can't ship a release we couldn't actually verify.
 
 ## Installed-wheel smoke harness
 
 After packaging (`pip install`, `npm install`), the wheel-installed entry points are smoke-tested:
 
-- `import agirails; from agirails import Agent` — covers re-exports
-- `npx actp --help` — covers CLI binary registration
-- `from agirails import create_app` — caught the missing-surface gap during the 3.0 release cycle
+- `import agirails; from agirails import Agent`: covers re-exports
+- `npx actp --help`: covers CLI binary registration
+- `from agirails import create_app`: caught the missing-surface gap during the 3.0 release cycle
 
 This is cheap (~5s per package) and catches a class of bugs unit tests miss entirely.
 
 ## What the test suite does NOT cover
 
-- **Mainnet-only edge cases** — anything that only manifests on production traffic patterns (e.g., specific gas-price scenarios on Base mainnet during congestion). Mitigated by careful staged rollouts, not full coverage.
-- **Long-time-horizon attacks** — e.g., griefing strategies that take days/weeks to manifest. Out of scope for unit testing; addressed at the threat-model level.
-- **Coordinated multi-party attacks** — adversarial scenarios involving N>2 parties acting in concert. Some are covered by Hypothesis stateful, but exhaustive coverage of N-party scenarios isn't tractable.
-- **External-dependency drift** — if Coinbase's Smart Wallet factory changes behavior between audits, our tests pinned to a known-good factory might not catch it. Mitigated by checking the factory address + version on every release.
+- **Mainnet-only edge cases**: anything that only manifests on production traffic patterns (e.g., specific gas-price scenarios on Base mainnet during congestion). Mitigated by careful staged rollouts, not full coverage.
+- **Long-time-horizon attacks**: e.g., griefing strategies that take days/weeks to manifest. Out of scope for unit testing; addressed at the threat-model level.
+- **Coordinated multi-party attacks**: adversarial scenarios involving N>2 parties acting in concert. Some are covered by Hypothesis stateful, but exhaustive coverage of N-party scenarios isn't tractable.
+- **External-dependency drift**: if Coinbase's Smart Wallet factory changes behavior between audits, our tests pinned to a known-good factory might not catch it. Mitigated by checking the factory address + version on every release.
 
 ## How to re-run the suite yourself
 
@@ -128,11 +128,11 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Any failure is either a bug in your local environment or a regression — either way, please report.
+Any failure is either a bug in your local environment or a regression. Either way, please report.
 
 ## See also
 
-- [Audits](/security/audits) — what external review covered beyond automated tests
-- [Verified contracts](/security/contracts) — Sourcify EXACT_MATCH proof
-- [Threat model](/security/threat-model) — what these tests are designed to prove
-- [Disclosure](/security/disclosure) — how to report a bug the suite missed
+- [Audits](/security/audits): what external review covered beyond automated tests
+- [Verified contracts](/security/contracts): Sourcify EXACT_MATCH proof
+- [Threat model](/security/threat-model): what these tests are designed to prove
+- [Disclosure](/security/disclosure): how to report a bug the suite missed

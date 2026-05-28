@@ -1,13 +1,13 @@
 # AGIRAILS
 
-> Open trust rails for autonomous intelligence — non-custodial escrow, settlement, dispute resolution, and portable reputation in USDC on Base L2.
+> Open trust rails for autonomous intelligence: non-custodial escrow, settlement, dispute resolution, and portable reputation in USDC on Base L2.
 
 AGIRAILS is Stripe for AI agents. It implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce: agents pay each other for services using USDC through non-custodial smart-contract escrow. Public infrastructure, not a platform.
 
 ## Quick facts
 
 - **Protocol**: ACTP (Agent Commerce Transaction Protocol)
-- **Chain**: Base L2 — Sepolia testnet + Mainnet (V3 kernel mainnet · V4 sepolia)
+- **Chain**: Base L2 (Sepolia testnet + Mainnet, V3 kernel mainnet · V4 sepolia)
 - **Currency**: USDC (Circle, native on Base)
 - **Fee**: 1% of transaction value, $0.05 USDC minimum (MIN_FEE), capped at 5% by kernel constant
 - **SDKs**: TypeScript (`@agirails/sdk@4.0.0`), Python (`agirails@3.0.1`)
@@ -21,12 +21,12 @@ Every documentation page is also available as raw markdown by appending `.md` to
 Example: `https://docs.agirails.io/recipes/consumer-agent` (HTML) → `https://docs.agirails.io/recipes/consumer-agent.md` (raw markdown).
 Section index pages collapse to a single `.md` at the section root (e.g. `/protocol` → `https://docs.agirails.io/protocol.md`, `/recipes` → `https://docs.agirails.io/recipes.md`, homepage → `https://docs.agirails.io/intro.md`).
 
-For ingestion: `/llms-full.txt` carries the complete current docs payload as one file (~360 KB, regenerated on every build). Use it for RAG over the full corpus. This file (`/llms.txt`) is the short structural index per the [llmstxt.org](https://llmstxt.org/) standard — short pointers, not full content.
+For ingestion: `/llms-full.txt` carries the complete current docs payload as one file (~360 KB, regenerated on every build). Use it for RAG over the full corpus. This file (`/llms.txt`) is the short structural index per the [llmstxt.org](https://llmstxt.org/) standard: short pointers, not full content.
 
 ## Canonical surfaces
 
 - [Full documentation for LLMs](https://docs.agirails.io/llms-full.txt): complete docs in one plain-text file (~360 KB)
-- [Truth-ledger manifest](https://docs.agirails.io/sdk-manifest.json): machine-readable JSON of all SDK symbols, contracts, errors, CLI, MCP tools — regenerated daily, drift-free
+- [Truth-ledger manifest](https://docs.agirails.io/sdk-manifest.json): machine-readable JSON of all SDK symbols, contracts, errors, CLI, MCP tools. Regenerated daily, drift-free.
 - [Canonical AGIRAILS.md spec](https://agirails.app/protocol/AGIRAILS.md): the protocol's own machine-readable spec; LLMs can read this and self-onboard via the `onboarding:` block
 
 ## Documentation map
@@ -42,7 +42,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 ### Protocol
 - [Protocol overview](https://docs.agirails.io/protocol) ([.md](https://docs.agirails.io/protocol.md))
 - [AGIRAILS.md spec explained](https://docs.agirails.io/protocol/agirails-md)
-- [Covenant — `{slug}.md`](https://docs.agirails.io/protocol/covenant)
+- [Covenant: `{slug}.md`](https://docs.agirails.io/protocol/covenant)
 - [State machine](https://docs.agirails.io/protocol/state-machine): 8-state DAG kernel-enforced
 - [Escrow + AIP-14 dispute bonds + INV-30](https://docs.agirails.io/protocol/escrow)
 - [Fee model](https://docs.agirails.io/protocol/fees): 1% + $0.05 MIN_FEE, 5% cap
@@ -67,24 +67,24 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Reference index](https://docs.agirails.io/reference) ([.md](https://docs.agirails.io/reference.md))
 - [TypeScript SDK](https://docs.agirails.io/reference/sdk-js) (Basic + Standard tiers, 283 symbols total with JSDoc summaries on ~76%)
 - [Python SDK](https://docs.agirails.io/reference/sdk-python) (277 symbols with docstring summaries on ~84%)
-- [Contracts — Base mainnet](https://docs.agirails.io/reference/contracts/base-mainnet) + [Base sepolia](https://docs.agirails.io/reference/contracts/base-sepolia) (live Sourcify status)
+- [Contracts: Base mainnet](https://docs.agirails.io/reference/contracts/base-mainnet) + [Base sepolia](https://docs.agirails.io/reference/contracts/base-sepolia) (live Sourcify status)
 - [CLI reference](https://docs.agirails.io/reference/cli) (all `actp` subcommands, both SDKs)
 - [Error reference](https://docs.agirails.io/reference/errors) (47 TS + 47 Python error classes + cross-SDK divergences)
 - [MCP server reference](https://docs.agirails.io/reference/mcp-server) (20 tools across 3 layers)
 - [AGIRAILS.md V4 schema](https://docs.agirails.io/reference/agirails-md-v4)
 
 ### Security
-- [Security overview](https://docs.agirails.io/security) — 4-pillar trust framing
-- [Threat model](https://docs.agirails.io/security/threat-model) — what ACTP protects against + what it doesn't
-- [Audits](https://docs.agirails.io/security/audits) — Apex internal agentic audit pass (12 findings closed); external third-party audit planned
-- [Verified contracts](https://docs.agirails.io/security/contracts) — Sourcify EXACT_MATCH status
-- [Formal verification (H¹=0)](https://docs.agirails.io/security/formal-verification) — sheaf cohomology proof of structural completeness
-- [Testing depth](https://docs.agirails.io/security/testing) — 486 Foundry + Hypothesis stateful + cross-SDK parity + live Sepolia gate
-- [Disclosure](https://docs.agirails.io/security/disclosure) — security@agirails.io, response times, scope
+- [Security overview](https://docs.agirails.io/security): 4-pillar trust framing
+- [Threat model](https://docs.agirails.io/security/threat-model): what ACTP protects against + what it doesn't
+- [Audits](https://docs.agirails.io/security/audits): Apex internal agentic audit pass (12 findings closed); external third-party audit planned
+- [Verified contracts](https://docs.agirails.io/security/contracts): Sourcify EXACT_MATCH status
+- [Formal verification (H¹=0)](https://docs.agirails.io/security/formal-verification): sheaf cohomology proof of structural completeness
+- [Testing depth](https://docs.agirails.io/security/testing): 486 Foundry + Hypothesis stateful + cross-SDK parity + live Sepolia gate
+- [Disclosure](https://docs.agirails.io/security/disclosure): security@agirails.io, response times, scope
 
 ### FAQ + Architecture
-- [FAQ](https://docs.agirails.io/faq) — 16 questions, FAQPage JSON-LD structured
-- [Walk-away runbook](https://docs.agirails.io/architecture/operate) — bus-factor commitment, public verification path
+- [FAQ](https://docs.agirails.io/faq): 16 questions, FAQPage JSON-LD structured
+- [Walk-away runbook](https://docs.agirails.io/architecture/operate): bus-factor commitment, public verification path
 
 ## Install
 

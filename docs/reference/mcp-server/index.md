@@ -1,7 +1,7 @@
 ---
 slug: /reference/mcp-server
 title: "MCP server reference (@agirails/mcp-server)"
-description: "All 20 MCP tools across three layers (discovery, runtime, protocol bootstrap) — auto-extracted from the mcp-server TOOLS array."
+description: "All 20 MCP tools across three layers (discovery, runtime, protocol bootstrap). Auto-extracted from the mcp-server TOOLS array."
 schema_type: APIReference
 last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,11 +15,11 @@ sidebar_position: 6
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-28 10:47:44 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-28 12:51:50 UTC
 
-Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool — MCP server](/start/ai-environment/mcp-server) for setup.
+Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.
 
-## Layer 1 — Discovery (5 tools, read-only)
+## Layer 1: Discovery (5 tools, read-only)
 
 | Tool | Description | Read-only | Destructive |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (
 | `agirails_get_agent_card` | Fetch the full Agent Card for a specific agent. Returns covenant (accepts/returns schema + guarantees), SLA, pricing, payment modes, on-c… | ✓ |  |
 | `agirails_explain_concept` | Explain any AGIRAILS/ACTP concept with documentation context: 8-state machine, escrow lifecycle, QUOTED price negotiation, x402 instant p… | ✓ |  |
 
-## Layer 2 — Runtime (14 tools)
+## Layer 2: Runtime (14 tools)
 
 | Tool | Description | Read-only | Destructive |
 |---|---|---|---|
@@ -40,7 +40,7 @@ Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (
 | `agirails_accept_quote` | Returns a TypeScript snippet for a requester to accept a provider quote and lock USDC in escrow (QUOTED → COMMITTED). Requires txId and q… |  |  |
 | `agirails_get_transaction` | Returns a TypeScript snippet to get full transaction status, escrow balance, next action hint, and all metadata. Use to check what state … | ✓ |  |
 | `agirails_list_transactions` | Returns a TypeScript snippet to list transactions with optional filters by state (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, S… | ✓ |  |
-| `agirails_deliver` | Returns a TypeScript snippet for a provider to mark a transaction as delivered (IN_PROGRESS → DELIVERED). Include the deliverable — resul… |  |  |
+| `agirails_deliver` | Returns a TypeScript snippet for a provider to mark a transaction as delivered (IN_PROGRESS → DELIVERED). Include the deliverable: result… |  |  |
 | `agirails_settle` | Returns a TypeScript snippet for a requester to release escrowed USDC to the provider (DELIVERED → SETTLED). Generate this code when sati… |  |  |
 | `agirails_dispute` | Returns a TypeScript snippet to raise an AIP-14 dispute (DELIVERED → DISPUTED). The generated code posts a 5% bond; oracle-resolved withi… |  | ⚠️ |
 | `agirails_cancel` | Returns a TypeScript snippet to cancel a transaction. The generated code cancels INITIATED, QUOTED, or COMMITTED transactions and returns… |  | ⚠️ |
@@ -48,7 +48,7 @@ Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (
 | `agirails_verify_agent` | Returns a TypeScript snippet to verify an agent on-chain via AgentRegistry (AIP-7). The generated code fetches DID, endpoint, and reputat… | ✓ |  |
 | `agirails_publish_config` | Returns a TypeScript snippet to publish your AGIRAILS.md to IPFS and register the CID on-chain (AIP-7). Running the generated code makes … |  |  |
 
-## Layer 3 — Protocol bootstrap (1 tool)
+## Layer 3: Protocol bootstrap (1 tool)
 
 | Tool | Description | Read-only | Destructive |
 |---|---|---|---|

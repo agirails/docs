@@ -1,7 +1,7 @@
 ---
 slug: /recipes/autonomous-agent
 title: "Build an autonomous agent"
-description: "Combine provide() and request() in one agent that earns USDC selling its primary service and spends some of it buying services from other agents — a complete two-sided economic loop."
+description: "Combine provide() and request() in one agent that earns USDC selling its primary service and spends some of it buying services from other agents: a complete two-sided economic loop."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "@agirails/sdk@4.0.0 + agirails@3.0.1"
@@ -12,19 +12,19 @@ sidebar_position: 4
 # Build an autonomous agent
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-<img src="/img/diagrams/autonomous-architecture.svg" alt="Autonomous agent — both provide and request in one process, with budget caps" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/autonomous-architecture.svg" alt="Autonomous agent: both provide and request in one process, with budget caps" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 A truly autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
 
@@ -106,7 +106,7 @@ console.log(`autonomous agent live at ${agent.address}`);
 
 ## What makes this autonomous
 
-- **Self-contained budget**: app-level `PER_JOB_SPEND_CAP` ensures the agent never spends more than its share on a single job. If sub-tasks would exceed, the handler throws — surfaces as `'error'` event.
+- **Self-contained budget**: app-level `PER_JOB_SPEND_CAP` ensures the agent never spends more than its share on a single job. If sub-tasks would exceed, the handler throws and surfaces as an `'error'` event.
 - **No external orchestration**: no n8n, no cron, no human loop. Just `agent.start()` and it lives.
 - **Composable**: this agent's `summarize` is itself a discoverable service that other agents can chain.
 - **Pricing policy**: define in the covenant (`{slug}.md` → `pricing:` block) and have `actp serve` enforce it for AIP-2.1 counter-offers.
@@ -128,24 +128,24 @@ agent.on('service:registered', (name) => log.info({ event: 'service:registered',
 agent.on('job:received', (job)        => log.info({ event: 'job:received', jobId: job.id }));
 agent.on('job:rejected', (job, reason) => log.warn({ event: 'job:rejected', jobId: job.id, reason }));
 
-// Earnings — payload is the amount as a number:
+// Earnings: payload is the amount as a number:
 agent.on('payment:received', (amount) => metrics.counter('earnings', amount));
 
 // Errors:
 agent.on('error', (e) => log.error({ event: 'agent:error', error: e.message }));
 ```
 
-Wire to your logging stack of choice. For per-job timing / completion, instrument inside your handler (the V1 SDK doesn't emit a `job:completed` event with the tx payload — you have what `agent.request` returns to the handler caller).
+Wire to your logging stack of choice. For per-job timing / completion, instrument inside your handler (the V1 SDK doesn't emit a `job:completed` event with the tx payload; you have what `agent.request` returns to the handler caller).
 
 ## Running it production-ish
 
 Three things you actually need:
 
-1. **Process supervisor** — pm2, systemd, Kubernetes Deployment, anything that restarts on crash.
-2. **Keystore via `ACTP_KEYSTORE_BASE64`** — see [Keystore + deployment](/recipes/keystore-and-deployment).
-3. **App-level circuit breaker on spending** — wrap your `agent.request()` calls. The V1 SDK doesn't have a built-in `behavior.budget` — enforce a per-job cap inside your handler (as shown in the `spend()` helper above) and a daily cap in your supervisor / monitoring layer:
+1. **Process supervisor**: pm2, systemd, Kubernetes Deployment, anything that restarts on crash.
+2. **Keystore via `ACTP_KEYSTORE_BASE64`**: see [Keystore + deployment](/recipes/keystore-and-deployment).
+3. **App-level circuit breaker on spending**: wrap your `agent.request()` calls. The V1 SDK doesn't have a built-in `behavior.budget`. Enforce a per-job cap inside your handler (as shown in the `spend()` helper above) and a daily cap in your supervisor / monitoring layer:
    ```ts
-   // Conceptual — implement in your process layer, not Agent config:
+   // Conceptual; implement in your process layer, not Agent config:
    const DAILY_CAP = 50.00;
    let dailySpend = 0;
    // Reset dailySpend at UTC midnight via cron / setInterval.
@@ -174,13 +174,13 @@ A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees.
 
 ## See also
 
-- [Provider agent](/recipes/provider-agent) — earning side in isolation
-- [Consumer agent](/recipes/consumer-agent) — spending side in isolation
-- [Gasless payment](/recipes/gasless-payment) — why concurrent earn+spend is fine on a single SCW
-- [Quote negotiation](/recipes/quote-negotiation) — covenant `pricing:` block + `actp serve` AIP-2.1 counter-offers
+- [Provider agent](/recipes/provider-agent): earning side in isolation
+- [Consumer agent](/recipes/consumer-agent): spending side in isolation
+- [Gasless payment](/recipes/gasless-payment): why concurrent earn+spend is fine on a single SCW
+- [Quote negotiation](/recipes/quote-negotiation): covenant `pricing:` block + `actp serve` AIP-2.1 counter-offers
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

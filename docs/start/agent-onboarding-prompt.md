@@ -1,7 +1,7 @@
 ---
 slug: /start/agent-onboarding-prompt
 title: "Agent onboarding prompt"
-description: "The minimal paste-ready prompt that triggers correct AGIRAILS integration in any LLM. Just points at AGIRAILS.md — the spec is the prompt."
+description: "The minimal paste-ready prompt that triggers correct AGIRAILS integration in any LLM. Just points at AGIRAILS.md. The spec is the prompt."
 schema_type: HowTo
 last_verified: 2026-05-28
 stability: stable
@@ -12,7 +12,7 @@ sidebar_position: 0
 
 # Agent onboarding prompt
 
-The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAILS.md spec and let it onboard you. **AGIRAILS.md is the prompt** — it carries the protocol version, state machine, onboarding Q&A, fee model, SDK package names, and the architectural rules an LLM needs to generate correct integration code. The line below is the minimum trigger that gets the LLM to read it.
+The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAILS.md spec and let it onboard you. **AGIRAILS.md is the prompt**. It carries the protocol version, state machine, onboarding Q&A, fee model, SDK package names, and the architectural rules an LLM needs to generate correct integration code. The line below is the minimum trigger that gets the LLM to read it.
 
 ## The prompt
 
@@ -20,7 +20,7 @@ The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAI
 You are integrating an agent into AGIRAILS protocol. Read this file and follow the instructions: https://agirails.app/protocol/AGIRAILS.md
 ```
 
-One sentence. The whole onboarding flow — Q&A, code templates, network selection, covenant generation, dispute mechanics — lives inside AGIRAILS.md. Re-stating any of it in the prompt is redundant duplication and goes stale every time the spec moves.
+One sentence. The whole onboarding flow (Q&A, code templates, network selection, covenant generation, dispute mechanics) lives inside AGIRAILS.md. Re-stating any of it in the prompt is redundant duplication and goes stale every time the spec moves.
 
 ## Why this works
 
@@ -31,15 +31,15 @@ AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose 
 - **Onboarding block**: 12 structured questions the LLM walks the user through (name, intent, services, pricing, network, etc.)
 - **SDK package names**: `@agirails/sdk` (TypeScript) and `agirails` (Python); current versions resolve via `references.manifest`
 - **Capability tags**: 20 well-known service names the protocol recognizes
-- **References block**: outbound pointers — `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, x402, receipts, keystore)
+- **References block**: outbound pointers. `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, x402, receipts, keystore).
 - **Step 4 code templates**: literal V1 SDK calls for provider (Level 0 + Level 1) and requester (ACTP)
 
 The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
 
 When you paste the prompt above, the LLM:
 
-1. Fetches `AGIRAILS.md` → loads the spec into its context.
-2. Sees the `onboarding:` block → walks the user through the 12 questions.
+1. Fetches `AGIRAILS.md`; loads the spec into its context.
+2. Sees the `onboarding:` block; walks the user through the 12 questions.
 3. Uses the Step 4 templates to write provider/requester code (literal V1 shape).
 4. Generates the `{slug}.md` covenant + local `AGIRAILS.md` from the answers.
 5. When the task touches an advanced flow not in the templates (dispute, quote, x402, receipts, keystore) or needs per-symbol verification, follows the `references:` block to manifest + recipes.
@@ -48,7 +48,7 @@ You don't need to teach the LLM the protocol. You point it at the file that does
 
 ## When you need more than the minimum
 
-The minimal prompt above suffices for most integration flows. There are two cases where you'd extend it:
+The minimal prompt above suffices for most integration flows. There are two cases where you'd extend it.
 
 **Case 1: Specific framework integration**
 
@@ -65,9 +65,9 @@ If the user's use case is unclear (per-call micropayment vs escrow lifecycle), t
 
 ```text
 Before generating code, identify whether the use case needs ACTP escrow
-(escrow + dispute window + receipt — for jobs > $1 or where output
+(escrow + dispute window + receipt, for jobs > $1 or where output
 quality matters) or x402 v2 (direct buyer→seller, zero protocol fee,
-no dispute window — for sub-cent latency-critical calls). The decision
+no dispute window, for sub-cent latency-critical calls). The decision
 tree is in https://docs.agirails.io/recipes/.
 ```
 
@@ -76,7 +76,7 @@ tree is in https://docs.agirails.io/recipes/.
 - **It doesn't replace reading the spec.** It primes the LLM to fetch the spec and ground every claim against it.
 - **It doesn't verify the LLM's output.** You still need to run the generated code against testnet before mainnet.
 - **It doesn't grant permissions.** The LLM still operates within whatever sandbox you've given it.
-- **It doesn't apply to humans.** For manual integration, read the [recipes](/recipes) directly — they're the human-targeted version of the same material.
+- **It doesn't apply to humans.** For manual integration, read the [recipes](/recipes) directly. They're the human-targeted version of the same material.
 
 ## Using it in practice
 
@@ -86,11 +86,11 @@ Paste as the first message in a new conversation. Then describe your task.
 
 ### Cursor / Cline / Windsurf / VS Code with MCP
 
-If your editor has the [AGIRAILS MCP server](/start/ai-environment/mcp-server) installed (recommended), the agent already has direct tool access to the truth-ledger and live network state. The minimal prompt above is still useful for kicking off the conversation, but MCP tools provide live verification automatically — you don't need to point at the manifest URL.
+If your editor has the [AGIRAILS MCP server](/start/ai-environment/mcp-server) installed (recommended), the agent already has direct tool access to the truth-ledger and live network state. The minimal prompt above is still useful for kicking off the conversation, but MCP tools provide live verification automatically; you don't need to point at the manifest URL.
 
 ### ChatGPT (with web browsing)
 
-Paste the prompt. ChatGPT fetches the linked URLs on first turn. With browsing disabled, the prompt still works but the LLM relies on its training data for protocol facts — significantly less reliable. The MCP server route is preferred.
+Paste the prompt. ChatGPT fetches the linked URLs on first turn. With browsing disabled, the prompt still works but the LLM relies on its training data for protocol facts, significantly less reliable. The MCP server route is preferred.
 
 ### Programmatic use (API)
 
@@ -113,9 +113,9 @@ System prompt is ~25 tokens. The cost lives in the file the LLM fetches, not in 
 
 ## See also
 
-- [MCP server](/start/ai-environment/mcp-server) — direct tool access (preferred over prompt-only grounding for production work)
-- [Claude Code plugin recipes](/recipes/claude-code-plugin) — slash commands + the `agirails:integration-wizard` subagent
-- [llms-full.txt](/llms-full.txt) — the full docs as a single LLM-optimized payload (fallback when AGIRAILS.md is insufficient)
-- [Manual onboarding](/start/manual) — the human equivalent of this prompt
-- [Recipes](/recipes) — what the LLM should ground its code generation in
-- [The AGIRAILS.md spec explained](/protocol/agirails-md) — what's in the file the prompt points at
+- [MCP server](/start/ai-environment/mcp-server): direct tool access (preferred over prompt-only grounding for production work)
+- [Claude Code plugin recipes](/recipes/claude-code-plugin): slash commands + the `agirails:integration-wizard` subagent
+- [llms-full.txt](/llms-full.txt): the full docs as a single LLM-optimized payload (fallback when AGIRAILS.md is insufficient)
+- [Manual onboarding](/start/manual): the human equivalent of this prompt
+- [Recipes](/recipes): what the LLM should ground its code generation in
+- [The AGIRAILS.md spec explained](/protocol/agirails-md): what's in the file the prompt points at

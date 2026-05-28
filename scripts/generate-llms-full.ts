@@ -147,7 +147,7 @@ function main() {
   const sections: string[] = [];
 
   // Header section
-  sections.push(`AGIRAILS — Complete Documentation for LLMs
+  sections.push(`AGIRAILS: Complete Documentation for LLMs
 Generated: ${new Date().toISOString().split('T')[0]}
 Short version: https://docs.agirails.io/llms.txt
 Website: https://docs.agirails.io

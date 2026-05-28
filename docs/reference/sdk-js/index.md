@@ -17,7 +17,7 @@ sidebar_position: 0
 
 **Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 283 · **Source**: `src/index.ts`
 
-<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API — Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 The TypeScript SDK is tiered to match the depth of integration you need:
 
@@ -32,13 +32,13 @@ The TypeScript SDK is tiered to match the depth of integration you need:
 Three entry points cover most real code:
 
 ```ts
-// 1. Level 0 — one-shot request / provide, no Agent lifecycle
+// 1. Level 0: one-shot request / provide, no Agent lifecycle
 import { request, provide } from '@agirails/sdk';
 
-// 2. Basic — long-lived agent with handlers
+// 2. Basic: long-lived agent with handlers
 import { Agent } from '@agirails/sdk';
 
-// 3. Standard — direct adapter / builder usage
+// 3. Standard: direct adapter / builder usage
 import { ACTPClient, CounterOfferBuilder, StandardAdapter } from '@agirails/sdk';
 ```
 
@@ -49,5 +49,5 @@ Pick the lowest tier that covers your use case; you can always drop deeper if ne
 - [Python SDK reference](/reference/sdk-python)
 - [Errors reference](/reference/errors)
 - [CLI reference](/reference/cli)
-- [Consumer agent recipe](/recipes/consumer-agent) — Level 0 / Basic in practice
-- [Provider agent recipe](/recipes/provider-agent) — Level 0 / Basic in practice
+- [Consumer agent recipe](/recipes/consumer-agent): Level 0 / Basic in practice
+- [Provider agent recipe](/recipes/provider-agent): Level 0 / Basic in practice

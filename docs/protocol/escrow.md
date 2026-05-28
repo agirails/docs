@@ -13,13 +13,13 @@ sidebar_position: 5
 
 The **EscrowVault** smart contract is where USDC actually sits during a transaction's `COMMITTED → DELIVERED → SETTLED` window. The ACTPKernel kernel calls `EscrowVault.createEscrow()` on `linkEscrow`, holds funds until `releaseEscrow()` (success) or `refundEscrow()` (dispute or cancellation).
 
-<img src="/img/diagrams/escrow-lifecycle.svg" alt="EscrowVault lifecycle — createEscrow → releaseEscrow / refundEscrow / lockForDispute paths" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/escrow-lifecycle.svg" alt="EscrowVault lifecycle: createEscrow → releaseEscrow / refundEscrow / lockForDispute paths" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-EscrowVault is the only contract that holds user funds. Its solvency invariant — **vault USDC balance ≥ sum of all active escrows** — is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
+EscrowVault is the only contract that holds user funds. Its solvency invariant (**vault USDC balance ≥ sum of all active escrows**) is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
 
-<img src="/img/diagrams/escrow-flow.svg" alt="Escrow flow — 4 steps: USDC approve, linkEscrow lock, work happens, releaseEscrow pays provider" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/escrow-flow.svg" alt="Escrow flow: 4 steps: USDC approve, linkEscrow lock, work happens, releaseEscrow pays provider" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-<img src="/img/diagrams/escrow-architecture.svg" alt="Escrow architecture — ACTPKernel + EscrowVault, requester/provider wallets, USDC balance flow" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/escrow-architecture.svg" alt="Escrow architecture: ACTPKernel + EscrowVault, requester/provider wallets, USDC balance flow" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Lifecycle
 
@@ -64,7 +64,7 @@ Bond amount = `max(amount * disputeBondBps / 10000, MIN_DISPUTE_BOND)`.
 
 Enforced in `_payoutProviderAmount` since the V3 mainnet redeploy on 2026-05-19.
 
-## INV-30 — per-transaction locked-bps
+## INV-30: per-transaction locked-bps
 
 `disputeBondBpsLocked` is captured at transaction creation time and immutable thereafter. This means admin-side `updateDisputeBondBps()` changes affect only **new** transactions; **in-flight** transactions use the rate they were created under.
 
@@ -72,7 +72,7 @@ Same locking applies to `platformFeeBpsLocked` (AIP-5) and `requesterPenaltyBpsL
 
 The implication: a malicious or compromised admin cannot retroactively raise dispute bonds, platform fees, or requester penalties on transactions that have already been initiated. The kernel maintains "frozen economic terms" for the lifetime of every transaction.
 
-<img src="/img/diagrams/cancellation-path.svg" alt="Cancellation paths — from INITIATED/QUOTED/COMMITTED/IN_PROGRESS to CANCELLED, with deadline + penalty rules" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/cancellation-path.svg" alt="Cancellation paths: from INITIATED/QUOTED/COMMITTED/IN_PROGRESS to CANCELLED, with deadline + penalty rules" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Refund paths
 
@@ -84,12 +84,12 @@ The implication: a malicious or compromised admin cannot retroactively raise dis
 | `IN_PROGRESS` → `CANCELLED` | Amount minus `requesterPenaltyBpsLocked` refunded; penalty awarded to provider for partial work |
 | `DELIVERED` → `DISPUTED` → mediator → `CANCELLED` | Per mediator decision (full / partial / penalty split) |
 
-The requester-penalty BPS exists to prevent griefing — cancellation after the provider has begun work shouldn't be free.
+The requester-penalty BPS exists to prevent griefing: cancellation after the provider has begun work shouldn't be free.
 
 ## See also
 
-- [State machine](/protocol/state-machine) — the DAG that drives escrow transitions
-- [Fee model](/protocol/fees) — `platformFeeBps` + `MIN_FEE` + 5% cap
-- [Dispute flow recipe](/recipes/dispute-flow) — concrete walkthrough of `DELIVERED → DISPUTED → SETTLED/CANCELLED`
-- [Contracts — EscrowVault on mainnet](/reference/contracts/base-mainnet#escrowvault)
-- [Contracts — EscrowVault on sepolia](/reference/contracts/base-sepolia#escrowvault)
+- [State machine](/protocol/state-machine): the DAG that drives escrow transitions
+- [Fee model](/protocol/fees): `platformFeeBps` + `MIN_FEE` + 5% cap
+- [Dispute flow recipe](/recipes/dispute-flow): concrete walkthrough of `DELIVERED → DISPUTED → SETTLED/CANCELLED`
+- [Contracts: EscrowVault on mainnet](/reference/contracts/base-mainnet#escrowvault)
+- [Contracts: EscrowVault on sepolia](/reference/contracts/base-sepolia#escrowvault)

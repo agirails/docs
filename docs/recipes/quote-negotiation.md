@@ -12,21 +12,21 @@ sidebar_position: 7
 # Quote negotiation (AIP-2.1)
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
 A provider's initial quote isn't always the price both sides agree on. AIP-2.1 adds a **signed off-chain negotiation** phase between INITIATED and COMMITTED: requester and provider exchange EIP-712 typed-data counters until one accepts. Only the final price hits the chain via `kernel.acceptQuote()`.
 
-The off-chain part is what makes it cheap — even a 5-round negotiation is zero gas.
+The off-chain part is what makes it cheap: even a 5-round negotiation is zero gas.
 
 ## Provider: run `actp serve`
 
@@ -90,7 +90,7 @@ const txId = await agent.client.standard.createTransaction({
 
 // V1: CounterOfferBuilder is constructed, not chained.
 // `signer` here is your wallet provider's signer; the AgentClient holds it
-// internally — for explicit construction use ethers.Signer or the
+// internally. For explicit construction use ethers.Signer or the
 // wallet provider's signer. (Recover it from the keystore loader, or
 // instantiate the wallet via the SDK's wallet provider helpers.)
 const nonceManager = new InMemoryNonceManager();
@@ -121,7 +121,7 @@ const { kind, payload } = await reply.json();
 
 ## Settle the accepted counter on-chain
 
-When `kind === 'CounterAccept'`, advance the transaction through the kernel via the standard adapter (there is no top-level `acceptQuote()` export in V1 — the `acceptQuote` method lives on `agent.client.standard`):
+When `kind === 'CounterAccept'`, advance the transaction through the kernel via the standard adapter (there is no top-level `acceptQuote()` export in V1; the `acceptQuote` method lives on `agent.client.standard`):
 
 ```ts
 // V1: acceptQuote is a method on the standard adapter, not a free function
@@ -133,15 +133,15 @@ await agent.client.standard.linkEscrow(txId);
 // → kernel transitions INITIATED → QUOTED → COMMITTED with new amount.
 ```
 
-In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one sponsored UserOp — zero gas.
+In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one sponsored UserOp: zero gas.
 
 ## Cancellation mid-negotiation
 
-Either side can simply stop responding. The `expiresAt` field bounds the window — after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
+Either side can simply stop responding. The `expiresAt` field bounds the window: after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
 
 ## Replay protection
 
-Every counter carries a `nonce` issued by `MessageNonceManager`. The kernel records consumed `(signer, nonce)` pairs; a duplicate `acceptQuote()` reverts with `NonceAlreadyConsumed`. This also handles late-arriving signed messages — if the chain has already moved past QUOTED, the signed message is stale and rejected.
+Every counter carries a `nonce` issued by `MessageNonceManager`. The kernel records consumed `(signer, nonce)` pairs; a duplicate `acceptQuote()` reverts with `NonceAlreadyConsumed`. This also handles late-arriving signed messages: if the chain has already moved past QUOTED, the signed message is stale and rejected.
 
 ## Cross-SDK parity
 
@@ -149,12 +149,12 @@ Every counter carries a `nonce` issued by `MessageNonceManager`. The kernel reco
 
 ## See also
 
-- [Quote channel protocol](/protocol/quote-channel) — the on-chain side of AIP-2.1
-- [Provider agent](/recipes/provider-agent) — the daemon's caller
-- [Gasless payment](/recipes/gasless-payment) — how `acceptQuote + linkEscrow` get bundled
+- [Quote channel protocol](/protocol/quote-channel): the on-chain side of AIP-2.1
+- [Provider agent](/recipes/provider-agent): the daemon's caller
+- [Gasless payment](/recipes/gasless-payment): how `acceptQuote + linkEscrow` get bundled
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

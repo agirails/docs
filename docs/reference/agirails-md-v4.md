@@ -1,7 +1,7 @@
 ---
 slug: /reference/agirails-md-v4
 title: "AGIRAILS.md V4 schema"
-description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4 — auto-extracted from the canonical AGIRAILS.md spec (AGIRAILS v4.0.0, spec=ACTP)."
+description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4. Auto-extracted from the canonical AGIRAILS.md spec (AGIRAILS v4.0.0, spec=ACTP)."
 schema_type: APIReference
 last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json (protocol surface)"
@@ -15,12 +15,12 @@ sidebar_position: 7
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-28 10:47:44 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-28 12:51:50 UTC
 
-This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter — the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
+This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 
-- **Owner-local AGIRAILS.md** — template-filled copy of the canonical spec, kept locally per agent.
-- **`{slug}.md` covenant** — public business card, V4-schema, hash-anchored on-chain via AgentRegistry.
+- **Owner-local AGIRAILS.md**: template-filled copy of the canonical spec, kept locally per agent.
+- **`{slug}.md` covenant**: public business card, V4-schema, hash-anchored on-chain via AgentRegistry.
 
 See [the covenant page](/protocol/covenant) for the mental model + the [AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation (canonical / owner-local / covenant).
 
@@ -58,23 +58,23 @@ Execution mode: `auto`. The canonical spec defines these questions that the LLM-
 
 | # | ID | Question | Type | Default | Condition | Advanced |
 |---:|---|---|---|---|---|---|
-| 1 | `name` | What is your agent's name? | `text` | — | — |  |
-| 2 | `description` | Describe your agent in one sentence. | `text` | — | — |  |
-| 3 | `intent` | What will your agent do? | `select (earn / pay / both)` | `earn` | — |  |
-| 4 | `capabilities` | What services will your agent provide? | `multi-select` | — | `intent != pay` |  |
+| 1 | `name` | What is your agent's name? | `text` | _(none)_ | _(none)_ |  |
+| 2 | `description` | Describe your agent in one sentence. | `text` | _(none)_ | _(none)_ |  |
+| 3 | `intent` | What will your agent do? | `select (earn / pay / both)` | `earn` | _(none)_ |  |
+| 4 | `capabilities` | What services will your agent provide? | `multi-select` | _(none)_ | `intent != pay` |  |
 | 5 | `price` | What is your base price per job in USDC? | `number` | `10` | `intent != pay` |  |
-| 6 | `servicesNeeded` | What services do you need from other agents? | `text` | — | `intent != earn` |  |
+| 6 | `servicesNeeded` | What services do you need from other agents? | `text` | _(none)_ | `intent != earn` |  |
 | 7 | `budget` | Default budget per request in USDC? | `number` | `10` | `intent != earn` |  |
-| 8 | `network` | Which network? | `select (mock / testnet / mainnet)` | `mock` | — | ✓ |
-| 9 | `paymentMode` | Payment mode? | `select (actp / x402)` | `actp` | — | ✓ |
+| 8 | `network` | Which network? | `select (mock / testnet / mainnet)` | `mock` | _(none)_ | ✓ |
+| 9 | `paymentMode` | Payment mode? | `select (actp / x402)` | `actp` | _(none)_ | ✓ |
 | 10 | `maxConcurrent` | Max concurrent jobs? | `number` | `10` | `intent != pay` | ✓ |
-| 11 | `autonomy` | Autonomy level? | `select (manual / suggest / autobid / full)` | `manual` | — | ✓ |
-| 12 | `wallet` | Wallet setup? | `select (generate / existing)` | `generate` | — | ✓ |
+| 11 | `autonomy` | Autonomy level? | `select (manual / suggest / autobid / full)` | `manual` | _(none)_ | ✓ |
+| 12 | `wallet` | Wallet setup? | `select (generate / existing)` | `generate` | _(none)_ | ✓ |
 
 ## See also
 
-- [Canonical AGIRAILS.md spec](/protocol/agirails-md) — three-form disambiguation
-- [The `{slug}.md` covenant](/protocol/covenant) — V4 business card
-- [State machine](/protocol/state-machine) — 8-state DAG
-- [Get started](/start) — 5-input flow that fills the covenant
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json) — `protocol` section
+- [Canonical AGIRAILS.md spec](/protocol/agirails-md): three-form disambiguation
+- [The `{slug}.md` covenant](/protocol/covenant): V4 business card
+- [State machine](/protocol/state-machine): 8-state DAG
+- [Get started](/start): 5-input flow that fills the covenant
+- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json): `protocol` section

@@ -1,7 +1,7 @@
 ---
 slug: /security/audits
 title: "Audits"
-description: "Two layers of audit: Apex — AGIRAILS' internal agentic audit system — surfaced 12 findings against actp-kernel + sdk-js, all closed before the V3 mainnet redeploy. External third-party audits are planned for the right moment; this page tracks both."
+description: "Two layers of audit. Apex (AGIRAILS' internal agentic audit system) surfaced 12 findings against actp-kernel + sdk-js, all closed before the V3 mainnet redeploy. External third-party audits are planned for the right moment; this page tracks both."
 schema_type: TechArticle
 last_verified: 2026-05-28
 stability: stable
@@ -14,12 +14,12 @@ sidebar_position: 3
 
 Two distinct review layers run against AGIRAILS:
 
-1. **Apex** — our **internal agentic audit system**. Built by the team to systematically review `actp-kernel` and `sdk-js` against known smart-contract vulnerability classes + protocol-design risks. Runs continuously; each substantial pass surfaces a numbered findings index that goes through remediation before a release ships.
-2. **External third-party audit** — planned for the right moment (post-PMF, before major upgrades, or when an external firm's review materially de-risks a specific class of stakeholder). **Not yet performed.** This page will be updated when one is scheduled.
+1. **Apex**: our **internal agentic audit system**. Built by the team to systematically review `actp-kernel` and `sdk-js` against known smart-contract vulnerability classes + protocol-design risks. Runs continuously; each substantial pass surfaces a numbered findings index that goes through remediation before a release ships.
+2. **External third-party audit**: planned for the right moment (post-PMF, before major upgrades, or when an external firm's review materially de-risks a specific class of stakeholder). **Not yet performed.** This page will be updated when one is scheduled.
 
-This page is the public record of both layers — every finding tracked through remediation, nothing quietly removed.
+This page is the public record of both layers. Every finding tracked through remediation, nothing quietly removed.
 
-## Apex internal agentic audit — pass dated 2026-05-17
+## Apex internal agentic audit: pass dated 2026-05-17
 
 Apex performed a source-level pass over `actp-kernel` (V2 at the time) and the TypeScript SDK. **12 actionable findings raised; all closed before the V3 mainnet redeploy on 2026-05-19.**
 
@@ -37,7 +37,7 @@ Apex performed a source-level pass over `actp-kernel` (V2 at the time) and the T
 | **FIND-008** | Medium | Dispute bond bps locking | ✅ Closed | `disputeBondBpsLocked` captured at `createTransaction`, immutable thereafter (INV-30) |
 | **FIND-009** | Medium | Mediator timelock hardening | ✅ Closed | M-2: timelock always resets on re-approval, closes the racing window |
 | **FIND-010** | Low | Self-transaction prevention | ✅ Closed | Kernel rejects `requester == provider` at `createTransaction` |
-| **FIND-011** | Low | Compiler bump | ✅ Closed | solc 0.8.20 → 0.8.34; closes four `via_ir` codegen bugs + `TransientStorageClearingHelperCollision` |
+| **FIND-011** | Low | Compiler bump | ✅ Closed | solc 0.8.20 to 0.8.34; closes four `via_ir` codegen bugs + `TransientStorageClearingHelperCollision` |
 | **FIND-012** | Low | Documentation gap | ✅ Closed | Admin-only resolver functions explicitly documented |
 | **FIND-013** | Low | Sepolia kernel freshness | ✅ Closed | V4 sepolia kernel deployed to match mainnet V3 + 1 patch ahead for early validation |
 | **FIND-014** | Low | Sourcify verification | ✅ Closed | All 8 contracts (4 mainnet + 4 sepolia) verified EXACT_MATCH |
@@ -55,7 +55,7 @@ For non-auditors, here's what the table is actually telling you:
 - **Low** = correctness improvements, defense-in-depth, no realistic exploit path identified.
 - **Info** = observations / nits / future work.
 
-Every "Closed" status is backed by either an on-chain change (kernel redeploy → V3) or a workflow change (CI hardening → visible in `.github/workflows/`). Verify any specific finding by checking the linked PR or commit in the `actp-kernel` and `sdk-js` repo history around April–May 2026.
+Every "Closed" status is backed by either an on-chain change (kernel redeploy to V3) or a workflow change (CI hardening, visible in `.github/workflows/`). Verify any specific finding by checking the linked PR or commit in the `actp-kernel` and `sdk-js` repo history around April–May 2026.
 
 ### What Apex is (and isn't)
 
@@ -67,9 +67,9 @@ Every "Closed" status is backed by either an on-chain change (kernel redeploy �
 - 🟡 **Not third-party**: an internal audit pipeline shares blind spots with the team that built it. That gap is what an external audit closes.
 - 🟡 **No external sign-off**: the index has no third-party-firm letterhead. Anyone evaluating AGIRAILS for institutional deployment should treat the Apex index as one input, not the only input.
 
-We publish this index because the work is real and the remediation is verifiable — but we don't claim third-party audit until we've actually run one.
+We publish this index because the work is real and the remediation is verifiable, but we don't claim third-party audit until we've actually run one.
 
-## External audit — planned, not performed
+## External audit: planned, not performed
 
 **Status**: no third-party external audit has been performed on AGIRAILS as of the date above.
 
@@ -87,15 +87,15 @@ Apex is the named, systematic layer. The continuous discipline beneath it:
 
 - **Slither + Foundry coverage** gate on every PR to `actp-kernel`.
 - **Manual review by 2+ reviewers** required for any change to kernel logic (enforced via CODEOWNERS).
-- **Hypothesis stateful exerciser** — ~600 random op sequences per CI run on the lifecycle state machine.
-- **Cross-SDK byte-identical EIP-712 parity** — every release verifies TS-signed messages decode in Python and vice versa.
+- **Hypothesis stateful exerciser**: ~600 random op sequences per CI run on the lifecycle state machine.
+- **Cross-SDK byte-identical EIP-712 parity**: every release verifies TS-signed messages decode in Python and vice versa.
 
 See [Testing](/security/testing) for the full testing depth.
 
 ## See also
 
-- [Threat model](/security/threat-model) — what each finding closed
-- [Verified contracts](/security/contracts) — Sourcify status for every reviewed contract
-- [Formal verification (H¹=0)](/security/formal-verification) — sheaf cohomology layer above code audit
-- [Testing](/security/testing) — what the continuous review covers
-- [Disclosure](/security/disclosure) — how to report new findings
+- [Threat model](/security/threat-model): what each finding closed
+- [Verified contracts](/security/contracts): Sourcify status for every reviewed contract
+- [Formal verification (H¹=0)](/security/formal-verification): sheaf cohomology layer above code audit
+- [Testing](/security/testing): what the continuous review covers
+- [Disclosure](/security/disclosure): how to report new findings

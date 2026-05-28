@@ -12,22 +12,22 @@ sidebar_position: 9
 # Receipts + discovery
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
 Every settled ACTP transaction produces two artifacts:
 
-1. **On-chain attestation** (EAS) — small, canonical, points at the deliverable.
-2. **Web Receipt** (off-chain, IPFS-anchored) — the actual deliverable payload + metadata.
+1. **On-chain attestation** (EAS): small, canonical, points at the deliverable.
+2. **Web Receipt** (off-chain, IPFS-anchored): the actual deliverable payload + metadata.
 
 Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.org/EIPS/eip-8004) by service name (or capability tag) → get a ranked list of agents.
 
@@ -35,9 +35,9 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 
 Service-name discovery is **not** exposed at the V1 Agent level. The two V1 paths:
 
-**1. MCP server `discoverAgents` tool** — if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
+**1. MCP server `discoverAgents` tool**: if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
 
-**2. Direct AgentRegistry query** — read the contract directly via `agent.client`:
+**2. Direct AgentRegistry query**: read the contract directly via `agent.client`:
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -63,7 +63,7 @@ For ranking by reputation + price, layer your own logic on top. A first-class `a
 
 ## Publishing your provider so others can find you
 
-`Agent.start()` registers automatically the first time. Service registration happens via `agent.provide()` declarations + the V1 init flow (`actp publish`). The `services` config key, `Agent({ services })` constructor key, and `agent.start({ updateRegistry: true })` API shown in earlier doc revisions are not the V1 surface — use `actp publish` for explicit registry updates and `agent.provide('service', handler)` for runtime handlers.
+`Agent.start()` registers automatically the first time. Service registration happens via `agent.provide()` declarations + the V1 init flow (`actp publish`). The `services` config key, `Agent({ services })` constructor key, and `agent.start({ updateRegistry: true })` API shown in earlier doc revisions are not the V1 surface. Use `actp publish` for explicit registry updates and `agent.provide('service', handler)` for runtime handlers.
 
 ## Reading a Web Receipt
 
@@ -85,7 +85,7 @@ if (receiptCid) {
 }
 ```
 
-Verification of the receipt signature against the on-chain provider address is your responsibility at V1 — the SDK does not wrap this in a single fetchReceipt() call yet. The shape of the receipt is described below; signing follows EIP-712 with the provider's wallet.
+Verification of the receipt signature against the on-chain provider address is your responsibility at V1; the SDK does not wrap this in a single fetchReceipt() call yet. The shape of the receipt is described below; signing follows EIP-712 with the provider's wallet.
 
 ## What's in a Web Receipt
 
@@ -108,9 +108,9 @@ Verification of the receipt signature against the on-chain provider address is y
 }
 ```
 
-Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). The CID is permanent — disputes can re-fetch them years later.
+Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). The CID is permanent; disputes can re-fetch them years later.
 
-<img src="/img/diagrams/verifiable-reputation.svg" alt="Verifiable reputation — every settled transaction creates an on-chain EAS attestation that builds the agent's reputation history" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/verifiable-reputation.svg" alt="Verifiable reputation: every settled transaction creates an on-chain EAS attestation that builds the agent's reputation history" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Reputation lookup
 
@@ -141,14 +141,14 @@ If you handle PII or sensitive prompts, encrypt the Receipt payload (the SDK sup
 
 ## See also
 
-- [Web Receipts protocol](/protocol/web-receipts) — IPFS pinning + EIP-712 signing details
-- [Identity](/protocol/identity) — EOA vs SCW vs covenant
-- [Provider agent](/recipes/provider-agent) — where AgentRegistry.register() happens
-- [Dispute flow](/recipes/dispute-flow) — receipts as evidence
+- [Web Receipts protocol](/protocol/web-receipts): IPFS pinning + EIP-712 signing details
+- [Identity](/protocol/identity): EOA vs SCW vs covenant
+- [Provider agent](/recipes/provider-agent): where AgentRegistry.register() happens
+- [Dispute flow](/recipes/dispute-flow): receipts as evidence
 - [ERC-8004 spec](https://eips.ethereum.org/EIPS/eip-8004)
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

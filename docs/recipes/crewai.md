@@ -1,7 +1,7 @@
 ---
 slug: /recipes/crewai
 title: "CrewAI integration"
-description: "Add ACTP payments between CrewAI agents — turn the implicit internal call graph into explicit USDC-settled transactions, with attestations + receipts per inter-agent call."
+description: "Add ACTP payments between CrewAI agents: turn the implicit internal call graph into explicit USDC-settled transactions, with attestations + receipts per inter-agent call."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "agirails@3.0.1 + crewai@0.130.x"
@@ -12,21 +12,21 @@ sidebar_position: 13
 # CrewAI integration
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP — useful when:
+CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP, useful when:
 
-<img src="/img/diagrams/crewai-integration.svg" alt="CrewAI integration — paid tools between crew agents via AGIRAILS" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/crewai-integration.svg" alt="CrewAI integration: paid tools between crew agents via AGIRAILS" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 - The agents belong to **different owners** sharing a workflow.
 - You want per-call accountability (cost, attestation, audit trail).
@@ -94,6 +94,7 @@ result = crew.kickoff()
 
 When the researcher decides it needs to translate French → English, it calls `translate` which costs $0.10 USDC. Summary call costs $0.30. Total visible in `agirails.stats.totalSpent`.
 
+
 ## Exposing a CrewAI workflow as a provider
 
 The whole crew can be a single AGIRAILS service:
@@ -108,9 +109,9 @@ async def research_summary(job, ctx):
 await agirails.start()
 ```
 
-Now other agents discover and pay for `research-summary`. Each call funds one crew execution. The crew internally might **also** call paid sub-services — full economic chain.
+Now other agents discover and pay for `research-summary`. Each call funds one crew execution. The crew internally might **also** call paid sub-services: full economic chain.
 
-## Full scenario — research crew with budgeted hand-offs
+## Full scenario: research crew with budgeted hand-offs
 
 A four-agent crew where each agent owns its own AGIRAILS wallet, transacts with the others, and respects per-agent + per-crew budget caps. Production-shape, not toy.
 
@@ -121,7 +122,7 @@ from crewai import Agent as CrewAgent, Crew, Task
 from crewai_tools import BaseTool
 from agirails import Agent as AgirailsAgent
 
-# Each crew agent owns a separate AGIRAILS wallet — different EOAs, separate budgets,
+# Each crew agent owns a separate AGIRAILS wallet: different EOAs, separate budgets,
 # separate reputations. This is the pattern when crew members may belong to different
 # owners or need distinct accounting.
 
@@ -156,7 +157,7 @@ class AgirailsServiceTool(BaseTool):
         self._daily_cap = daily_cap
 
     def _run(self, **kwargs):
-        # V1 has no behavior.budget on Agent — enforce caps in the wrapper.
+        # V1 has no behavior.budget on Agent; enforce caps in the wrapper.
         # agent.stats.total_spent is the running total since agent.start().
         if self._agent.stats.total_spent >= self._daily_cap:
             return {"error": f"daily cap ${self._daily_cap} exhausted for {self._agent.config.name}"}
@@ -235,6 +236,7 @@ What this gives you in production:
 
 For a 50-call research crew at typical prices, total spend lands around $5-8 USDC. With per-wallet `daily_cap` enforced in the wrapper, you can never overspend a Friday afternoon's curiosity.
 
+
 ## Per-call vs per-crew billing
 
 | Pattern | When |
@@ -245,9 +247,10 @@ For a 50-call research crew at typical prices, total spend lands around $5-8 USD
 
 The hybrid is most common: you own the research workflow, but the LLM gateway, translation, and content-fetching are each paid AGIRAILS services. Margin = your asking price − sub-task costs − ACTP fee.
 
+
 ## Cost discipline
 
-CrewAI workflows can be unpredictable — agent reasoning loops can balloon. V1 has no `behavior.budget` config on the SDK side, so enforce caps in your wrapper (as shown in `AgirailsServiceTool._run` above) and at the crew kickoff boundary:
+CrewAI workflows can be unpredictable; agent reasoning loops can balloon. V1 has no `behavior.budget` config on the SDK side, so enforce caps in your wrapper (as shown in `AgirailsServiceTool._run` above) and at the crew kickoff boundary:
 
 ```python
 PER_KICKOFF_CAP = 1.00
@@ -267,13 +270,13 @@ For preventive enforcement, extend the per-wallet `daily_cap` check inside `Agir
 
 ## See also
 
-- [LangChain integration](/recipes/langchain) — same pattern, different framework
-- [Autonomous agent](/recipes/autonomous-agent) — single-process version of the same idea
-- [Provider agent](/recipes/provider-agent) — how the underlying provide() works
+- [LangChain integration](/recipes/langchain): same pattern, different framework
+- [Autonomous agent](/recipes/autonomous-agent): single-process version of the same idea
+- [Provider agent](/recipes/provider-agent): how the underlying provide() works
 - [CrewAI docs](https://docs.crewai.com/)
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

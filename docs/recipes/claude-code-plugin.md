@@ -1,7 +1,7 @@
 ---
 slug: /recipes/claude-code-plugin
 title: "Claude Code plugin recipes"
-description: "Use the `agirails` Claude Code plugin — slash commands, agents, and skills — to develop ACTP integrations from inside Claude Code, including a pre-wired AGIRAILS-specialized agent."
+description: "Use the `agirails` Claude Code plugin (slash commands, agents, and skills) to develop ACTP integrations from inside Claude Code, including a pre-wired AGIRAILS-specialized agent."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "agirails-claude-plugin@1.0.0 (Claude Code plugin marketplace)"
@@ -11,13 +11,13 @@ sidebar_position: 14
 
 # Claude Code plugin recipes
 
-<img src="/img/diagrams/claude-plugin-architecture.svg" alt="Claude Code plugin architecture — slash commands, skills, agents wrapping the SDK" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/claude-plugin-architecture.svg" alt="Claude Code plugin architecture: slash commands, skills, agents wrapping the SDK" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 The `agirails` Claude Code plugin gives Claude Code three things:
 
 1. **Slash commands** for common ACTP dev tasks (`/agirails:agent-new`, `/agirails:wallet-check`, `/agirails:audit`).
 2. **Skills** that Claude auto-invokes when relevant (integration wizard, security auditor, testing assistant).
-3. **Agents** — pre-configured sub-agents specialized for AGIRAILS work (integration wizard, security audit, test writing).
+3. **Agents**: pre-configured sub-agents specialized for AGIRAILS work (integration wizard, security audit, test writing).
 
 Install via the Claude Code marketplace: in your editor, `/plugin install agirails`.
 
@@ -89,7 +89,7 @@ The auditor looks for:
 > Use the agirails:testing-assistant subagent to write tests for src/handlers/translate.ts.
 ```
 
-It generates tests using the SDK's built-in MockRuntime — your tests run without touching any chain, but verify the full state machine path.
+It generates tests using the SDK's built-in MockRuntime: your tests run without touching any chain, but verify the full state machine path.
 
 ## Skill auto-invocation
 
@@ -127,14 +127,14 @@ If you're integrating against an older SDK (e.g. `@agirails/sdk@3.x`) explicitly
 
 ## See also
 
-- [Claude Code integration overview](/start/ai-environment/claude-code) — broader Claude Code setup
-- [Claude skill (Anthropic Skills)](/start/ai-environment/claude-skill) — the other distribution channel
-- [Consumer agent](/recipes/consumer-agent) — what the wizard generates for the consumer side
-- [Provider agent](/recipes/provider-agent) — same for providers
+- [Claude Code integration overview](/start/ai-environment/claude-code): broader Claude Code setup
+- [Claude skill (Anthropic Skills)](/start/ai-environment/claude-skill): the other distribution channel
+- [Consumer agent](/recipes/consumer-agent): what the wizard generates for the consumer side
+- [Provider agent](/recipes/provider-agent): same for providers
 - [Plugin source on GitHub](https://github.com/agirails/claude-code-plugin)
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

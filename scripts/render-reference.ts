@@ -17,7 +17,7 @@
  * Wired into the CI workflow (truth-ledger-refresh.yml) so manifest
  * regeneration + reference re-render ship together as a single PR.
  *
- * Does NOT run in Vercel prebuild — like truth-ledger itself, this script
+ * Does NOT run in Vercel prebuild. Like truth-ledger itself, this script
  * needs the manifest to exist (it always does, since it's committed).
  * Vercel just deploys whatever rendered pages are committed.
  */
@@ -237,7 +237,7 @@ function renderCliPage(cli: Manifest['cli'], generatedAt: string): string {
   lines.push('---');
   lines.push('slug: /reference/cli');
   lines.push('title: "actp CLI reference"');
-  lines.push('description: "All actp subcommands, args, and options — auto-extracted from sdk-js (Commander) + python-sdk-v2 (Typer) sources via the truth-ledger pipeline."');
+  lines.push('description: "All actp subcommands, args, and options. Auto-extracted from sdk-js (Commander) + python-sdk-v2 (Typer) sources via the truth-ledger pipeline."');
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
@@ -264,7 +264,7 @@ function renderCliPage(cli: Manifest['cli'], generatedAt: string): string {
     for (const c of commands) {
       const subs = c.subcommands && c.subcommands.length > 0
         ? c.subcommands.map((s) => `\`${s.qualified_name}\``).join(', ')
-        : '—';
+        : '_(none)_';
       lines.push(`| \`actp ${c.name}\` | ${subs} |`);
     }
     lines.push('');
@@ -300,7 +300,7 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
   lines.push('---');
   lines.push('slug: /reference/mcp-server');
   lines.push('title: "MCP server reference (@agirails/mcp-server)"');
-  lines.push(`description: "All ${mcp.total} MCP tools across three layers (discovery, runtime, protocol bootstrap) — auto-extracted from the mcp-server TOOLS array."`);
+  lines.push(`description: "All ${mcp.total} MCP tools across three layers (discovery, runtime, protocol bootstrap). Auto-extracted from the mcp-server TOOLS array."`);
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
@@ -316,7 +316,7 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
   lines.push('');
   lines.push(`**Package**: \`@agirails/mcp-server@${mcp.package_version}\` · **Tools**: ${mcp.total} (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: ${generatedAt.slice(0, 19).replace('T', ' ')} UTC`);
   lines.push('');
-  lines.push('Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool — MCP server](/start/ai-environment/mcp-server) for setup.');
+  lines.push('Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.');
   lines.push('');
 
   const renderLayer = (label: string, tools: typeof mcp.layers.discovery) => {
@@ -331,9 +331,9 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
     lines.push('');
   };
 
-  renderLayer('Layer 1 — Discovery (5 tools, read-only)', mcp.layers.discovery);
-  renderLayer('Layer 2 — Runtime (14 tools)', mcp.layers.runtime);
-  renderLayer('Layer 3 — Protocol bootstrap (1 tool)', mcp.layers.protocol);
+  renderLayer('Layer 1: Discovery (5 tools, read-only)', mcp.layers.discovery);
+  renderLayer('Layer 2: Runtime (14 tools)', mcp.layers.runtime);
+  renderLayer('Layer 3: Protocol bootstrap (1 tool)', mcp.layers.protocol);
 
   lines.push('## See also');
   lines.push('');
@@ -350,7 +350,7 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   lines.push('---');
   lines.push('slug: /reference/errors');
   lines.push('title: "Error reference"');
-  lines.push(`description: "All ${errors.counts.ts} TypeScript + ${errors.counts.python} Python error classes — auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."`);
+  lines.push(`description: "All ${errors.counts.ts} TypeScript + ${errors.counts.python} Python error classes. Auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."`);
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
@@ -366,7 +366,7 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   lines.push('');
   lines.push(`**TypeScript SDK**: ${errors.counts.ts} error classes · **Python SDK**: ${errors.counts.python} error classes · **Manifest generated**: ${generatedAt.slice(0, 19).replace('T', ' ')} UTC`);
   lines.push('');
-  lines.push('Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks — preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren\'t thrown directly.');
+  lines.push('Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren\'t thrown directly.');
   lines.push('');
 
   const renderTable = (sdk: 'TypeScript' | 'Python', entries: ErrorEntry[]) => {
@@ -407,8 +407,8 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   lines.push('## See also');
   lines.push('');
   lines.push('- [Reference overview](/reference)');
-  lines.push('- [SDK reference — TypeScript](/reference/sdk-js)');
-  lines.push('- [SDK reference — Python](/reference/sdk-python)');
+  lines.push('- [SDK reference: TypeScript](/reference/sdk-js)');
+  lines.push('- [SDK reference: Python](/reference/sdk-python)');
   lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)');
   lines.push('');
 
@@ -418,7 +418,7 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
 // Fallback badge for sync_status values that renderSymbolTable doesn't
 // explicitly handle. Every value of `SyncStatus` (types.ts) is currently
 // branched on at the call site, so this only fires if the type ever grows
-// a new variant. Kept narrow on purpose — labels for the four canonical
+// a new variant. Kept narrow on purpose. Labels for the four canonical
 // statuses live at the call site (renderSymbolTable) where the per-SDK
 // directional phrasing matters.
 function syncBadge(status: string): string {
@@ -428,9 +428,9 @@ function syncBadge(status: string): string {
 function tierIntro(tier: string): string {
   switch (tier) {
     case 'level0':
-      return 'The smallest surface that produces a working transaction. If you\'re integrating for the first time, this is where to start — three or four imports get you a fully functional consumer or provider agent.';
+      return 'The smallest surface that produces a working transaction. If you\'re integrating for the first time, this is where to start. Three or four imports get you a fully functional consumer or provider agent.';
     case 'basic':
-      return 'The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn\'t expose.';
+      return 'The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn\'t expose.';
     case 'standard':
       return 'Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.';
     case 'advanced':
@@ -461,21 +461,21 @@ function renderSymbolTable(
     if (t) {
       if (t.sync_status === 'in-sync') status = '✅ in-sync';
       else if (t.sync_status === 'local-ahead') {
-        // local-ahead: TS has it, Python doesn't — these rows only land in
+        // local-ahead: TS has it, Python doesn't. These rows only land in
         // the TS doc (Python symbol list won't include the symbol at all).
-        status = '🟢 TS-only — Python parity pending';
+        status = '🟢 TS-only (Python parity pending)';
       }
       else if (t.sync_status === 'remote-ahead') {
-        // remote-ahead: Python has it, TS doesn't — these rows only land in
+        // remote-ahead: Python has it, TS doesn't. These rows only land in
         // the Python doc. Prior phrasing said "TS has it; Python pending"
         // which was the inverse of what `remote-ahead` actually means.
-        status = '🟢 Python-only — TS parity pending';
+        status = '🟢 Python-only (TS parity pending)';
       }
       else if (t.sync_status === 'diverged') status = '⚠️ diverged (cross-SDK signature mismatch)';
       else status = syncBadge(t.sync_status);
     }
     const kind = s.kind === 'export-from' ? '_re-export_' : (s.kind === 'unknown' ? '_(unknown)_' : `\`${s.kind}\``);
-    const summary = s.doc_summary ? escapeMd(s.doc_summary) : '_—_';
+    const summary = s.doc_summary ? escapeMd(s.doc_summary) : '_(no summary)_';
     lines.push(`| \`${s.name}\` | ${kind} | ${summary} | ${status} |`);
   }
   return lines;
@@ -496,10 +496,10 @@ function renderSdkTsPage(
   const includedTiers = buckets[tier];
   const symbols = sdk.symbols.filter((s) => includedTiers.includes(s.tier));
 
-  const title = tier === 'basic' ? 'TypeScript SDK — Basic + Level 0' : 'TypeScript SDK — Standard + Advanced';
+  const title = tier === 'basic' ? 'TypeScript SDK: Basic + Level 0' : 'TypeScript SDK: Standard + Advanced';
   const desc = tier === 'basic'
-    ? `Convenience tier of @agirails/sdk@${sdk.package_version} — Level 0 imports (\`request\`, \`provide\`) plus the \`Agent\` class and basic \`pay()\` flow.`
-    : `Production-stable surface of @agirails/sdk@${sdk.package_version} — adapters, builders, message-signing utilities, runtime helpers, plus the advanced building blocks.`;
+    ? `Convenience tier of @agirails/sdk@${sdk.package_version}: Level 0 imports (\`request\`, \`provide\`) plus the \`Agent\` class and basic \`pay()\` flow.`
+    : `Production-stable surface of @agirails/sdk@${sdk.package_version}: adapters, builders, message-signing utilities, runtime helpers, plus the advanced building blocks.`;
   const slug = `/reference/sdk-js/${tier}`;
   const sidebar = tier === 'basic' ? 1 : 2;
 
@@ -525,13 +525,13 @@ function renderSdkTsPage(
   lines.push('');
   lines.push('Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.');
   lines.push('');
-  lines.push('For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.');
+  lines.push('For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement; currently this page is the **index of what exists**, not the prose reference.');
   lines.push('');
 
   for (const t of includedTiers) {
     const tierSymbols = symbols.filter((s) => s.tier === t);
     if (tierSymbols.length === 0) continue;
-    lines.push(`## ${t.charAt(0).toUpperCase() + t.slice(1)} tier — ${tierSymbols.length} symbols`);
+    lines.push(`## ${t.charAt(0).toUpperCase() + t.slice(1)} tier (${tierSymbols.length} symbols)`);
     lines.push('');
     const intro = tierIntro(t);
     if (intro) {
@@ -550,7 +550,7 @@ function renderSdkTsPage(
   } else {
     lines.push('- [TypeScript Basic + Level 0](/reference/sdk-js/basic)');
   }
-  lines.push('- [Errors reference](/reference/errors) — exception class catalog');
+  lines.push('- [Errors reference](/reference/errors): exception class catalog');
   lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)');
   lines.push(`- [Source: \`@agirails/sdk@${sdk.package_version}\`](https://github.com/agirails/sdk-js)`);
   lines.push('');
@@ -583,7 +583,7 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('');
   lines.push(`**Package**: \`@agirails/sdk@${sdk.package_version}\` · **Total symbols**: ${sdk.count} · **Source**: \`${sdk.source_file}\``);
   lines.push('');
-  lines.push('<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API — Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: \'100%\', height: \'auto\', margin: \'1.5rem 0\'}} />');
+  lines.push('<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: \'100%\', height: \'auto\', margin: \'1.5rem 0\'}} />');
   lines.push('');
   lines.push('The TypeScript SDK is tiered to match the depth of integration you need:');
   lines.push('');
@@ -598,13 +598,13 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('Three entry points cover most real code:');
   lines.push('');
   lines.push('```ts');
-  lines.push('// 1. Level 0 — one-shot request / provide, no Agent lifecycle');
+  lines.push('// 1. Level 0: one-shot request / provide, no Agent lifecycle');
   lines.push('import { request, provide } from \'@agirails/sdk\';');
   lines.push('');
-  lines.push('// 2. Basic — long-lived agent with handlers');
+  lines.push('// 2. Basic: long-lived agent with handlers');
   lines.push('import { Agent } from \'@agirails/sdk\';');
   lines.push('');
-  lines.push('// 3. Standard — direct adapter / builder usage');
+  lines.push('// 3. Standard: direct adapter / builder usage');
   lines.push('import { ACTPClient, CounterOfferBuilder, StandardAdapter } from \'@agirails/sdk\';');
   lines.push('```');
   lines.push('');
@@ -615,8 +615,8 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('- [Python SDK reference](/reference/sdk-python)');
   lines.push('- [Errors reference](/reference/errors)');
   lines.push('- [CLI reference](/reference/cli)');
-  lines.push('- [Consumer agent recipe](/recipes/consumer-agent) — Level 0 / Basic in practice');
-  lines.push('- [Provider agent recipe](/recipes/provider-agent) — Level 0 / Basic in practice');
+  lines.push('- [Consumer agent recipe](/recipes/consumer-agent): Level 0 / Basic in practice');
+  lines.push('- [Provider agent recipe](/recipes/provider-agent): Level 0 / Basic in practice');
   lines.push('');
 
   return lines.join('\n');
@@ -653,7 +653,7 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
   lines.push('');
   lines.push('Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.');
   lines.push('');
-  lines.push('For detailed per-symbol docs (parameters, return types, examples) consult the source docstrings in [`agirails/sdk-python`](https://github.com/agirails/sdk-python). Auto-extraction of docstrings into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.');
+  lines.push('For detailed per-symbol docs (parameters, return types, examples) consult the source docstrings in [`agirails/sdk-python`](https://github.com/agirails/sdk-python). Auto-extraction of docstrings into rendered prose is a deferred enhancement; currently this page is the **index of what exists**, not the prose reference.');
   lines.push('');
   lines.push('## Tier distribution');
   lines.push('');
@@ -670,13 +670,13 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
   lines.push('## Quick orientation');
   lines.push('');
   lines.push('```python');
-  lines.push('# Level 0 — one-shot request / provide');
+  lines.push('# Level 0: one-shot request / provide');
   lines.push('from agirails import request, provide');
   lines.push('');
-  lines.push('# Basic — long-lived agent with handlers');
+  lines.push('# Basic: long-lived agent with handlers');
   lines.push('from agirails import Agent');
   lines.push('');
-  lines.push('# Standard — direct kernel / adapter usage');
+  lines.push('# Standard: direct kernel / adapter usage');
   lines.push('from agirails import ACTPClient, CounterOfferMessage');
   lines.push('```');
   lines.push('');
@@ -715,7 +715,7 @@ function renderAgirailsMdV4Page(p: ProtocolData, generatedAt: string): string {
   lines.push('---');
   lines.push('slug: /reference/agirails-md-v4');
   lines.push('title: "AGIRAILS.md V4 schema"');
-  lines.push(`description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4 — auto-extracted from the canonical AGIRAILS.md spec (${p.protocol} v${p.version}, spec=${p.spec})."`);
+  lines.push(`description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4. Auto-extracted from the canonical AGIRAILS.md spec (${p.protocol} v${p.version}, spec=${p.spec})."`);
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json (protocol surface)"');
@@ -731,10 +731,10 @@ function renderAgirailsMdV4Page(p: ProtocolData, generatedAt: string): string {
   lines.push('');
   lines.push(`**${p.protocol} v${p.version}** · spec \`${p.spec}\` · network \`${p.network}\` · currency \`${p.currency}\` · fee \`${p.fee}\` · **Manifest generated**: ${generatedAt.slice(0, 19).replace('T', ' ')} UTC`);
   lines.push('');
-  lines.push('This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter — the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:');
+  lines.push('This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:');
   lines.push('');
-  lines.push('- **Owner-local AGIRAILS.md** — template-filled copy of the canonical spec, kept locally per agent.');
-  lines.push('- **`{slug}.md` covenant** — public business card, V4-schema'  + ', hash-anchored on-chain via AgentRegistry.');
+  lines.push('- **Owner-local AGIRAILS.md**: template-filled copy of the canonical spec, kept locally per agent.');
+  lines.push('- **`{slug}.md` covenant**: public business card, V4-schema'  + ', hash-anchored on-chain via AgentRegistry.');
   lines.push('');
   lines.push('See [the covenant page](/protocol/covenant) for the mental model + the [AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation (canonical / owner-local / covenant).');
   lines.push('');
@@ -776,8 +776,8 @@ function renderAgirailsMdV4Page(p: ProtocolData, generatedAt: string): string {
   lines.push('| # | ID | Question | Type | Default | Condition | Advanced |');
   lines.push('|---:|---|---|---|---|---|---|');
   p.onboarding.questions.forEach((q, i) => {
-    const def = q.default !== undefined ? `\`${q.default}\`` : '—';
-    const cond = q.condition ? `\`${q.condition}\`` : '—';
+    const def = q.default !== undefined ? `\`${q.default}\`` : '_(none)_';
+    const cond = q.condition ? `\`${q.condition}\`` : '_(none)_';
     const adv = q.advanced ? '✓' : '';
     const typeWithOpts = q.options ? `${q.type} (${q.options.join(' / ')})` : q.type;
     lines.push(`| ${i + 1} | \`${q.id}\` | ${q.ask} | \`${typeWithOpts}\` | ${def} | ${cond} | ${adv} |`);
@@ -787,11 +787,11 @@ function renderAgirailsMdV4Page(p: ProtocolData, generatedAt: string): string {
   // See also
   lines.push('## See also');
   lines.push('');
-  lines.push('- [Canonical AGIRAILS.md spec](/protocol/agirails-md) — three-form disambiguation');
-  lines.push('- [The `{slug}.md` covenant](/protocol/covenant) — V4 business card');
-  lines.push('- [State machine](/protocol/state-machine) — 8-state DAG');
-  lines.push('- [Get started](/start) — 5-input flow that fills the covenant');
-  lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json) — `protocol` section');
+  lines.push('- [Canonical AGIRAILS.md spec](/protocol/agirails-md): three-form disambiguation');
+  lines.push('- [The `{slug}.md` covenant](/protocol/covenant): V4 business card');
+  lines.push('- [State machine](/protocol/state-machine): 8-state DAG');
+  lines.push('- [Get started](/start): 5-input flow that fills the covenant');
+  lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json): `protocol` section');
   lines.push('');
 
   return lines.join('\n');

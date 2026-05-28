@@ -1,7 +1,7 @@
 ---
 slug: /protocol/state-machine
 title: "ACTP state machine"
-description: "The 8-state DAG ACTP enforces in-kernel — INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED, with CANCELLED and DISPUTED branches gated by on-chain access checks. State machine integrity is the protocol's bedrock invariant."
+description: "The 8-state DAG ACTP enforces in-kernel: INITIATED → QUOTED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED, with CANCELLED and DISPUTED branches gated by on-chain access checks. State machine integrity is the protocol's bedrock invariant."
 schema_type: TechArticle
 last_verified: 2026-05-26
 verified_against: "actp-kernel V3 (mainnet) + V4 (sepolia); runtime/types.py::VALID_TRANSITIONS"
@@ -11,9 +11,9 @@ sidebar_position: 4
 
 # ACTP state machine
 
-The 8 ACTP states are **enforced in the kernel itself** — every state transition is gated by `requester` / `provider` / `mediator` access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
+The 8 ACTP states are **enforced in the kernel itself**. Every state transition is gated by `requester` / `provider` / `mediator` access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
 
-<img src="/img/diagrams/state-machine.svg" alt="ACTP state machine — 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/state-machine.svg" alt="ACTP state machine: 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ```text
 INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
@@ -23,7 +23,7 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 
 - `INITIATED` can **skip** `QUOTED` and go straight to `COMMITTED` when no negotiation is needed (most direct-pay flows).
 - `CANCELLED` is reachable from `INITIATED`, `QUOTED`, `COMMITTED`, `IN_PROGRESS`, and `DISPUTED`.
-- `SETTLED` and `CANCELLED` are **terminal** — no transitions out.
+- `SETTLED` and `CANCELLED` are **terminal**; no transitions out.
 
 ## The 8 states
 
@@ -34,11 +34,11 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | 2 | `COMMITTED` | Requester locks USDC in escrow via `linkEscrow()` | Provider (→ IN_PROGRESS, CANCELLED) |
 | 3 | `IN_PROGRESS` | Provider has started work | Provider (→ DELIVERED, CANCELLED) |
 | 4 | `DELIVERED` | Provider submits deliverable + EAS attestation proof | Requester (→ SETTLED, DISPUTED) |
-| 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | — (terminal) |
+| 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | (terminal) |
 | 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
-| 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | — (terminal) |
+| 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | (terminal) |
 
-<img src="/img/diagrams/transaction-lifecycle.svg" alt="Transaction lifecycle — full path from INITIATED through QUOTED/COMMITTED/IN_PROGRESS/DELIVERED to terminal SETTLED, with CANCELLED + DISPUTED branches" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/transaction-lifecycle.svg" alt="Transaction lifecycle: full path from INITIATED through QUOTED/COMMITTED/IN_PROGRESS/DELIVERED to terminal SETTLED, with CANCELLED + DISPUTED branches" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Why DAG-only on-chain
 
@@ -52,7 +52,7 @@ The 8 states are exposed in both SDKs. **TypeScript caveat**: in `@agirails/sdk@
 
 ```typescript
 import type { State } from '@agirails/sdk'; // type annotation only
-// In code, pass string literals — these match the kernel enum:
+// In code, pass string literals (these match the kernel enum):
 await client.standard.transitionState(txId, 'DELIVERED', proof);
 // Other valid values:
 // 'INITIATED' | 'QUOTED' | 'COMMITTED' | 'IN_PROGRESS'
@@ -68,8 +68,8 @@ State transitions on the SDK side mirror the on-chain DAG; calling `client.stand
 
 ## See also
 
-- [Escrow mechanism](/protocol/escrow) — where the USDC sits between COMMITTED and SETTLED
-- [Quote channel (AIP-2.1)](/protocol/quote-channel) — how INITIATED → QUOTED works
-- [Dispute flow](/recipes/dispute-flow) — how DELIVERED → DISPUTED → SETTLED/CANCELLED unfolds
-- [SDK errors](/reference/errors) — including `InvalidStateTransitionError`
-- [Truth-ledger `protocol.states`](/sdk-manifest.json) — machine-readable, extracted from canonical AGIRAILS.md
+- [Escrow mechanism](/protocol/escrow): where the USDC sits between COMMITTED and SETTLED
+- [Quote channel (AIP-2.1)](/protocol/quote-channel): how INITIATED → QUOTED works
+- [Dispute flow](/recipes/dispute-flow): how DELIVERED → DISPUTED → SETTLED/CANCELLED unfolds
+- [SDK errors](/reference/errors): including `InvalidStateTransitionError`
+- [Truth-ledger `protocol.states`](/sdk-manifest.json): machine-readable, extracted from canonical AGIRAILS.md

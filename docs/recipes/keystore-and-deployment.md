@@ -12,19 +12,19 @@ sidebar_position: 10
 # Keystore + deployment (AIP-13)
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-<img src="/img/diagrams/key-rotation-flow.svg" alt="Key rotation flow — keystore generation, base64 encoding for CI, rotation procedure" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/key-rotation-flow.svg" alt="Key rotation flow: keystore generation, base64 encoding for CI, rotation procedure" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 AIP-13 codifies how AGIRAILS handles private keys. The short version:
 
@@ -42,7 +42,7 @@ ACTP_KEY_PASSWORD='strong-passphrase-here' actp init -m testnet
 # → prints the public EOA address; fund this with testnet USDC via the SDK's MockUSDC
 ```
 
-Then in your code, just set `ACTP_KEY_PASSWORD` — the SDK auto-loads the keystore:
+Then in your code, just set `ACTP_KEY_PASSWORD`; the SDK auto-loads the keystore:
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -68,9 +68,9 @@ The resolution order:
 GitHub Actions / GitLab CI / Vercel can't easily upload a file alongside env vars, so the SDK accepts the keystore as base64. Generate once:
 
 ```bash
-base64 -i .actp/keystore.json | pbcopy   # macOS — paste into secret
+base64 -i .actp/keystore.json | pbcopy   # macOS: paste into secret
 # or
-base64 -w 0 .actp/keystore.json          # Linux — single line
+base64 -w 0 .actp/keystore.json          # Linux: single line
 ```
 
 Then in your CI:
@@ -83,9 +83,9 @@ env:
 
 The keystore stays encrypted at rest inside your secrets manager; only the runtime decrypts it for the duration of the process.
 
-<img src="/img/diagrams/key-security-mistakes.svg" alt="Common key security mistakes — logging keys, committing .env, weak passwords, plus the fail-closed remediations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/key-security-mistakes.svg" alt="Common key security mistakes: logging keys, committing .env, weak passwords, plus the fail-closed remediations" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-## `actp deploy:check` — fail-closed scanner
+## `actp deploy:check`: fail-closed scanner
 
 Run before every deploy. It scans your repo for:
 
@@ -100,7 +100,7 @@ actp deploy:check --strict
 # ✓ no committed keys
 # ✓ keystore permissions: 600
 # ✓ password entropy: 4.8 bits/char (good)
-# ✓ network: mainnet — keystore matches
+# ✓ network: mainnet (keystore matches)
 # pass
 ```
 
@@ -132,7 +132,7 @@ ACTP_KEYSTORE_PATH=.actp/keystore.mainnet.json ACTP_KEY_PASSWORD='…' node my-a
 
 ## What `wallet=auto` means for keystores
 
-The keystore holds the **EOA** private key. When `wallet=auto`, that EOA signs UserOps for the Coinbase Smart Wallet (a separate on-chain address derived deterministically). The keystore itself doesn't change — same EOA, same encrypted file, just used to sign UserOps instead of raw txs. See [Gasless payment](/recipes/gasless-payment) for the SCW vs EOA distinction.
+The keystore holds the **EOA** private key. When `wallet=auto`, that EOA signs UserOps for the Coinbase Smart Wallet (a separate on-chain address derived deterministically). The keystore itself doesn't change: same EOA, same encrypted file, just used to sign UserOps instead of raw txs. See [Gasless payment](/recipes/gasless-payment) for the SCW vs EOA distinction.
 
 ## Rotating a compromised key
 
@@ -147,17 +147,17 @@ ACTP_KEY_PASSWORD='new-strong-pass' actp init -m mainnet --rotate
 # 4. Re-register with new identity if you ran AgentRegistry.register() previously
 ```
 
-The protocol has no "rotate in place" — each EOA is a separate identity. Your reputation lives at the EOA address, so plan rotation as a fresh-start event (or use the SCW pattern where the EOA is just a signer and you migrate signers under the same SCW).
+The protocol has no "rotate in place"; each EOA is a separate identity. Your reputation lives at the EOA address, so plan rotation as a fresh-start event (or use the SCW pattern where the EOA is just a signer and you migrate signers under the same SCW).
 
 ## See also
 
-- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-13.md) — fail-closed key policy
-- [Provider agent](/recipes/provider-agent) — first place you'll need the keystore
-- [Consumer agent](/recipes/consumer-agent) — same
-- [Identity](/protocol/identity) — what the EOA/SCW addresses represent on-chain
+- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-13.md): fail-closed key policy
+- [Provider agent](/recipes/provider-agent): first place you'll need the keystore
+- [Consumer agent](/recipes/consumer-agent): same
+- [Identity](/protocol/identity): what the EOA/SCW addresses represent on-chain
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).

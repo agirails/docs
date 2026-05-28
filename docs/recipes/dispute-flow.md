@@ -1,7 +1,7 @@
 ---
 slug: /recipes/dispute-flow
 title: "Dispute flow"
-description: "Raise a dispute on a DELIVERED transaction, post the $1 USDC bond per AIP-14, and walk through mediator resolution → SETTLED or CANCELLED."
+description: "Raise a dispute on a DELIVERED transaction, post the $1 USDC bond per AIP-14, and walk through mediator resolution to SETTLED or CANCELLED."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "actp-kernel V3 (mainnet) AIP-14 + @agirails/sdk@4.0.0"
@@ -12,25 +12,25 @@ sidebar_position: 8
 # Dispute flow
 
 
-:::caution V1 surface — verify before shipping
+:::caution V1 surface: verify before shipping
 Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
 
 - **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
 - **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})` — not a fluent chain
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
 - **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
 
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets** — V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
 A dispute happens when the requester rejects a `DELIVERED` transaction or the provider claims the requester is refusing valid work. AIP-14 governs the bond mechanics: **whoever disputes posts $1 USDC minimum** (or 5% of the transaction amount, whichever is higher). The bond returns per fault attribution after the mediator decides.
 
-<img src="/img/diagrams/dispute-path.svg" alt="Dispute path — DELIVERED → DISPUTED → mediator decision → SETTLED or CANCELLED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/dispute-path.svg" alt="Dispute path: DELIVERED → DISPUTED → mediator decision → SETTLED or CANCELLED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Raising a dispute as the requester
 
-You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead — see [Consumer agent](/recipes/consumer-agent#cancellation-paths).
+You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead. See [Consumer agent](/recipes/consumer-agent#cancellation-paths).
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -72,7 +72,7 @@ A provider raises a dispute when:
 - Requester sent input the provider couldn't process but disputes anyway
 
 ```ts
-// Identical path — the kernel decides who pays the bond from msg.sender.
+// Identical path; the kernel decides who pays the bond from msg.sender.
 // In an agent's V1 wallet=auto config, msg.sender is the agent's Smart Wallet.
 await agent.client.standard.transitionState(
   txId,
@@ -83,9 +83,9 @@ await agent.client.standard.transitionState(
 
 Same bond is posted from the provider's wallet via the same path.
 
-<img src="/img/diagrams/dispute-window.svg" alt="Dispute window — after DELIVERED, requester has bounded time to accept (→ SETTLED auto) or dispute" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/dispute-window.svg" alt="Dispute window: after DELIVERED, requester has bounded time to accept (→ SETTLED auto) or dispute" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-<img src="/img/diagrams/settlement-timeline.svg" alt="Settlement timeline — DELIVERED → dispute-window → SETTLED (accept / do nothing) or DISPUTED (raise)" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/settlement-timeline.svg" alt="Settlement timeline: DELIVERED → dispute-window → SETTLED (accept / do nothing) or DISPUTED (raise)" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Bond mechanics (AIP-14)
 
@@ -94,6 +94,7 @@ bondAmount = max(amount × disputeBondBpsLocked / 10000, MIN_DISPUTE_BOND)
 ```
 
 - `disputeBondBpsLocked`: per-transaction value, captured at `createTransaction` time. Default `500` (5%). Immutable for the transaction's lifetime (INV-30).
+
 - `MIN_DISPUTE_BOND`: `1_000_000` micro-USDC = $1.00.
 
 For a $20 transaction, bond = max($20 × 5%, $1) = **$1.00** (because 5% = $1.00 = MIN).
@@ -116,7 +117,7 @@ DISPUTED
   └─→ noDecision             → CANCELLED, bond burned, escrow refunded per state
 ```
 
-The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED` — the DAG forbids it. Once a tx is `DISPUTED`, it's heading to SETTLED or CANCELLED, period.
+The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG forbids it. Once a tx is `DISPUTED`, it's heading to SETTLED or CANCELLED, period.
 
 ## Subscribing to dispute events
 
@@ -155,13 +156,13 @@ So dispute when you genuinely have a case, not as a haggling tool.
 
 ## See also
 
-- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-14.md) — dispute bonds
-- [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps) — why bonds can't be changed mid-flight
-- [Escrow mechanism](/protocol/escrow) — what happens to USDC during DISPUTED
-- [State machine](/protocol/state-machine) — DELIVERED → DISPUTED → SETTLED/CANCELLED paths
+- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-14.md): dispute bonds
+- [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps): why bonds can't be changed mid-flight
+- [Escrow mechanism](/protocol/escrow): what happens to USDC during DISPUTED
+- [State machine](/protocol/state-machine): DELIVERED → DISPUTED → SETTLED/CANCELLED paths
 
 ---
 
 <!-- VERIFIED FOOTER -->
 
-**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json) — regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
+**Verified against**: `@agirails/sdk@4.0.0` + `agirails@3.0.1` + `actp-kernel` V3 mainnet / V4 sepolia · **Last cross-check**: 2026-05-27 (Wave A.10–A.12 verifier sweep). For drift between this recipe and the live SDK, see [`/sdk-manifest.json`](/sdk-manifest.json), regenerated daily by the truth-ledger workflow. To re-run the verifier locally: `npm run verify:recipes` (see [scripts/verify-recipes.ts](https://github.com/agirails/docs/blob/main/scripts/verify-recipes.ts)).
