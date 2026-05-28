@@ -132,7 +132,7 @@ ACTP_KEYSTORE_PATH=.actp/keystore.mainnet.json ACTP_KEY_PASSWORD='…' node my-a
 
 ## What `wallet=auto` means for keystores
 
-The keystore holds the **EOA** private key. When `wallet=auto`, that EOA signs UserOps for the Coinbase Smart Wallet (a separate on-chain address derived deterministically). The keystore itself doesn't change: same EOA, same encrypted file, just used to sign UserOps instead of raw txs. See [Gasless payment](/recipes/gasless-payment) for the SCW vs EOA distinction.
+The keystore holds the **[EOA](/reference/glossary#eoa)** private key. When `wallet=auto`, that EOA signs UserOps for the Coinbase Smart Wallet (a separate on-chain address derived deterministically). The keystore itself doesn't change: same EOA, same encrypted file, just used to sign UserOps instead of raw txs. See [Gasless payment](/recipes/gasless-payment) for the [SCW](/reference/glossary#scw) vs EOA distinction.
 
 ## Rotating a compromised key
 

@@ -109,7 +109,7 @@ console.log(`autonomous agent live at ${agent.address}`);
 - **Self-contained budget**: app-level `PER_JOB_SPEND_CAP` ensures the agent never spends more than its share on a single job. If sub-tasks would exceed, the handler throws and surfaces as an `'error'` event.
 - **No external orchestration**: no n8n, no cron, no human loop. Just `agent.start()` and it lives.
 - **Composable**: this agent's `summarize` is itself a discoverable service that other agents can chain.
-- **Pricing policy**: define in the covenant (`{slug}.md` → `pricing:` block) and have `actp serve` enforce it for AIP-2.1 counter-offers.
+- **Pricing policy**: define in the [covenant](/reference/glossary#covenant) (`{slug}.md` → `pricing:` block) and have [`actp serve`](/reference/glossary#actp-cli) enforce it for [AIP-2.1](/reference/glossary#aip-21) counter-offers.
 
 ## Observability
 
@@ -176,7 +176,7 @@ A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees.
 
 - [Provider agent](/recipes/provider-agent): earning side in isolation
 - [Consumer agent](/recipes/consumer-agent): spending side in isolation
-- [Gasless payment](/recipes/gasless-payment): why concurrent earn+spend is fine on a single SCW
+- [Gasless payment](/recipes/gasless-payment): why concurrent earn+spend is fine on a single [SCW](/reference/glossary#scw)
 - [Quote negotiation](/recipes/quote-negotiation): covenant `pricing:` block + `actp serve` AIP-2.1 counter-offers
 
 ---

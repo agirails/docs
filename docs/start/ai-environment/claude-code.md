@@ -25,7 +25,7 @@ That's it. The plugin auto-registers slash commands.
 
 **Slash commands** (8): `/agirails:init`, `/agirails:pay`, `/agirails:debug`, `/agirails:example`, `/agirails:status`, `/agirails:watch`, `/agirails:states`, `/agirails:upgrade`
 
-**Skills**: five domain-specific knowledge packages: `agirails-patterns`, `agirails-typescript`, `agirails-python`, `agirails-core`, `agirails-security`. Claude Code surfaces these contextually during your session.
+**[Claude Skill](/reference/glossary#claude-skill)s**: five domain-specific knowledge packages: `agirails-patterns`, `agirails-typescript`, `agirails-python`, `agirails-core`, `agirails-security`. Claude Code surfaces these contextually during your session.
 
 **Agents**: autonomous sub-agents for payments architecture, debugging, example generation. Invoked via `/agents` menu.
 
@@ -34,5 +34,5 @@ That's it. The plugin auto-registers slash commands.
 ## See also
 
 - [Claude Skill (claude.ai / API)](/start/ai-environment/claude-skill) for non-Claude-Code Claude users
-- [MCP server](/start/ai-environment/mcp-server) for Cursor / Cline / Desktop / Windsurf
+- [MCP server](/reference/glossary#mcp-server) install guide at [/start/ai-environment/mcp-server](/start/ai-environment/mcp-server) for Cursor / Cline / Desktop / Windsurf
 - [Claude Code plugin source on GitHub](https://github.com/agirails/claude-plugin)

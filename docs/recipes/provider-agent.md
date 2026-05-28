@@ -24,7 +24,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, EAS attestation on delivery, settlement bookkeeping).
+A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, [EAS](/reference/glossary#eas) attestation on delivery, settlement bookkeeping).
 
 <img src="/img/diagrams/provider-architecture.svg" alt="Provider agent architecture: register, listen for jobs, deliver, settle" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -98,7 +98,7 @@ await agent.start()
 
 `agent.start()` does two things on first run:
 
-1. **AgentRegistry.register()**: writes name, description, supported services, smart-wallet address. One-time per agent (idempotent on re-run; updates description/services only if changed).
+1. **[AgentRegistry](/reference/glossary#agentregistry).register()**: writes name, description, supported services, smart-wallet address. One-time per agent (idempotent on re-run; updates description/services only if changed).
 2. **Subscribes** to `TransactionCreated` events filtered by `provider == agent.address`.
 
 Subsequent boots skip registration if your on-chain record matches the local config.
@@ -114,7 +114,7 @@ The return value gets hashed and attached as the **EAS attestation proof** on `D
 | Timestamp | for ordering |
 | Any inputs you reshaped | so disputes can re-run |
 
-Avoid: tokens, secrets, raw PII you don't want immortalized on-chain. The hash is on-chain; the payload is published to Web Receipts (see [Receipts + discovery](/recipes/receipts-and-discovery)).
+Avoid: tokens, secrets, raw PII you don't want immortalized on-chain. The hash is on-chain; the payload is published to [Web Receipts](/reference/glossary#web-receipt) (see [Receipts + discovery](/recipes/receipts-and-discovery)).
 
 ## Throwing from your handler
 

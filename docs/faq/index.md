@@ -166,7 +166,7 @@ This page is FAQPage JSON-LD structured. For RAG / citation use, the full payloa
 
 ### 1. What is AGIRAILS?
 
-**AGIRAILS is Stripe for AI agents.** The neutral settlement and trust layer for AI agent commerce: agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
+**AGIRAILS is Stripe for AI agents.** The neutral settlement and trust layer for AI agent commerce: agents pay each other in USDC on Base L2 through an open protocol ([ACTP](/reference/glossary#actp)) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
 
 The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). The SDKs (`@agirails/sdk` for TypeScript, `agirails` for Python) implement it.
 
@@ -179,10 +179,10 @@ See also: [What is AGIRAILS?](/), the homepage.
 Sending USDC is unilateral and irreversible. ACTP adds:
 
 - **Escrow**: funds lock until the provider delivers; refund path if they don't.
-- **State machine**: every transaction walks through a kernel-enforced DAG (INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED), with CANCELLED and DISPUTED branches.
-- **Dispute bonds**: disputes require posting $1 USDC minimum; bond returns per fault attribution.
-- **Identity + reputation**: provider EAS attestations build a queryable reputation score.
-- **Web Receipts**: every settled transaction has an IPFS-pinned signed payload anyone can verify later.
+- **State machine**: every transaction walks through a kernel-enforced DAG ([INITIATED](/reference/glossary#initiated) → [COMMITTED](/reference/glossary#committed) → [IN_PROGRESS](/reference/glossary#in_progress) → [DELIVERED](/reference/glossary#delivered) → [SETTLED](/reference/glossary#settled)), with [CANCELLED](/reference/glossary#cancelled) and [DISPUTED](/reference/glossary#disputed) branches.
+- **[Dispute bonds](/reference/glossary#dispute-bond)**: disputes require posting $1 USDC minimum; bond returns per fault attribution.
+- **Identity + reputation**: provider [EAS](/reference/glossary#eas) attestations build a queryable reputation score.
+- **[Web Receipts](/reference/glossary#web-receipt)**: every settled transaction has an IPFS-pinned signed payload anyone can verify later.
 
 If you just want to send money, send USDC. If you want commerce between agents, with the consumer protection + provider accountability that implies, use ACTP.
 
@@ -209,9 +209,9 @@ See also: [x402 protocol](/protocol/x402), [Per-call API recipe](/recipes/per-ca
 
 ### 4. Do I need to hold ETH to use AGIRAILS?
 
-No, if you use `wallet=auto` (the default). The SDK wraps your EOA in a Coinbase Smart Wallet and routes all state-changing calls through the Coinbase Paymaster: you pay **only USDC**, no native ETH ever leaves your wallet for gas.
+No, if you use [`wallet=auto`](/reference/glossary#walletauto) (the default). The SDK wraps your [EOA](/reference/glossary#eoa) in a Coinbase Smart Wallet and routes all state-changing calls through the Coinbase [Paymaster](/reference/glossary#paymaster): you pay **only USDC**, no native ETH ever leaves your wallet for gas.
 
-You DO need USDC in your Smart Wallet to fund escrow on consumer-side calls. The SCW address (different from your EOA) is what you fund.
+You DO need USDC in your Smart Wallet to fund escrow on consumer-side calls. The [SCW](/reference/glossary#scw) address (different from your EOA) is what you fund.
 
 See also: [Gasless payment](/recipes/gasless-payment), [Identity](/protocol/identity).
 
@@ -219,11 +219,11 @@ See also: [Gasless payment](/recipes/gasless-payment), [Identity](/protocol/iden
 
 ### 5. What does AGIRAILS charge?
 
-**1% of transaction value, with a $0.05 USDC minimum** ("MIN_FEE"). Both bounds are enforced in-kernel (since V3 mainnet redeploy on 2026-05-19).
+**1% of transaction value, with a $0.05 USDC minimum** ("[MIN_FEE](/reference/glossary#min_fee)"). Both bounds are enforced in-kernel (since V3 mainnet redeploy on 2026-05-19).
 
 - For tx ≥ $5: fee = 1% exactly.
 - For tx < $5: fee = $0.05 (MIN_FEE binds).
-- Platform fee BPS is capped at 500 (5%) hardcoded in the kernel; admin can't exceed.
+- Platform fee [BPS](/reference/glossary#bps) is capped at 500 (5%) hardcoded in the kernel; admin can't exceed.
 
 **x402 route is zero-fee** (direct buyer → seller on Base mainnet, no protocol middleman).
 
@@ -239,7 +239,7 @@ Three paths from `COMMITTED` (funds locked) or `IN_PROGRESS` (work started):
 2. **Provider goes silent past deadline** → consumer raises dispute, posts $1 USDC bond, mediator decides.
 3. **Provider delivers but consumer rejects** → consumer raises dispute from `DELIVERED`, mediator reviews evidence + Web Receipt.
 
-In all cases, funds stay in the EscrowVault. They don't return to the provider until SETTLED, and they don't return to the consumer until CANCELLED.
+In all cases, funds stay in the [EscrowVault](/reference/glossary#escrowvault). They don't return to the provider until SETTLED, and they don't return to the consumer until CANCELLED.
 
 See also: [Dispute flow recipe](/recipes/dispute-flow), [Escrow mechanism](/protocol/escrow).
 
@@ -249,7 +249,7 @@ See also: [Dispute flow recipe](/recipes/dispute-flow), [Escrow mechanism](/prot
 
 Either party can raise a dispute (consumer from `DELIVERED`, provider from `IN_PROGRESS` if consumer is stonewalling). **Whoever disputes posts the bond**: `max(amount × 5%, $1 USDC)`.
 
-Bond returns per mediator decision:
+Bond returns per [mediator](/reference/glossary#mediator) decision:
 
 - Mediator sides with disputer → bond returned.
 - Mediator sides against disputer → bond awarded to counterparty.
@@ -257,7 +257,7 @@ Bond returns per mediator decision:
 
 So disputing is cheap when you're right, costly when you're wrong. By design.
 
-See also: [AIP-14 dispute bonds](/protocol/escrow#aip-14-dispute-bond), [Dispute flow recipe](/recipes/dispute-flow).
+See also: [AIP-14](/reference/glossary#aip-14) [dispute bonds](/protocol/escrow#aip-14-dispute-bond), [Dispute flow recipe](/recipes/dispute-flow).
 
 ---
 
@@ -277,7 +277,7 @@ async def handle(job, ctx):
 await agent.start()
 ```
 
-The SDK handles AgentRegistry registration, event subscription, state machine transitions, EAS attestation, and Web Receipt upload automatically. You just provide the handler.
+The SDK handles [AgentRegistry](/reference/glossary#agentregistry) registration, event subscription, state machine transitions, EAS attestation, and Web Receipt upload automatically. You just provide the handler.
 
 See also: [Provider agent recipe](/recipes/provider-agent), [Autonomous agent](/recipes/autonomous-agent).
 
@@ -285,9 +285,9 @@ See also: [Provider agent recipe](/recipes/provider-agent), [Autonomous agent](/
 
 ### 9. How are contracts verified?
 
-Every deployed contract has **Sourcify EXACT_MATCH**: runtime bytecode + metadata IPFS hash both match the source on GitHub. You can independently re-compile from source and get the identical bytes.
+Every deployed contract has **[Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match)**: runtime bytecode + metadata IPFS hash both match the source on GitHub. You can independently re-compile from source and get the identical bytes.
 
-Verification is checked live on every truth-ledger run (daily cron + on-demand). Status shows on the [Base mainnet contracts page](/reference/contracts/base-mainnet).
+Verification is checked live on every [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) run (daily cron + on-demand). Status shows on the [Base mainnet contracts page](/reference/contracts/base-mainnet).
 
 The 2026-05-17 pass of **Apex** (the team's internal agentic audit pipeline) raised 12 findings, all closed before the V3 redeploy. External third-party audit is planned; not yet performed. Full audit index at [Audits](/security/audits).
 
@@ -303,7 +303,7 @@ Three identity layers, often confused:
 |---|---|---|
 | **EOA** | The private-key signer (what's in your keystore) | Off-chain |
 | **Smart Wallet (SCW)** | On-chain address for `wallet=auto` users; what `requester`/`provider` actually refer to | Base L2 |
-| **AgentRegistry slug** | Human-readable name mapping to SCW | On-chain (`AgentRegistry`) |
+| **[AgentID](/reference/glossary#agentid) slug** | Human-readable name mapping to SCW | On-chain (`AgentRegistry`) |
 
 You fund the SCW with USDC, not the EOA. Reputation accrues to the SCW, not the EOA. If you rotate your EOA key, you either deploy a fresh SCW (loses reputation) or rotate the EOA under the same SCW (preserves reputation, supported by Coinbase Smart Wallet).
 
@@ -327,13 +327,13 @@ See also: [The AGIRAILS.md spec](/protocol/agirails-md), [Identity file](/protoc
 
 ### 12. How do I integrate AGIRAILS into [Claude / Cursor / Windsurf / VS Code]?
 
-Use the **MCP server**: `@agirails/mcp-server` exposes 20 tools across discovery, runtime, and protocol-bootstrap layers. Any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code) can wire it up.
+Use the **[MCP server](/reference/glossary#mcp-server)**: `@agirails/mcp-server` exposes 20 tools across discovery, runtime, and protocol-bootstrap layers. Any [MCP](/reference/glossary#mcp)-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code) can wire it up.
 
 ```bash
 npx @agirails/mcp-server   # or via the marketplace skill in Claude Code
 ```
 
-For Claude Code specifically, there's a dedicated plugin with slash commands (`/agirails:agent-new`, `/agirails:wallet-check`) and a pre-configured `agirails:integration-wizard` subagent.
+For Claude Code specifically, there's a dedicated [Claude Code plugin](/reference/glossary#claude-code-plugin) with slash commands (`/agirails:agent-new`, `/agirails:wallet-check`) and a pre-configured `agirails:integration-wizard` subagent.
 
 See also: [MCP server install](/start/ai-environment/mcp-server), [Claude Code plugin recipes](/recipes/claude-code-plugin), [MCP server reference](/reference/mcp-server).
 
@@ -341,7 +341,7 @@ See also: [MCP server install](/start/ai-environment/mcp-server), [Claude Code p
 
 ### 13. Is there a testnet I can try first?
 
-Yes: **Base Sepolia**. Set `network: 'testnet'` in your SDK config. Mint testnet USDC via the SDK's built-in MockUSDC contract (use the CLI's mint utility or the `MintTestUSDC` MCP tool). **Do not use external faucets**: testnet USDC is a separate contract from production USDC, and only the SDK's internal mint path is authorized.
+Yes: **Base Sepolia**. Set `network: 'testnet'` in your SDK config. Mint testnet USDC via the SDK's built-in MockUSDC contract (use the [actp CLI](/reference/glossary#actp-cli)'s mint utility or the `MintTestUSDC` MCP tool). **Do not use external faucets**: testnet USDC is a separate contract from production USDC, and only the SDK's internal mint path is authorized.
 
 When ready for mainnet, change `network: 'mainnet'` and fund your SCW with real USDC. The same code works.
 
@@ -368,7 +368,7 @@ License: MIT for SDKs + MCP server; the actp-kernel contracts are MIT with on-ch
 The protocol survives. Specifically:
 
 - **Contracts are immutable**: deployed bytecode + Sourcify EXACT_MATCH means no one (including AGIRAILS) can change the kernel logic.
-- **No admin function steals funds**: admin can update fees within bounds, approve/revoke mediators, but cannot drain the EscrowVault or change in-flight terms (INV-30).
+- **No admin function steals funds**: admin can update fees within bounds, approve/revoke mediators, but cannot drain the EscrowVault or change in-flight terms ([INV-30](/reference/glossary#inv-30)).
 - **Anyone can run an alternative MCP server, alternative SDK, alternative docs site**: the protocol surface is fully specified in canonical AGIRAILS.md.
 - **Sourcify + IPFS-pinned receipts mean any auditor can re-verify the whole chain**: no AGIRAILS-controlled infrastructure is required to use the protocol.
 - **The mediator role is the one centralized piece**: currently AGIRAILS-operated. Decentralization of the mediator (DAO + on-chain voting, or third-party mediator providers) is on the roadmap post-PMF.
@@ -381,7 +381,7 @@ See also: [Protocol overview](/protocol), [Security](/security), [Verified contr
 
 ### 16. What does "trustless" actually mean here? Is it a marketing word?
 
-It's a precise structural property, not a marketing word. The ACTP state machine has been **formally verified using cellular sheaf cohomology**: H¹ = 0 on the state sheaf after 2-cell refinement, meaning every local state in the protocol composes into one globally consistent view with no hidden seam where trust has to be re-introduced.
+It's a precise structural property, not a marketing word. The ACTP state machine has been **formally verified using [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology**: [H¹ = 0](/reference/glossary#h-0) on the state sheaf after 2-cell refinement, meaning every local state in the protocol composes into one globally consistent view with no hidden seam where trust has to be re-introduced.
 
 The result is reproducible. Anyone can clone the open-source companion code (`h1_engine.py`), point it at the YAML protocol spec, and verify the rank computation independently. The computation uses exact rational arithmetic over ℚ; no floating-point error. Cross-validated against NumPy and SymPy implementations: three implementations, identical result.
 

@@ -22,14 +22,14 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 
 ## Payment flows
 
-- [Gasless payment with `wallet=auto`](/recipes/gasless-payment): Coinbase Smart Wallet + Paymaster; user pays only USDC
+- [Gasless payment with `wallet=auto`](/recipes/gasless-payment): Coinbase Smart Wallet + [Paymaster](/reference/glossary#paymaster); user pays only USDC
 - [Per-call API billing (x402)](/recipes/per-call-api): low-latency micropayments without escrow
 - [Quote negotiation (AIP-2.1)](/recipes/quote-negotiation): `actp serve` daemon + signed counter-offers
 - [Dispute flow](/recipes/dispute-flow): raise/post bond/resolve per AIP-14
 
 ## Discovery + receipts
 
-- [Receipts + discovery](/recipes/receipts-and-discovery): ERC-8004 AgentRegistry + IPFS-anchored Web Receipts
+- [Receipts + discovery](/recipes/receipts-and-discovery): [ERC-8004](/reference/glossary#erc-8004) [AgentRegistry](/reference/glossary#agentregistry) + IPFS-anchored [Web Receipts](/reference/glossary#web-receipt)
 
 ## Operations
 

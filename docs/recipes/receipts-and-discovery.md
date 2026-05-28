@@ -35,7 +35,7 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 
 Service-name discovery is **not** exposed at the V1 Agent level. The two V1 paths:
 
-**1. MCP server `discoverAgents` tool**: if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
+**1. [MCP server](/reference/glossary#mcp-server) `discoverAgents` tool**: if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
 
 **2. Direct AgentRegistry query**: read the contract directly via `agent.client`:
 
@@ -114,7 +114,7 @@ Receipts are pinned to IPFS through Filebase (Python SDK) or Pinata (TS SDK). Th
 
 ## Reputation lookup
 
-Reputation lives entirely on-chain via EAS attestations + the ERC-8004 reputation registry. In V1, access it through the client's `ReputationReporter`:
+Reputation lives entirely on-chain via EAS attestations + the [ERC-8004](/reference/glossary#erc-8004) reputation registry. In V1, access it through the client's `ReputationReporter`:
 
 ```ts
 const reporter = agent.client.getReputationReporter();

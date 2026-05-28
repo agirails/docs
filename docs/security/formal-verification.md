@@ -11,7 +11,7 @@ sidebar_position: 4
 
 # Formal verification (H¹=0)
 
-Most protocols claim "trustless" as a marketing word. ACTP earns it as a structural property, verifiable independently of any audit, any auditor, and any AGIRAILS team member.
+Most protocols claim "trustless" as a marketing word. [ACTP](/reference/glossary#actp) earns it as a structural property, verifiable independently of any audit, any auditor, and any AGIRAILS team member.
 
 The claim is precise: when the protocol's local state at each step is modeled as a **cellular sheaf**, the first cohomology group **H¹ = 0** on the state sheaf after a 10-face 2-cell refinement. In plain language: every piece of local state carries through every transition into a single consistent global view, with no hidden seam where trust has to be re-introduced.
 
@@ -30,7 +30,7 @@ When they do, the sheaf has a *global section*: a single coherent view that resp
 What this catches that other verification techniques don't:
 
 - **Model checkers** (TLA⁺, Alloy) verify temporal and relational properties by enumerating reachable states. They treat all data as undifferentiated: they can't distinguish a missing *dimension* of shared state from a missing *transition*.
-- **Smart-contract auditors** (Certora, Echidna, Slither) check code-level safety: reentrancy, overflow, access control. They operate one level *below* the protocol, on the Solidity implementation rather than the state machine the implementation realizes.
+- **Smart-contract auditors** (Certora, [Echidna](/reference/glossary#echidna), Slither) check code-level safety: reentrancy, overflow, access control. They operate one level *below* the protocol, on the Solidity implementation rather than the state machine the implementation realizes.
 - **Sheaf cohomology** operates at the protocol-state level itself. It answers: does the information the protocol exposes at each step actually assemble into a globally consistent picture, and if not, where exactly does it fail?
 
 All three layers are necessary. They answer different questions. Sheaf cohomology adds the layer above code audit and below model checking.
@@ -51,7 +51,7 @@ The 2-cells aren't an editorial addition; they correspond to actual parallel pat
 
 ### Participant-based sheaf: information asymmetry
 
-- Places stalks on the protocol's principals (requester, provider, escrow vault, kernel, mediator).
+- Places stalks on the protocol's principals (requester, provider, escrow vault, kernel, [mediator](/reference/glossary#mediator)).
 - Places restriction maps on the information channels between them.
 - H¹ counts dimensions of protocol state visible to some principals but hidden from others.
 

@@ -24,7 +24,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-A consumer agent **calls** services other agents offer. The SDK's Level 0 `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
+A consumer agent **calls** services other agents offer. The SDK's [Level 0](/reference/glossary#level-0) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
 <img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture: Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -33,7 +33,7 @@ This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'ma
 ## Prerequisites
 
 - Node 20+ (TS) or Python 3.11+ (Python)
-- An EOA private key (`ACTP_PRIVATE_KEY`): see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
+- An [EOA](/reference/glossary#eoa) private key (`ACTP_PRIVATE_KEY`): see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
 - Testnet USDC in your Smart Wallet: mint via the SDK's MockUSDC, never an external faucet
 
 ## TypeScript
@@ -101,7 +101,7 @@ print("paid:", result.transaction.amount, "USDC")
 9. EscrowVault releases (amount - fee) to provider
 ```
 
-Steps 3–5 are batched into **one** UserOperation when `wallet=auto` (the default). See [Gasless payment](/recipes/gasless-payment).
+Steps 3–5 are batched into **one** [UserOperation](/reference/glossary#useroperation) when `wallet=auto` (the default). See [Gasless payment](/recipes/gasless-payment).
 
 ## Handling delivery you don't accept
 
@@ -119,7 +119,7 @@ await agent.client.standard.transitionState(
 );
 ```
 
-The kernel freezes the escrow and pages the mediator. See [Dispute flow](/recipes/dispute-flow) for the full walkthrough.
+The kernel freezes the escrow and pages the [mediator](/reference/glossary#mediator). See [Dispute flow](/recipes/dispute-flow) for the full walkthrough.
 
 ## Cancellation paths
 

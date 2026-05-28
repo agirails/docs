@@ -72,6 +72,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Error reference](https://docs.agirails.io/reference/errors) (47 TS + 47 Python error classes + cross-SDK divergences)
 - [MCP server reference](https://docs.agirails.io/reference/mcp-server) (20 tools across 3 layers)
 - [AGIRAILS.md V4 schema](https://docs.agirails.io/reference/agirails-md-v4)
+- [Glossary](https://docs.agirails.io/reference/glossary): every acronym, protocol term, and standard reference in one place (DefinedTermSet JSON-LD)
 
 ### Security
 - [Security overview](https://docs.agirails.io/security): 4-pillar trust framing

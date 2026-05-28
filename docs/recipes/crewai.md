@@ -230,7 +230,7 @@ print(f"writer spent: ${writer_wallet.stats.total_spent:.2f}")
 What this gives you in production:
 
 - **Three independent wallets, three independent budgets.** A runaway researcher can't drain the writer's wallet. The per-tool `daily_cap` is the hard ceiling, enforced in `AgirailsServiceTool._run` before each call.
-- **Three independent reputation tracks.** Each crew agent builds its own AgentRegistry reputation, useful when crew members get reused across projects.
+- **Three independent reputation tracks.** Each crew agent builds its own [AgentRegistry](/reference/glossary#agentregistry) reputation, useful when crew members get reused across projects.
 - **Per-agent observability.** `agent.stats.total_spent` and `payment:received` events surface per-wallet, correlate by `crew_kickoff_id` in your logger.
 - **Graceful budget exhaustion.** When an agent hits its cap, its tool returns `{"error": "..."}` instead of crashing the crew. The next agent in the chain decides how to handle the partial result.
 

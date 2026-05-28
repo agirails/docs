@@ -35,25 +35,25 @@ Everything else (fees, dispute bonds, identity, receipts) is layered on top of t
 | Asset | How it survives | What it needs |
 |---|---|---|
 | **`actp-kernel` contracts** on Base mainnet | Immutable on-chain; admin changes are bounded by hardcoded caps | Base L2 continues operating |
-| **EscrowVault** USDC custody | Solvency invariant enforced by contract; no admin drain function | Base L2 + USDC contract |
-| **Sourcify verification** of all contracts | Sourcify is a public service; metadata pinned to IPFS | Sourcify + IPFS |
+| **[EscrowVault](/reference/glossary#escrowvault)** USDC custody | Solvency invariant enforced by contract; no admin drain function | Base L2 + USDC contract |
+| **[Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match)** of all contracts | Sourcify is a public service; metadata pinned to IPFS | Sourcify + IPFS |
 | **Open-source SDKs** (`@agirails/sdk`, `agirails`) | npm + PyPI + GitHub | npm/PyPI registries continue serving |
 | **AGIRAILS.md canonical spec** | Forkable; can be re-hosted anywhere | Any public host (GitHub, IPFS, archive.org) |
-| **Web Receipts** of past transactions | Pinned to IPFS via Filebase/Pinata | Any IPFS gateway can resolve by CID |
-| **EAS attestations** of reputation + deliveries | Live on EAS infrastructure; chain-native | EAS contract on Base |
-| **Agent registrations** in AgentRegistry | On-chain mapping survives independently | Base L2 |
+| **[Web Receipts](/reference/glossary#web-receipt)** of past transactions | Pinned to IPFS via Filebase/Pinata | Any IPFS gateway can resolve by [CID](/reference/glossary#cid) |
+| **[EAS](/reference/glossary#eas) attestations** of reputation + deliveries | Live on EAS infrastructure; chain-native | EAS contract on Base |
+| **Agent registrations** in [AgentRegistry](/reference/glossary#agentregistry) | On-chain mapping survives independently | Base L2 |
 
 ## What breaks (gracefully) without AGIRAILS
 
 | Asset | Failure mode | Recovery path |
 |---|---|---|
-| **Mediator role** | Disputes pile up unresolved | Anyone running an alternative ACTP fork can stand up a community mediator, or migrate to a decentralized mediator implementation. Until then, disputes time out and escrow refunds per state-machine rules. |
+| **[Mediator](/reference/glossary#mediator) role** | Disputes pile up unresolved | Anyone running an alternative ACTP fork can stand up a community mediator, or migrate to a decentralized mediator implementation. Until then, disputes time out and escrow refunds per state-machine rules. |
 | **docs.agirails.io site** | Vercel hosting could lapse | Source is open on `github.com/agirails/docs`; anyone can rebuild + deploy a Docusaurus site to any static host |
 | **agirails.app web app** | Operational UI goes dark | Direct kernel interaction still works via SDK + raw RPC. The web app is a convenience, not a dependency. |
-| **MCP server** | If AGIRAILS-published version isn't updated, gets stale | Anyone can fork + publish their own (npm + open source) |
-| **`actp serve` policy daemon** (AIP-2.1) | Counter-offer routing breaks | Counter-offers can still be exchanged manually via EIP-712 signing; daemon is for convenience |
+| **[MCP server](/reference/glossary#mcp-server)** | If AGIRAILS-published version isn't updated, gets stale | Anyone can fork + publish their own (npm + open source) |
+| **`actp serve` policy daemon** ([AIP-2.1](/reference/glossary#aip-21)) | Counter-offer routing breaks | Counter-offers can still be exchanged manually via [EIP-712](/reference/glossary#eip-712) signing; daemon is for convenience |
 | **Filebase/Pinata pinning** for new receipts | New receipts wouldn't auto-pin | Anyone can pin via any IPFS pinning service; the protocol doesn't depend on a specific pinner |
-| **Daily truth-ledger refresh** in CI | Reference pages go stale | Manual refresh via `npm run truth-ledger`; or stale data, since contract addresses don't change |
+| **Daily [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) refresh** in CI | Reference pages go stale | Manual refresh via `npm run truth-ledger`; or stale data, since contract addresses don't change |
 
 ## What an inheriting team needs to do
 

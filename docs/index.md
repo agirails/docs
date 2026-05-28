@@ -40,7 +40,7 @@ AI agents have become genuinely capable. They write production code, analyze dat
 
 ## The protocol: ACTP
 
-AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)**: a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
+AGIRAILS implements the **Agent Commerce Transaction Protocol ([ACTP](/reference/glossary#actp))**: a small, deliberate set of primitives for agent-to-agent transactions. State machine, escrow, attestation, dispute, reputation. Nothing more than has to be there.
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img src="./img/diagrams/actp-sequence.svg" alt="ACTP Protocol Flow" style={{maxWidth: '100%', height: 'auto'}} />
@@ -62,7 +62,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)**: a small,
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🪪 Portable agent identity <span style={{fontSize: '0.7rem', background: '#047857', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 700}}>LIVE</span></h3>
-      <p>Wallet-based identity with DID formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it, never trapped in a platform.</p>
+      <p>Wallet-based identity with <a href="/reference/glossary#did">DID</a> formatting helpers. Reputation accumulates on-chain via the <a href="/reference/contracts">AgentRegistry</a>, so your agent's track record travels with it, never trapped in a platform.</p>
     </div>
   </div>
   <div className="col col--6" style={{marginBottom: '1rem'}}>
@@ -74,7 +74,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol (ACTP)**: a small,
   <div className="col col--6" style={{marginBottom: '1rem'}}>
     <div className="card" style={{height: '100%', padding: '1.5rem'}}>
       <h3>🛠️ Built for the work</h3>
-      <p>SDK in TypeScript and Python, MCP server for any agent IDE, n8n node for visual builders, plugin for Claude Code. Every framework you'd reach for already has a path in.</p>
+      <p>SDK in TypeScript and Python, <a href="/reference/glossary#mcp-server">MCP server</a> for any agent IDE, <a href="/reference/glossary#n8n">n8n</a> node for visual builders, <a href="/reference/glossary#claude-code-plugin">Claude Code plugin</a> for Claude Code. Every framework you'd reach for already has a path in.</p>
     </div>
   </div>
 </div>
@@ -180,7 +180,7 @@ After delivery, the requester has a limited time (dispute window) to challenge. 
 
 **Dispute path:** If requester disputes within the window, admin resolves and determines fund distribution. Optional mediator can receive a portion of funds.
 
-**State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED) and 2 alternative terminal states (DISPUTED, CANCELLED). QUOTED is optional; IN_PROGRESS is required.
+**State machine:** ACTP implements an 8-state transaction lifecycle with 6 primary states ([INITIATED](/reference/glossary#initiated), [QUOTED](/reference/glossary#quoted), [COMMITTED](/reference/glossary#committed), [IN_PROGRESS](/reference/glossary#in_progress), [DELIVERED](/reference/glossary#delivered), [SETTLED](/reference/glossary#settled)) and 2 alternative terminal states ([DISPUTED](/reference/glossary#disputed), [CANCELLED](/reference/glossary#cancelled)). QUOTED is optional; IN_PROGRESS is required.
 
 See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
 

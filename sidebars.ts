@@ -123,6 +123,7 @@ const sidebars: SidebarsConfig = {
         'reference/errors/index',
         'reference/mcp-server/index',
         'reference/agirails-md-v4',
+        'reference/glossary',
       ],
     },
 

@@ -11,7 +11,7 @@ sidebar_position: 2
 
 # AGIRAILS Claude Skill
 
-The **agirails/claude-skill** is a read-only knowledge package in the Anthropic Skills format. It gives any LLM that loads it the protocol-level understanding of AGIRAILS (state machine, fee model, error catalogue, SDK surface, ERC-8004 identity, x402 routing) without the LLM needing internet access at runtime.
+The **agirails/claude-skill** is a read-only knowledge package in the Anthropic Skills format. It gives any LLM that loads it the protocol-level understanding of AGIRAILS (state machine, fee model, error catalogue, SDK surface, [ERC-8004](/reference/glossary#erc-8004) identity, [x402](/reference/glossary#x402) routing) without the LLM needing internet access at runtime.
 
 ## Install (claude.ai web)
 
@@ -37,6 +37,6 @@ The package is a refresh of the canonical `/protocol/agirails-md` contents, plus
 
 ## See also
 
-- [Claude Code plugin](/start/ai-environment/claude-code): richer integration if you're on Claude Code
-- [MCP server](/start/ai-environment/mcp-server): for tool-calling instead of knowledge-only
+- [Claude Code plugin](/reference/glossary#claude-code-plugin) install at [/start/ai-environment/claude-code](/start/ai-environment/claude-code): richer integration if you're on Claude Code
+- [MCP server](/reference/glossary#mcp-server) install at [/start/ai-environment/mcp-server](/start/ai-environment/mcp-server): for tool-calling instead of knowledge-only
 - [Claude Skill source on GitHub](https://github.com/agirails/claude-skill)

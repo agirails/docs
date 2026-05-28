@@ -16,7 +16,7 @@ sidebar_position: 2
 The manual path produces the same artefacts as the LLM path:
 
 - `AGIRAILS.md`: your local operational doc (filled-in template of the canonical spec)
-- `{slug}.md`: your public covenant (V4 schema, machine-parseable, on-chain hash anchor)
+- `{slug}.md`: your public [covenant](/reference/glossary#covenant) (V4 schema, machine-parseable, on-chain hash anchor)
 - `.actp/keystore.json`: encrypted wallet keystore (chmod 600, gitignored)
 - `.env`: keystore password + RPC endpoint
 
@@ -71,7 +71,7 @@ actp deploy:env
 
 Generates an encrypted keystore at `.actp/keystore.json` + writes `ACTP_KEYSTORE_BASE64` and `ACTP_KEY_PASSWORD` to `.env`. The keystore is `chmod 600`; the password is randomly generated; the keystore is added to `.gitignore`.
 
-See [keystore + deployment recipe](/recipes/keystore-and-deployment) for the AIP-13 fail-closed key policy and CI/CD integration details.
+See [keystore + deployment recipe](/recipes/keystore-and-deployment) for the [AIP-13](/reference/glossary#aip-13) fail-closed key policy and CI/CD integration details.
 
 ## 5. Publish identity to the registry
 
@@ -79,7 +79,7 @@ See [keystore + deployment recipe](/recipes/keystore-and-deployment) for the AIP
 actp publish --network testnet
 ```
 
-Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` covenant, registers the slug + hash on-chain via `AgentRegistry.registerAgent()`. See [identity-file schema](/protocol/covenant).
+Hashes your `AGIRAILS.md` deterministically, uploads to IPFS, generates `{slug}.md` covenant, registers the slug + hash on-chain via [`AgentRegistry`](/reference/glossary#agentregistry)`.registerAgent()`. See [identity-file schema](/protocol/covenant).
 
 ## 6. Run your first payment
 
@@ -95,7 +95,7 @@ async def handler(job):
 asyncio.run(provide("code-review", handler=handler))
 ```
 
-For consumer (pay) agents, gasless via ERC-4337:
+For consumer (pay) agents, gasless via [ERC-4337](/reference/glossary#erc-4337):
 
 ```python
 from agirails import ACTPClient

@@ -13,7 +13,7 @@ sidebar_position: 4
 
 Every contract AGIRAILS deploys is Sourcify-verified `EXACT_MATCH`. That means: the deployed runtime bytecode at the address matches a compilation of the source published on GitHub, byte-for-byte. No proxy upgrade can change that without re-verifying.
 
-Live verification status is refreshed on every truth-ledger run (daily cron at 06:00 UTC, plus on-demand via `gh workflow run truth-ledger-refresh.yml`). The reference pages below show the actual current status as of the most recent manifest refresh.
+Live verification status is refreshed on every [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) run (daily cron at 06:00 UTC, plus on-demand via `gh workflow run truth-ledger-refresh.yml`). The reference pages below show the actual current status as of the most recent manifest refresh.
 
 ## Why Sourcify EXACT_MATCH matters
 
@@ -37,19 +37,19 @@ Both registries are auto-rendered from the truth-ledger manifest. They include a
 
 | Contract | Invariants enforced |
 |---|---|
-| **ACTPKernel** | State machine integrity (DAG-only transitions, no admin bypass), `requester ≠ provider`, `_requesterCheck` (closes AA bypass), per-tx locked bps (INV-30), fee BPS cap ≤ 500 |
-| **EscrowVault** | Vault USDC balance ≥ sum of active escrows (bedrock solvency invariant, asserted by test + Echidna fuzz), MIN_FEE floor in `_payoutProviderAmount`, AIP-14 dispute bond mechanics |
-| **AgentRegistry** | First-write wins on slug, 48h timelock on agent registry updates (permissionless execute after timelock) |
+| **ACTPKernel** | [State machine](/reference/glossary#actp) integrity (DAG-only transitions, no admin bypass), `requester ≠ provider`, `_requesterCheck` (closes [AA](/reference/glossary#account-abstraction-erc-4337) bypass), per-tx locked bps ([INV-30](/reference/glossary#inv-30)), fee [BPS](/reference/glossary#bps) cap ≤ 500 |
+| **[EscrowVault](/reference/glossary#escrowvault)** | Vault USDC balance ≥ sum of active escrows (bedrock solvency invariant, asserted by test + [Echidna](/reference/glossary#echidna) fuzz), [MIN_FEE](/reference/glossary#min_fee) floor in `_payoutProviderAmount`, [AIP-14](/reference/glossary#aip-14) [dispute bond](/reference/glossary#dispute-bond) mechanics |
+| **[AgentRegistry](/reference/glossary#agentregistry)** | First-write wins on slug, 48h timelock on agent registry updates (permissionless execute after timelock) |
 | **ArchiveTreasury** | Receives confiscated bonds (from "no decision" dispute resolutions), admin-only withdrawals via Safe |
 
-Smart Wallet (Coinbase) + Paymaster (Coinbase) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
+Smart Wallet (Coinbase) + [Paymaster](/reference/glossary#paymaster) (Coinbase) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
 
 ## Deploy provenance
 
 Every contract address has on-chain proof of when and how it was deployed:
 
 - **Deploy block + tx hash**: the exact L2 block and transaction where the contract was created. Visible via Basescan and Sourcify; both are linked from the reference pages.
-- **Deployer address**: the EOA that submitted the CREATE2 transaction. For V3 mainnet, this is the AGIRAILS mainnet deployer (kept in a separate hardware-secured keystore, never used for any other purpose).
+- **Deployer address**: the [EOA](/reference/glossary#eoa) that submitted the CREATE2 transaction. For V3 mainnet, this is the AGIRAILS mainnet deployer (kept in a separate hardware-secured keystore, never used for any other purpose).
 - **Compiler version + settings**: solc 0.8.34 with optimizer runs as specified in the Sourcify metadata; reproducible from the GitHub source.
 
 ## How to verify yourself

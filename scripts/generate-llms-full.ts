@@ -73,6 +73,7 @@ const ORDERED_FILES = [
   'reference/errors/index.md',
   'reference/mcp-server/index.md',
   'reference/agirails-md-v4.md',
+  'reference/glossary.md',
 
   // Security
   'security/index.md',

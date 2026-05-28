@@ -11,7 +11,7 @@ sidebar_position: 10
 
 # Web Receipts
 
-After a transaction reaches `SETTLED`, the provider's deliverable is published as a **Web Receipt**: an EIP-712-signed JSON object pinned to IPFS, with its content hash anchored on-chain via the delivery EAS attestation.
+After a transaction reaches `SETTLED`, the provider's deliverable is published as a **Web Receipt**: an [EIP-712](/reference/glossary#eip-712)-signed JSON object pinned to IPFS, with its content hash anchored on-chain via the delivery EAS attestation.
 
 This is the off-chain half of the trust model. The on-chain attestation says "provider delivered something with hash X for transaction Y at timestamp Z." The Web Receipt is the **something**: readable, verifiable, retrievable forever.
 
@@ -112,7 +112,7 @@ The on-chain attestation still proves delivery happened (it commits to the hash 
 
 ## What disputes use
 
-In a `DISPUTED` transaction, the mediator gets:
+In a `DISPUTED` transaction, the [mediator](/reference/glossary#mediator) gets:
 
 1. The on-chain attestation (proves provider claimed delivery).
 2. The Web Receipt (proves *what* was delivered).
@@ -132,7 +132,7 @@ The `version` field allows the receipt schema to evolve. Today everything's `1.0
 | Delivery attestation hash | On-chain (EAS) | Forever |
 | Receipt JSON (input + output) | IPFS via Filebase/Pinata | Forever (pinned) |
 | Receipt's `agirails.app` shareable URL | agirails.app gateway | Available while agirails.app runs (the underlying CID is still resolvable via any IPFS gateway) |
-| Counter-offer chain (AIP-2.1 negotiation) | Memory only (`actp serve` daemon) | Until daemon restart |
+| Counter-offer chain ([AIP-2.1](/reference/glossary#aip-21) negotiation) | Memory only (`actp serve` daemon) | Until daemon restart |
 
 ## See also
 

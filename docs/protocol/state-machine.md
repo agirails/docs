@@ -11,7 +11,7 @@ sidebar_position: 4
 
 # ACTP state machine
 
-The 8 ACTP states are **enforced in the kernel itself**. Every state transition is gated by `requester` / `provider` / `mediator` access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
+The 8 [ACTP](/reference/glossary#actp) states are **enforced in the kernel itself**. Every state transition is gated by `requester` / `provider` / [`mediator`](/reference/glossary#mediator) access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
 
 <img src="/img/diagrams/state-machine.svg" alt="ACTP state machine: 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -30,10 +30,10 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | Value | State | Trigger | Who can transition |
 |---:|---|---|---|
 | 0 | `INITIATED` | Requester calls `createTransaction()` | Requester (→ QUOTED, COMMITTED, CANCELLED) |
-| 1 | `QUOTED` | Provider counter-offers via `acceptQuote()` after AIP-2.1 negotiation | Requester (→ COMMITTED, CANCELLED) |
+| 1 | `QUOTED` | Provider counter-offers via `acceptQuote()` after [AIP-2.1](/reference/glossary#aip-21) negotiation | Requester (→ COMMITTED, CANCELLED) |
 | 2 | `COMMITTED` | Requester locks USDC in escrow via `linkEscrow()` | Provider (→ IN_PROGRESS, CANCELLED) |
 | 3 | `IN_PROGRESS` | Provider has started work | Provider (→ DELIVERED, CANCELLED) |
-| 4 | `DELIVERED` | Provider submits deliverable + EAS attestation proof | Requester (→ SETTLED, DISPUTED) |
+| 4 | `DELIVERED` | Provider submits deliverable + [EAS](/reference/glossary#eas) attestation proof | Requester (→ SETTLED, DISPUTED) |
 | 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | (terminal) |
 | 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
 | 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | (terminal) |

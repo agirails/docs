@@ -15,7 +15,7 @@ sidebar_position: 14
 
 The `agirails` Claude Code plugin gives Claude Code three things:
 
-1. **Slash commands** for common ACTP dev tasks (`/agirails:agent-new`, `/agirails:wallet-check`, `/agirails:audit`).
+1. **Slash commands** for common [ACTP](/reference/glossary#actp) dev tasks (`/agirails:agent-new`, `/agirails:wallet-check`, `/agirails:audit`).
 2. **Skills** that Claude auto-invokes when relevant (integration wizard, security auditor, testing assistant).
 3. **Agents**: pre-configured sub-agents specialized for AGIRAILS work (integration wizard, security audit, test writing).
 
@@ -64,8 +64,8 @@ The agent has internal knowledge of:
 
 - Current SDK version surface (`@agirails/sdk@4.0.0`, `agirails@3.0.1`)
 - The `wallet=auto` pattern, when to use it
-- Best practices for keystores per AIP-13
-- AIP-2.1 quote-channel patterns
+- Best practices for keystores per [AIP-13](/reference/glossary#aip-13)
+- [AIP-2.1](/reference/glossary#aip-21) quote-channel patterns
 - Common error paths and fallback handling
 
 ### Security audit on commit

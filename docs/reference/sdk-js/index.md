@@ -23,8 +23,8 @@ The TypeScript SDK is tiered to match the depth of integration you need:
 
 | Tier | Symbols | When to use |
 |---|---|---|
-| **[Level 0 + Basic](/reference/sdk-js/basic)** | 19 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
-| **[Standard + Advanced](/reference/sdk-js/standard)** | 255 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
+| **[Level 0](/reference/glossary#level-0) + [Basic](/reference/glossary#basic-tier)** install at [/reference/sdk-js/basic](/reference/sdk-js/basic) | 19 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
+| **[Standard](/reference/glossary#standard-tier) + Advanced** install at [/reference/sdk-js/standard](/reference/sdk-js/standard) | 255 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
 | _Internal_ | 9 | Not part of the public API contract; documented separately if at all |
 
 ## Quick orientation

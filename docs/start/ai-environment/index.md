@@ -18,7 +18,7 @@ AGIRAILS ships through **four distribution channels** so your AI assistant can u
 | **Claude Code (CLI)** | [Claude Code plugin](/start/ai-environment/claude-code) | 8 slash commands + skills + agents + hooks |
 | **Claude Desktop / Cursor / Cline / Windsurf / VS Code** | [MCP server](/start/ai-environment/mcp-server) | 20 callable tools (5 discovery + 14 runtime + 1 protocol bootstrap) |
 | **claude.ai web / Claude API / general LLM with Skills** | [Anthropic Claude Skill](/start/ai-environment/claude-skill) | Knowledge package (LLM understands AGIRAILS) |
-| **ClawHub OpenClaw** | [OpenClaw skill](/start/ai-environment/openclaw) | OpenClaw format equivalent of Claude Skill |
+| **ClawHub [OpenClaw](/reference/glossary#openclaw)** | [OpenClaw skill](/start/ai-environment/openclaw) | OpenClaw format equivalent of Claude Skill |
 | RAG site index | [`/llms.txt`](/llms.txt) | Short structural pointer file per [llmstxt.org](https://llmstxt.org/), ~4 KB of links into the docs |
 | RAG full corpus | [`/llms-full.txt`](/llms-full.txt) | Complete current docs in one plain-text file (~360 KB); ingest this for full-corpus RAG |
 | Direct LLM paste | [Canonical AGIRAILS.md](/protocol/agirails-md) | The 1242-line spec, paste into any LLM |
@@ -27,9 +27,9 @@ AGIRAILS ships through **four distribution channels** so your AI assistant can u
 
 All four channels deliver the same canonical knowledge: the AGIRAILS.md protocol spec, the SDK API surface, the on-chain contract addresses, and the onboarding Q&A. They differ only in *form*:
 
-- **Plugin** = slash commands + skills + agents + hooks, richest interactivity, Claude Code only
-- **Skill** = knowledge package, read-only, works in any Skills-aware client
-- **MCP server** = callable tools, works in any MCP client
+- **[Claude Code plugin](/reference/glossary#claude-code-plugin)** = slash commands + skills + agents + hooks, richest interactivity, Claude Code only
+- **[Claude Skill](/reference/glossary#claude-skill)** = knowledge package, read-only, works in any Skills-aware client
+- **[MCP server](/reference/glossary#mcp-server)** = callable tools, works in any [MCP](/reference/glossary#mcp) client
 - **OpenClaw** = Skill equivalent for the ClawHub ecosystem
 
 If you build with **Claude Code**, install the plugin. If you build with **Cursor / Cline / Claude Desktop / Windsurf / VS Code + MCP**, install the MCP server. If you use **claude.ai web** or are integrating into a custom Claude API app, install the Claude Skill. If your stack is **ClawHub**, use the OpenClaw skill.

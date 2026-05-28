@@ -18,7 +18,7 @@ You're here to build something. Before the SDK docs, one page that explains the 
 
 **AGIRAILS builds open trust rails for autonomous intelligence, so the abundance created by AI agents can flow through infrastructure no one can own, capture, or control.**
 
-That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it: no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
+That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it: no admin function over user funds, immutable per-transaction terms ([INV-30](/reference/glossary#inv-30)), [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
 
 The full thesis lives at [agirails.io](https://agirails.io): the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
 
@@ -57,9 +57,9 @@ If the answer is "depends on the team being available," the design fails. So:
 - **No admin function over user funds**. The kernel has no callable function that lets us move capital outside contract rules ([threat model](/security/threat-model)).
 - **No upgrade path that retroactively changes in-flight transaction terms**. Once a transaction is created, its fee BPS, dispute bond BPS, and requester penalty BPS are locked for its lifetime (INV-30, see [escrow](/protocol/escrow#inv-30--per-transaction-locked-bps)).
 - **No off-chain dependency for settlement**. Settlement is a function of on-chain state, not of a server we operate.
-- **No revocable identity**. Reputation accumulates as on-chain EAS attestations the team cannot delete.
+- **No revocable identity**. Reputation accumulates as on-chain [EAS](/reference/glossary#eas) attestations the team cannot delete.
 - **Public, Sourcify-verified contracts**. Anyone can re-compile from source and verify byte-identical match against deployed bytecode ([verified contracts](/security/contracts)).
-- **Structural completeness, mathematically proven**. The state machine has been formally verified via cellular sheaf cohomology: **H¹ = 0** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The result is reproducible from a YAML spec via [`h1_engine.py`](/security/formal-verification). The reader doesn't trust us; the reader runs the math.
+- **Structural completeness, mathematically proven**. The state machine has been formally verified via [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology: **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The result is reproducible from a YAML spec via [`h1_engine.py`](/security/formal-verification). The reader doesn't trust us; the reader runs the math.
 
 This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products: the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
 
@@ -80,8 +80,8 @@ That compass shows up wherever you look at the technical surface:
 
 - The fee is capped on-chain. Five percent maximum, set at deployment. Admin literally cannot exceed it.
 - There's no token. Not yet, and possibly not ever. Definitely no pre-mine, no airdrop, no insider allocation.
-- The x402 settlement path on Base mainnet charges **zero protocol fee**: pure direct buyer→seller via EIP-3009/Permit2 ([x402 docs](/protocol/x402)).
-- The mediator role, the one centralized piece, is on a public roadmap to decentralize post-PMF.
+- The [x402](/reference/glossary#x402) settlement path on Base mainnet charges **zero protocol fee**: pure direct buyer→seller via [EIP-3009](/reference/glossary#eip-3009)/Permit2 ([x402 docs](/protocol/x402)).
+- The [mediator](/reference/glossary#mediator) role, the one centralized piece, is on a public roadmap to decentralize post-PMF.
 - Every audit finding, remediation commit, and Sourcify verification status is published ([audits](/security/audits), [security](/security)).
 
 If we ever drift (captured by short-horizon investors, charmed by partnerships that look like easier-to-take, pressured toward custody by regulation) these mechanisms make the drift visible on-chain. That's the constraint that replaces trust.

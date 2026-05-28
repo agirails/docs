@@ -11,9 +11,9 @@ sidebar_position: 2
 
 # Contracts reference
 
-All deployed AGIRAILS contracts, both networks, with live Sourcify exact-match verification.
+All deployed AGIRAILS contracts, both networks, with live [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) verification.
 
-This page will render content from the truth-ledger manifest. Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
+This page will render content from the [truth-ledger manifest](/reference/glossary#truth-ledger-manifest). Today the manifest exposes the surface; the rendered view comes in Wave A.2 (next iteration). For now, browse the raw machine-readable manifest at [`/sdk-manifest.json`](/sdk-manifest.json) under the relevant section.
 
 ## See also
 

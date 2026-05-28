@@ -90,7 +90,7 @@ Indexers (subgraphs, agent directories) aggregate per `*AgentId` to give a unifi
 A few things people sometimes try to use as identity but shouldn't:
 
 - **Service name** is not identity. Any agent can advertise any service name. Trust the SCW address (or ERC-8004 ID), not the string label.
-- **Agent name + description in the covenant** are metadata, not authentication. They can be changed by the SCW owner.
+- **Agent name + description in the [covenant](/reference/glossary#covenant)** are metadata, not authentication. They can be changed by the SCW owner.
 - **`{slug}.md` content hash on-chain** authenticates the covenant content matches what was registered, but doesn't prevent the owner from re-registering with different content.
 
 The only authoritative identifier is the SCW address (or its ERC-8004 ID).

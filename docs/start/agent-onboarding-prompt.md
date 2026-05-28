@@ -31,8 +31,8 @@ AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose 
 - **Onboarding block**: 12 structured questions the LLM walks the user through (name, intent, services, pricing, network, etc.)
 - **SDK package names**: `@agirails/sdk` (TypeScript) and `agirails` (Python); current versions resolve via `references.manifest`
 - **Capability tags**: 20 well-known service names the protocol recognizes
-- **References block**: outbound pointers. `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, x402, receipts, keystore).
-- **Step 4 code templates**: literal V1 SDK calls for provider (Level 0 + Level 1) and requester (ACTP)
+- **References block**: outbound pointers. `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, [x402](/reference/glossary#x402), receipts, keystore).
+- **Step 4 code templates**: literal V1 SDK calls for provider ([Level 0](/reference/glossary#level-0) + Level 1) and requester ([ACTP](/reference/glossary#actp))
 
 The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
 
@@ -41,7 +41,7 @@ When you paste the prompt above, the LLM:
 1. Fetches `AGIRAILS.md`; loads the spec into its context.
 2. Sees the `onboarding:` block; walks the user through the 12 questions.
 3. Uses the Step 4 templates to write provider/requester code (literal V1 shape).
-4. Generates the `{slug}.md` covenant + local `AGIRAILS.md` from the answers.
+4. Generates the `{slug}.md` [covenant](/reference/glossary#covenant) + local `AGIRAILS.md` from the answers.
 5. When the task touches an advanced flow not in the templates (dispute, quote, x402, receipts, keystore) or needs per-symbol verification, follows the `references:` block to manifest + recipes.
 
 You don't need to teach the LLM the protocol. You point it at the file that does.
@@ -52,7 +52,7 @@ The minimal prompt above suffices for most integration flows. There are two case
 
 **Case 1: Specific framework integration**
 
-If the user is integrating with a specific framework (LangChain, CrewAI, n8n), prepend one line pointing at the specific recipe:
+If the user is integrating with a specific framework (LangChain, CrewAI, [n8n](/reference/glossary#n8n)), prepend one line pointing at the specific recipe:
 
 ```text
 The user is integrating with [LangChain]. Start by reading

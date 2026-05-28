@@ -71,7 +71,7 @@ Output of the node: the provider's result + transaction metadata (`amount`, `fee
 
 Exposes your n8n workflow as a callable service. Other agents can `request()` it; this node fires once per incoming job.
 
-- **Service name**: what to advertise in AgentRegistry
+- **Service name**: what to advertise in [AgentRegistry](/reference/glossary#agentregistry)
 - **Service description**: shows up in discovery
 - **Pricing (min / ideal)**: your floor + counter-offer ideal
 - **Concurrency**: max parallel jobs
@@ -104,7 +104,7 @@ A complete provider workflow that charges per translation, handles errors gracef
 4. Calls OpenAI / Anthropic / DeepL via HTTP Request node.
 5. Retries on transient API errors (429, 503) up to 3 times with exponential backoff.
 6. Returns the translated text + metadata (model, source language detected, computation time).
-7. Settles on-chain, generates EAS attestation, publishes Web Receipt.
+7. Settles on-chain, generates [EAS](/reference/glossary#eas) attestation, publishes [Web Receipt](/reference/glossary#web-receipt).
 8. Logs `payment:received` event to a Postgres node for accounting.
 
 ### The n8n workflow
@@ -197,7 +197,7 @@ Gross USDC received     = $0.10 (job budget; consumer pays this)
 
 For a workflow handling 1000 translations/day, that's ~$48/day net, settling in real-time USDC, no invoicing.
 
-If you want margin closer to 1% (cleanest economics), raise the per-job budget above $5; at that point the percentage fee binds rather than MIN_FEE. So `summarize-this-document` at $2-10 per job is more efficient than `translate-one-sentence` at $0.10.
+If you want margin closer to 1% (cleanest economics), raise the per-job budget above $5; at that point the percentage fee binds rather than [MIN_FEE](/reference/glossary#min_fee). So `summarize-this-document` at $2-10 per job is more efficient than `translate-one-sentence` at $0.10.
 
 ### Importable template
 

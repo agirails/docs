@@ -117,7 +117,7 @@ DISPUTED
   └─→ noDecision             → CANCELLED, bond burned, escrow refunded per state
 ```
 
-The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG forbids it. Once a tx is `DISPUTED`, it's heading to SETTLED or CANCELLED, period.
+The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG forbids it. Once a tx is `DISPUTED`, it's heading to [SETTLED](/reference/glossary#settled) or [CANCELLED](/reference/glossary#cancelled), period.
 
 ## Subscribing to dispute events
 
@@ -137,7 +137,7 @@ agent.on('dispute:resolved', ({ txId, decision, escrowResolution }) => {
 
 | Source | What's in it |
 |---|---|
-| EAS delivery attestation | Provider's signed claim of what was delivered |
+| [EAS](/reference/glossary#eas) delivery attestation | Provider's signed claim of what was delivered |
 | Web Receipts payload | Full output blob (off-chain, IPFS-anchored) |
 | `dispute.evidence` field | Free-form JSON from disputer |
 | Counter-offer chain | Negotiated price + justifications |

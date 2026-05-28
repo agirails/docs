@@ -15,7 +15,7 @@ Defensive testing is what catches bugs **before** they're deployed. Here's what 
 
 ## Formal verification: sheaf cohomology
 
-The structural layer. ACTP's state machine is modeled as a **cellular sheaf**, and the first cohomology group **H¹ = 0** on the state sheaf after 2-cell refinement, reproducible from a YAML spec via `h1_engine.py`.
+The structural layer. [ACTP](/reference/glossary#actp)'s state machine is modeled as a **[cellular sheaf](/reference/glossary#cellular-sheaf)**, and the first cohomology group **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement, reproducible from a YAML spec via `h1_engine.py`.
 
 | Tool | What it does |
 |---|---|
@@ -42,10 +42,10 @@ Total: **486 tests** passing on V3 mainnet code. CI runs the full suite on every
 ### What the invariant tests assert
 
 - **Escrow solvency**: `EscrowVault.usdc.balanceOf(vault) >= sum(escrows[t].amount for t in active)` after any reachable sequence of kernel calls.
-- **State-machine integrity**: terminal states (SETTLED, CANCELLED) are sticky; once reached, no further transition.
+- **State-machine integrity**: terminal states ([SETTLED](/reference/glossary#settled), [CANCELLED](/reference/glossary#cancelled)) are sticky; once reached, no further transition.
 - **Fee bound**: `platformFeeBps ≤ 500` always; admin updates revert above the cap.
 - **Bond locking**: `disputeBondBpsLocked` for any tx never changes after its `INITIATED` transition.
-- **Mediator authority**: only the active mediator (post-timelock, post-approval) can resolve disputes.
+- **[Mediator](/reference/glossary#mediator) authority**: only the active mediator (post-timelock, post-approval) can resolve disputes.
 
 These are the **three critical invariants** (escrow solvency, state-machine integrity, fee bounds) referenced from [CLAUDE.md](/protocol), checked continuously, not just at release time.
 
@@ -63,7 +63,7 @@ When the stateful suite finds a bug, it produces a deterministic minimal sequenc
 
 ### Cross-SDK byte-identical EIP-712 parity
 
-Both SDKs sign EIP-712 typed data for AIP-2.1 counter-offers, Web Receipts, and x402 payment authorizations. The CI gate before every release verifies:
+Both SDKs sign [EIP-712](/reference/glossary#eip-712) typed data for [AIP-2.1](/reference/glossary#aip-21) counter-offers, [Web Receipts](/reference/glossary#web-receipt), and [x402](/reference/glossary#x402) payment authorizations. The CI gate before every release verifies:
 
 - A `CounterOffer` signed by the TS SDK verifies in the Python SDK with the same recovered signer.
 - A `CounterAccept` signed by Python verifies in TS.
@@ -81,10 +81,10 @@ The SDK CI runs a **live Base Sepolia integration suite** before any release:
 | Test scenario | What it proves |
 |---|---|
 | Full lifecycle (create → quote → commit → in-progress → delivered → settled) | Every state transition works against the real kernel |
-| Smart Wallet UserOp via Coinbase Paymaster | `wallet=auto` actually settles gasless against the production paymaster |
+| Smart Wallet [UserOperation](/reference/glossary#useroperation) via Coinbase [Paymaster](/reference/glossary#paymaster) | [`wallet=auto`](/reference/glossary#walletauto) actually settles gasless against the production paymaster |
 | Web Receipt upload + fetch | IPFS round-trip via Filebase/Pinata works |
-| EAS attestation publish | Real attestation appears on-chain |
-| Dispute flow with bond posting | AIP-14 bond mechanics work end-to-end |
+| [EAS](/reference/glossary#eas) attestation publish | Real attestation appears on-chain |
+| Dispute flow with bond posting | [AIP-14](/reference/glossary#aip-14) bond mechanics work end-to-end |
 
 This suite gates publication. Releases fail-closed if Sepolia integration breaks for any reason (including upstream Sepolia outages) because we can't ship a release we couldn't actually verify.
 

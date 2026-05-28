@@ -11,7 +11,7 @@ sidebar_position: 6
 
 # Fee model
 
-ACTP charges **1% of transaction value, with a $0.05 USDC minimum** ("MIN_FEE"). Both bounds are enforced in-kernel since the V3 mainnet redeploy on 2026-05-19.
+[ACTP](/reference/glossary#actp) charges **1% of transaction value, with a $0.05 USDC minimum** ("MIN_FEE"). Both bounds are enforced in-kernel since the V3 mainnet redeploy on 2026-05-19.
 
 <img src="/img/diagrams/fee-curve.svg" alt="ACTP fee curve: MIN_FEE floor at $0.05 binds below $5; 1% rate above; 5% cap hardcoded" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -63,7 +63,7 @@ When a transaction is created, the current `platformFeeBps` value is captured in
 
 The implication: if admin lowers the fee from 100 → 50 bps later, **in-flight transactions** continue settling at 100. New transactions get 50. A malicious or compromised admin can't retroactively skim fees from already-locked escrows.
 
-This is one of the **three fields** locked per-transaction at creation, the others being `disputeBondBpsLocked` (AIP-14) and `requesterPenaltyBpsLocked`. Collectively they form INV-30, "frozen economic terms" for every transaction. See [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps).
+This is one of the **three fields** locked per-transaction at creation, the others being `disputeBondBpsLocked` ([AIP-14](/reference/glossary#aip-14)) and `requesterPenaltyBpsLocked`. Collectively they form [INV-30](/reference/glossary#inv-30), "frozen economic terms" for every transaction. See [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps).
 
 ## Fee recipient
 
@@ -71,7 +71,7 @@ The fee accumulates in `feeRecipient` (initially the AGIRAILS Treasury Safe; rot
 
 ## x402 zero-fee path
 
-The `X402Adapter` route on Base mainnet goes **direct buyer → seller**, no ACTP protocol fee. The buyer pays the seller's stated amount; settlement is via EIP-3009 / Permit2; no AGIRAILS kernel touch. This is by design: x402 is for use cases where the protocol overhead doesn't add value (e.g., $0.001/call inference).
+The `X402Adapter` route on Base mainnet goes **direct buyer → seller**, no ACTP protocol fee. The buyer pays the seller's stated amount; settlement is via [EIP-3009](/reference/glossary#eip-3009) / Permit2; no AGIRAILS kernel touch. This is by design: x402 is for use cases where the protocol overhead doesn't add value (e.g., $0.001/call inference).
 
 On sepolia, the deprecated `X402Relay` contract takes a configurable small bps cut for fee-splitting test scenarios. Not used in production.
 

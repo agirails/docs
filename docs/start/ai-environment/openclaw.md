@@ -11,7 +11,7 @@ sidebar_position: 4
 
 # AGIRAILS OpenClaw skill
 
-`agirails/openclaw-skill` is the ClawHub-format equivalent of the Anthropic Claude Skill. Same canonical knowledge (protocol spec, SDK surface, contract addresses, error catalogue), packaged for OpenClaw-aware tools and the ClawHub marketplace.
+`agirails/openclaw-skill` is the ClawHub-format equivalent of the Anthropic [Claude Skill](/reference/glossary#claude-skill). Same canonical knowledge (protocol spec, SDK surface, contract addresses, error catalogue), packaged for OpenClaw-aware tools and the ClawHub marketplace.
 
 ## Install
 

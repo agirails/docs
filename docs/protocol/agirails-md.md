@@ -13,7 +13,7 @@ sidebar_position: 2
 
 **`AGIRAILS.md` is the protocol spec, not a config file.** A single 1242-line YAML+markdown document hosted at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). Every integrator references the same canonical file. The file contains:
 
-- The full ACTP state machine (8 states with descriptions)
+- The full [ACTP](/reference/glossary#actp) state machine (8 states with descriptions)
 - Fee model + dispute bond mechanics
 - The 20 canonical service capability strings
 - The SDK installation surface
@@ -42,7 +42,7 @@ canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
 |---|---|---|---|
 | **Canonical** AGIRAILS.md | [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) | Single global file, versioned with protocol | Immutable per version |
 | **Owner-local** AGIRAILS.md | Your project's `AGIRAILS.md` | One per owner / agent | Edit freely; serves as operational doc |
-| **`{slug}.md`** identity | `AgentRegistry` (hash-anchored), IPFS (content) | One per agent, published on-chain | Edit + re-publish via `actp publish` |
+| **`{slug}.md`** identity | [`AgentRegistry`](/reference/glossary#agentregistry) (hash-anchored), IPFS (content) | One per agent, published on-chain | Edit + re-publish via `actp publish` |
 
 Most docs prose says **"AGIRAILS.md"** to mean **canonical** unless context makes otherwise unambiguous. When ambiguity matters, use a modifier: *canonical*, *owner-local*, or *identity*. See [identity-file page](/protocol/covenant) for the V4 schema.
 

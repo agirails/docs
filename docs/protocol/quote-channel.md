@@ -11,7 +11,7 @@ sidebar_position: 7
 
 # AIP-2.1 quote channel
 
-ACTP supports a **signed off-chain negotiation phase** between INITIATED and COMMITTED. Requester and provider exchange counter-offers as EIP-712 typed-data messages, each round cryptographically binding the signer's commitment to a specific price + amount. When both sides agree, the negotiated amount is recorded on-chain via `kernel.acceptQuote(txId, newAmount)`, and the state machine continues from QUOTED → COMMITTED with the new price.
+[ACTP](/reference/glossary#actp) supports a **signed off-chain negotiation phase** between INITIATED and COMMITTED. Requester and provider exchange counter-offers as [EIP-712](/reference/glossary#eip-712) typed-data messages, each round cryptographically binding the signer's commitment to a specific price + amount. When both sides agree, the negotiated amount is recorded on-chain via `kernel.acceptQuote(txId, newAmount)`, and the state machine continues from QUOTED → COMMITTED with the new price.
 
 <img src="/img/diagrams/quote-flow.svg" alt="AIP-2.1 quote channel: signed counter-offer round-trip between requester and provider, only final acceptance touches the chain" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 

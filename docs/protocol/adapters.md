@@ -14,11 +14,11 @@ sidebar_position: 9
 | Adapter | Priority | Target | Use case |
 |---|---|---|---|
 | **X402Adapter** | 70 | `https://…` URLs | Instant atomic HTTP payments, direct USDC settlement |
-| **StandardAdapter** | 60 | `0x…` addresses | Full ACTP lifecycle: create, accept, link, transition, settle |
+| **StandardAdapter** | 60 | `0x…` addresses | Full [ACTP](/reference/glossary#actp) lifecycle: create, accept, link, transition, settle |
 | **BasicAdapter** | 50 | `0x…` addresses | High-level `pay()`: create + escrow to COMMITTED in one call |
 
 - **x402 on Base mainnet** routes payments directly buyer → seller via `@x402/fetch` + facilitator (no AGIRAILS fee). Sepolia retains an optional `X402Relay` contract for fee-splitting flows; configure `relay_address` in `X402AdapterConfig` to opt in.
-- **BasicAdapter** drives the transaction to `COMMITTED` and returns. The provider still needs to mark `DELIVERED` and the requester `SETTLED`. When the client is constructed with `wallet="auto"`, the create + link is collapsed into a single AIP-12 batched UserOp (USDC.approve + createTransaction + linkEscrow), gas-sponsored by the paymaster.
+- **BasicAdapter** drives the transaction to `COMMITTED` and returns. The provider still needs to mark `DELIVERED` and the requester `SETTLED`. When the client is constructed with `wallet="auto"`, the create + link is collapsed into a single AIP-12 batched [UserOp](/reference/glossary#useroperation) (USDC.approve + createTransaction + linkEscrow), gas-sponsored by the [paymaster](/reference/glossary#paymaster).
 
 ## See also
 

@@ -24,7 +24,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-A provider's initial quote isn't always the price both sides agree on. AIP-2.1 adds a **signed off-chain negotiation** phase between INITIATED and COMMITTED: requester and provider exchange EIP-712 typed-data counters until one accepts. Only the final price hits the chain via `kernel.acceptQuote()`.
+A provider's initial quote isn't always the price both sides agree on. AIP-2.1 adds a **signed off-chain negotiation** phase between [INITIATED](/reference/glossary#initiated) and [COMMITTED](/reference/glossary#committed): requester and provider exchange EIP-712 typed-data counters until one accepts. Only the final price hits the chain via `kernel.acceptQuote()`.
 
 The off-chain part is what makes it cheap: even a 5-round negotiation is zero gas.
 

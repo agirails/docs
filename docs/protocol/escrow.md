@@ -15,7 +15,7 @@ The **EscrowVault** smart contract is where USDC actually sits during a transact
 
 <img src="/img/diagrams/escrow-lifecycle.svg" alt="EscrowVault lifecycle: createEscrow → releaseEscrow / refundEscrow / lockForDispute paths" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-EscrowVault is the only contract that holds user funds. Its solvency invariant (**vault USDC balance ≥ sum of all active escrows**) is the bedrock guarantee of ACTP and is asserted by the test suite + Echidna fuzz.
+EscrowVault is the only contract that holds user funds. Its solvency invariant (**vault USDC balance ≥ sum of all active escrows**) is the bedrock guarantee of [ACTP](/reference/glossary#actp) and is asserted by the test suite + Echidna fuzz.
 
 <img src="/img/diagrams/escrow-flow.svg" alt="Escrow flow: 4 steps: USDC approve, linkEscrow lock, work happens, releaseEscrow pays provider" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -50,7 +50,7 @@ transitionState(txId, DISPUTED)
 
 ## AIP-14 dispute bond
 
-A disputer (requester *or* provider) must post a **$1 USDC minimum bond** when transitioning a tx to `DISPUTED`. The bond returns per fault attribution after mediator resolution:
+A disputer (requester *or* provider) must post a **$1 USDC minimum bond** when transitioning a tx to `DISPUTED`. The bond returns per fault attribution after [mediator](/reference/glossary#mediator) resolution:
 
 | Outcome | Bond returned to |
 |---|---|
@@ -84,7 +84,7 @@ The implication: a malicious or compromised admin cannot retroactively raise dis
 | `IN_PROGRESS` → `CANCELLED` | Amount minus `requesterPenaltyBpsLocked` refunded; penalty awarded to provider for partial work |
 | `DELIVERED` → `DISPUTED` → mediator → `CANCELLED` | Per mediator decision (full / partial / penalty split) |
 
-The requester-penalty BPS exists to prevent griefing: cancellation after the provider has begun work shouldn't be free.
+The requester-penalty [BPS](/reference/glossary#bps) exists to prevent griefing: cancellation after the provider has begun work shouldn't be free.
 
 ## See also
 

@@ -31,16 +31,16 @@ Apex performed a source-level pass over `actp-kernel` (V2 at the time) and the T
 | **FIND-002** | High | CI hardening | ✅ Closed | `forge build` + Slither workflow + CODEOWNERS gate on `actp-kernel` and `sdk-js` repos |
 | **FIND-003** | High | CI hardening | ✅ Closed | Same workflow change as FIND-002; covered both code repos |
 | **FIND-004** | High | Smart Wallet AA bypass | ✅ Closed | `_requesterCheck` enforces `msg.sender == requester` for state transitions; closed in `level0/request.ts` + `BuyerOrchestrator.ts` |
-| **FIND-005** | Medium | Fee bps validation | ✅ Closed | `platformFeeBps ≤ 500` capped in kernel constant; admin cannot exceed |
-| **FIND-006** | Medium | MIN_FEE enforcement | ✅ Closed | $0.05 USDC floor moved from SDK convention to on-chain check in `_payoutProviderAmount` (V3) |
+| **FIND-005** | Medium | Fee [BPS](/reference/glossary#bps) validation | ✅ Closed | `platformFeeBps ≤ 500` capped in kernel constant; admin cannot exceed |
+| **FIND-006** | Medium | [MIN_FEE](/reference/glossary#min_fee) enforcement | ✅ Closed | $0.05 USDC floor moved from SDK convention to on-chain check in `_payoutProviderAmount` (V3) |
 | **FIND-007** | Medium | Tag-driven publish | ✅ Closed | Workflow now publishes only on signed git tags; sigstore provenance attached |
-| **FIND-008** | Medium | Dispute bond bps locking | ✅ Closed | `disputeBondBpsLocked` captured at `createTransaction`, immutable thereafter (INV-30) |
-| **FIND-009** | Medium | Mediator timelock hardening | ✅ Closed | M-2: timelock always resets on re-approval, closes the racing window |
+| **FIND-008** | Medium | [Dispute bond](/reference/glossary#dispute-bond) bps locking | ✅ Closed | `disputeBondBpsLocked` captured at `createTransaction`, immutable thereafter ([INV-30](/reference/glossary#inv-30)) |
+| **FIND-009** | Medium | [Mediator](/reference/glossary#mediator) timelock hardening | ✅ Closed | M-2: timelock always resets on re-approval, closes the racing window |
 | **FIND-010** | Low | Self-transaction prevention | ✅ Closed | Kernel rejects `requester == provider` at `createTransaction` |
 | **FIND-011** | Low | Compiler bump | ✅ Closed | solc 0.8.20 to 0.8.34; closes four `via_ir` codegen bugs + `TransientStorageClearingHelperCollision` |
 | **FIND-012** | Low | Documentation gap | ✅ Closed | Admin-only resolver functions explicitly documented |
 | **FIND-013** | Low | Sepolia kernel freshness | ✅ Closed | V4 sepolia kernel deployed to match mainnet V3 + 1 patch ahead for early validation |
-| **FIND-014** | Low | Sourcify verification | ✅ Closed | All 8 contracts (4 mainnet + 4 sepolia) verified EXACT_MATCH |
+| **FIND-014** | Low | Sourcify verification | ✅ Closed | All 8 contracts (4 mainnet + 4 sepolia) verified [EXACT_MATCH](/reference/glossary#sourcify-exact_match) |
 | **FIND-015** | Low | AGIRAILS.md parser hardening | ✅ Closed | 256 KB input cap; `maxAliasCount=10` on YAML library to prevent quadratic-blowup attacks |
 | **FIND-016** | Info | Receipts parser | ✅ Closed | Strict schema validation on inbound receipts; tampered payloads rejected |
 
@@ -87,8 +87,8 @@ Apex is the named, systematic layer. The continuous discipline beneath it:
 
 - **Slither + Foundry coverage** gate on every PR to `actp-kernel`.
 - **Manual review by 2+ reviewers** required for any change to kernel logic (enforced via CODEOWNERS).
-- **Hypothesis stateful exerciser**: ~600 random op sequences per CI run on the lifecycle state machine.
-- **Cross-SDK byte-identical EIP-712 parity**: every release verifies TS-signed messages decode in Python and vice versa.
+- **[Hypothesis stateful](/reference/glossary#hypothesis-stateful) exerciser**: ~600 random op sequences per CI run on the lifecycle state machine.
+- **Cross-SDK byte-identical [EIP-712](/reference/glossary#eip-712) parity**: every release verifies TS-signed messages decode in Python and vice versa.
 
 See [Testing](/security/testing) for the full testing depth.
 

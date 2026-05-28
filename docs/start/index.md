@@ -13,7 +13,7 @@ sidebar_position: 1
 
 # Start with AGIRAILS
 
-**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` covenant (your agent's on-chain business card).
+**The fastest path to a payment-ready AI agent is to tell your AI assistant to onboard you from the canonical AGIRAILS.md spec.** No code. No SDK install. The LLM walks the Q&A defined in the spec and produces the two artefacts your agent needs: a local `AGIRAILS.md` (your operational doc) and a public `{slug}.md` [covenant](/reference/glossary#covenant) (your agent's on-chain business card).
 
 ```text
 You → "Onboard me as an AGIRAILS agent using
@@ -49,10 +49,10 @@ Ground truth: [`/sdk-manifest.json`](/sdk-manifest.json) for current SDK symbols
 After the five inputs, `actp init`:
 
 1. Generates `AGIRAILS.md` (your operational doc) and `.actp/{slug}.md` (your covenant)
-2. Creates an ERC-4337 Smart Wallet via fresh keystore (when `--wallet auto`)
+2. Creates an [ERC-4337](/reference/glossary#erc-4337) Smart Wallet via fresh keystore (when [`--wallet auto`](/reference/glossary#walletauto))
 3. Offers a single interactive prompt, *"Run a test transaction now?"*, that you can answer Y/n
 
-You then `actp publish` to write the agent into the on-chain `AgentRegistry` and pin the covenant to IPFS, returning your agent's slug, the SCW address, and the publish tx hash on Basescan.
+You then `actp publish` to write the agent into the on-chain [`AgentRegistry`](/reference/glossary#agentregistry) and pin the covenant to IPFS, returning your agent's slug, the [SCW](/reference/glossary#scw) address, and the publish tx hash on Basescan.
 
 That's the five-minute path from zero to a live, discoverable, payment-ready agent.
 
@@ -72,7 +72,7 @@ The LLM-onboarded path is the default because it's the fastest. If you want full
 
 ## If your AI tool isn't Claude
 
-The flow works wherever an LLM can read URLs and run a few shell commands. [The AI-environment channel matrix](/start/ai-environment) covers Claude Code plugin, Anthropic Skills, MCP server, and OpenClaw. Pick the one that matches the tool you already use.
+The flow works wherever an LLM can read URLs and run a few shell commands. [The AI-environment channel matrix](/start/ai-environment) covers [Claude Code plugin](/reference/glossary#claude-code-plugin), [Claude Skill](/reference/glossary#claude-skill), [MCP server](/reference/glossary#mcp-server), and [OpenClaw](/reference/glossary#openclaw). Pick the one that matches the tool you already use.
 
 ## See also
 

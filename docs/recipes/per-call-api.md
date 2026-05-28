@@ -24,7 +24,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-For high-frequency, low-value, latency-sensitive endpoints (inference calls, search queries, single-shot translations under a few cents) the full ACTP escrow round-trip is overkill. **x402** is the lightweight alternative: a single signed payment authorization travels with the HTTP request, the seller verifies it, executes the work, and settles directly. No INITIATED → COMMITTED → DELIVERED dance.
+For high-frequency, low-value, latency-sensitive endpoints (inference calls, search queries, single-shot translations under a few cents) the full [ACTP](/reference/glossary#actp) escrow round-trip is overkill. **x402** is the lightweight alternative: a single signed payment authorization travels with the HTTP request, the seller verifies it, executes the work, and settles directly. No [INITIATED](/reference/glossary#initiated) → [COMMITTED](/reference/glossary#committed) → [DELIVERED](/reference/glossary#delivered) dance.
 
 x402 v2 (the version both SDKs support) is direct buyer→seller, with no facilitator middleman and no escrow lock-up. Trade-off: no dispute window, so use it only where individual calls are cheap enough to write off if one goes wrong.
 
@@ -143,8 +143,8 @@ Full list: [Error reference](/reference/errors) (x402 errors are TS-only; Python
 ## What x402 doesn't give you
 
 - **No dispute window.** Once settled, the money's gone. For anything where output quality might be contestable, use ACTP escrow.
-- **No reputation accumulation.** x402 payments don't write to EAS the same way ACTP transactions do. Provider reputation only builds via ACTP escrow flow.
-- **No AIP-2.1 quote negotiation.** Price is take-it-or-leave-it per call.
+- **No reputation accumulation.** x402 payments don't write to [EAS](/reference/glossary#eas) the same way ACTP transactions do. Provider reputation only builds via ACTP escrow flow.
+- **No [AIP-2.1](/reference/glossary#aip-21) quote negotiation.** Price is take-it-or-leave-it per call.
 
 ## See also
 

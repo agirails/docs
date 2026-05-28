@@ -24,7 +24,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 :::
-By default both SDKs run in `wallet=auto` mode: the agent's EOA is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) (ERC-4337) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by Coinbase Paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
+By default both SDKs run in `wallet=auto` mode: the agent's [EOA](/reference/glossary#eoa) is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) ([ERC-4337](/reference/glossary#erc-4337)) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by Coinbase Paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
 
 This is AIP-12 in practice. The fallback is `wallet=eoa` (pay-your-own-gas mode) for power users.
 
