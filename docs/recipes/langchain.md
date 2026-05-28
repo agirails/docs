@@ -112,12 +112,16 @@ async def translate(text: str, target: str) -> str:
 You almost always want a per-invocation cap **and** a session cap to prevent runaway loops:
 
 ```ts
+// V1 SDK doesn't emit a 'payment:sent' event — enforce session cap
+// at call sites by reading agent.stats.totalSpent before each request:
 const SESSION_CAP = 5.00; // $5 total
-agent.on('payment:sent', () => {
+async function paidCall<T>(tool: () => Promise<T>): Promise<T> {
   if (agent.stats.totalSpent >= SESSION_CAP) {
     throw new Error('session budget exhausted');
   }
-});
+  return tool();
+}
+// Then in each LangChain tool: const r = await paidCall(() => agent.request(...))
 ```
 
 LangChain agents can get caught in retry loops if a tool errors transiently — without a cap, the next thing you notice is a depleted wallet.
@@ -134,17 +138,27 @@ import { z } from 'zod';
 import { Agent } from '@agirails/sdk';
 
 const agirails = new Agent({
+  name: 'ResearchTooling',
   network: 'mainnet',
   wallet: 'auto', // reads keystore via env per AIP-13
-  behavior: {
-    budget: {
-      perRequestSpendCap: 0.50, // never spend more than $0.50 per top-level query
-      dailySpendCap: 20.00,     // hard daily ceiling
-      onCapExceeded: 'halt',
-    },
-  },
 });
 await agirails.start();
+
+// V1 SDK has no behavior.budget config — enforce caps at the call site.
+const PER_QUERY_CAP = 0.50;
+const DAILY_CAP = 20.00;
+let queryStartSpend = 0;
+let dailySpendBudget = DAILY_CAP; // reset at UTC midnight in your supervisor
+
+function guardSpend(currentTotalSpent: number) {
+  const perQuery = currentTotalSpent - queryStartSpend;
+  if (perQuery > PER_QUERY_CAP) {
+    throw new Error(`per-query cap exceeded: ${perQuery} > ${PER_QUERY_CAP}`);
+  }
+  if (currentTotalSpent > dailySpendBudget) {
+    throw new Error('daily cap exceeded — halting');
+  }
+}
 
 // Tool 1: fetch web content (a paid AGIRAILS provider somewhere)
 const fetchWeb = tool(
@@ -208,7 +222,10 @@ const researcher = createReactAgent({
   tools: [fetchWeb, translate, summarize],
 });
 
-// Run a research task
+// Run a research task — capture the start-of-query spend baseline
+queryStartSpend = agirails.stats.totalSpent;
+guardSpend(agirails.stats.totalSpent);
+
 const out = await researcher.invoke({
   messages: [{
     role: 'user',
@@ -216,6 +233,7 @@ const out = await researcher.invoke({
   }],
 });
 
+guardSpend(agirails.stats.totalSpent); // re-check after the LangChain loop finishes
 console.log('answer:', out.messages.at(-1)?.content);
 console.log('spent:', agirails.stats.totalSpent, 'USDC');
 ```
@@ -227,18 +245,7 @@ What happens at runtime:
 3. The LLM decides it needs `translate` to Croatian → calls it → pays ~$0.08 USDC
 4. Returns answer to the user; total spend visible in `agirails.stats.totalSpent` (~$0.42)
 
-The `behavior.budget.perRequestSpendCap` ensures the whole query never exceeds $0.50 even if the LLM gets stuck in a loop. The `dailySpendCap` is the secondary safety net.
-
-For LangSmith correlation, attach the LangSmith run ID as metadata on every `request()` call:
-
-```ts
-const r = await agirails.request('translate', {
-  input: { text, target },
-  budget: 0.10,
-  metadata: { langsmithRunId: traceContext.runId },
-});
-// Later: result.transaction.id ↔ langsmithRunId for cost attribution per trace
-```
+The app-level `guardSpend()` enforces per-query and daily caps. Drop a `guardSpend()` inside each tool's `async` body to catch runaway spend mid-loop. The V1 SDK doesn't ship `behavior.budget` config; this app-side guard is the canonical pattern until V2.
 
 ## Exposing your LangChain workflow as a provider
 

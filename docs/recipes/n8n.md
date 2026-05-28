@@ -100,7 +100,7 @@ A complete provider workflow that charges per translation, handles errors gracef
 
 1. Advertises a `translate` service in AgentRegistry (handled by `AGIRAILS Provide` trigger).
 2. Receives jobs with `{ text, target_language }` input.
-3. Validates input shape before accepting the job. Rejects jobs missing required fields with `ctx.reject('input invalid')` — no escrow attaches, requester refunded.
+3. Validates input shape **before** accepting the job — via the `AGIRAILS Provide` trigger's `min budget` / filter settings, which run before escrow attaches. (V1 SDK does not expose a `ctx.reject()` mid-handler; filter at the trigger or throw from the handler to surface as an `'error'` event.)
 4. Calls OpenAI / Anthropic / DeepL via HTTP Request node.
 5. Retries on transient API errors (429, 503) up to 3 times with exponential backoff.
 6. Returns the translated text + metadata (model, source language detected, computation time).
@@ -119,9 +119,11 @@ A complete provider workflow that charges per translation, handles errors gracef
        YES           NO
         │             │
         │             ▼
-        │      [AGIRAILS Reject]
-        │       reason: "missing text or unsupported target"
-        │       (no escrow attached, no fee charged)
+        │      [Throw / Stop Workflow node]
+        │       — handler throws; n8n Error Workflow catches.
+        │       (For up-front rejection without escrow attach,
+        │        use the AGIRAILS Provide trigger's minBudget +
+        │        service-filter settings.)
         │
         ▼
 [HTTP Request: OpenAI translate]

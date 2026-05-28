@@ -72,21 +72,42 @@ Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
 ## Requester: send a counter
 
 ```ts
-import { CounterOfferBuilder, Agent } from '@agirails/sdk';
+import { Agent, CounterOfferBuilder, InMemoryNonceManager } from '@agirails/sdk';
 
-const agent = new Agent({ network: 'mainnet', wallet: 'auto', // reads keystore via env per AIP-13 });
+const agent = new Agent({
+  name: 'Negotiator',
+  network: 'mainnet',
+  wallet: 'auto', // reads keystore via env per AIP-13
+});
 await agent.start();
 
-const tx = await agent.createTransaction({ provider: '0xPROV…', service: 'translate' });
-// tx.state === 'INITIATED'; quote was 1.00 USDC, we want 0.60
+// V1: create the on-chain transaction via the standard adapter
+const txId = await agent.client.standard.createTransaction({
+  provider: '0xPROV…',
+  service: 'translate',
+  // amount, deadline, etc.
+});
 
-const counter = await CounterOfferBuilder
-  .for(tx)
-  .counterAmount(600_000)   // $0.60 in micro-USDC
-  .maxPrice(800_000)        // we'll accept up to $0.80 in return-counter
-  .expiresInSeconds(120)
-  .justification('cheaper provider quoted $0.55 elsewhere')
-  .sign(agent.signer);
+// V1: CounterOfferBuilder is constructed, not chained.
+// `signer` here is your wallet provider's signer; the AgentClient holds it
+// internally — for explicit construction use ethers.Signer or the
+// wallet provider's signer. (Recover it from the keystore loader, or
+// instantiate the wallet via the SDK's wallet provider helpers.)
+const nonceManager = new InMemoryNonceManager();
+const builder = new CounterOfferBuilder(signer, nonceManager);
+
+const counter = await builder.build({
+  txId,
+  consumer: agent.address,
+  provider: '0xPROV…',
+  quoteAmount: '1000000',    // $1.00 in micro-USDC (provider's initial quote)
+  counterAmount: '600000',   // $0.60 in micro-USDC
+  maxPrice: '800000',        // accept up to $0.80 in return-counter
+  inReplyTo: 'INITIAL_QUOTE_ID',
+  chainId: 8453,
+  kernelAddress: '0xKERNEL…',
+  expiresAt: Math.floor(Date.now() / 1000) + 120, // 2 minutes from now
+});
 
 const reply = await fetch('https://provider.example.com/actp/counter-offer', {
   method: 'POST',
@@ -100,17 +121,16 @@ const { kind, payload } = await reply.json();
 
 ## Settle the accepted counter on-chain
 
-When `kind === 'CounterAccept'`:
+When `kind === 'CounterAccept'`, advance the transaction through the kernel via the standard adapter (there is no top-level `acceptQuote()` export in V1 — the `acceptQuote` method lives on `agent.client.standard`):
 
 ```ts
-import { acceptQuote } from '@agirails/sdk';
+// V1: acceptQuote is a method on the standard adapter, not a free function
+await agent.client.standard.acceptQuote(txId, '600000'); // negotiated amount in micro-USDC
 
-await acceptQuote(agent, {
-  txId: tx.id,
-  acceptPayload: payload,   // the signed CounterAccept from provider
-});
-// → kernel verifies signature, transitions INITIATED → QUOTED → COMMITTED
-//   with new amount, then linkEscrow() funds the locked amount.
+// linkEscrow funds the locked amount. With wallet=auto the kernel
+// composes acceptQuote + linkEscrow into a single sponsored UserOp.
+await agent.client.standard.linkEscrow(txId);
+// → kernel transitions INITIATED → QUOTED → COMMITTED with new amount.
 ```
 
 In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one sponsored UserOp — zero gas.

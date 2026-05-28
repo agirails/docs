@@ -38,6 +38,11 @@ A truly autonomous agent does both sides: it **earns** USDC by providing a servi
 ```ts
 import { Agent } from '@agirails/sdk';
 
+// Track sub-task spend per job to enforce a per-job ceiling at app level.
+// (behavior.budget.perRequestSpendCap is not a V1 SDK option; enforce in
+// your handler.)
+const PER_JOB_SPEND_CAP = 0.20;
+
 const agent = new Agent({
   name: 'ResearchSummarizer',
   description: 'Summarizes any URL into 200 words. Multi-language input supported.',
@@ -46,16 +51,28 @@ const agent = new Agent({
   behavior: {
     autoAccept: true,
     concurrency: 10,
-    pricing: { min: 0.25, ideal: 0.50 },
-    budget: { perRequestSpendCap: 0.20 }, // safety: never spend more than $0.20 on sub-tasks per incoming job
+    // Pricing policy lives in the covenant ({slug}.md) `pricing:` block,
+    // not on Agent config. The actp serve daemon reads covenant policy at runtime.
   },
 });
 
 agent.provide('summarize', async (job, ctx) => {
   const { url } = job.input;
+  let subSpend = 0;
+
+  const spend = (label: string, cost: number) => {
+    subSpend += cost;
+    if (subSpend > PER_JOB_SPEND_CAP) {
+      throw new Error(
+        `sub-task spend cap exceeded (${subSpend} > ${PER_JOB_SPEND_CAP}) at ${label}`,
+      );
+    }
+  };
+
   ctx.progress(10, 'fetching content');
 
   // Sub-task 1: pay a fetch provider to get the page (avoids hosting headless Chrome)
+  spend('fetch-content', 0.05);
   const fetched = await agent.request('fetch-content', {
     input: { url, format: 'markdown' },
     budget: 0.05,
@@ -67,6 +84,7 @@ agent.provide('summarize', async (job, ctx) => {
 
   // Sub-task 2: translate if needed
   if (fetched.result.detectedLanguage !== 'en') {
+    spend('translate', 0.10);
     ctx.progress(50, 'translating');
     const translated = await agent.request('translate', {
       input: { text: content, target: 'en' },
@@ -88,30 +106,36 @@ console.log(`autonomous agent live at ${agent.address}`);
 
 ## What makes this autonomous
 
-- **Self-contained pricing logic**: it counter-offers via AIP-2.1 if the incoming job is below its floor.
-- **Budgeted spending**: `behavior.budget.perRequestSpendCap` ensures the agent never spends more than it earns on a single job. If sub-tasks would exceed that, the agent throws and the job goes to dispute (or you can `ctx.reject()` instead).
+- **Self-contained budget**: app-level `PER_JOB_SPEND_CAP` ensures the agent never spends more than its share on a single job. If sub-tasks would exceed, the handler throws — surfaces as `'error'` event.
 - **No external orchestration**: no n8n, no cron, no human loop. Just `agent.start()` and it lives.
-- **Composable**: this agent's `summarize` is itself discoverable by other agents who can chain it further.
+- **Composable**: this agent's `summarize` is itself a discoverable service that other agents can chain.
+- **Pricing policy**: define in the covenant (`{slug}.md` → `pricing:` block) and have `actp serve` enforce it for AIP-2.1 counter-offers.
 
 ## Observability
 
-For anything that runs unattended, you want events flowing somewhere:
+For anything that runs unattended, you want events flowing somewhere. The V1 events on `Agent`:
 
 ```ts
-agent.on('job:started', (job) => log.info({ event: 'job:started', jobId: job.id }));
-agent.on('job:completed', (job, result, tx) => log.info({
-  event: 'job:completed',
-  jobId: job.id,
-  earned: tx.amount,
-  fee: tx.fee,
-  netProfit: tx.amount - tx.fee - (job._subtaskSpend ?? 0),
-}));
-agent.on('payment:received', (p) => metrics.counter('earnings', p.amount));
-agent.on('payment:sent', (p) => metrics.counter('spend', p.amount));
+agent.on('starting', () => log.info({ event: 'starting' }));
+agent.on('started', () => log.info({ event: 'started', address: agent.address }));
+agent.on('stopping', () => log.info({ event: 'stopping' }));
+agent.on('stopped',  () => log.info({ event: 'stopped' }));
+agent.on('paused',   () => log.info({ event: 'paused' }));
+agent.on('resumed',  () => log.info({ event: 'resumed' }));
+
+// Service + job lifecycle:
+agent.on('service:registered', (name) => log.info({ event: 'service:registered', name }));
+agent.on('job:received', (job)        => log.info({ event: 'job:received', jobId: job.id }));
+agent.on('job:rejected', (job, reason) => log.warn({ event: 'job:rejected', jobId: job.id, reason }));
+
+// Earnings — payload is the amount as a number:
+agent.on('payment:received', (amount) => metrics.counter('earnings', amount));
+
+// Errors:
 agent.on('error', (e) => log.error({ event: 'agent:error', error: e.message }));
 ```
 
-Wire to your logging stack of choice. The Python SDK exposes the same events via async generators (`async for event in agent.events()`).
+Wire to your logging stack of choice. For per-job timing / completion, instrument inside your handler (the V1 SDK doesn't emit a `job:completed` event with the tx payload — you have what `agent.request` returns to the handler caller).
 
 ## Running it production-ish
 
@@ -119,14 +143,15 @@ Three things you actually need:
 
 1. **Process supervisor** — pm2, systemd, Kubernetes Deployment, anything that restarts on crash.
 2. **Keystore via `ACTP_KEYSTORE_BASE64`** — see [Keystore + deployment](/recipes/keystore-and-deployment).
-3. **A circuit breaker on spending** — the `budget.perRequestSpendCap` plus a daily cap. The SDK supports:
+3. **App-level circuit breaker on spending** — wrap your `agent.request()` calls. The V1 SDK doesn't have a built-in `behavior.budget` — enforce a per-job cap inside your handler (as shown in the `spend()` helper above) and a daily cap in your supervisor / monitoring layer:
    ```ts
-   behavior: {
-     budget: {
-       perRequestSpendCap: 0.20,
-       dailySpendCap: 50.00,    // halt requests for 24h if daily spend exceeds $50
-       onCapExceeded: 'halt',    // or 'warn'
-     },
+   // Conceptual — implement in your process layer, not Agent config:
+   const DAILY_CAP = 50.00;
+   let dailySpend = 0;
+   // Reset dailySpend at UTC midnight via cron / setInterval.
+   function guardSpend(label: string, cost: number) {
+     if (dailySpend + cost > DAILY_CAP) throw new Error('daily cap exceeded');
+     dailySpend += cost;
    }
    ```
 
@@ -135,20 +160,21 @@ Three things you actually need:
 ```ts
 setInterval(() => {
   console.log({
-    earned: agent.stats.totalEarned,
-    spent: agent.stats.totalSpent,
-    net: agent.stats.totalEarned - agent.stats.totalSpent,
-    jobsCompleted: agent.stats.completedJobs,
-    avgMargin: agent.stats.avgMargin, // % of revenue retained after sub-task spend + fees
+    earned: agent.stats.totalEarned, // USDC
+    spent:  agent.stats.totalSpent,  // USDC (set by SDK on each request payment)
+    net:    agent.stats.totalEarned - agent.stats.totalSpent,
+    jobs:   agent.stats.jobsCompleted,
+    // For per-job margin tracking, instrument inside your handler and
+    // emit your own metrics; V1 AgentStats doesn't expose avgMargin.
   });
 }, 60_000);
 ```
 
-A healthy autonomous agent has `avgMargin > 30%`. If it's lower, your sub-task budgets are too generous or your asking price is too low.
+A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees. If lower, your sub-task budgets are too generous or your asking price is too low.
 
 ## See also
 
 - [Provider agent](/recipes/provider-agent) — earning side in isolation
 - [Consumer agent](/recipes/consumer-agent) — spending side in isolation
 - [Gasless payment](/recipes/gasless-payment) — why concurrent earn+spend is fine on a single SCW
-- [Quote negotiation](/recipes/quote-negotiation) — how `behavior.pricing` translates into AIP-2.1 counters
+- [Quote negotiation](/recipes/quote-negotiation) — covenant `pricing:` block + `actp serve` AIP-2.1 counter-offers

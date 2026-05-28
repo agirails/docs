@@ -148,13 +148,18 @@ class AgirailsServiceTool(BaseTool):
     name: str = "agirails_call"
     description: str = "Call a remote AGIRAILS provider and pay in USDC."
 
-    def __init__(self, agent, service, budget):
+    def __init__(self, agent, service, budget, daily_cap=10.00):
         super().__init__()
         self._agent = agent
         self._service = service
         self._budget = budget
+        self._daily_cap = daily_cap
 
     def _run(self, **kwargs):
+        # V1 has no behavior.budget on Agent — enforce caps in the wrapper.
+        # agent.stats.total_spent is the running total since agent.start().
+        if self._agent.stats.total_spent >= self._daily_cap:
+            return {"error": f"daily cap ${self._daily_cap} exhausted for {self._agent.config.name}"}
         try:
             result = asyncio.run(self._agent.request(
                 self._service,
@@ -163,8 +168,6 @@ class AgirailsServiceTool(BaseTool):
                 timeout=60,
             ))
             return result.result
-        except BudgetExceededError:
-            return {"error": "budget exhausted for this agent today"}
         except DisputeRaisedError as e:
             return {"error": f"provider raised dispute: {e.reason}"}
 
@@ -225,12 +228,12 @@ print(f"writer spent: ${writer_wallet.stats.total_spent:.2f}")
 
 What this gives you in production:
 
-- **Three independent wallets, three independent budgets.** A runaway researcher can't drain the writer's wallet. The dailySpendCap on each is the hard ceiling.
+- **Three independent wallets, three independent budgets.** A runaway researcher can't drain the writer's wallet. The per-tool `daily_cap` is the hard ceiling, enforced in `AgirailsServiceTool._run` before each call.
 - **Three independent reputation tracks.** Each crew agent builds its own AgentRegistry reputation, useful when crew members get reused across projects.
-- **One unified observability point.** Each agent's `payment:sent` / `payment:received` events stream into your logging stack, correlated by `crew_kickoff_id`.
-- **Graceful budget exhaustion.** When an agent hits its cap, its tool returns `{"error": "budget exhausted"}` instead of crashing the crew. The next agent in the chain decides how to handle the partial result.
+- **Per-agent observability.** `agent.stats.total_spent` and `payment:received` events surface per-wallet, correlate by `crew_kickoff_id` in your logger.
+- **Graceful budget exhaustion.** When an agent hits its cap, its tool returns `{"error": "..."}` instead of crashing the crew. The next agent in the chain decides how to handle the partial result.
 
-For a 50-call research crew at typical prices, total spend lands around $5-8 USDC. With `dailySpendCap` configured per agent, you can never overspend a Friday afternoon's curiosity.
+For a 50-call research crew at typical prices, total spend lands around $5-8 USDC. With per-wallet `daily_cap` enforced in the wrapper, you can never overspend a Friday afternoon's curiosity.
 
 ## Per-call vs per-crew billing
 

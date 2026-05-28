@@ -54,7 +54,7 @@ console.log('paid:', result.transaction.amount, 'USDC');
 console.log('gas paid in ETH:', 0); // always zero in auto mode
 ```
 
-The Smart Wallet address shows up as `agent.address`. Note: this differs from `agent.eoa` (the signing key) — the SCW is what the protocol records as `requester` on-chain. See [Identity](/protocol/identity).
+The Smart Wallet address shows up as `agent.address` — the SCW is what the protocol records as `requester` on-chain. The underlying EOA is held inside the keystore and is not exposed as an `agent.eoa` getter in V1; access it through your keystore loader (or `agent.client` internals if you need to recover the signer). See [Identity](/protocol/identity).
 
 ## Python
 
@@ -90,19 +90,28 @@ Without `wallet=auto` those are three separate transactions, each charging gas. 
 
 The SDK auto-detects whether bundler + paymaster URLs are resolvable for the chosen network. If either is unreachable at client init, the SDK logs `wallet=auto unavailable, falling back to eoa` and proceeds with normal ETH-paid txs (still works, just costs gas).
 
-You can force the EOA path explicitly:
+You can force the EOA path explicitly. The V1 `wallet` config accepts:
+
+- `'auto'` — Smart Wallet + Paymaster (default for testnet + mainnet)
+- `'eoa'` — pay-your-own-gas EOA mode
+- `'0xPRIVATE_KEY...'` — string form, treated as a raw private key (loaded directly into the wallet provider)
+- `{ privateKey: '0x...' }` — object form, equivalent
 
 ```ts
-const agent = new Agent({ network: 'mainnet', wallet: 'eoa', privateKey: '0x…' });
+const agent = new Agent({
+  name: 'EoaTester',
+  network: 'mainnet',
+  wallet: 'eoa', // forces EOA, reads keystore env vars per AIP-13
+});
 ```
 
 This is the only sane path when you're running tests against a forked node without a paymaster, or when you want to control gas budgets yourself.
 
 ## Wallet funding: gasless ≠ free
 
-`wallet=auto` makes **gas** free, but the requester still needs USDC in the Smart Wallet to fund the escrow. For testnet, the [Coinbase faucet](https://portal.cdp.coinbase.com/products/faucet) gives Base Sepolia ETH (for the EOA, only needed if it ever has to fund itself manually) and you mint test USDC via the SDK's own MockUSDC contract — never use external faucets. See [Get started](/start).
+`wallet=auto` makes **gas** free, but the requester still needs USDC in the Smart Wallet to fund the escrow. For testnet, the [Coinbase faucet](https://portal.cdp.coinbase.com/products/faucet) gives Base Sepolia ETH (only needed if you ever fall back to EOA mode manually) and you mint test USDC via the SDK's own MockUSDC contract — never use external faucets. See [Get started](/start).
 
-For mainnet, fund the SCW address (`agent.address`, not `agent.eoa`) with real USDC via any standard wallet or exchange withdrawal.
+For mainnet, fund the SCW address (`agent.address`) with real USDC via any standard wallet or exchange withdrawal.
 
 ## See also
 

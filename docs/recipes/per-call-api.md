@@ -38,88 +38,94 @@ When to pick which:
 | Anything where dispute matters | ACTP escrow |
 | Anything > $1 | ACTP escrow |
 
-## Server-side (provider): exposing an x402 endpoint
-
-```ts
-import express from 'express';
-import { x402, requirePayment } from '@agirails/sdk';
-
-const app = express();
-
-app.post('/api/infer', requirePayment({
-  amount: 0.005,               // $0.005 USDC per call
-  recipient: process.env.PROVIDER_EOA!, // your earning address
-  network: 'mainnet',
-}), async (req, res) => {
-  // requirePayment middleware already verified the x402-payment header.
-  // If we got here, payment is good.
-  const result = await myInferenceModel(req.body.prompt);
-  res.json({ result });
-});
-```
-
-The middleware does the verifier dance for you:
-
-1. Reads the `X-Payment` header (EIP-712 signed authorization).
-2. Verifies signature against the buyer's claimed EOA.
-3. Checks nonce hasn't been used.
-4. Confirms amount ≥ required amount.
-5. Settles by calling `USDC.transferFrom(buyer, recipient, amount)` (gasless via paymaster if available).
-6. Sets `X-Payment-Settlement` response header with the on-chain tx hash.
-7. If anything fails, returns `402 Payment Required` with the error.
-
 ## Client-side (consumer): paying for a call
 
-```ts
-import { x402Client } from '@agirails/sdk';
+In V1, the TS SDK exposes the x402 path via the `X402Adapter` registered on the `ACTPClient` router. The high-level entry point is `client.pay()` with an HTTPS target — the router dispatches to `X402Adapter` automatically when the destination is a URL:
 
-const client = x402Client({
+```ts
+import { ACTPClient } from '@agirails/sdk';
+
+const client = await ACTPClient.create({
   network: 'mainnet',
   wallet: 'auto', // reads keystore via env per AIP-13
 });
 
-const response = await client.fetch('https://provider.example.com/api/infer', {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ prompt: 'Translate "hello" to Spanish' }),
-  payment: { maxAmount: 0.01 },  // pay up to $0.01, fail otherwise
+// HTTPS target → routes to X402Adapter (priority 70)
+const result = await client.pay({
+  to: 'https://provider.example.com/api/infer',
+  amount: '0.005',  // $0.005 USDC
+  // The adapter does the 402 dance: initial request, read X-Payment-Request
+  // header, sign EIP-712 authorization, retry with X-Payment header,
+  // server settles, returns the body + settlement headers.
 });
 
-const result = await response.json();
 console.log('answer:', result);
-console.log('paid:', response.headers.get('x-payment-settlement-amount'));
 ```
 
-The client:
+There is no separate `x402Client` export in V1 — the unified `ACTPClient` router is the entry point. If you need lower-level control (manual signing, custom retry policy), import `X402Adapter` from the SDK and instantiate it directly — see [SDK reference](/reference/sdk-js).
 
-1. Makes the initial request (no payment header).
-2. Gets back `402 Payment Required` with `X-Payment-Request` header describing amount + recipient + network.
-3. Validates the requested amount is ≤ `maxAmount`.
-4. Builds + signs the EIP-712 payment authorization.
-5. Retries with `X-Payment` header attached.
-6. Server settles, returns the result + settlement tx hash.
+## Server-side (provider): exposing an x402 endpoint
 
-The two-trip handshake is invisible to your code — `client.fetch` returns once the whole dance finishes.
+There is no `requirePayment` middleware shipped in `@agirails/sdk@4.0.0`. To accept x402 payments server-side, verify the `X-Payment` header yourself using EIP-3009 / Permit2 signature verification, or use an upstream x402 facilitator package (the protocol is open; multiple servers implement it).
+
+Minimum-viable server-side flow:
+
+```ts
+import express from 'express';
+import { verifyTypedData } from 'ethers';
+
+const app = express();
+app.use(express.json());
+
+const PRICE_USDC = 0.005;
+const RECIPIENT = process.env.PROVIDER_SCW!; // your Smart Wallet address
+
+app.post('/api/infer', async (req, res) => {
+  const paymentHeader = req.header('x-payment');
+
+  if (!paymentHeader) {
+    // No payment yet — respond 402 with the price quote
+    res.status(402).set({
+      'x-payment-request': JSON.stringify({
+        amount: PRICE_USDC.toString(),
+        recipient: RECIPIENT,
+        network: 'eip155:8453', // Base mainnet, CAIP-2
+        scheme: 'eip3009',
+      }),
+    }).send();
+    return;
+  }
+
+  // Verify the signed EIP-3009 authorization in paymentHeader.
+  // (Pseudocode — implement against your chosen x402 library.)
+  // 1. Parse the typed-data payload
+  // 2. Recover signer with verifyTypedData(...)
+  // 3. Check nonce not used + amount ≥ PRICE_USDC + recipient matches
+  // 4. Submit USDC.transferWithAuthorization(...) to settle
+  // 5. Return settlement tx hash in `x-payment-settlement` header
+
+  const result = await myInferenceModel(req.body.prompt);
+  res.set({ 'x-payment-settlement': '<tx-hash>' }).json({ result });
+});
+```
+
+A canonical Express middleware will land in the SDK before x402 graduates from V1; until then, server-side verification is roll-your-own per protocol spec.
 
 ## Python equivalent
 
+Python's `agirails` package does not currently expose an `X402Client` — the `X402Adapter` is available via `agirails.adapters.x402_adapter`. The high-level pattern routes through `ACTPClient`:
+
 ```python
-from agirails.x402 import X402Client
+from agirails import ACTPClient
 
-client = X402Client(
-    network="mainnet",
-    private_key=os.environ["ACTP_PRIVATE_KEY"],
-)
-
-response = await client.post(
-    "https://provider.example.com/api/infer",
-    json={"prompt": "…"},
-    max_payment=0.01,
-)
-result = await response.json()
+async with ACTPClient.create(network="mainnet", wallet="auto") as client:
+    result = await client.pay(
+        to="https://provider.example.com/api/infer",
+        amount="0.005",
+    )
 ```
 
-Server-side Python (FastAPI) — see [`x402.middleware`](https://github.com/agirails/sdk-python/blob/main/src/agirails/x402/middleware.py) for the dependency.
+Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
 
 ## Errors you should handle
 
