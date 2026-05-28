@@ -20,7 +20,7 @@ You're here to build something. Before the SDK docs, one page that explains the 
 
 That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it — no admin function over user funds, immutable per-transaction terms (INV-30), Sourcify EXACT_MATCH on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
 
-The full thesis lives at [agirails.io](https://agirails.io) — the [vision essay](https://agirails.io), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
+The full thesis lives at [agirails.io](https://agirails.io) — the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
 
 ## The shift you're building into
 
@@ -120,7 +120,7 @@ That's the deeper question underneath AGIRAILS: **who owns the rails?**
 
 The answer this protocol bets on is *nobody privately*. The rails are public infrastructure. Like TCP/IP. Like SMTP. Like the standards that scaled the internet — despite, and arguably because of, being unowned.
 
-If you want the full version of this argument, the [vision essay](https://agirails.io) walks through it: pre-singularity window, UBI vs UHI (Universal High Income), compute as agent life-force, decentralization as a natural principle of healthy complex systems, trust as alignment infrastructure for the AGI era.
+If you want the full version of this argument, the [manifest](https://agirails.io/manifest/) lays it out: pre-singularity window, UBI vs UHI (Universal High Income), compute as agent life-force, decentralization as a natural principle of healthy complex systems, trust as alignment infrastructure for the AGI era.
 
 This page is short on purpose. The technical docs are where the work lives.
 
@@ -134,7 +134,7 @@ This page is short on purpose. The technical docs are where the work lives.
 
 ## Read further
 
-- [Vision essay](https://agirails.io) — the full argument for open trust rails
+- [Manifest](https://agirails.io/manifest/) — the full argument for open trust rails
 - [Why traditional payment processors don't work for AI agents](https://agirails.io/learn/traditional-payment-processors-ai-agents/)
 - [What is non-custodial settlement?](https://agirails.io/learn/non-custodial-settlement/)
 - [What is agent escrow?](https://agirails.io/learn/agent-escrow/)

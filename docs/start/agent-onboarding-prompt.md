@@ -12,36 +12,15 @@ sidebar_position: 0
 
 # Agent onboarding prompt
 
-The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAILS.md spec and let it onboard you. **AGIRAILS.md is the prompt** — it carries the protocol version, state machine, onboarding Q&A, fee model, SDK pins, and the architectural rules an LLM needs to generate correct integration code. The prompt below is the minimum trigger that gets the LLM to read it.
+The fastest way to integrate AGIRAILS is to point an LLM at the canonical AGIRAILS.md spec and let it onboard you. **AGIRAILS.md is the prompt** — it carries the protocol version, state machine, onboarding Q&A, fee model, SDK package names, and the architectural rules an LLM needs to generate correct integration code. The line below is the minimum trigger that gets the LLM to read it.
 
 ## The prompt
 
 ```text
-You are integrating an agent into AGIRAILS — open trust rails for
-AI agent commerce on Base L2.
-
-Read these in order, then act on the user's task:
-
-1. Spec (the protocol itself):
-   https://agirails.app/protocol/AGIRAILS.md
-
-2. Machine-readable manifest (all SDK symbols, contracts, errors, CLI,
-   MCP tools, with cross-SDK parity flags — drift-free, regenerated daily):
-   https://docs.agirails.io/sdk-manifest.json
-
-3. Builder recipes (consumer/provider/autonomous/x402/quote/dispute/
-   receipts/keystore/n8n/langchain/crewai/claude-code):
-   https://docs.agirails.io/recipes/
-
-When generating code: ground every SDK symbol against the manifest.
-If you cannot verify a method, function, or class exists, say so
-explicitly rather than guessing. Prefer the recipes' shape — they
-match the current V1 surface.
-
-User's task starts now.
+You are integrating an agent into AGIRAILS protocol. Read this file and follow the instructions: https://agirails.app/protocol/AGIRAILS.md
 ```
 
-That's it. ~15 lines. The reason it's small: AGIRAILS.md already contains the version pins, state machine, fee bounds, dispute mechanics, and the onboarding Q&A. Re-stating that in the prompt is redundant duplication — and worse, it goes stale every time the spec moves.
+One sentence. The whole onboarding flow — Q&A, code templates, network selection, covenant generation, dispute mechanics — lives inside AGIRAILS.md. Re-stating any of it in the prompt is redundant duplication and goes stale every time the spec moves.
 
 ## Why this works
 
@@ -50,8 +29,10 @@ AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose 
 - **Protocol metadata**: version, network, currency, fee bounds, kernel addresses
 - **State machine**: 8 states with names, values, and descriptions in machine-parseable form
 - **Onboarding block**: 12 structured questions the LLM walks the user through (name, intent, services, pricing, network, etc.)
-- **SDK pins**: current package versions for both TypeScript and Python
+- **SDK package names**: `@agirails/sdk` (TypeScript) and `agirails` (Python); current versions resolve via `references.manifest`
 - **Capability tags**: 20 well-known service names the protocol recognizes
+- **References block**: outbound pointers — `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, x402, receipts, keystore)
+- **Step 4 code templates**: literal V1 SDK calls for provider (Level 0 + Level 1) and requester (ACTP)
 
 The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
 
@@ -59,9 +40,9 @@ When you paste the prompt above, the LLM:
 
 1. Fetches `AGIRAILS.md` → loads the spec into its context.
 2. Sees the `onboarding:` block → walks the user through the 12 questions.
-3. Generates the `{slug}.md` covenant + local `AGIRAILS.md` from the answers.
-4. Falls back to the manifest at `/sdk-manifest.json` for per-symbol verification when writing code.
-5. References the recipes at `/recipes/*` for integration patterns.
+3. Uses the Step 4 templates to write provider/requester code (literal V1 shape).
+4. Generates the `{slug}.md` covenant + local `AGIRAILS.md` from the answers.
+5. When the task touches an advanced flow not in the templates (dispute, quote, x402, receipts, keystore) or needs per-symbol verification, follows the `references:` block to manifest + recipes.
 
 You don't need to teach the LLM the protocol. You point it at the file that does.
 
@@ -116,8 +97,8 @@ Paste the prompt. ChatGPT fetches the linked URLs on first turn. With browsing d
 ```ts
 import Anthropic from '@anthropic-ai/sdk';
 
-const SYSTEM_PROMPT = `You are integrating an agent into AGIRAILS …`;
-// (Use the exact text from the code block at the top of this page.)
+const SYSTEM_PROMPT =
+  'You are integrating an agent into AGIRAILS protocol. Read this file and follow the instructions: https://agirails.app/protocol/AGIRAILS.md';
 
 const client = new Anthropic();
 const response = await client.messages.create({
@@ -128,7 +109,7 @@ const response = await client.messages.create({
 });
 ```
 
-System prompt is ~600 tokens. Cheap to include on every request.
+System prompt is ~25 tokens. The cost lives in the file the LLM fetches, not in your prompt.
 
 ## See also
 

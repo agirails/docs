@@ -3,7 +3,7 @@ slug: /reference/sdk-js
 title: "TypeScript SDK reference"
 description: "Auto-extracted surface of @agirails/sdk@4.0.0, organised by tier (Level 0 → Basic → Standard → Advanced)."
 schema_type: APIReference
-last_verified: 2026-05-27
+last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 0
 
 # TypeScript SDK reference
 
-**Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 173 · **Source**: `src/index.ts`
+**Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 283 · **Source**: `src/index.ts`
 
 <img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API — Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
@@ -23,8 +23,8 @@ The TypeScript SDK is tiered to match the depth of integration you need:
 
 | Tier | Symbols | When to use |
 |---|---|---|
-| **[Level 0 + Basic](/reference/sdk-js/basic)** | 11 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
-| **[Standard + Advanced](/reference/sdk-js/standard)** | 153 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
+| **[Level 0 + Basic](/reference/sdk-js/basic)** | 19 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
+| **[Standard + Advanced](/reference/sdk-js/standard)** | 255 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
 | _Internal_ | 9 | Not part of the public API contract; documented separately if at all |
 
 ## Quick orientation

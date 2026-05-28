@@ -59,7 +59,7 @@ The 2-cells aren't an editorial addition — they correspond to actual parallel 
 
 A separate exact *raw-visibility* supplement yields H¹ = 0 at every state after public-face completion. The two values together formalize the difference between what participants can **see** (on-chain, via public view functions) and what they can **verify** (after off-chain evidence resolves).
 
-## Honest scope — what the proof covers and what it doesn't
+## Scope — what the proof covers and what it doesn't
 
 The two sheaves answer **orthogonal** questions. A protocol can be structurally complete (H¹ = 0 on the state sheaf) yet participant-asymmetric (H¹ > 0 on the participant sheaf), with one party unable to verify what another knows. Trustlessness in the strict sense requires both.
 
@@ -79,7 +79,7 @@ What the proof does NOT claim:
 - It does not eliminate the need for off-chain information exchange in disputes. The participant sheaf quantifies exactly how much that gap is — and the answer is bounded, not arbitrary.
 - It does not certify any specific deployed contract. The proofs are about a YAML protocol specification (labelled "ACTP v2.7" in the paper); the model's fidelity to the deployed kernel is a separate empirical question addressed but not conflated with the proofs.
 
-This honesty is the point. *"Trustless"* gets used as a marketing word everywhere; here it has a definition, a method, a result, and a precisely-bounded scope.
+That precision is the point. *"Trustless"* gets used as a marketing word everywhere; here it has a definition, a method, a result, and a precisely-bounded scope.
 
 ## Reproducibility
 

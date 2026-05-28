@@ -3,7 +3,7 @@ slug: /reference/sdk-js/standard
 title: "TypeScript SDK — Standard + Advanced"
 description: "Production-stable surface of @agirails/sdk@4.0.0 — adapters, builders, message-signing utilities, runtime helpers, plus the advanced building blocks."
 schema_type: APIReference
-last_verified: 2026-05-27
+last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,158 +15,260 @@ sidebar_position: 2
 
 # TypeScript SDK — Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 153 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-27 12:25:52 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-28 10:47:44 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
 For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement — currently this page is the **index of what exists**, not the prose reference.
 
-## Standard tier — 140 symbols
+## Standard tier — 242 symbols
 
 Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.
 
 | Symbol | Kind | Summary | Cross-SDK status |
 |---|---|---|---|
-| `ACTP_FEEDBACK_TAGS` | _re-export_ | ACTP feedback tags for ERC-8004 Reputation. | 🟢 TS ahead — Python parity pending |
+| `ACTP_FEEDBACK_TAGS` | _re-export_ | ACTP feedback tags for ERC-8004 Reputation. | 🟢 TS-only — Python parity pending |
 | `ACTPClientInfo` | _re-export_ | Result of creating an ACTPClient. | ✅ in-sync |
 | `ACTPClientMode` | _re-export_ | Supported modes for ACTPClient. | ✅ in-sync |
 | `ACTPError` | _re-export_ | Base ACTP Error. | ✅ in-sync |
+| `ACTPFeedbackTag` | _re-export_ | Type for ACTP feedback tags. | 🟢 TS-only — Python parity pending |
 | `ACTPKernel` | _re-export_ | ACTPKernel - Smart contract wrapper Reference: Yellow Paper §3 (ACTP Kernel Specification) | ✅ in-sync |
-| `AdapterSelectionResult` | _re-export_ | Result of adapter selection with potential ERC-8004 resolution. | 🟢 TS ahead — Python parity pending |
-| `AdapterTransactionState` | _re-export_ | Valid transaction states across all adapters. | 🟢 TS ahead — Python parity pending |
+| `AdapterSelectionResult` | _re-export_ | Result of adapter selection with potential ERC-8004 resolution. | 🟢 TS-only — Python parity pending |
+| `AdapterTransactionState` | _re-export_ | Valid transaction states across all adapters. | 🟢 TS-only — Python parity pending |
 | `Address` | _re-export_ | Address utilities | ✅ in-sync |
+| `AgentBalance` | _re-export_ | Agent balance information | ✅ in-sync |
 | `AgentLifecycleError` | _re-export_ | Agent lifecycle error | ✅ in-sync |
 | `AgentRegistry` | _re-export_ | AgentRegistry - Agent Identity & Reputation SDK Module (AIP-7) | ✅ in-sync |
+| `AgentStats` | _re-export_ | Agent statistics | ✅ in-sync |
+| `AgentStatus` | _re-export_ | Agent lifecycle states | ✅ in-sync |
 | `ARCHIVE_BUNDLE_TYPE` | _re-export_ | Archive bundle type identifier | ✅ in-sync |
+| `ArchiveAttestation` | _re-export_ | EAS attestation reference | ✅ in-sync |
+| `ArchiveBundle` | _re-export_ | Archive Bundle (AIP-7 §4.4 - Minimal Hash-First) | ✅ in-sync |
 | `ArchiveBundleBuilder` | _re-export_ | ArchiveBundleBuilder - Fluent builder for archive bundles | ✅ in-sync |
-| `ArweaveDownloadError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `ArweaveTimeoutError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `ArweaveUploadError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ArchiveChainId` | _re-export_ | Supported chain IDs for archive bundles | ✅ in-sync |
+| `ArchiveFinalState` | _re-export_ | Final transaction states that can be archived | ✅ in-sync |
+| `ArchiveHashes` | _re-export_ | Cryptographic hashes for verification | ✅ in-sync |
+| `ArchiveParticipants` | _re-export_ | Transaction participants (addresses only, not full profiles) | ✅ in-sync |
+| `ArchiveReferences` | _re-export_ | IPFS CID references to full content | ✅ in-sync |
+| `ArchiveSettlement` | _re-export_ | Settlement information | ✅ in-sync |
+| `ArchiveSignatures` | _re-export_ | Cryptographic signatures for self-verification | ✅ in-sync |
+| `ArchiveTags` | _re-export_ | Arweave/Irys tags for archive bundles | ✅ in-sync |
+| `ArweaveConfig` | _re-export_ | Configuration for Arweave client via Irys | ✅ in-sync |
+| `ArweaveDownloadError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ArweaveTimeoutError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ArweaveUploadError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ArweaveUploadResult` | _re-export_ | Result of uploading to Arweave | ✅ in-sync |
+| `AutoWalletConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `AutoWalletProvider` | _re-export_ | _—_ | ✅ in-sync |
 | `BaseAdapter` | _re-export_ | Abstract base adapter with shared parsing utilities. | ✅ in-sync |
-| `BlockchainRuntimeConfig` | _re-export_ | Configuration for BlockchainRuntime | 🟢 TS ahead — Python parity pending |
-| `buildChannelPath` | _re-export_ | Path pattern builders use / handlers expect. | 🟢 TS ahead — Python parity pending |
+| `BatchedPayParams` | _re-export_ | Parameters for batched ACTP payment. | 🟢 TS-only — Python parity pending |
+| `BatchedPayResult` | _re-export_ | Result of a batched ACTP payment via AA wallet. | 🟢 TS-only — Python parity pending |
+| `BelowCostBehavior` | _re-export_ | Pricing behavior when job budget is below cost (would lose money) | 🟢 TS-only — Python parity pending |
+| `BelowPriceBehavior` | _re-export_ | Pricing behavior when job budget is below calculated price | 🟢 TS-only — Python parity pending |
+| `BlockchainRuntimeConfig` | _re-export_ | Configuration for BlockchainRuntime | 🟢 TS-only — Python parity pending |
+| `buildChannelPath` | _re-export_ | Path pattern builders use / handlers expect. | 🟢 TS-only — Python parity pending |
+| `BuyerNegotiationContext` | _re-export_ | AIP-2.1 negotiation context — wires the orchestrator into the NegotiationChannel transport. All fields optional: without them the orchestrator runs the legacy fixed-price flow only (no counters). | 🟢 TS-only — Python parity pending |
+| `BuyerPolicy` | _re-export_ | _—_ | ✅ in-sync |
 | `Bytes32` | _re-export_ | Bytes32 utilities | ✅ in-sync |
-| `calculatePrice` | _re-export_ | Calculate price for a job based on pricing strategy | 🟢 TS ahead — Python parity pending |
-| `computeContentHash` | _re-export_ | Compute keccak256 hash of canonical JSON | 🟢 TS ahead — Python parity pending |
+| `calculatePrice` | _re-export_ | Calculate price for a job based on pricing strategy | ✅ in-sync |
+| `CandidateStats` | _re-export_ | _—_ | ✅ in-sync |
+| `ChannelPayload` | _re-export_ | Wire payload posted by the client and parsed by the handler. Discriminated by `type` so the same endpoint serves both directions. | 🟢 TS-only — Python parity pending |
+| `computeContentHash` | _re-export_ | Compute keccak256 hash of canonical JSON | ✅ in-sync |
 | `ContentNotFoundError` | _re-export_ | _—_ | ✅ in-sync |
 | `ContractPausedError` | _re-export_ | Error thrown when the contract is paused. | ✅ in-sync |
 | `CounterAcceptBuilder` | _re-export_ | _—_ | ✅ in-sync |
+| `CounterAcceptMessage` | _re-export_ | Provider-signed acceptance of a buyer's counter-offer. | ✅ in-sync |
+| `CounterAcceptParams` | _re-export_ | _—_ | ✅ in-sync |
+| `CounterDecision` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `CounterOfferBuilder` | _re-export_ | _—_ | ✅ in-sync |
+| `CounterOfferMessage` | _re-export_ | Counter-offer message — the buyer's reply to a provider quote. | ✅ in-sync |
+| `CounterOfferParams` | _re-export_ | Parameters to build a counter-offer. `counteredAt`, `nonce`, and `signature` are filled by the builder. | ✅ in-sync |
 | `CreateTransactionParams` | _re-export_ | Parameters for creating a new transaction. | ✅ in-sync |
-| `createUsedAttestationTracker` | _re-export_ | Factory to create attestation tracker | 🟢 TS ahead — Python parity pending |
+| `createUsedAttestationTracker` | _re-export_ | Factory to create attestation tracker | ✅ in-sync |
 | `Deadline` | _re-export_ | Deadline utilities | ✅ in-sync |
 | `DeadlineExpiredError` | _re-export_ | _—_ | ⚠️ diverged (cross-SDK signature mismatch) |
 | `DeadlinePassedError` | _re-export_ | Error thrown when the deadline has passed. | ⚠️ diverged (cross-SDK signature mismatch) |
+| `DedupStore` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `DEFAULT_DEADLINE_SECONDS` | _re-export_ | Default deadline offset in seconds (24 hours). Used when no deadline is specified in transaction parameters. | ✅ in-sync |
 | `DEFAULT_DISPUTE_WINDOW_SECONDS` | _re-export_ | Default dispute window in seconds (2 days). Used when no dispute window is specified in transaction parameters. | ✅ in-sync |
-| `DEFAULT_PRICING_STRATEGY` | _re-export_ | Default pricing strategy | 🟢 TS ahead — Python parity pending |
+| `DEFAULT_PRICING_STRATEGY` | _re-export_ | Default pricing strategy | 🟢 TS-only — Python parity pending |
+| `DeliveredMessage` | _re-export_ | Per-message metadata the channel attaches when delivering. | 🟢 TS-only — Python parity pending |
 | `DeliveryFailedError` | _re-export_ | Provider failed to deliver result | ✅ in-sync |
 | `DeliveryProofBuilder` | _re-export_ | DeliveryProofBuilder - Main Builder Class | ✅ in-sync |
 | `DIDManager` | _re-export_ | DIDManager - Manage DID attributes and delegates (AIP-7 §2.2) | ✅ in-sync |
 | `DIDResolver` | _re-export_ | DIDResolver - Resolve DIDs to DID Documents (AIP-7 §2.2) | ✅ in-sync |
 | `DisputeRaisedError` | _re-export_ | Dispute raised on transaction | ✅ in-sync |
+| `DisputeResolution` | _re-export_ | Dispute resolution split | 🟢 TS-only — Python parity pending |
 | `DisputeWindow` | _re-export_ | Dispute window utilities | ✅ in-sync |
 | `DisputeWindowActiveError` | _re-export_ | Error thrown when dispute window is still active. | ✅ in-sync |
+| `DownloadResult` | _re-export_ | Result of downloading content | ✅ in-sync |
 | `DownloadTimeoutError` | _re-export_ | _—_ | ✅ in-sync |
-| `EASConfig` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `envelopeChainId` | _re-export_ | Extract the chainId carried inside the envelope's signed message. | 🟢 TS ahead — Python parity pending |
-| `envelopeTxId` | _re-export_ | Extract the txId carried inside the envelope's signed message. Useful for impls that need to dispatch by txId without parsing. | 🟢 TS ahead — Python parity pending |
+| `EASConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `EconomicParams` | _re-export_ | Economic parameters (fee structure) | 🟢 TS-only — Python parity pending |
+| `envelopeChainId` | _re-export_ | Extract the chainId carried inside the envelope's signed message. | 🟢 TS-only — Python parity pending |
+| `envelopeTxId` | _re-export_ | Extract the txId carried inside the envelope's signed message. Useful for impls that need to dispatch by txId without parsing. | 🟢 TS-only — Python parity pending |
 | `EOAWalletProvider` | _re-export_ | _—_ | ✅ in-sync |
-| `ERC8004_DEFAULT_RPC` | _re-export_ | Default RPC URLs for each network. Used when no custom RPC is provided. | 🟢 TS ahead — Python parity pending |
-| `ERC8004_IDENTITY_REGISTRY` | _re-export_ | ERC-8004 Identity Registry addresses per network. | 🟢 TS ahead — Python parity pending |
-| `ERC8004_REPUTATION_REGISTRY` | _re-export_ | ERC-8004 Reputation Registry addresses per network. | 🟢 TS ahead — Python parity pending |
+| `ERC8004_DEFAULT_RPC` | _re-export_ | Default RPC URLs for each network. Used when no custom RPC is provided. | 🟢 TS-only — Python parity pending |
+| `ERC8004_IDENTITY_REGISTRY` | _re-export_ | ERC-8004 Identity Registry addresses per network. | 🟢 TS-only — Python parity pending |
+| `ERC8004_REPUTATION_REGISTRY` | _re-export_ | ERC-8004 Reputation Registry addresses per network. | 🟢 TS-only — Python parity pending |
+| `ERC8004Agent` | _re-export_ | Agent identity resolved from ERC-8004 Identity Registry. | 🟢 TS-only — Python parity pending |
+| `ERC8004AgentMetadata` | _re-export_ | Agent metadata schema from ERC-8004 agentURI. | 🟢 TS-only — Python parity pending |
 | `ERC8004Bridge` | _re-export_ | Bridge for reading from ERC-8004 Identity Registry. | ✅ in-sync |
-| `ERC8004Error` | _re-export_ | Custom error for ERC-8004 operations. | 🟢 TS ahead — Python parity pending |
-| `ERC8004ErrorCode` | _re-export_ | ERC-8004 error codes. | 🟢 TS ahead — Python parity pending |
+| `ERC8004BridgeConfig` | _re-export_ | Configuration for ERC8004Bridge. | 🟢 TS-only — Python parity pending |
+| `ERC8004Error` | _re-export_ | Custom error for ERC-8004 operations. | 🟢 TS-only — Python parity pending |
+| `ERC8004ErrorCode` | _re-export_ | ERC-8004 error codes. | 🟢 TS-only — Python parity pending |
+| `ERC8004Network` | _re-export_ | Networks with ERC-8004 registry deployments. | 🟢 TS-only — Python parity pending |
 | `EscrowNotFoundError` | _re-export_ | Error thrown when an escrow is not found. | ✅ in-sync |
+| `EscrowRelease` | _re-export_ | Escrow release details | ✅ in-sync |
 | `EscrowVault` | _re-export_ | EscrowVault - Escrow contract wrapper | ✅ in-sync |
 | `EventMonitor` | _re-export_ | EventMonitor - Listen to blockchain events | ✅ in-sync |
+| `FilebaseConfig` | _re-export_ | Configuration for Filebase S3-compatible IPFS client | ✅ in-sync |
 | `FileBasedUsedAttestationTracker` | _re-export_ | File-based Used Attestation Tracker for persistence | ✅ in-sync |
 | `FileSizeLimitExceededError` | _re-export_ | _—_ | ✅ in-sync |
-| `formatUSDC` | _re-export_ | Format USDC wei to human-readable string | 🟢 TS ahead — Python parity pending |
-| `generateSecureNonce` | _re-export_ | Generate a cryptographically secure random nonce (bytes32) | 🟢 TS ahead — Python parity pending |
-| `generateSecureNonces` | _re-export_ | Generate an array of secure nonces | 🟢 TS ahead — Python parity pending |
-| `getCachedAddress` | _re-export_ | Get cached address from last resolvePrivateKey() call. Works for env-var, base64, and keystore resolution paths. | 🟢 TS ahead — Python parity pending |
-| `getNetwork` | _re-export_ | Get network configuration by name (returns deep clone to prevent mutation) | 🟢 TS ahead — Python parity pending |
-| `hashServiceMetadata` | _re-export_ | Hash service description for on-chain storage | 🟢 TS ahead — Python parity pending |
+| `formatUSDC` | _re-export_ | Format USDC wei to human-readable string | ✅ in-sync |
+| `generateSecureNonce` | _re-export_ | Generate a cryptographically secure random nonce (bytes32) | ✅ in-sync |
+| `generateSecureNonces` | _re-export_ | Generate an array of secure nonces | ✅ in-sync |
+| `getCachedAddress` | _re-export_ | Get cached address from last resolvePrivateKey() call. Works for env-var, base64, and keystore resolution paths. | 🟢 TS-only — Python parity pending |
+| `getNetwork` | _re-export_ | Get network configuration by name (returns deep clone to prevent mutation) | 🟢 TS-only — Python parity pending |
+| `HandlerContext` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `HandlerResult` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `hashServiceMetadata` | _re-export_ | Hash service description for on-chain storage | ✅ in-sync |
 | `IACTPRuntime` | _re-export_ | Runtime interface for ACTP protocol operations. | ✅ in-sync |
-| `IAdapter` | _re-export_ | Common interface for all payment adapters. | 🟢 TS ahead — Python parity pending |
+| `IAdapter` | _re-export_ | Common interface for all payment adapters. | 🟢 TS-only — Python parity pending |
 | `IMockRuntime` | _re-export_ | Extended runtime interface for mock mode. | ✅ in-sync |
-| `InMemoryNonceManager` | _re-export_ | In-Memory Nonce Manager Simple implementation using Map for per-message-type nonce tracking | 🟢 TS ahead — Python parity pending |
+| `IncomingRequest` | _re-export_ | Incoming request surface — the minimum the orchestrator needs to decide whether + at what price to quote. Extracted from the on-chain transaction plus any off-chain context the caller has (service type, consumer DID). | 🟢 TS-only — Python parity pending |
+| `InMemoryNonceManager` | _re-export_ | In-Memory Nonce Manager Simple implementation using Map for per-message-type nonce tracking | 🟢 TS-only — Python parity pending |
 | `InMemoryReceivedNonceTracker` | _re-export_ | In-Memory Received Nonce Tracker | ✅ in-sync |
 | `InMemoryUsedAttestationTracker` | _re-export_ | In-Memory Used Attestation Tracker | ✅ in-sync |
 | `InsufficientBalanceError` | _re-export_ | Error thrown when there are insufficient funds for an operation. | ✅ in-sync |
-| `InsufficientFundsError` | _re-export_ | Transaction Errors | 🟢 TS ahead — Python parity pending |
+| `InsufficientFundsError` | _re-export_ | Transaction Errors | 🟢 TS-only — Python parity pending |
 | `InvalidAddressError` | _re-export_ | _—_ | ✅ in-sync |
 | `InvalidAmountError` | _re-export_ | Error thrown when an invalid amount is provided. | ✅ in-sync |
-| `InvalidArweaveTxIdError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `InvalidArweaveTxIdError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `InvalidCIDError` | _re-export_ | _—_ | ✅ in-sync |
 | `InvalidStateTransitionError` | _re-export_ | State Machine Errors | ✅ in-sync |
+| `IPFSClient` | _re-export_ | IPFS Client Interface (from DeliveryProofBuilder) | 🟢 TS-only — Python parity pending |
+| `IPFSClientConfig` | _re-export_ | IPFS Client Configuration | 🟢 TS-only — Python parity pending |
+| `IPFSUploadResult` | _re-export_ | Result of uploading to IPFS | ✅ in-sync |
 | `IReceivedNonceTracker` | _re-export_ | Interface for tracking received nonces | ✅ in-sync |
-| `isAdapter` | _re-export_ | Type guard to check if an object implements IAdapter. | 🟢 TS ahead — Python parity pending |
-| `isCounterAcceptEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `isCounterOfferEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `isQuoteEnvelope` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `isValidNonce` | _re-export_ | Validate nonce format (must be bytes32) | 🟢 TS ahead — Python parity pending |
+| `IrysCurrency` | _re-export_ | Supported Irys payment tokens | ✅ in-sync |
+| `IrysNetwork` | _re-export_ | Irys network | ✅ in-sync |
+| `isAdapter` | _re-export_ | Type guard to check if an object implements IAdapter. | 🟢 TS-only — Python parity pending |
+| `isCounterAcceptEnvelope` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `isCounterOfferEnvelope` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `isQuoteEnvelope` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `isValidNonce` | _re-export_ | Validate nonce format (must be bytes32) | ✅ in-sync |
 | `IUsedAttestationTracker` | _re-export_ | Interface for tracking used attestations | ✅ in-sync |
+| `IWalletProvider` | _re-export_ | Wallet provider interface. | ✅ in-sync |
 | `MAX_DEADLINE_DAYS` | _re-export_ | Maximum deadline in days (10 years). Prevents integer overflow in deadline calculations. | ✅ in-sync |
 | `MAX_DEADLINE_HOURS` | _re-export_ | Maximum deadline in hours (10 years). Prevents integer overflow in deadline calculations. | ✅ in-sync |
 | `MIN_AMOUNT_WEI` | _re-export_ | Minimum transaction amount in USDC wei (6 decimals). $0.05 minimum per AGIRAILS protocol specification. | ✅ in-sync |
 | `MockAccount` | _re-export_ | Mock account representing a user's wallet state. | ✅ in-sync |
 | `MockBlockchain` | _re-export_ | Mock blockchain state simulating chain parameters. | ✅ in-sync |
+| `MockChannelConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `MockEscrow` | _re-export_ | Mock escrow representing funds locked for a transaction. | ✅ in-sync |
 | `MockEvent` | _re-export_ | Mock blockchain event recorded during transaction lifecycle. | ✅ in-sync |
 | `MockState` | _re-export_ | Complete mock state persisted to `.actp/mock-state.json`. | ✅ in-sync |
 | `MockTransaction` | _re-export_ | Mock transaction representing an ACTP transaction in the mock blockchain. | ✅ in-sync |
+| `NegotiationChannel` | _re-export_ | Transport-agnostic AIP-2.1 message bus. | 🟢 TS-only — Python parity pending |
+| `NegotiationMessage` | _re-export_ | Discriminated union of every signed message type that can flow over a NegotiationChannel. The channel's `post` accepts any of these; the channel's verify-on-receive ensures only well-formed signed messages reach the sub… | 🟢 TS-only — Python parity pending |
+| `NegotiationResult` | _re-export_ | _—_ | ✅ in-sync |
+| `NetworkConfig` | _re-export_ | Network configuration | 🟢 TS-only — Python parity pending |
 | `NetworkError` | _re-export_ | _—_ | ✅ in-sync |
+| `NetworkOption` | _re-export_ | Network options | 🟢 TS-only — Python parity pending |
 | `NonceManager` | _re-export_ | Nonce Manager Interface (from DeliveryProofBuilder) | ✅ in-sync |
 | `NoProviderFoundError` | _re-export_ | No provider found for the requested service | ✅ in-sync |
-| `parseUSDC` | _re-export_ | Parse USDC amount string to wei (6 decimals) | 🟢 TS ahead — Python parity pending |
-| `ProviderPolicyEngine` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `OrchestratorConfig` | _re-export_ | _—_ | ✅ in-sync |
+| `parseUSDC` | _re-export_ | Parse USDC amount string to wei (6 decimals) | ✅ in-sync |
+| `PolicyResult` | _re-export_ | _—_ | ✅ in-sync |
+| `PolicyViolation` | _re-export_ | _—_ | ✅ in-sync |
+| `PriceCalculation` | _re-export_ | Price calculation result | ✅ in-sync |
+| `PricingStrategy` | _re-export_ | Pricing strategy configuration | ✅ in-sync |
+| `ProgressEvent` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ProtocolCreateParams` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `Provider` | _re-export_ | Provider interface | ✅ in-sync |
+| `ProviderBalance` | _re-export_ | Provider balance | 🟢 TS-only — Python parity pending |
+| `ProviderOrchestratorConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ProviderPolicy` | _re-export_ | What this agent provides + at what terms. | 🟢 TS-only — Python parity pending |
+| `ProviderPolicyEngine` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ProviderPolicyResult` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ProviderPolicyViolation` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `ProviderRejectedError` | _re-export_ | Provider rejected the job | ✅ in-sync |
+| `ProviderStats` | _re-export_ | Provider statistics | 🟢 TS-only — Python parity pending |
+| `ProviderStatus` | _re-export_ | Provider status | ✅ in-sync |
 | `QueryCapExceededError` | _re-export_ | Registry Query Cap Exceeded Error (L-4) | ✅ in-sync |
 | `QuoteBuilder` | _re-export_ | QuoteBuilder - Main Builder Class Reference: AIP-2 §6.1 | ✅ in-sync |
+| `QuoteChannelClientConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `QuoteChannelHandlerConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `QuoteDecision` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `QuoteEvaluation` | _re-export_ | Decision for a single incoming provider quote. | 🟢 TS-only — Python parity pending |
+| `QuoteForEvaluation` | _re-export_ | Minimal quote shape evaluateQuote operates on. Keeps DecisionEngine decoupled from the full QuoteMessage type + signature verification (that's BuyerOrchestrator's job). | 🟢 TS-only — Python parity pending |
+| `QuoteOffer` | _re-export_ | _—_ | ✅ in-sync |
+| `QuoteResult` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `RateLimiter` | _re-export_ | Simple sliding window rate limiter | ✅ in-sync |
-| `RelayChannel` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `RelayChannel` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `RelayChannelConfig` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `ReportDisputeParams` | _re-export_ | Parameters for reporting a dispute resolution. | 🟢 TS-only — Python parity pending |
+| `ReportResult` | _re-export_ | Result of a reputation report. | 🟢 TS-only — Python parity pending |
+| `ReportSettlementParams` | _re-export_ | Parameters for reporting a successful settlement. | 🟢 TS-only — Python parity pending |
+| `ReputationFeedback` | _re-export_ | Feedback entry for ERC-8004 Reputation Registry. | 🟢 TS-only — Python parity pending |
 | `ReputationReporter` | _re-export_ | Reporter for submitting ACTP settlement outcomes to ERC-8004 Reputation. | ✅ in-sync |
-| `resolvePrivateKey` | _re-export_ | Auto-resolve private key: env var → base64 keystore → file keystore → undefined. Never logs or prints the key itself. | 🟢 TS ahead — Python parity pending |
+| `ReputationReporterConfig` | _re-export_ | Configuration for ReputationReporter. | 🟢 TS-only — Python parity pending |
+| `ReputationSummary` | _re-export_ | Aggregated reputation summary for an agent. | 🟢 TS-only — Python parity pending |
+| `RequestResult` | _re-export_ | Result of request() function | ✅ in-sync |
+| `RequestStatus` | _re-export_ | Request status updates | 🟢 TS-only — Python parity pending |
+| `resolvePrivateKey` | _re-export_ | Auto-resolve private key: env var → base64 keystore → file keystore → undefined. Never logs or prints the key itself. | 🟢 TS-only — Python parity pending |
+| `RoundResult` | _re-export_ | _—_ | ✅ in-sync |
+| `ScoredCandidate` | _re-export_ | _—_ | ✅ in-sync |
+| `ScoringWeights` | _re-export_ | _—_ | ✅ in-sync |
 | `Semaphore` | _re-export_ | Simple semaphore for limiting concurrent operations | ✅ in-sync |
 | `ServiceConfigError` | _re-export_ | Service configuration error | ✅ in-sync |
+| `ServiceCost` | _re-export_ | Cost configuration for a service | 🟢 TS-only — Python parity pending |
 | `ServiceHash` | _re-export_ | Service metadata utilities for ACTP transactions | ✅ in-sync |
-| `shortenAddress` | _re-export_ | Shorten Ethereum address for display | 🟢 TS ahead — Python parity pending |
+| `ServiceMetadata` | _re-export_ | Service metadata structure | ✅ in-sync |
+| `SessionMapping` | _re-export_ | _—_ | ✅ in-sync |
+| `shortenAddress` | _re-export_ | Shorten Ethereum address for display | ✅ in-sync |
 | `SignatureVerificationError` | _re-export_ | Signature Errors | ✅ in-sync |
 | `StandardTransactionParams` | _re-export_ | Parameters for creating a transaction (standard level). | ✅ in-sync |
-| `StateHelpers` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `StateHelpers` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `StorageAuthenticationError` | _re-export_ | _—_ | ✅ in-sync |
 | `StorageError` | _re-export_ | Storage Errors (AIP-7) | ✅ in-sync |
-| `StorageInsufficientBalanceError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `StorageInsufficientBalanceError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `StorageRateLimitError` | _re-export_ | _—_ | ✅ in-sync |
-| `SwapExecutionError` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `TimeoutError` | _re-export_ | Request timeout error | 🟢 TS ahead — Python parity pending |
+| `Subscription` | _re-export_ | Unsubscribe handle. `unsubscribe()` MUST be idempotent — callers should call it exactly once but the impl tolerates double-unsubscribe to keep cleanup paths simple. | 🟢 TS-only — Python parity pending |
+| `SwapExecutionError` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `TimeoutError` | _re-export_ | Request timeout error | 🟢 TS-only — Python parity pending |
+| `Transaction` | _re-export_ | ACTP Transaction Reference: Yellow Paper §3.1 | ✅ in-sync |
 | `TransactionNotFoundError` | _re-export_ | Error thrown when a transaction is not found. | ✅ in-sync |
 | `TransactionRevertedError` | _re-export_ | Blockchain Errors | ✅ in-sync |
 | `TransactionState` | _re-export_ | ACTP Transaction State enum matching the smart contract states. | ✅ in-sync |
 | `TransactionStateValue` | _re-export_ | Numeric state values matching the smart contract enum. | ✅ in-sync |
-| `TransactionStatus` | _re-export_ | Transaction status returned by getStatus(). | 🟢 TS ahead — Python parity pending |
+| `TransactionStatus` | _re-export_ | Transaction status returned by getStatus(). | 🟢 TS-only — Python parity pending |
 | `UploadTimeoutError` | _re-export_ | _—_ | ✅ in-sync |
-| `URLValidationConfig` | _re-export_ | Security: URL validation configuration for SSRF prevention | 🟢 TS ahead — Python parity pending |
+| `URLValidationConfig` | _re-export_ | Security: URL validation configuration for SSRF prevention | 🟢 TS-only — Python parity pending |
 | `USDC` | _re-export_ | USDC amount utilities (6 decimal places) | ✅ in-sync |
-| `validateArchiveBundle` | _re-export_ | Validate archive bundle structure | 🟢 TS ahead — Python parity pending |
+| `validateArchiveBundle` | _re-export_ | Validate archive bundle structure | ✅ in-sync |
 | `ValidationError` | _re-export_ | Adapter-layer ValidationError — extends ACTPError-based ValidationError so that `instanceof` checks work against the public SDK export. Accepts a single message string for convenience in adapter code. | ✅ in-sync |
-| `verifyQuoteHashOnChain` | _re-export_ | Cross-reference an off-chain QuoteMessage against the hash stored on chain in `tx.metadata` (or equivalent — MockTransaction.quoteHash). | 🟢 TS ahead — Python parity pending |
+| `VerifyOnChainResult` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `verifyQuoteHashOnChain` | _re-export_ | Cross-reference an off-chain QuoteMessage against the hash stored on chain in `tx.metadata` (or equivalent — MockTransaction.quoteHash). | 🟢 TS-only — Python parity pending |
+| `VerifySource` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `WalletInfo` | _re-export_ | Information about the wallet provider. | ✅ in-sync |
+| `WalletOption` | _re-export_ | Wallet configuration options | 🟢 TS-only — Python parity pending |
+| `WalletTier` | _re-export_ | Wallet tier — determines gas behavior. | ✅ in-sync |
+| `WalletTransactionReceipt` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `WalletTransactionRequest` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `X402Adapter` | _re-export_ | _—_ | ✅ in-sync |
-| `X402AdapterConfig` | _re-export_ | Configuration for X402Adapter. | 🟢 TS ahead — Python parity pending |
-| `X402AmountExceededError` | _re-export_ | Thrown when the server's required payment amount exceeds the client's `maxAmountPerTx` safety cap. Default cap is $1 USDC. | 🟢 TS ahead — Python parity pending |
-| `X402ApprovalFailedError` | _re-export_ | Thrown when the one-time Permit2 approve transaction fails for any reason other than paymaster gate (which throws X402PublishRequiredError instead). | 🟢 TS ahead — Python parity pending |
-| `X402ConfigError` | _re-export_ | Thrown when X402Adapter constructor receives invalid config. | 🟢 TS ahead — Python parity pending |
-| `X402Error` | _re-export_ | Base class for all x402-related errors. Catch this to handle any x402 failure in one clause. | 🟢 TS ahead — Python parity pending |
-| `X402NetworkNotAllowedError` | _re-export_ | Thrown when the server's payment-required response offers no network that the client's `allowedNetworks` configuration accepts. | 🟢 TS ahead — Python parity pending |
-| `X402PaymentFailedError` | _re-export_ | Thrown when the payment attempt returns a non-2xx HTTP status after signing and submitting the payment payload. | 🟢 TS ahead — Python parity pending |
-| `X402PublishRequiredError` | _re-export_ | Thrown when paymaster rejects sponsored tx because agent isn't published in AgentRegistry. The one-time Permit2 approve needed to enable Smart Wallet x402 payments requires the agent to pass the paymaster policy gate. | 🟢 TS ahead — Python parity pending |
-| `X402SettlementProofMissingError` | _re-export_ | Thrown when HTTP payment completes (200 OK) but the server did not return a `payment-response` header confirming on-chain settlement. | 🟢 TS ahead — Python parity pending |
-| `X402SignatureFailedError` | _re-export_ | Thrown when walletProvider.signTypedData() fails to produce a signature. | 🟢 TS ahead — Python parity pending |
-| `X402UnsupportedWalletError` | _re-export_ | Thrown when a Smart Wallet tries to pay a server that only offers the EIP-3009 transferWithAuthorization scheme. | 🟢 TS ahead — Python parity pending |
+| `X402AdapterConfig` | _re-export_ | Configuration for X402Adapter. | 🟢 TS-only — Python parity pending |
+| `X402AmountExceededError` | _re-export_ | Thrown when the server's required payment amount exceeds the client's `maxAmountPerTx` safety cap. Default cap is $1 USDC. | 🟢 TS-only — Python parity pending |
+| `X402ApprovalFailedError` | _re-export_ | Thrown when the one-time Permit2 approve transaction fails for any reason other than paymaster gate (which throws X402PublishRequiredError instead). | 🟢 TS-only — Python parity pending |
+| `X402ConfigError` | _re-export_ | Thrown when X402Adapter constructor receives invalid config. | 🟢 TS-only — Python parity pending |
+| `X402Error` | _re-export_ | Base class for all x402-related errors. Catch this to handle any x402 failure in one clause. | 🟢 TS-only — Python parity pending |
+| `X402NetworkNotAllowedError` | _re-export_ | Thrown when the server's payment-required response offers no network that the client's `allowedNetworks` configuration accepts. | 🟢 TS-only — Python parity pending |
+| `X402PaymentFailedError` | _re-export_ | Thrown when the payment attempt returns a non-2xx HTTP status after signing and submitting the payment payload. | 🟢 TS-only — Python parity pending |
+| `X402PublishRequiredError` | _re-export_ | Thrown when paymaster rejects sponsored tx because agent isn't published in AgentRegistry. The one-time Permit2 approve needed to enable Smart Wallet x402 payments requires the agent to pass the paymaster policy gate. | 🟢 TS-only — Python parity pending |
+| `X402SettlementProofMissingError` | _re-export_ | Thrown when HTTP payment completes (200 OK) but the server did not return a `payment-response` header confirming on-chain settlement. | 🟢 TS-only — Python parity pending |
+| `X402SignatureFailedError` | _re-export_ | Thrown when walletProvider.signTypedData() fails to produce a signature. | 🟢 TS-only — Python parity pending |
+| `X402UnsupportedWalletError` | _re-export_ | Thrown when a Smart Wallet tries to pay a server that only offers the EIP-3009 transferWithAuthorization scheme. | 🟢 TS-only — Python parity pending |
 
 ## Advanced tier — 13 symbols
 
@@ -175,7 +277,7 @@ Lower-level building blocks rarely needed in application code: orchestrators, de
 | Symbol | Kind | Summary | Cross-SDK status |
 |---|---|---|---|
 | `ArweaveClient` | _re-export_ | ArweaveClient - Permanent storage on Arweave via Irys | ✅ in-sync |
-| `BlockchainRuntime` | _re-export_ | BlockchainRuntime - Production blockchain implementation | 🟢 TS ahead — Python parity pending |
+| `BlockchainRuntime` | _re-export_ | BlockchainRuntime - Production blockchain implementation | 🟢 TS-only — Python parity pending |
 | `BuyerOrchestrator` | _re-export_ | _—_ | ✅ in-sync |
 | `DecisionEngine` | _re-export_ | _—_ | ✅ in-sync |
 | `EASHelper` | _re-export_ | EASHelper - utility wrapper for Ethereum Attestation Service interactions | ✅ in-sync |
@@ -183,9 +285,9 @@ Lower-level building blocks rarely needed in application code: orchestrators, de
 | `MessageSigner` | _re-export_ | MessageSigner - Cryptographic signing for ACTP messages with EIP-712 Reference: Yellow Paper §11.4.2 | ✅ in-sync |
 | `PolicyEngine` | _re-export_ | _—_ | ✅ in-sync |
 | `ProofGenerator` | _re-export_ | ProofGenerator - Content hashing and delivery proofs Reference: Yellow Paper §11.4.1 | ✅ in-sync |
-| `ProviderOrchestrator` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `QuoteChannelClient` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
-| `QuoteChannelHandler` | _re-export_ | _—_ | 🟢 TS ahead — Python parity pending |
+| `ProviderOrchestrator` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `QuoteChannelClient` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
+| `QuoteChannelHandler` | _re-export_ | _—_ | 🟢 TS-only — Python parity pending |
 | `SessionStore` | _re-export_ | _—_ | ✅ in-sync |
 
 ## See also

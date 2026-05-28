@@ -85,8 +85,11 @@ function extractBraceBlock(src: string, openIdx: number): string {
  */
 function parseReExportBlocks(src: string, warnings: string[]): TsSymbol[] {
   const out: TsSymbol[] = [];
-  // Find every `export {` (multiline-friendly)
-  const reExportRegex = /export\s*\{/g;
+  // Match both `export { ... }` and `export type { ... }` — the optional
+  // `type` modifier is what most type-only re-export blocks use, and dropping
+  // it would make ~100 type symbols invisible to the manifest (and the
+  // cross-SDK diff would falsely flag them as Python-only).
+  const reExportRegex = /export\s+(?:type\s+)?\{/g;
   let m: RegExpExecArray | null;
   while ((m = reExportRegex.exec(src)) !== null) {
     const openIdx = m.index + m[0].length - 1; // position of `{`

@@ -244,8 +244,8 @@ Contract addresses are automatically configured by the SDK based on your `networ
 
 ## V1 Limitations
 
-:::info Security Audit Complete
-Smart contracts passed security audit (Feb 2026). No transaction limits.
+:::info Audit status
+Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026-05-17 pass before the V3 mainnet redeploy on 2026-05-19 — see [audits](/security/audits) for the full index. External third-party audit is planned, not yet performed. No transaction limits.
 :::
 
 | Limitation | Current State | Planned Resolution |

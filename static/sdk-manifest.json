@@ -2,7 +2,7 @@
   "_generated": true,
   "_doNotEdit": true,
   "_generator": "scripts/truth-ledger/build-truth-ledger.ts",
-  "_generatedAt": "2026-05-27T12:25:52.674Z",
+  "_generatedAt": "2026-05-28T10:47:44.788Z",
   "_sourceVersions": {
     "sdk-js": "4.0.0",
     "agirails-python": "3.0.1",
@@ -10,13 +10,14 @@
   },
   "divergences": {
     "summary": {
-      "ts_only_count": 73,
-      "python_only_count": 189,
+      "ts_only_count": 129,
+      "python_only_count": 135,
       "name_diffs_count": 1,
       "behavioral_diffs_count": 1
     },
     "ts_only": {
       "sdk_api": [
+        "ACTPFeedbackTag",
         "ACTP_FEEDBACK_TAGS",
         "AdapterRegistry",
         "AdapterRouter",
@@ -25,32 +26,87 @@
         "ArweaveDownloadError",
         "ArweaveTimeoutError",
         "ArweaveUploadError",
+        "AutoWalletConfig",
+        "BatchedPayParams",
+        "BatchedPayResult",
+        "BelowCostBehavior",
+        "BelowPriceBehavior",
         "BlockchainRuntime",
         "BlockchainRuntimeConfig",
+        "BuyerNegotiationContext",
+        "ChannelPayload",
+        "CounterDecision",
         "DEFAULT_PRICING_STRATEGY",
+        "DedupStore",
+        "DeliveredMessage",
+        "DisputeResolution",
         "EASConfig",
+        "ERC8004Agent",
+        "ERC8004AgentMetadata",
+        "ERC8004BridgeConfig",
         "ERC8004Error",
         "ERC8004ErrorCode",
+        "ERC8004Network",
         "ERC8004_DEFAULT_RPC",
         "ERC8004_IDENTITY_REGISTRY",
         "ERC8004_REPUTATION_REGISTRY",
+        "EconomicParams",
+        "HandlerContext",
+        "HandlerResult",
         "IAdapter",
+        "IPFSClient",
+        "IPFSClientConfig",
         "InMemoryDedupStore",
         "InMemoryNonceManager",
+        "IncomingRequest",
         "InsufficientFundsError",
         "InvalidArweaveTxIdError",
         "MockChannel",
+        "MockChannelConfig",
+        "NegotiationChannel",
+        "NegotiationMessage",
+        "NetworkConfig",
+        "NetworkOption",
+        "ProgressEvent",
+        "ProtocolCreateParams",
+        "ProviderBalance",
         "ProviderOrchestrator",
+        "ProviderOrchestratorConfig",
+        "ProviderPolicy",
         "ProviderPolicyEngine",
+        "ProviderPolicyResult",
+        "ProviderPolicyViolation",
+        "ProviderStats",
         "QuoteChannelClient",
+        "QuoteChannelClientConfig",
         "QuoteChannelHandler",
+        "QuoteChannelHandlerConfig",
+        "QuoteDecision",
+        "QuoteEvaluation",
+        "QuoteForEvaluation",
+        "QuoteResult",
         "RelayChannel",
+        "RelayChannelConfig",
+        "ReportDisputeParams",
+        "ReportResult",
+        "ReportSettlementParams",
+        "ReputationFeedback",
+        "ReputationReporterConfig",
+        "ReputationSummary",
+        "RequestStatus",
+        "ServiceCost",
         "StateHelpers",
         "StorageInsufficientBalanceError",
+        "Subscription",
         "SwapExecutionError",
         "TimeoutError",
         "TransactionStatus",
         "URLValidationConfig",
+        "VerifyOnChainResult",
+        "VerifySource",
+        "WalletOption",
+        "WalletTransactionReceipt",
+        "WalletTransactionRequest",
         "X402AdapterConfig",
         "X402AmountExceededError",
         "X402ApprovalFailedError",
@@ -101,38 +157,16 @@
         "ACTPEvent",
         "ACTPTimeoutError",
         "ARCHIVE_SCHEMA_VERSION",
-        "AgentBalance",
         "AgentBehavior",
-        "AgentConfig",
         "AgentDID",
         "AgentProfile",
-        "AgentStats",
-        "AgentStatus",
-        "ArchiveAttestation",
-        "ArchiveBundle",
-        "ArchiveChainId",
-        "ArchiveFinalState",
-        "ArchiveHashes",
-        "ArchiveParticipants",
-        "ArchiveReferences",
-        "ArchiveSettlement",
-        "ArchiveSignatures",
-        "ArchiveTags",
-        "ArweaveConfig",
-        "ArweaveUploadResult",
         "Attestation",
-        "BuyerPolicy",
-        "CandidateStats",
         "CheckStatusResult",
         "CircuitBreakerConfig",
         "Constraints",
         "ContentProof",
         "CostModel",
-        "CounterAcceptMessage",
-        "CounterAcceptParams",
         "CounterOfferJustification",
-        "CounterOfferMessage",
-        "CounterOfferParams",
         "CreateEscrowParams",
         "DEFAULT_WEIGHTS",
         "DELIVERY_SCHEMA",
@@ -141,24 +175,14 @@
         "DeliveryProof",
         "DeliveryProofMessage",
         "DeliveryProofMetadata",
-        "DownloadResult",
         "EIP712Domain",
         "EscrowCreatedEvent",
         "EscrowInfo",
         "EscrowPayoutEvent",
-        "EscrowRelease",
         "EventFilter",
         "EventType",
-        "FilebaseConfig",
         "HAS_MESSAGES",
         "HAS_WEB3_PROTOCOL",
-        "IPFSUploadResult",
-        "IWalletProvider",
-        "IrysCurrency",
-        "IrysNetwork",
-        "Job",
-        "JobContext",
-        "JobHandler",
         "JobResult",
         "LRUCache",
         "Logger",
@@ -167,54 +191,34 @@
         "MerkleProof",
         "MessageNonceManager",
         "Negotiation",
-        "NegotiationResult",
         "NonceManagerPool",
         "NonceValidationResult",
-        "OrchestratorConfig",
         "PROTOCOL_VERSION",
-        "PolicyResult",
-        "PolicyViolation",
-        "PriceCalculation",
-        "PricingStrategy",
-        "ProvideOptions",
-        "Provider",
         "ProviderConfig",
-        "ProviderStatus",
-        "QuoteOffer",
         "ReceiptUploadFailure",
         "ReceiptUploadOptions",
         "ReceiptUploadPayload",
         "ReceiptUploadResult",
         "ReceiptUploadSuccess",
-        "RequestOptions",
-        "RequestResult",
         "RetryConfig",
-        "RoundResult",
         "STATE_TRANSITIONS",
         "Schema",
         "ScoreBreakdown",
-        "ScoredCandidate",
-        "ScoringWeights",
         "Selection",
-        "ServiceConfig",
         "ServiceDescriptor",
         "ServiceDirectory",
         "ServiceEndpoint",
         "ServiceEntry",
         "ServiceFilter",
-        "ServiceMetadata",
         "ServiceQuery",
         "ServiceRequest",
         "ServiceResponse",
-        "SessionMapping",
         "SetBasedReceivedNonceTracker",
         "SignatureComponents",
         "SignedMessage",
-        "State",
         "StateHelper",
         "StateTransitionedEvent",
         "TimeInterface",
-        "Transaction",
         "TransactionCreatedEvent",
         "TransactionDetails",
         "TransactionFilter",
@@ -222,8 +226,6 @@
         "TransactionView",
         "TypedData",
         "VerificationMethod",
-        "WalletInfo",
-        "WalletTier",
         "ZERO_BYTES32",
         "canonical_json_dumps",
         "compute_domain_separator",
@@ -341,6 +343,10 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "ACTPFeedbackTag": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ACTPKernel": {
       "ts": "standard",
       "python": "standard",
@@ -372,6 +378,16 @@
       "python": "basic",
       "sync_status": "in-sync"
     },
+    "AgentBalance": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "AgentConfig": {
+      "ts": "basic",
+      "python": "basic",
+      "sync_status": "in-sync"
+    },
     "AgentLifecycleError": {
       "ts": "standard",
       "python": "standard",
@@ -382,7 +398,27 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "AgentStats": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "AgentStatus": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "ARCHIVE_BUNDLE_TYPE": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveAttestation": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveBundle": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -392,9 +428,54 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "ArchiveChainId": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveFinalState": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveHashes": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveParticipants": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveReferences": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveSettlement": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveSignatures": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ArchiveTags": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "ArweaveClient": {
       "ts": "advanced",
       "python": "advanced",
+      "sync_status": "in-sync"
+    },
+    "ArweaveConfig": {
+      "ts": "standard",
+      "python": "standard",
       "sync_status": "in-sync"
     },
     "ArweaveDownloadError": {
@@ -406,6 +487,15 @@
       "sync_status": "local-ahead"
     },
     "ArweaveUploadError": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ArweaveUploadResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "AutoWalletConfig": {
       "ts": "standard",
       "sync_status": "local-ahead"
     },
@@ -434,6 +524,22 @@
       "python": "basic",
       "sync_status": "in-sync"
     },
+    "BatchedPayParams": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "BatchedPayResult": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "BelowCostBehavior": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "BelowPriceBehavior": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "BlockchainRuntime": {
       "ts": "advanced",
       "sync_status": "local-ahead"
@@ -446,9 +552,18 @@
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "BuyerNegotiationContext": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "BuyerOrchestrator": {
       "ts": "advanced",
       "python": "advanced",
+      "sync_status": "in-sync"
+    },
+    "BuyerPolicy": {
+      "ts": "standard",
+      "python": "standard",
       "sync_status": "in-sync"
     },
     "Bytes32": {
@@ -458,11 +573,20 @@
     },
     "calculatePrice": {
       "ts": "standard",
+      "sync_status": "in-sync"
+    },
+    "CandidateStats": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ChannelPayload": {
+      "ts": "standard",
       "sync_status": "local-ahead"
     },
     "computeContentHash": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "ContentNotFoundError": {
       "ts": "standard",
@@ -479,7 +603,31 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "CounterAcceptMessage": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "CounterAcceptParams": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "CounterDecision": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "CounterOfferBuilder": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "CounterOfferMessage": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "CounterOfferParams": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -491,7 +639,7 @@
     },
     "createUsedAttestationTracker": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "Deadline": {
       "ts": "standard",
@@ -513,6 +661,10 @@
       "python": "advanced",
       "sync_status": "in-sync"
     },
+    "DedupStore": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "DEFAULT_DEADLINE_SECONDS": {
       "ts": "standard",
       "python": "standard",
@@ -524,6 +676,10 @@
       "sync_status": "in-sync"
     },
     "DEFAULT_PRICING_STRATEGY": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "DeliveredMessage": {
       "ts": "standard",
       "sync_status": "local-ahead"
     },
@@ -552,12 +708,21 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "DisputeResolution": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "DisputeWindow": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
     },
     "DisputeWindowActiveError": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "DownloadResult": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -575,6 +740,10 @@
       "ts": "advanced",
       "python": "advanced",
       "sync_status": "in-sync"
+    },
+    "EconomicParams": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "envelopeChainId": {
       "ts": "standard",
@@ -601,10 +770,22 @@
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "ERC8004Agent": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ERC8004AgentMetadata": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ERC8004Bridge": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
+    },
+    "ERC8004BridgeConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "ERC8004Error": {
       "ts": "standard",
@@ -614,7 +795,16 @@
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "ERC8004Network": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "EscrowNotFoundError": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "EscrowRelease": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -634,6 +824,11 @@
       "python": "advanced",
       "sync_status": "in-sync"
     },
+    "FilebaseConfig": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "FileBasedUsedAttestationTracker": {
       "ts": "standard",
       "python": "standard",
@@ -646,15 +841,15 @@
     },
     "formatUSDC": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "generateSecureNonce": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "generateSecureNonces": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "getCachedAddress": {
       "ts": "standard",
@@ -664,9 +859,17 @@
       "ts": "standard",
       "sync_status": "local-ahead"
     },
-    "hashServiceMetadata": {
+    "HandlerContext": {
       "ts": "standard",
       "sync_status": "local-ahead"
+    },
+    "HandlerResult": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "hashServiceMetadata": {
+      "ts": "standard",
+      "sync_status": "in-sync"
     },
     "IACTPRuntime": {
       "ts": "standard",
@@ -681,6 +884,10 @@
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
+    },
+    "IncomingRequest": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "InMemoryDedupStore": {
       "ts": "internal",
@@ -733,7 +940,30 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "IPFSClient": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "IPFSClientConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "IPFSUploadResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "IReceivedNonceTracker": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "IrysCurrency": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "IrysNetwork": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -756,11 +986,31 @@
     },
     "isValidNonce": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "IUsedAttestationTracker": {
       "ts": "standard",
       "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "IWalletProvider": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "Job": {
+      "ts": "basic",
+      "python": "basic",
+      "sync_status": "in-sync"
+    },
+    "JobContext": {
+      "ts": "basic",
+      "python": "basic",
+      "sync_status": "in-sync"
+    },
+    "JobHandler": {
+      "ts": "basic",
+      "python": "basic",
       "sync_status": "in-sync"
     },
     "MAX_DEADLINE_DAYS": {
@@ -800,6 +1050,10 @@
     },
     "MockChannel": {
       "ts": "internal",
+      "sync_status": "local-ahead"
+    },
+    "MockChannelConfig": {
+      "ts": "standard",
       "sync_status": "local-ahead"
     },
     "MockEscrow": {
@@ -847,10 +1101,31 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "NegotiationChannel": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "NegotiationMessage": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "NegotiationResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "NetworkConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "NetworkError": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
+    },
+    "NetworkOption": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "NonceManager": {
       "ts": "standard",
@@ -862,34 +1137,106 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "OrchestratorConfig": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "parseUSDC": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "PolicyEngine": {
       "ts": "advanced",
       "python": "advanced",
       "sync_status": "in-sync"
     },
+    "PolicyResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "PolicyViolation": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "PriceCalculation": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "PricingStrategy": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ProgressEvent": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ProofGenerator": {
       "ts": "advanced",
       "python": "advanced",
       "sync_status": "in-sync"
+    },
+    "ProtocolCreateParams": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "provide": {
       "ts": "level0",
       "python": "level0",
       "sync_status": "in-sync"
     },
+    "ProvideOptions": {
+      "ts": "basic",
+      "python": "basic",
+      "sync_status": "in-sync"
+    },
+    "Provider": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ProviderBalance": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ProviderOrchestrator": {
       "ts": "advanced",
+      "sync_status": "local-ahead"
+    },
+    "ProviderOrchestratorConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ProviderPolicy": {
+      "ts": "standard",
       "sync_status": "local-ahead"
     },
     "ProviderPolicyEngine": {
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "ProviderPolicyResult": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ProviderPolicyViolation": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ProviderRejectedError": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ProviderStats": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ProviderStatus": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -908,8 +1255,37 @@
       "ts": "advanced",
       "sync_status": "local-ahead"
     },
+    "QuoteChannelClientConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "QuoteChannelHandler": {
       "ts": "advanced",
+      "sync_status": "local-ahead"
+    },
+    "QuoteChannelHandlerConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "QuoteDecision": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "QuoteEvaluation": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "QuoteForEvaluation": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "QuoteOffer": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "QuoteResult": {
+      "ts": "standard",
       "sync_status": "local-ahead"
     },
     "RateLimiter": {
@@ -921,23 +1297,85 @@
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "RelayChannelConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ReportDisputeParams": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ReportResult": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ReportSettlementParams": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ReputationFeedback": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "ReputationReporter": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
+    },
+    "ReputationReporterConfig": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "ReputationSummary": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
     },
     "request": {
       "ts": "level0",
       "python": "level0",
       "sync_status": "in-sync"
     },
+    "RequestOptions": {
+      "ts": "basic",
+      "python": "basic",
+      "sync_status": "in-sync"
+    },
+    "RequestResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "RequestStatus": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "resolvePrivateKey": {
       "ts": "standard",
       "sync_status": "local-ahead"
     },
+    "RoundResult": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ScoredCandidate": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ScoringWeights": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
     "Semaphore": {
       "ts": "standard",
       "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ServiceConfig": {
+      "ts": "basic",
+      "python": "basic",
       "sync_status": "in-sync"
     },
     "ServiceConfigError": {
@@ -945,11 +1383,25 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "ServiceCost": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "serviceDirectory": {
       "ts": "level0",
       "sync_status": "local-ahead"
     },
     "ServiceHash": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "ServiceMetadata": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "SessionMapping": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
@@ -961,7 +1413,7 @@
     },
     "shortenAddress": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "SignatureVerificationError": {
       "ts": "standard",
@@ -976,6 +1428,11 @@
     "StandardTransactionParams": {
       "ts": "standard",
       "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "State": {
+      "ts": "basic",
+      "python": "basic",
       "sync_status": "in-sync"
     },
     "StateHelpers": {
@@ -1001,6 +1458,10 @@
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "Subscription": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "SwapExecutionError": {
       "ts": "standard",
       "sync_status": "local-ahead"
@@ -1008,6 +1469,11 @@
     "TimeoutError": {
       "ts": "standard",
       "sync_status": "local-ahead"
+    },
+    "Transaction": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
     },
     "TransactionNotFoundError": {
       "ts": "standard",
@@ -1049,14 +1515,44 @@
     },
     "validateArchiveBundle": {
       "ts": "standard",
-      "sync_status": "local-ahead"
+      "sync_status": "in-sync"
     },
     "ValidationError": {
       "ts": "standard",
       "python": "standard",
       "sync_status": "in-sync"
     },
+    "VerifyOnChainResult": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
     "verifyQuoteHashOnChain": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "VerifySource": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "WalletInfo": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "WalletOption": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "WalletTier": {
+      "ts": "standard",
+      "python": "standard",
+      "sync_status": "in-sync"
+    },
+    "WalletTransactionReceipt": {
+      "ts": "standard",
+      "sync_status": "local-ahead"
+    },
+    "WalletTransactionRequest": {
       "ts": "standard",
       "sync_status": "local-ahead"
     },
@@ -1117,16 +1613,8 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "AgentBalance": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "AgentBehavior": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "AgentConfig": {
-      "python": "basic",
       "sync_status": "remote-ahead"
     },
     "AgentDID": {
@@ -1137,63 +1625,7 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "AgentStats": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "AgentStatus": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "ARCHIVE_SCHEMA_VERSION": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveAttestation": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveBundle": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveChainId": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveFinalState": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveHashes": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveParticipants": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveReferences": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveSettlement": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveSignatures": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArchiveTags": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArweaveConfig": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ArweaveUploadResult": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1201,17 +1633,9 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "BuyerPolicy": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "calculate_price": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "CandidateStats": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "canonical_json_dumps": {
       "python": "standard",
@@ -1227,7 +1651,7 @@
     },
     "compute_content_hash": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "compute_domain_separator": {
       "python": "standard",
@@ -1265,23 +1689,7 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "CounterAcceptMessage": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "CounterAcceptParams": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "CounterOfferJustification": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "CounterOfferMessage": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "CounterOfferParams": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1299,7 +1707,7 @@
     },
     "create_used_attestation_tracker": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "CreateEscrowParams": {
       "python": "standard",
@@ -1341,10 +1749,6 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "DownloadResult": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "EIP712Domain": {
       "python": "standard",
       "sync_status": "remote-ahead"
@@ -1361,10 +1765,6 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "EscrowRelease": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "EventFilter": {
       "python": "standard",
       "sync_status": "remote-ahead"
@@ -1373,13 +1773,9 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "FilebaseConfig": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "format_usdc": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "generate_escrow_id": {
       "python": "standard",
@@ -1387,11 +1783,11 @@
     },
     "generate_secure_nonce": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "generate_secure_nonces": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "HAS_MESSAGES": {
       "python": "standard",
@@ -1407,7 +1803,7 @@
     },
     "hash_service_metadata": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "hash_service_output": {
       "python": "standard",
@@ -1418,18 +1814,6 @@
       "sync_status": "remote-ahead"
     },
     "hash_typed_data": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "IPFSUploadResult": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "IrysCurrency": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "IrysNetwork": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1447,26 +1831,10 @@
     },
     "is_valid_nonce": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "is_valid_transition": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "IWalletProvider": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "Job": {
-      "python": "basic",
-      "sync_status": "remote-ahead"
-    },
-    "JobContext": {
-      "python": "basic",
-      "sync_status": "remote-ahead"
-    },
-    "JobHandler": {
-      "python": "basic",
       "sync_status": "remote-ahead"
     },
     "JobResult": {
@@ -1501,10 +1869,6 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "NegotiationResult": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "NonceManagerPool": {
       "python": "standard",
       "sync_status": "remote-ahead"
@@ -1513,51 +1877,15 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "OrchestratorConfig": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "parse_usdc": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "PolicyResult": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "PolicyViolation": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "PriceCalculation": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "PricingStrategy": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "PROTOCOL_VERSION": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "ProvideOptions": {
-      "python": "basic",
-      "sync_status": "remote-ahead"
-    },
-    "Provider": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "ProviderConfig": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ProviderStatus": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "QuoteOffer": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1581,19 +1909,7 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "RequestOptions": {
-      "python": "basic",
-      "sync_status": "remote-ahead"
-    },
-    "RequestResult": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "RetryConfig": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "RoundResult": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1609,20 +1925,8 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "ScoredCandidate": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ScoringWeights": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "Selection": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "ServiceConfig": {
-      "python": "basic",
       "sync_status": "remote-ahead"
     },
     "ServiceDescriptor": {
@@ -1645,10 +1949,6 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "ServiceMetadata": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "ServiceQuery": {
       "python": "standard",
       "sync_status": "remote-ahead"
@@ -1661,17 +1961,13 @@
       "python": "standard",
       "sync_status": "remote-ahead"
     },
-    "SessionMapping": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
     "SetBasedReceivedNonceTracker": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
     "shorten_address": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "SignatureComponents": {
       "python": "standard",
@@ -1679,10 +1975,6 @@
     },
     "SignedMessage": {
       "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "State": {
-      "python": "basic",
       "sync_status": "remote-ahead"
     },
     "STATE_TRANSITIONS": {
@@ -1702,10 +1994,6 @@
       "sync_status": "remote-ahead"
     },
     "timing_safe_equal": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "Transaction": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -1747,7 +2035,7 @@
     },
     "validate_archive_bundle": {
       "python": "standard",
-      "sync_status": "remote-ahead"
+      "sync_status": "in-sync"
     },
     "validate_bytes32": {
       "python": "standard",
@@ -1782,14 +2070,6 @@
       "sync_status": "remote-ahead"
     },
     "verify_merkle_proof": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "WalletInfo": {
-      "python": "standard",
-      "sync_status": "remote-ahead"
-    },
-    "WalletTier": {
       "python": "standard",
       "sync_status": "remote-ahead"
     },
@@ -2874,7 +3154,7 @@
         "ACTPKernel": {
           "address": "0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.516Z",
+          "verified_at": "2026-05-28T10:47:44.619Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212266,
           "deploy_tx": "0x0ec9bec21a33f3f316993e3b85e550132ef082651e0be0a75eb5237f08ee1104",
@@ -2888,7 +3168,7 @@
         "EscrowVault": {
           "address": "0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.516Z",
+          "verified_at": "2026-05-28T10:47:44.619Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212268,
           "deploy_tx": "0x55b44cd01b57ef7a9bf5c3672dd439c6261899880b60ac1ef9a570a415b81e64",
@@ -2899,7 +3179,7 @@
         "AgentRegistry": {
           "address": "0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.516Z",
+          "verified_at": "2026-05-28T10:47:44.619Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212269,
           "deploy_tx": "0xdbf9158ef85f8d064e2f6624e7d34ed5852b720edb7af7d0dfe548b19ba66c89",
@@ -2910,7 +3190,7 @@
         "ArchiveTreasury": {
           "address": "0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.516Z",
+          "verified_at": "2026-05-28T10:47:44.619Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212270,
           "deploy_tx": "0x4ebddaebd203afceb5d3592a927787061b8b2981d0a289bb740c397ef1ab5481",
@@ -2934,7 +3214,7 @@
         "ACTPKernel": {
           "address": "0x9d25A874f046185d9237Cd4954C88D2B74B0021b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.674Z",
+          "verified_at": "2026-05-28T10:47:44.787Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725686,
           "deploy_tx": "0xe976b7005b4a35f066fedb782d69974f2f491b3608d2803375fa46987546db5c",
@@ -2945,7 +3225,7 @@
         "EscrowVault": {
           "address": "0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.674Z",
+          "verified_at": "2026-05-28T10:47:44.787Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725687,
           "deploy_tx": "0x0194b83d02fe31482d346db0d445a1245ec8ac35d66995a465af217c22beca59",
@@ -2956,7 +3236,7 @@
         "AgentRegistry": {
           "address": "0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.674Z",
+          "verified_at": "2026-05-28T10:47:44.787Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725688,
           "deploy_tx": "0xa0b7ac96550590f8269ca245e7f6ba618ab5821dfe33d3e48f919d7bd650484c",
@@ -2974,7 +3254,7 @@
         "ArchiveTreasury": {
           "address": "0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.674Z",
+          "verified_at": "2026-05-28T10:47:44.787Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725689,
           "deploy_tx": "0xd3dc0dd2f630abb32480061a51522efde9234539687ccbae037f56ef2da36808",
@@ -2986,7 +3266,7 @@
         "X402Relay": {
           "address": "0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-27T12:25:52.674Z",
+          "verified_at": "2026-05-28T10:47:44.787Z",
           "deployment_claimed_verified": true,
           "deploy_block": 40239726,
           "explorer_url": "https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
@@ -3332,8 +3612,8 @@
     },
     "_source": {
       "file": "https://agirails.app/protocol/AGIRAILS.md",
-      "line_count": 1243,
-      "onboarding_marker_line": 41
+      "line_count": 1251,
+      "onboarding_marker_line": 44
     }
   },
   "sdk_api": {
@@ -3385,6 +3665,13 @@
           "doc_summary": "Base ACTP Error."
         },
         {
+          "name": "ACTPFeedbackTag",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Type for ACTP feedback tags."
+        },
+        {
           "name": "ACTPKernel",
           "kind": "export-from",
           "tier": "standard",
@@ -3434,6 +3721,20 @@
           "doc_summary": "Agent class - Standard API"
         },
         {
+          "name": "AgentBalance",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Agent balance information"
+        },
+        {
+          "name": "AgentConfig",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Agent configuration"
+        },
+        {
           "name": "AgentLifecycleError",
           "kind": "export-from",
           "tier": "standard",
@@ -3448,11 +3749,39 @@
           "doc_summary": "AgentRegistry - Agent Identity & Reputation SDK Module (AIP-7)"
         },
         {
+          "name": "AgentStats",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Agent statistics"
+        },
+        {
+          "name": "AgentStatus",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Agent lifecycle states"
+        },
+        {
           "name": "ARCHIVE_BUNDLE_TYPE",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Archive bundle type identifier"
+        },
+        {
+          "name": "ArchiveAttestation",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "EAS attestation reference"
+        },
+        {
+          "name": "ArchiveBundle",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Archive Bundle (AIP-7 §4.4 - Minimal Hash-First)"
         },
         {
           "name": "ArchiveBundleBuilder",
@@ -3462,11 +3791,74 @@
           "doc_summary": "ArchiveBundleBuilder - Fluent builder for archive bundles"
         },
         {
+          "name": "ArchiveChainId",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Supported chain IDs for archive bundles"
+        },
+        {
+          "name": "ArchiveFinalState",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Final transaction states that can be archived"
+        },
+        {
+          "name": "ArchiveHashes",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Cryptographic hashes for verification"
+        },
+        {
+          "name": "ArchiveParticipants",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Transaction participants (addresses only, not full profiles)"
+        },
+        {
+          "name": "ArchiveReferences",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "IPFS CID references to full content"
+        },
+        {
+          "name": "ArchiveSettlement",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Settlement information"
+        },
+        {
+          "name": "ArchiveSignatures",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Cryptographic signatures for self-verification"
+        },
+        {
+          "name": "ArchiveTags",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Arweave/Irys tags for archive bundles"
+        },
+        {
           "name": "ArweaveClient",
           "kind": "export-from",
           "tier": "advanced",
           "tier_from_source": false,
           "doc_summary": "ArweaveClient - Permanent storage on Arweave via Irys"
+        },
+        {
+          "name": "ArweaveConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Configuration for Arweave client via Irys"
         },
         {
           "name": "ArweaveDownloadError",
@@ -3482,6 +3874,19 @@
         },
         {
           "name": "ArweaveUploadError",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ArweaveUploadResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of uploading to Arweave"
+        },
+        {
+          "name": "AutoWalletConfig",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false
@@ -3521,6 +3926,34 @@
           "doc_summary": "Result of creating a payment."
         },
         {
+          "name": "BatchedPayParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Parameters for batched ACTP payment."
+        },
+        {
+          "name": "BatchedPayResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of a batched ACTP payment via AA wallet."
+        },
+        {
+          "name": "BelowCostBehavior",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Pricing behavior when job budget is below cost (would lose money)"
+        },
+        {
+          "name": "BelowPriceBehavior",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Pricing behavior when job budget is below calculated price"
+        },
+        {
           "name": "BlockchainRuntime",
           "kind": "export-from",
           "tier": "advanced",
@@ -3542,9 +3975,22 @@
           "doc_summary": "Path pattern builders use / handlers expect."
         },
         {
+          "name": "BuyerNegotiationContext",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "AIP-2.1 negotiation context — wires the orchestrator into the NegotiationChannel transport. All fields optional: without them the orchestrator runs the legacy fixed-price flow only (no counters)."
+        },
+        {
           "name": "BuyerOrchestrator",
           "kind": "export-from",
           "tier": "advanced",
+          "tier_from_source": false
+        },
+        {
+          "name": "BuyerPolicy",
+          "kind": "export-from",
+          "tier": "standard",
           "tier_from_source": false
         },
         {
@@ -3560,6 +4006,19 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Calculate price for a job based on pricing strategy"
+        },
+        {
+          "name": "CandidateStats",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ChannelPayload",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Wire payload posted by the client and parsed by the handler. Discriminated by `type` so the same endpoint serves both directions."
         },
         {
           "name": "computeContentHash",
@@ -3588,10 +4047,43 @@
           "tier_from_source": false
         },
         {
+          "name": "CounterAcceptMessage",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Provider-signed acceptance of a buyer's counter-offer."
+        },
+        {
+          "name": "CounterAcceptParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "CounterDecision",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "CounterOfferBuilder",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false
+        },
+        {
+          "name": "CounterOfferMessage",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Counter-offer message — the buyer's reply to a provider quote."
+        },
+        {
+          "name": "CounterOfferParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Parameters to build a counter-offer. `counteredAt`, `nonce`, and `signature` are filled by the builder."
         },
         {
           "name": "CreateTransactionParams",
@@ -3634,6 +4126,12 @@
           "tier_from_source": false
         },
         {
+          "name": "DedupStore",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "DEFAULT_DEADLINE_SECONDS",
           "kind": "export-from",
           "tier": "standard",
@@ -3653,6 +4151,13 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Default pricing strategy"
+        },
+        {
+          "name": "DeliveredMessage",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Per-message metadata the channel attaches when delivering."
         },
         {
           "name": "DeliveryFailedError",
@@ -3690,6 +4195,13 @@
           "doc_summary": "Dispute raised on transaction"
         },
         {
+          "name": "DisputeResolution",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Dispute resolution split"
+        },
+        {
           "name": "DisputeWindow",
           "kind": "export-from",
           "tier": "standard",
@@ -3702,6 +4214,13 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Error thrown when dispute window is still active."
+        },
+        {
+          "name": "DownloadResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of downloading content"
         },
         {
           "name": "DownloadTimeoutError",
@@ -3721,6 +4240,13 @@
           "tier": "advanced",
           "tier_from_source": false,
           "doc_summary": "EASHelper - utility wrapper for Ethereum Attestation Service interactions"
+        },
+        {
+          "name": "EconomicParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Economic parameters (fee structure)"
         },
         {
           "name": "envelopeChainId",
@@ -3764,11 +4290,32 @@
           "doc_summary": "ERC-8004 Reputation Registry addresses per network."
         },
         {
+          "name": "ERC8004Agent",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Agent identity resolved from ERC-8004 Identity Registry."
+        },
+        {
+          "name": "ERC8004AgentMetadata",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Agent metadata schema from ERC-8004 agentURI."
+        },
+        {
           "name": "ERC8004Bridge",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Bridge for reading from ERC-8004 Identity Registry."
+        },
+        {
+          "name": "ERC8004BridgeConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Configuration for ERC8004Bridge."
         },
         {
           "name": "ERC8004Error",
@@ -3785,11 +4332,25 @@
           "doc_summary": "ERC-8004 error codes."
         },
         {
+          "name": "ERC8004Network",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Networks with ERC-8004 registry deployments."
+        },
+        {
           "name": "EscrowNotFoundError",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Error thrown when an escrow is not found."
+        },
+        {
+          "name": "EscrowRelease",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Escrow release details"
         },
         {
           "name": "EscrowVault",
@@ -3811,6 +4372,13 @@
           "tier": "advanced",
           "tier_from_source": false,
           "doc_summary": "FilebaseClient - IPFS storage via Filebase S3 API"
+        },
+        {
+          "name": "FilebaseConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Configuration for Filebase S3-compatible IPFS client"
         },
         {
           "name": "FileBasedUsedAttestationTracker",
@@ -3861,6 +4429,18 @@
           "doc_summary": "Get network configuration by name (returns deep clone to prevent mutation)"
         },
         {
+          "name": "HandlerContext",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "HandlerResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "hashServiceMetadata",
           "kind": "export-from",
           "tier": "standard",
@@ -3887,6 +4467,13 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Extended runtime interface for mock mode."
+        },
+        {
+          "name": "IncomingRequest",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Incoming request surface — the minimum the orchestrator needs to decide whether + at what price to quote. Extracted from the on-chain transaction plus any off-chain context the caller has (service type, consumer DID)."
         },
         {
           "name": "InMemoryDedupStore",
@@ -3963,11 +4550,46 @@
           "doc_summary": "State Machine Errors"
         },
         {
+          "name": "IPFSClient",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "IPFS Client Interface (from DeliveryProofBuilder)"
+        },
+        {
+          "name": "IPFSClientConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "IPFS Client Configuration"
+        },
+        {
+          "name": "IPFSUploadResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of uploading to IPFS"
+        },
+        {
           "name": "IReceivedNonceTracker",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Interface for tracking received nonces"
+        },
+        {
+          "name": "IrysCurrency",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Supported Irys payment tokens"
+        },
+        {
+          "name": "IrysNetwork",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Irys network"
         },
         {
           "name": "isAdapter",
@@ -4007,6 +4629,34 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Interface for tracking used attestations"
+        },
+        {
+          "name": "IWalletProvider",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Wallet provider interface."
+        },
+        {
+          "name": "Job",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Job interface - work request data"
+        },
+        {
+          "name": "JobContext",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "JobContext - Execution context passed to job handlers"
+        },
+        {
+          "name": "JobHandler",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Job handler function type"
         },
         {
           "name": "MAX_DEADLINE_DAYS",
@@ -4063,6 +4713,12 @@
           "tier": "internal",
           "tier_from_source": false,
           "doc_summary": "In-memory channel. Multiple orchestrators can share one instance to simulate \"both parties on the same relay\"."
+        },
+        {
+          "name": "MockChannelConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
         },
         {
           "name": "MockEscrow",
@@ -4128,10 +4784,44 @@
           "doc_summary": "Mock transaction representing an ACTP transaction in the mock blockchain."
         },
         {
+          "name": "NegotiationChannel",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Transport-agnostic AIP-2.1 message bus."
+        },
+        {
+          "name": "NegotiationMessage",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Discriminated union of every signed message type that can flow over a NegotiationChannel. The channel's `post` accepts any of these; the channel's verify-on-receive ensures only well-formed signed messages reach the sub…"
+        },
+        {
+          "name": "NegotiationResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "NetworkConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Network configuration"
+        },
+        {
           "name": "NetworkError",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false
+        },
+        {
+          "name": "NetworkOption",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Network options"
         },
         {
           "name": "NonceManager",
@@ -4148,6 +4838,12 @@
           "doc_summary": "No provider found for the requested service"
         },
         {
+          "name": "OrchestratorConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "parseUSDC",
           "kind": "export-from",
           "tier": "standard",
@@ -4161,11 +4857,49 @@
           "tier_from_source": false
         },
         {
+          "name": "PolicyResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "PolicyViolation",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "PriceCalculation",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Price calculation result"
+        },
+        {
+          "name": "PricingStrategy",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Pricing strategy configuration"
+        },
+        {
+          "name": "ProgressEvent",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "ProofGenerator",
           "kind": "export-from",
           "tier": "advanced",
           "tier_from_source": false,
           "doc_summary": "ProofGenerator - Content hashing and delivery proofs Reference: Yellow Paper §11.4.1"
+        },
+        {
+          "name": "ProtocolCreateParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
         },
         {
           "name": "provide",
@@ -4175,13 +4909,59 @@
           "doc_summary": "Provide a service"
         },
         {
+          "name": "ProvideOptions",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Options for provide() function (Basic API)"
+        },
+        {
+          "name": "Provider",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Provider interface"
+        },
+        {
+          "name": "ProviderBalance",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Provider balance"
+        },
+        {
           "name": "ProviderOrchestrator",
           "kind": "export-from",
           "tier": "advanced",
           "tier_from_source": false
         },
         {
+          "name": "ProviderOrchestratorConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ProviderPolicy",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "What this agent provides + at what terms."
+        },
+        {
           "name": "ProviderPolicyEngine",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ProviderPolicyResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ProviderPolicyViolation",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false
@@ -4192,6 +4972,20 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Provider rejected the job"
+        },
+        {
+          "name": "ProviderStats",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Provider statistics"
+        },
+        {
+          "name": "ProviderStatus",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Provider status"
         },
         {
           "name": "QueryCapExceededError",
@@ -4214,9 +5008,53 @@
           "tier_from_source": false
         },
         {
+          "name": "QuoteChannelClientConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "QuoteChannelHandler",
           "kind": "export-from",
           "tier": "advanced",
+          "tier_from_source": false
+        },
+        {
+          "name": "QuoteChannelHandlerConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "QuoteDecision",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "QuoteEvaluation",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Decision for a single incoming provider quote."
+        },
+        {
+          "name": "QuoteForEvaluation",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Minimal quote shape evaluateQuote operates on. Keeps DecisionEngine decoupled from the full QuoteMessage type + signature verification (that's BuyerOrchestrator's job)."
+        },
+        {
+          "name": "QuoteOffer",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "QuoteResult",
+          "kind": "export-from",
+          "tier": "standard",
           "tier_from_source": false
         },
         {
@@ -4233,11 +5071,59 @@
           "tier_from_source": false
         },
         {
+          "name": "RelayChannelConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ReportDisputeParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Parameters for reporting a dispute resolution."
+        },
+        {
+          "name": "ReportResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of a reputation report."
+        },
+        {
+          "name": "ReportSettlementParams",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Parameters for reporting a successful settlement."
+        },
+        {
+          "name": "ReputationFeedback",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Feedback entry for ERC-8004 Reputation Registry."
+        },
+        {
           "name": "ReputationReporter",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Reporter for submitting ACTP settlement outcomes to ERC-8004 Reputation."
+        },
+        {
+          "name": "ReputationReporterConfig",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Configuration for ReputationReporter."
+        },
+        {
+          "name": "ReputationSummary",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Aggregated reputation summary for an agent."
         },
         {
           "name": "request",
@@ -4247,11 +5133,50 @@
           "doc_summary": "Request a service"
         },
         {
+          "name": "RequestOptions",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Options for request() function (Basic API)"
+        },
+        {
+          "name": "RequestResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Result of request() function"
+        },
+        {
+          "name": "RequestStatus",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Request status updates"
+        },
+        {
           "name": "resolvePrivateKey",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Auto-resolve private key: env var → base64 keystore → file keystore → undefined. Never logs or prints the key itself."
+        },
+        {
+          "name": "RoundResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ScoredCandidate",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "ScoringWeights",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
         },
         {
           "name": "Semaphore",
@@ -4261,11 +5186,25 @@
           "doc_summary": "Simple semaphore for limiting concurrent operations"
         },
         {
+          "name": "ServiceConfig",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "Service configuration"
+        },
+        {
           "name": "ServiceConfigError",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Service configuration error"
+        },
+        {
+          "name": "ServiceCost",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Cost configuration for a service"
         },
         {
           "name": "serviceDirectory",
@@ -4280,6 +5219,19 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Service metadata utilities for ACTP transactions"
+        },
+        {
+          "name": "ServiceMetadata",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Service metadata structure"
+        },
+        {
+          "name": "SessionMapping",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
         },
         {
           "name": "SessionStore",
@@ -4316,6 +5268,13 @@
           "doc_summary": "Parameters for creating a transaction (standard level)."
         },
         {
+          "name": "State",
+          "kind": "export-from",
+          "tier": "basic",
+          "tier_from_source": false,
+          "doc_summary": "ACTP State Machine Reference: Yellow Paper §3.2"
+        },
+        {
           "name": "StateHelpers",
           "kind": "export-from",
           "tier": "standard",
@@ -4347,6 +5306,13 @@
           "tier_from_source": false
         },
         {
+          "name": "Subscription",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Unsubscribe handle. `unsubscribe()` MUST be idempotent — callers should call it exactly once but the impl tolerates double-unsubscribe to keep cleanup paths simple."
+        },
+        {
           "name": "SwapExecutionError",
           "kind": "export-from",
           "tier": "standard",
@@ -4358,6 +5324,13 @@
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Request timeout error"
+        },
+        {
+          "name": "Transaction",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "ACTP Transaction Reference: Yellow Paper §3.1"
         },
         {
           "name": "TransactionNotFoundError",
@@ -4429,11 +5402,56 @@
           "doc_summary": "Adapter-layer ValidationError — extends ACTPError-based ValidationError so that `instanceof` checks work against the public SDK export. Accepts a single message string for convenience in adapter code."
         },
         {
+          "name": "VerifyOnChainResult",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
           "name": "verifyQuoteHashOnChain",
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
           "doc_summary": "Cross-reference an off-chain QuoteMessage against the hash stored on chain in `tx.metadata` (or equivalent — MockTransaction.quoteHash)."
+        },
+        {
+          "name": "VerifySource",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "WalletInfo",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Information about the wallet provider."
+        },
+        {
+          "name": "WalletOption",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Wallet configuration options"
+        },
+        {
+          "name": "WalletTier",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false,
+          "doc_summary": "Wallet tier — determines gas behavior."
+        },
+        {
+          "name": "WalletTransactionReceipt",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
+        },
+        {
+          "name": "WalletTransactionRequest",
+          "kind": "export-from",
+          "tier": "standard",
+          "tier_from_source": false
         },
         {
           "name": "X402Adapter",
@@ -4519,7 +5537,7 @@
           "doc_summary": "Thrown when a Smart Wallet tries to pay a server that only offers the EIP-3009 transferWithAuthorization scheme."
         }
       ],
-      "count": 173
+      "count": 283
     },
     "python": {
       "package_name": "agirails",
@@ -6424,6 +7442,7 @@
     },
     "cross_sdk": {
       "ts_only": [
+        "ACTPFeedbackTag",
         "ACTP_FEEDBACK_TAGS",
         "AdapterRegistry",
         "AdapterRouter",
@@ -6432,32 +7451,87 @@
         "ArweaveDownloadError",
         "ArweaveTimeoutError",
         "ArweaveUploadError",
+        "AutoWalletConfig",
+        "BatchedPayParams",
+        "BatchedPayResult",
+        "BelowCostBehavior",
+        "BelowPriceBehavior",
         "BlockchainRuntime",
         "BlockchainRuntimeConfig",
+        "BuyerNegotiationContext",
+        "ChannelPayload",
+        "CounterDecision",
         "DEFAULT_PRICING_STRATEGY",
+        "DedupStore",
+        "DeliveredMessage",
+        "DisputeResolution",
         "EASConfig",
+        "ERC8004Agent",
+        "ERC8004AgentMetadata",
+        "ERC8004BridgeConfig",
         "ERC8004Error",
         "ERC8004ErrorCode",
+        "ERC8004Network",
         "ERC8004_DEFAULT_RPC",
         "ERC8004_IDENTITY_REGISTRY",
         "ERC8004_REPUTATION_REGISTRY",
+        "EconomicParams",
+        "HandlerContext",
+        "HandlerResult",
         "IAdapter",
+        "IPFSClient",
+        "IPFSClientConfig",
         "InMemoryDedupStore",
         "InMemoryNonceManager",
+        "IncomingRequest",
         "InsufficientFundsError",
         "InvalidArweaveTxIdError",
         "MockChannel",
+        "MockChannelConfig",
+        "NegotiationChannel",
+        "NegotiationMessage",
+        "NetworkConfig",
+        "NetworkOption",
+        "ProgressEvent",
+        "ProtocolCreateParams",
+        "ProviderBalance",
         "ProviderOrchestrator",
+        "ProviderOrchestratorConfig",
+        "ProviderPolicy",
         "ProviderPolicyEngine",
+        "ProviderPolicyResult",
+        "ProviderPolicyViolation",
+        "ProviderStats",
         "QuoteChannelClient",
+        "QuoteChannelClientConfig",
         "QuoteChannelHandler",
+        "QuoteChannelHandlerConfig",
+        "QuoteDecision",
+        "QuoteEvaluation",
+        "QuoteForEvaluation",
+        "QuoteResult",
         "RelayChannel",
+        "RelayChannelConfig",
+        "ReportDisputeParams",
+        "ReportResult",
+        "ReportSettlementParams",
+        "ReputationFeedback",
+        "ReputationReporterConfig",
+        "ReputationSummary",
+        "RequestStatus",
+        "ServiceCost",
         "StateHelpers",
         "StorageInsufficientBalanceError",
+        "Subscription",
         "SwapExecutionError",
         "TimeoutError",
         "TransactionStatus",
         "URLValidationConfig",
+        "VerifyOnChainResult",
+        "VerifySource",
+        "WalletOption",
+        "WalletTransactionReceipt",
+        "WalletTransactionRequest",
         "X402AdapterConfig",
         "X402AmountExceededError",
         "X402ApprovalFailedError",
@@ -6486,38 +7560,16 @@
         "ACTPEvent",
         "ACTPTimeoutError",
         "ARCHIVE_SCHEMA_VERSION",
-        "AgentBalance",
         "AgentBehavior",
-        "AgentConfig",
         "AgentDID",
         "AgentProfile",
-        "AgentStats",
-        "AgentStatus",
-        "ArchiveAttestation",
-        "ArchiveBundle",
-        "ArchiveChainId",
-        "ArchiveFinalState",
-        "ArchiveHashes",
-        "ArchiveParticipants",
-        "ArchiveReferences",
-        "ArchiveSettlement",
-        "ArchiveSignatures",
-        "ArchiveTags",
-        "ArweaveConfig",
-        "ArweaveUploadResult",
         "Attestation",
-        "BuyerPolicy",
-        "CandidateStats",
         "CheckStatusResult",
         "CircuitBreakerConfig",
         "Constraints",
         "ContentProof",
         "CostModel",
-        "CounterAcceptMessage",
-        "CounterAcceptParams",
         "CounterOfferJustification",
-        "CounterOfferMessage",
-        "CounterOfferParams",
         "CreateEscrowParams",
         "DEFAULT_WEIGHTS",
         "DELIVERY_SCHEMA",
@@ -6526,24 +7578,14 @@
         "DeliveryProof",
         "DeliveryProofMessage",
         "DeliveryProofMetadata",
-        "DownloadResult",
         "EIP712Domain",
         "EscrowCreatedEvent",
         "EscrowInfo",
         "EscrowPayoutEvent",
-        "EscrowRelease",
         "EventFilter",
         "EventType",
-        "FilebaseConfig",
         "HAS_MESSAGES",
         "HAS_WEB3_PROTOCOL",
-        "IPFSUploadResult",
-        "IWalletProvider",
-        "IrysCurrency",
-        "IrysNetwork",
-        "Job",
-        "JobContext",
-        "JobHandler",
         "JobResult",
         "LRUCache",
         "Logger",
@@ -6552,54 +7594,34 @@
         "MerkleProof",
         "MessageNonceManager",
         "Negotiation",
-        "NegotiationResult",
         "NonceManagerPool",
         "NonceValidationResult",
-        "OrchestratorConfig",
         "PROTOCOL_VERSION",
-        "PolicyResult",
-        "PolicyViolation",
-        "PriceCalculation",
-        "PricingStrategy",
-        "ProvideOptions",
-        "Provider",
         "ProviderConfig",
-        "ProviderStatus",
-        "QuoteOffer",
         "ReceiptUploadFailure",
         "ReceiptUploadOptions",
         "ReceiptUploadPayload",
         "ReceiptUploadResult",
         "ReceiptUploadSuccess",
-        "RequestOptions",
-        "RequestResult",
         "RetryConfig",
-        "RoundResult",
         "STATE_TRANSITIONS",
         "Schema",
         "ScoreBreakdown",
-        "ScoredCandidate",
-        "ScoringWeights",
         "Selection",
-        "ServiceConfig",
         "ServiceDescriptor",
         "ServiceDirectory",
         "ServiceEndpoint",
         "ServiceEntry",
         "ServiceFilter",
-        "ServiceMetadata",
         "ServiceQuery",
         "ServiceRequest",
         "ServiceResponse",
-        "SessionMapping",
         "SetBasedReceivedNonceTracker",
         "SignatureComponents",
         "SignedMessage",
-        "State",
         "StateHelper",
         "StateTransitionedEvent",
         "TimeInterface",
-        "Transaction",
         "TransactionCreatedEvent",
         "TransactionDetails",
         "TransactionFilter",
@@ -6607,8 +7629,6 @@
         "TransactionView",
         "TypedData",
         "VerificationMethod",
-        "WalletInfo",
-        "WalletTier",
         "ZERO_BYTES32",
         "canonical_json_dumps",
         "compute_domain_separator",
@@ -6646,8 +7666,8 @@
         "verify_merkle_proof"
       ],
       "counts": {
-        "ts_only": 57,
-        "python_only": 161
+        "ts_only": 113,
+        "python_only": 107
       }
     }
   }

@@ -3,7 +3,7 @@ slug: /reference/sdk-js/basic
 title: "TypeScript SDK — Basic + Level 0"
 description: "Convenience tier of @agirails/sdk@4.0.0 — Level 0 imports (`request`, `provide`) plus the `Agent` class and basic `pay()` flow."
 schema_type: APIReference
-last_verified: 2026-05-27
+last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # TypeScript SDK — Basic + Level 0
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 11 · **Total TS surface**: 173 · **Manifest generated**: 2026-05-27 12:25:52 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-28 10:47:44 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -31,20 +31,28 @@ The smallest surface that produces a working transaction. If you're integrating 
 | `ACTPClientConfig` | _re-export_ | Configuration for creating an ACTPClient instance. | ✅ in-sync |
 | `provide` | _re-export_ | Provide a service | ✅ in-sync |
 | `request` | _re-export_ | Request a service | ✅ in-sync |
-| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS ahead — Python parity pending |
+| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS-only — Python parity pending |
 
-## Basic tier — 6 symbols
+## Basic tier — 14 symbols
 
 The high-level convenience layer. `Agent`, `pay()`, `request()`, `provide()` — for most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
 
 | Symbol | Kind | Summary | Cross-SDK status |
 |---|---|---|---|
 | `Agent` | _re-export_ | Agent class - Standard API | ✅ in-sync |
+| `AgentConfig` | _re-export_ | Agent configuration | ✅ in-sync |
 | `BasicAdapter` | _re-export_ | BasicAdapter - High-level API for simple payment flows. | ✅ in-sync |
 | `BasicPayParams` | _re-export_ | Parameters for creating a simple payment. | ✅ in-sync |
 | `BasicPayResult` | _re-export_ | Result of creating a payment. | ✅ in-sync |
+| `Job` | _re-export_ | Job interface - work request data | ✅ in-sync |
+| `JobContext` | _re-export_ | JobContext - Execution context passed to job handlers | ✅ in-sync |
+| `JobHandler` | _re-export_ | Job handler function type | ✅ in-sync |
 | `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
+| `ProvideOptions` | _re-export_ | Options for provide() function (Basic API) | ✅ in-sync |
+| `RequestOptions` | _re-export_ | Options for request() function (Basic API) | ✅ in-sync |
+| `ServiceConfig` | _re-export_ | Service configuration | ✅ in-sync |
 | `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
+| `State` | _re-export_ | ACTP State Machine Reference: Yellow Paper §3.2 | ✅ in-sync |
 
 ## See also
 

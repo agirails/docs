@@ -148,13 +148,35 @@ export function normalize(input: NormalizeInput): NormalizedManifest {
 
   // Per-symbol sync_status. Phase 5.5: shape-level (present vs not).
   // Post-v1: extend with signature-shape comparison.
+  //
+  // Cross-SDK presence uses the same alias logic as tsOnly/pyOnly above:
+  // a TS symbol counts as "in-sync" if Python has it under the same name,
+  // under the snake_case equivalent, or as a KNOWN_NAME_DIFFS alias. Same
+  // in reverse for Python. Without this, `calculatePrice` (TS) and
+  // `calculate_price` (Python) would each be flagged one-sided in the
+  // per-SDK doc tables — even though the cross-SDK diff treats them as
+  // matched. The two views must agree.
+  //
+  // `diverged` is keyed off the source-of-truth KNOWN_NAME_DIFFS array
+  // rather than the derived alias maps. The alias maps lose the "ts vs
+  // python name actually differs" signal when `python_has_alias: true`
+  // (the d.ts → d.python entry gets overwritten to d.ts → d.ts), so
+  // testing them is brittle for future entries.
+  const divergedNames = new Set<string>();
+  for (const d of KNOWN_NAME_DIFFS) {
+    if (d.ts !== d.python) {
+      divergedNames.add(d.ts);
+      divergedNames.add(d.python);
+    }
+  }
   const tiersWithStatus: Record<string, { ts?: string; python?: string; sync_status: SyncStatus }> = {};
   for (const [name, t] of Object.entries(tiers)) {
+    const hasCounterpart =
+      (t.ts && tsHasPyMatch(name)) || (t.python && pyHasTsMatch(name));
     let sync_status: SyncStatus = 'in-sync';
-    if (t.ts && !t.python) sync_status = 'local-ahead'; // TS has it, Python doesn't
-    else if (!t.ts && t.python) sync_status = 'remote-ahead'; // Python has it, TS doesn't
-    // Names known to differ across SDKs are 'diverged' rather than missing
-    if (tsAliasedToPython.has(name) || pythonAliasedToTs.has(name)) sync_status = 'diverged';
+    if (t.ts && !t.python && !hasCounterpart) sync_status = 'local-ahead';
+    else if (!t.ts && t.python && !hasCounterpart) sync_status = 'remote-ahead';
+    if (divergedNames.has(name)) sync_status = 'diverged';
     tiersWithStatus[name] = { ...t, sync_status };
   }
 

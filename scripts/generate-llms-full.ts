@@ -19,9 +19,11 @@ const LLMS_TXT = path.join(__dirname, '..', 'static', 'llms.txt');
 // MUST match sidebars.ts top-level order (Wave A.1 IA).
 const ORDERED_FILES = [
   'index.md',
+  'why.md',
 
   // Start funnel
   'start/index.md',
+  'start/agent-onboarding-prompt.md',
   'start/manual.md',
   'start/ai-environment/index.md',
   'start/ai-environment/claude-code.md',
@@ -32,7 +34,7 @@ const ORDERED_FILES = [
   // Protocol
   'protocol/index.md',
   'protocol/agirails-md.md',
-  'protocol/identity-file.md',
+  'protocol/covenant.md',
   'protocol/state-machine.md',
   'protocol/escrow.md',
   'protocol/fees.md',
@@ -58,7 +60,7 @@ const ORDERED_FILES = [
   'recipes/crewai.md',
   'recipes/claude-code-plugin.md',
 
-  // Reference (auto-extracted from truth-ledger; stubs filled in Wave A.2)
+  // Reference (auto-extracted from truth-ledger)
   'reference/index.md',
   'reference/cli/index.md',
   'reference/contracts/index.md',
@@ -71,6 +73,19 @@ const ORDERED_FILES = [
   'reference/errors/index.md',
   'reference/mcp-server/index.md',
   'reference/agirails-md-v4.md',
+
+  // Security
+  'security/index.md',
+  'security/threat-model.md',
+  'security/audits.md',
+  'security/contracts.md',
+  'security/formal-verification.md',
+  'security/testing.md',
+  'security/disclosure.md',
+
+  // FAQ + Architecture
+  'faq/index.md',
+  'architecture/operate/index.md',
 ];
 
 function stripFrontmatter(content: string): string {

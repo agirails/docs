@@ -295,11 +295,17 @@ describe('tiers (cross-SDK normalization)', () => {
     }
   });
 
-  it('in-sync entries have both ts + python keys', () => {
+  it('in-sync entries have at least one side populated', () => {
+    // An entry is keyed by the literal source name from one SDK; "in-sync"
+    // means the OTHER SDK has a counterpart, but that counterpart lives
+    // under its own key (e.g. `calculatePrice` ts-side, `calculate_price`
+    // python-side — two tiers entries, both in-sync). So an in-sync entry
+    // doesn't have to carry both `ts` and `python` itself.
     for (const [name, entry] of Object.entries<any>(manifest.tiers)) {
       if (entry.sync_status === 'in-sync') {
-        expect(typeof entry.ts).toBe('string');
-        expect(typeof entry.python).toBe('string');
+        const hasTs = typeof entry.ts === 'string';
+        const hasPy = typeof entry.python === 'string';
+        expect(hasTs || hasPy).toBe(true);
       }
     }
   });

@@ -40,10 +40,10 @@
   <rect x="355" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
   <text x="415" y="224" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">CLI</text>
 
-  <!-- MCP (planned) -->
-  <rect x="495" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <!-- MCP (live) -->
+  <rect x="495" y="200" width="120" height="38" rx="6" fill="#1F2937" stroke="#8B5CF6" stroke-width="1.5"/>
   <text x="555" y="219" text-anchor="middle" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">MCP</text>
-  <text x="555" y="233" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">planned</text>
+  <text x="555" y="233" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600">20 tools</text>
 
   <!-- Arrow: ACTP layer → Blockchain layer (centered) -->
   <path d="M 350 250 L 350 285" stroke="#4B5563" stroke-width="2" fill="none" marker-end="url(#arrow-gray)"/>

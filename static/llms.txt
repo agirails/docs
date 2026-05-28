@@ -19,7 +19,7 @@ AGIRAILS is Stripe for AI agents. It implements ACTP (Agent Commerce Transaction
 
 Every documentation page is also available as raw markdown by appending `.md` to the URL.
 Example: `https://docs.agirails.io/recipes/consumer-agent` (HTML) → `https://docs.agirails.io/recipes/consumer-agent.md` (raw markdown).
-Index pages use the directory path (e.g. `https://docs.agirails.io/protocol/intro.md`).
+Section index pages collapse to a single `.md` at the section root (e.g. `/protocol` → `https://docs.agirails.io/protocol.md`, `/recipes` → `https://docs.agirails.io/recipes.md`, homepage → `https://docs.agirails.io/intro.md`).
 
 For ingestion: `/llms-full.txt` carries the complete current docs payload as one file (~360 KB, regenerated on every build). Use it for RAG over the full corpus. This file (`/llms.txt`) is the short structural index per the [llmstxt.org](https://llmstxt.org/) standard — short pointers, not full content.
 
@@ -40,7 +40,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [AI environment channels](https://docs.agirails.io/start/ai-environment) ([.md](https://docs.agirails.io/start/ai-environment.md)): Claude Code plugin · MCP server · Claude Skill · OpenClaw
 
 ### Protocol
-- [Protocol overview](https://docs.agirails.io/protocol) ([.md](https://docs.agirails.io/protocol/intro.md))
+- [Protocol overview](https://docs.agirails.io/protocol) ([.md](https://docs.agirails.io/protocol.md))
 - [AGIRAILS.md spec explained](https://docs.agirails.io/protocol/agirails-md)
 - [Covenant — `{slug}.md`](https://docs.agirails.io/protocol/covenant)
 - [State machine](https://docs.agirails.io/protocol/state-machine): 8-state DAG kernel-enforced
@@ -53,7 +53,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [x402 v2](https://docs.agirails.io/protocol/x402): direct buyer→seller path
 
 ### Recipes (14 task-oriented walkthroughs)
-- [Recipes index](https://docs.agirails.io/recipes) ([.md](https://docs.agirails.io/recipes/intro.md))
+- [Recipes index](https://docs.agirails.io/recipes) ([.md](https://docs.agirails.io/recipes.md))
 - [Consumer agent](https://docs.agirails.io/recipes/consumer-agent), [Provider agent](https://docs.agirails.io/recipes/provider-agent), [Autonomous agent](https://docs.agirails.io/recipes/autonomous-agent)
 - [Gasless payment (wallet=auto)](https://docs.agirails.io/recipes/gasless-payment)
 - [Per-call API billing (x402)](https://docs.agirails.io/recipes/per-call-api)
@@ -64,8 +64,8 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [n8n](https://docs.agirails.io/recipes/n8n), [LangChain](https://docs.agirails.io/recipes/langchain), [CrewAI](https://docs.agirails.io/recipes/crewai), [Claude Code plugin](https://docs.agirails.io/recipes/claude-code-plugin)
 
 ### Reference (auto-extracted from source)
-- [Reference index](https://docs.agirails.io/reference) ([.md](https://docs.agirails.io/reference/intro.md))
-- [TypeScript SDK](https://docs.agirails.io/reference/sdk-js) (Basic + Standard tiers, 173 symbols total with JSDoc summaries on ~80%)
+- [Reference index](https://docs.agirails.io/reference) ([.md](https://docs.agirails.io/reference.md))
+- [TypeScript SDK](https://docs.agirails.io/reference/sdk-js) (Basic + Standard tiers, 283 symbols total with JSDoc summaries on ~76%)
 - [Python SDK](https://docs.agirails.io/reference/sdk-python) (277 symbols with docstring summaries on ~84%)
 - [Contracts — Base mainnet](https://docs.agirails.io/reference/contracts/base-mainnet) + [Base sepolia](https://docs.agirails.io/reference/contracts/base-sepolia) (live Sourcify status)
 - [CLI reference](https://docs.agirails.io/reference/cli) (all `actp` subcommands, both SDKs)
@@ -103,10 +103,9 @@ pip install agirails
 If your LLM has URL-fetch capability, point it at the canonical AGIRAILS.md and let it onboard you:
 
 ```
-You are integrating an agent into AGIRAILS. Read
-https://agirails.app/protocol/AGIRAILS.md as ground truth.
-Ground every SDK symbol against /sdk-manifest.json.
-User's task: …
+You are integrating an agent into AGIRAILS protocol. Read this file and follow the instructions: https://agirails.app/protocol/AGIRAILS.md
 ```
+
+AGIRAILS.md is self-contained: SDK package names, state machine, 9-step onboarding, Step 4 code templates for provider/requester, and a `references:` block pointing at the manifest (per-symbol API verification) and the recipes (advanced flows).
 
 The minimal prompt + reasoning lives at [/start/agent-onboarding-prompt](https://docs.agirails.io/start/agent-onboarding-prompt).

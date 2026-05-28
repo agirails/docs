@@ -3,7 +3,7 @@ slug: /reference/agirails-md-v4
 title: "AGIRAILS.md V4 schema"
 description: "Field-by-field reference for the V4 frontmatter schema parsed by parseAgirailsMdV4 — auto-extracted from the canonical AGIRAILS.md spec (AGIRAILS v4.0.0, spec=ACTP)."
 schema_type: APIReference
-last_verified: 2026-05-27
+last_verified: 2026-05-28
 auto_extracted_source: "static/sdk-manifest.json (protocol surface)"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 7
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-27 12:25:52 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-28 10:47:44 UTC
 
 This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter — the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 

@@ -415,16 +415,14 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   return lines.join('\n');
 }
 
+// Fallback badge for sync_status values that renderSymbolTable doesn't
+// explicitly handle. Every value of `SyncStatus` (types.ts) is currently
+// branched on at the call site, so this only fires if the type ever grows
+// a new variant. Kept narrow on purpose — labels for the four canonical
+// statuses live at the call site (renderSymbolTable) where the per-SDK
+// directional phrasing matters.
 function syncBadge(status: string): string {
-  switch (status) {
-    case 'in-sync': return '✅';
-    case 'local-ahead': return '🟢 local-ahead';
-    case 'remote-ahead': return '🟡 remote-ahead';
-    case 'diverged': return '⚠️ diverged';
-    case 'ts-only': return '🅣 TS-only';
-    case 'python-only': return '🐍 Python-only';
-    default: return status;
-  }
+  return `_(${status})_`;
 }
 
 function tierIntro(tier: string): string {
@@ -463,11 +461,15 @@ function renderSymbolTable(
     if (t) {
       if (t.sync_status === 'in-sync') status = '✅ in-sync';
       else if (t.sync_status === 'local-ahead') {
-        // local-ahead means present in TS manifest only, awaiting parity
-        status = sdk === 'ts' ? '🟢 TS ahead — Python parity pending' : '🟢 Python ahead — TS parity pending';
+        // local-ahead: TS has it, Python doesn't — these rows only land in
+        // the TS doc (Python symbol list won't include the symbol at all).
+        status = '🟢 TS-only — Python parity pending';
       }
       else if (t.sync_status === 'remote-ahead') {
-        status = sdk === 'ts' ? '🟡 Python has it; TS pending' : '🟡 TS has it; Python pending';
+        // remote-ahead: Python has it, TS doesn't — these rows only land in
+        // the Python doc. Prior phrasing said "TS has it; Python pending"
+        // which was the inverse of what `remote-ahead` actually means.
+        status = '🟢 Python-only — TS parity pending';
       }
       else if (t.sync_status === 'diverged') status = '⚠️ diverged (cross-SDK signature mismatch)';
       else status = syncBadge(t.sync_status);

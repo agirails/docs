@@ -83,7 +83,7 @@ Until then: good-faith reports are appreciated and may be acknowledged publicly 
 
 Findings that have been resolved + publicly disclosed are tracked at:
 
-- [Audits](/security/audits) — external audit findings + remediation status
+- [Audits](/security/audits) — Apex internal audit findings + remediation index, external-audit roadmap
 - The `actp-kernel` git history — every PR addressing a security finding has a clear commit message
 - The `updates/` changelog feed on this site — major security-affecting releases are announced
 
