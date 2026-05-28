@@ -15,7 +15,7 @@ sidebar_position: 2
 
 # TypeScript SDK: Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-28 12:51:50 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-28 23:18:28 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -37,7 +37,7 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `AdapterTransactionState` | _re-export_ | Valid transaction states across all adapters. | 🟢 TS-only (Python parity pending) |
 | `Address` | _re-export_ | Address utilities | ✅ in-sync |
 | `AgentBalance` | _re-export_ | Agent balance information | ✅ in-sync |
-| `AgentLifecycleError` | _re-export_ | Agent lifecycle error | ✅ in-sync |
+| `AgentLifecycleError` | _re-export_ | Agent lifecycle error. | ✅ in-sync |
 | `AgentRegistry` | _re-export_ | AgentRegistry - Agent Identity & Reputation SDK Module (AIP-7) | ✅ in-sync |
 | `AgentStats` | _re-export_ | Agent statistics | ✅ in-sync |
 | `AgentStatus` | _re-export_ | Agent lifecycle states | ✅ in-sync |
@@ -93,11 +93,11 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `DEFAULT_DISPUTE_WINDOW_SECONDS` | _re-export_ | Default dispute window in seconds (2 days). Used when no dispute window is specified in transaction parameters. | ✅ in-sync |
 | `DEFAULT_PRICING_STRATEGY` | _re-export_ | Default pricing strategy | 🟢 TS-only (Python parity pending) |
 | `DeliveredMessage` | _re-export_ | Per-message metadata the channel attaches when delivering. | 🟢 TS-only (Python parity pending) |
-| `DeliveryFailedError` | _re-export_ | Provider failed to deliver result | ✅ in-sync |
+| `DeliveryFailedError` | _re-export_ | Provider failed to deliver result. | ✅ in-sync |
 | `DeliveryProofBuilder` | _re-export_ | DeliveryProofBuilder - Main Builder Class | ✅ in-sync |
 | `DIDManager` | _re-export_ | DIDManager - Manage DID attributes and delegates (AIP-7 §2.2) | ✅ in-sync |
 | `DIDResolver` | _re-export_ | DIDResolver - Resolve DIDs to DID Documents (AIP-7 §2.2) | ✅ in-sync |
-| `DisputeRaisedError` | _re-export_ | Dispute raised on transaction | ✅ in-sync |
+| `DisputeRaisedError` | _re-export_ | Dispute raised on transaction. | ✅ in-sync |
 | `DisputeResolution` | _re-export_ | Dispute resolution split | 🟢 TS-only (Python parity pending) |
 | `DisputeWindow` | _re-export_ | Dispute window utilities | ✅ in-sync |
 | `DisputeWindowActiveError` | _re-export_ | Error thrown when dispute window is still active. | ✅ in-sync |
@@ -141,12 +141,12 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `InMemoryReceivedNonceTracker` | _re-export_ | In-Memory Received Nonce Tracker | ✅ in-sync |
 | `InMemoryUsedAttestationTracker` | _re-export_ | In-Memory Used Attestation Tracker | ✅ in-sync |
 | `InsufficientBalanceError` | _re-export_ | Error thrown when there are insufficient funds for an operation. | ✅ in-sync |
-| `InsufficientFundsError` | _re-export_ | Transaction Errors | 🟢 TS-only (Python parity pending) |
+| `InsufficientFundsError` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `InvalidAddressError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `InvalidAmountError` | _re-export_ | Error thrown when an invalid amount is provided. | ✅ in-sync |
 | `InvalidArweaveTxIdError` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `InvalidCIDError` | _re-export_ | _(no summary)_ | ✅ in-sync |
-| `InvalidStateTransitionError` | _re-export_ | State Machine Errors | ✅ in-sync |
+| `InvalidStateTransitionError` | _re-export_ | Error thrown when an invalid state transition is attempted. | ✅ in-sync |
 | `IPFSClient` | _re-export_ | IPFS Client Interface (from DeliveryProofBuilder) | 🟢 TS-only (Python parity pending) |
 | `IPFSClientConfig` | _re-export_ | IPFS Client Configuration | 🟢 TS-only (Python parity pending) |
 | `IPFSUploadResult` | _re-export_ | Result of uploading to IPFS | ✅ in-sync |
@@ -177,7 +177,7 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `NetworkError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `NetworkOption` | _re-export_ | Network options | 🟢 TS-only (Python parity pending) |
 | `NonceManager` | _re-export_ | Nonce Manager Interface (from DeliveryProofBuilder) | ✅ in-sync |
-| `NoProviderFoundError` | _re-export_ | No provider found for the requested service | ✅ in-sync |
+| `NoProviderFoundError` | _re-export_ | No provider found for the requested service. | ✅ in-sync |
 | `OrchestratorConfig` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `parseUSDC` | _re-export_ | Parse USDC amount string to wei (6 decimals) | ✅ in-sync |
 | `PolicyResult` | _re-export_ | _(no summary)_ | ✅ in-sync |
@@ -193,7 +193,7 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `ProviderPolicyEngine` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `ProviderPolicyResult` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `ProviderPolicyViolation` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
-| `ProviderRejectedError` | _re-export_ | Provider rejected the job | ✅ in-sync |
+| `ProviderRejectedError` | _re-export_ | Provider rejected the job. | ✅ in-sync |
 | `ProviderStats` | _re-export_ | Provider statistics | 🟢 TS-only (Python parity pending) |
 | `ProviderStatus` | _re-export_ | Provider status | ✅ in-sync |
 | `QueryCapExceededError` | _re-export_ | Registry Query Cap Exceeded Error (L-4) | ✅ in-sync |
@@ -222,25 +222,25 @@ Production-stable surface for non-trivial integrations: adapters, builders, mess
 | `ScoredCandidate` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `ScoringWeights` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `Semaphore` | _re-export_ | Simple semaphore for limiting concurrent operations | ✅ in-sync |
-| `ServiceConfigError` | _re-export_ | Service configuration error | ✅ in-sync |
+| `ServiceConfigError` | _re-export_ | Service configuration error. | ✅ in-sync |
 | `ServiceCost` | _re-export_ | Cost configuration for a service | 🟢 TS-only (Python parity pending) |
 | `ServiceHash` | _re-export_ | Service metadata utilities for ACTP transactions | ✅ in-sync |
 | `ServiceMetadata` | _re-export_ | Service metadata structure | ✅ in-sync |
 | `SessionMapping` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `shortenAddress` | _re-export_ | Shorten Ethereum address for display | ✅ in-sync |
-| `SignatureVerificationError` | _re-export_ | Signature Errors | ✅ in-sync |
+| `SignatureVerificationError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `StandardTransactionParams` | _re-export_ | Parameters for creating a transaction (standard level). | ✅ in-sync |
 | `StateHelpers` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `StorageAuthenticationError` | _re-export_ | _(no summary)_ | ✅ in-sync |
-| `StorageError` | _re-export_ | Storage Errors (AIP-7) | ✅ in-sync |
+| `StorageError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `StorageInsufficientBalanceError` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
 | `StorageRateLimitError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `Subscription` | _re-export_ | Unsubscribe handle. `unsubscribe()` MUST be idempotent; callers should call it exactly once but the impl tolerates double-unsubscribe to keep cleanup paths simple. | 🟢 TS-only (Python parity pending) |
 | `SwapExecutionError` | _re-export_ | _(no summary)_ | 🟢 TS-only (Python parity pending) |
-| `TimeoutError` | _re-export_ | Request timeout error | 🟢 TS-only (Python parity pending) |
+| `TimeoutError` | _re-export_ | Request timeout error. | 🟢 TS-only (Python parity pending) |
 | `Transaction` | _re-export_ | ACTP Transaction Reference: Yellow Paper §3.1 | ✅ in-sync |
 | `TransactionNotFoundError` | _re-export_ | Error thrown when a transaction is not found. | ✅ in-sync |
-| `TransactionRevertedError` | _re-export_ | Blockchain Errors | ✅ in-sync |
+| `TransactionRevertedError` | _re-export_ | _(no summary)_ | ✅ in-sync |
 | `TransactionState` | _re-export_ | ACTP Transaction State enum matching the smart contract states. | ✅ in-sync |
 | `TransactionStateValue` | _re-export_ | Numeric state values matching the smart contract enum. | ✅ in-sync |
 | `TransactionStatus` | _re-export_ | Transaction status returned by getStatus(). | 🟢 TS-only (Python parity pending) |

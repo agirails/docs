@@ -84,7 +84,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Disclosure](https://docs.agirails.io/security/disclosure): security@agirails.io, response times, scope
 
 ### FAQ + Architecture
-- [FAQ](https://docs.agirails.io/faq): 16 questions, FAQPage JSON-LD structured
+- [FAQ](https://docs.agirails.io/faq): 17 questions, FAQPage JSON-LD structured
 - [Walk-away runbook](https://docs.agirails.io/architecture/operate): bus-factor commitment, public verification path
 
 ## Install

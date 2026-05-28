@@ -345,6 +345,93 @@ function renderMcpPage(mcp: Manifest['mcp'], generatedAt: string): string {
   return lines.join('\n');
 }
 
+interface CodeMerge {
+  code: string;
+  ts?: ErrorEntry;
+  python?: ErrorEntry;
+}
+
+function mergeErrorsByCode(
+  tsEntries: ErrorEntry[],
+  pyEntries: ErrorEntry[],
+): CodeMerge[] {
+  const byCode = new Map<string, CodeMerge>();
+  for (const e of tsEntries) {
+    if (!e.code) continue;
+    const entry = byCode.get(e.code) ?? { code: e.code };
+    entry.ts = e;
+    byCode.set(e.code, entry);
+  }
+  for (const e of pyEntries) {
+    if (!e.code) continue;
+    const entry = byCode.get(e.code) ?? { code: e.code };
+    entry.python = e;
+    byCode.set(e.code, entry);
+  }
+  return [...byCode.values()].sort((a, b) => a.code.localeCompare(b.code));
+}
+
+const RECOVERY_LABEL: Record<string, string> = {
+  'retry-safe': '♻️ retry-safe',
+  'user-action': '🛠️ user-action',
+  'must-investigate': '🔍 must-investigate',
+  'terminal': '⛔ terminal',
+};
+
+function renderTriageSection(
+  lines: string[],
+  tsEntries: ErrorEntry[],
+  pyEntries: ErrorEntry[],
+): void {
+  const merged = mergeErrorsByCode(tsEntries, pyEntries);
+  const withTriage = merged.filter((m) => m.ts?.cause || m.python?.cause);
+  if (withTriage.length === 0) return;
+
+  lines.push('## Per-code triage');
+  lines.push('');
+  lines.push(`${withTriage.length} user-facing error codes carry source-extracted **Cause** + **Fix** + **Recovery** tags. Each anchor below matches the raw error code string; paste the code (e.g. \`DEADLINE_EXPIRED\`) into your browser search or follow the direct fragment URL.`);
+  lines.push('');
+
+  for (const m of withTriage) {
+    const triage = m.ts ?? m.python!;
+    const anchor = m.code.toLowerCase();
+    lines.push(`### \`${m.code}\` {#${anchor}}`);
+    lines.push('');
+
+    const classes: string[] = [];
+    if (m.ts) classes.push(`**TS**: \`${m.ts.class_name}\``);
+    if (m.python) classes.push(`**Python**: \`${m.python.class_name}\``);
+    const recoveryRaw = (triage.recovery ?? '').trim();
+    const recoveryLabel = RECOVERY_LABEL[recoveryRaw] ?? (recoveryRaw ? `_${recoveryRaw}_` : '_(unspecified)_');
+    classes.push(`**Recovery**: ${recoveryLabel}`);
+    lines.push(classes.join(' · '));
+    lines.push('');
+
+    if (triage.cause) {
+      lines.push(`**Cause.** ${triage.cause}`);
+      lines.push('');
+    }
+    if (triage.fix) {
+      lines.push(`**Fix.** ${triage.fix}`);
+      lines.push('');
+    }
+  }
+}
+
+function renderSymptomFallback(lines: string[]): void {
+  lines.push('## If you don\'t have an error code');
+  lines.push('');
+  lines.push('Sometimes the SDK is silent or the failure mode looks like nothing in particular. Common scenarios:');
+  lines.push('');
+  lines.push('- **Agent appears to start but never picks up jobs.** Check `agent.status`, confirm `network:` matches the chain your service was registered on, and verify the AgentRegistry record at `agent.address` resolves. Setup-time issues most commonly surface as a [ServiceConfigError](#service_config_error) or [AgentLifecycleError](#agent_lifecycle_error); silent hangs usually mean RPC misconfiguration or unfunded paymaster.');
+  lines.push('- **Transaction stuck in `INITIATED` or `QUOTED`.** No on-chain action will move it. Either the requester needs to `acceptQuote + linkEscrow`, or the deadline will eventually fire a [DEADLINE_EXPIRED](#deadline_expired). See [State machine](/protocol/state-machine).');
+  lines.push('- **Money locked, can\'t move it.** Read `getTransaction(txId).state`. If `COMMITTED`/`IN_PROGRESS`/`DELIVERED`, the protocol path forward is `transitionState(...)` or `dispute(...)`. See [Dispute flow](/recipes/dispute-flow).');
+  lines.push('- **`actp test` passes but production fails.** Almost always a config drift. Run `actp deploy:check --strict` and verify keystore network matches code-level `network:`.');
+  lines.push('');
+  lines.push('If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issues) with the silent-failure repro and the output of `actp deploy:check --json`.');
+  lines.push('');
+}
+
 function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): string {
   const lines: string[] = [];
   lines.push('---');
@@ -368,6 +455,15 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   lines.push('');
   lines.push('Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren\'t thrown directly.');
   lines.push('');
+  lines.push('**Got an error code?** Cmd+F or jump straight to its anchor in [Per-code triage](#per-code-triage) below: cause, fix, and recovery class auto-extracted from the SDK source comments. **No code yet?** See [If you don\'t have an error code](#if-you-dont-have-an-error-code).');
+  lines.push('');
+
+  // Per-code triage section: merge TS + Python entries by code so each code
+  // gets one anchor with both class names listed. Built from the `@cause`,
+  // `@fix`, and `@recovery` JSDoc/docstring tags extracted in errors.ts.
+  renderTriageSection(lines, errors.ts, errors.python);
+
+  renderSymptomFallback(lines);
 
   const renderTable = (sdk: 'TypeScript' | 'Python', entries: ErrorEntry[]) => {
     lines.push(`## ${sdk} SDK errors`);

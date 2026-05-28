@@ -15,12 +15,12 @@ sidebar_position: 7
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-28 12:51:50 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-28 23:18:28 UTC
 
 This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 
 - **Owner-local AGIRAILS.md**: template-filled copy of the canonical spec, kept locally per agent.
-- **`{slug}.md` covenant**: public business card, V4-schema, hash-anchored on-chain via [AgentRegistry](/reference/glossary#agentregistry).
+- **`{slug}.md` covenant**: public business card, V4-schema, hash-anchored on-chain via AgentRegistry.
 
 See [the covenant page](/protocol/covenant) for the mental model + the [AGIRAILS.md spec page](/protocol/agirails-md) for the three-form disambiguation (canonical / owner-local / covenant).
 

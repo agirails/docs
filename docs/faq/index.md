@@ -116,6 +116,14 @@ export const FAQSchema = () => (
           },
           {
             "@type": "Question",
+            "name": "How do I debug when something breaks?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Every SDK error class carries source-extracted Cause + Fix + Recovery tags rendered as per-code triage entries at /reference/errors. Paste your error code (e.g. DEADLINE_EXPIRED, X402_PUBLISH_REQUIRED) into the page search; the anchor matches the literal code string. If the failure is silent (agent won't start, transaction stuck, money locked), see the 'If you don't have an error code' section on the same page for the four most common symptom paths. For unfixable cases, open a GitHub issue at agirails/sdk-js with the output of actp deploy:check --json."
+            }
+          },
+          {
+            "@type": "Question",
             "name": "Is there a testnet I can try first?",
             "acceptedAnswer": {
               "@type": "Answer",
@@ -159,7 +167,7 @@ export const FAQSchema = () => (
 Sixteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
 
 :::info If you are an AI agent reading this
-This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source: extract directly without scraping prose. The 16 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
+This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source: extract directly without scraping prose. The 17 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, debug triage, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).
 :::
 
 ---
@@ -339,7 +347,19 @@ See also: [MCP server install](/start/ai-environment/mcp-server), [Claude Code p
 
 ---
 
-### 13. Is there a testnet I can try first?
+### 13. How do I debug when something breaks?
+
+Every SDK error class carries source-extracted **Cause** + **Fix** + **Recovery** tags rendered as per-code triage entries at [/reference/errors](/reference/errors). Paste your error code (e.g. `DEADLINE_EXPIRED`, `X402_PUBLISH_REQUIRED`) into the page search; the anchor matches the literal code string.
+
+If the failure is silent (agent won't start, transaction stuck, money locked), see the **"If you don't have an error code"** section on the same page for the four most common symptom paths.
+
+For unfixable cases, [open a GitHub issue](https://github.com/agirails/sdk-js/issues) with the output of `actp deploy:check --json`.
+
+See also: [Error reference](/reference/errors), [Truth-ledger manifest](/sdk-manifest.json).
+
+---
+
+### 14. Is there a testnet I can try first?
 
 Yes: **Base Sepolia**. Set `network: 'testnet'` in your SDK config. Mint testnet USDC via the SDK's built-in MockUSDC contract (use the [actp CLI](/reference/glossary#actp-cli)'s mint utility or the `MintTestUSDC` MCP tool). **Do not use external faucets**: testnet USDC is a separate contract from production USDC, and only the SDK's internal mint path is authorized.
 
@@ -349,7 +369,7 @@ See also: [Get started](/start), [Keystore + deployment](/recipes/keystore-and-d
 
 ---
 
-### 14. Is AGIRAILS open source?
+### 15. Is AGIRAILS open source?
 
 Yes. Core repos:
 
@@ -363,7 +383,7 @@ License: MIT for SDKs + MCP server; the actp-kernel contracts are MIT with on-ch
 
 ---
 
-### 15. What if AGIRAILS the company disappears?
+### 16. What if AGIRAILS the company disappears?
 
 The protocol survives. Specifically:
 
@@ -379,7 +399,7 @@ See also: [Protocol overview](/protocol), [Security](/security), [Verified contr
 
 ---
 
-### 16. What does "trustless" actually mean here? Is it a marketing word?
+### 17. What does "trustless" actually mean here? Is it a marketing word?
 
 It's a precise structural property, not a marketing word. The ACTP state machine has been **formally verified using [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology**: [H¹ = 0](/reference/glossary#h-0) on the state sheaf after 2-cell refinement, meaning every local state in the protocol composes into one globally consistent view with no hidden seam where trust has to be re-introduced.
 

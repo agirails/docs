@@ -32,6 +32,12 @@ interface ErrorEntry {
   code: string | null;
   /** Source file (relative to monorepo root). */
   source_file: string;
+  /** From `@cause` tag in JSDoc/docstring. One-sentence root cause. */
+  cause?: string;
+  /** From `@fix` tag. Actionable resolution, possibly multi-sentence. */
+  fix?: string;
+  /** From `@recovery` tag. One of: retry-safe, user-action, must-investigate, terminal. */
+  recovery?: string;
 }
 
 export interface ErrorsSurfaceData {
@@ -60,6 +66,10 @@ const TS_ERROR_FILES = [
 /**
  * Extract error classes from a single TS file. Returns one ErrorEntry per
  * `export class XxxError extends Parent` declaration.
+ *
+ * Also extracts `@cause`, `@fix`, `@recovery` tags from the JSDoc block
+ * immediately preceding the class declaration. These power the per-code
+ * triage entries in the rendered docs.
  */
 function extractTsErrorsFromFile(
   filePath: string,
@@ -70,7 +80,7 @@ function extractTsErrorsFromFile(
 
   // Match: export class <Name> extends <Parent>
   // Then look ahead in the class body for the next super('CODE', ...) call
-  // (or super(message, 'CODE', ...) — code is the literal that ends in
+  // (or super(message, 'CODE', ...): code is the literal that ends in
   // ALL_CAPS_UNDERSCORE pattern, present as a single-quoted string).
   const classRegex = /export\s+(?:abstract\s+)?class\s+(\w+Error)\s+extends\s+(\w+)\s*\{/g;
   const entries: ErrorEntry[] = [];
@@ -78,17 +88,73 @@ function extractTsErrorsFromFile(
   while ((m = classRegex.exec(src)) !== null) {
     const [, className, parent] = m;
     const bodyStart = m.index + m[0].length;
-    // Find matching closing brace by simple depth counting.
     const body = extractBalancedBlock(src, bodyStart - 1);
     const code = findCodeStringInBody(body);
+    const jsdoc = findPrecedingJsDoc(src, m.index);
+    const triage = parseTriageTags(jsdoc);
     entries.push({
       class_name: className,
       parent,
       code,
       source_file: relPath,
+      ...triage,
     });
   }
   return entries;
+}
+
+/**
+ * Find the JSDoc block immediately preceding the class declaration at
+ * `classIdx`. Returns the comment body (without `/**` and ` * ` markers) or
+ * empty string if no JSDoc block was found within a tolerance gap.
+ */
+function findPrecedingJsDoc(src: string, classIdx: number): string {
+  // Walk backwards from classIdx, skip whitespace only, look for the closing
+  // `*/` of a JSDoc. Allow up to a couple of blank lines between.
+  let i = classIdx - 1;
+  while (i > 0 && /\s/.test(src[i])) i--;
+  if (i < 1 || src[i] !== '/' || src[i - 1] !== '*') return '';
+  const closeIdx = i; // index of '/'
+  // Find opening `/**`. JSDoc opens with `/**` and the second `*` is required.
+  let openIdx = -1;
+  for (let j = closeIdx - 2; j >= 1; j--) {
+    if (src[j] === '*' && src[j - 1] === '/' && src[j + 1] === '*') {
+      openIdx = j - 1;
+      break;
+    }
+  }
+  if (openIdx === -1) return '';
+  const block = src.slice(openIdx + 3, closeIdx - 1);
+  // Strip the leading ` * ` per line.
+  return block
+    .split('\n')
+    .map((line) => line.replace(/^\s*\*\s?/, ''))
+    .join('\n')
+    .trim();
+}
+
+/**
+ * Parse `@cause`, `@fix`, `@recovery` tags from a JSDoc/docstring body.
+ * Each tag is a single line; tag value extends until the next tag or end.
+ */
+function parseTriageTags(body: string): {
+  cause?: string;
+  fix?: string;
+  recovery?: string;
+} {
+  if (!body) return {};
+  const result: { cause?: string; fix?: string; recovery?: string } = {};
+  // Split on tag boundaries: @cause / @fix / @recovery / @other-tags.
+  const tagRegex = /(?:^|\n)\s*@(cause|fix|recovery)\s+([\s\S]*?)(?=\n\s*@\w|\n\s*$|$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = tagRegex.exec(body)) !== null) {
+    const [, tag, raw] = m;
+    const value = raw.replace(/\s+/g, ' ').trim();
+    if (tag === 'cause' || tag === 'fix' || tag === 'recovery') {
+      result[tag] = value;
+    }
+  }
+  return result;
 }
 
 /**
@@ -166,7 +232,7 @@ function extractPyErrorsFromFile(
   if (!fs.existsSync(filePath)) return [];
   const src = fs.readFileSync(filePath, 'utf-8');
 
-  // class Name(Parent):  →  capture name + parent.
+  // class Name(Parent):  -> capture name + parent.
   const classRegex = /^class\s+(\w+Error)\s*\(\s*(\w+)\s*\)\s*:/gm;
   const entries: ErrorEntry[] = [];
   let m: RegExpExecArray | null;
@@ -181,14 +247,29 @@ function extractPyErrorsFromFile(
         ? src.slice(tailStart)
         : src.slice(tailStart, tailStart + m[0].length + nextClass);
     const codeMatch = tail.match(/code\s*=\s*["']([A-Z][A-Z0-9_]+)["']/);
+    const docstring = findPyDocstringInBlock(tail);
+    const triage = parseTriageTags(docstring);
     entries.push({
       class_name: className,
       parent,
       code: codeMatch ? codeMatch[1] : null,
       source_file: relPath,
+      ...triage,
     });
   }
   return entries;
+}
+
+/**
+ * Find the triple-quoted docstring immediately after the `class X(Y):` line
+ * within a tail block. Returns the docstring body (without the triple quotes)
+ * or empty string if not found.
+ */
+function findPyDocstringInBlock(block: string): string {
+  // Match the first triple-quoted string after the class declaration. Accept
+  // both `"""..."""` and `'''...'''` though Python convention is the former.
+  const match = block.match(/:\s*\r?\n\s*(?:"""|''')([\s\S]*?)(?:"""|''')/);
+  return match ? match[1].trim() : '';
 }
 
 function extractAllPythonErrors(

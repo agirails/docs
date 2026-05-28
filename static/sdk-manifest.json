@@ -2,7 +2,7 @@
   "_generated": true,
   "_doNotEdit": true,
   "_generator": "scripts/truth-ledger/build-truth-ledger.ts",
-  "_generatedAt": "2026-05-28T12:51:50.481Z",
+  "_generatedAt": "2026-05-28T23:18:28.242Z",
   "_sourceVersions": {
     "sdk-js": "4.0.0",
     "agirails-python": "3.0.1",
@@ -2090,7 +2090,10 @@
         "class_name": "AgentLifecycleError",
         "parent": "ACTPError",
         "code": "AGENT_LIFECYCLE_ERROR",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "`start()`, `stop()`, `pause()`, or `resume()` called in a state where it is not allowed (e.g. stop() on a never-started agent).",
+        "fix": "Read `agent.status` before lifecycle transitions. Don't call `start()` twice; the SDK does not idempotent it.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ArweaveDownloadError",
@@ -2126,7 +2129,10 @@
         "class_name": "DeadlineExpiredError",
         "parent": "ACTPError",
         "code": "DEADLINE_EXPIRED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "The transaction's deadline (set at createTransaction, default 600s) has passed without delivery.",
+        "fix": "For new transactions, increase `deadline_seconds`. For an expired one, the requester can transition to CANCELLED. See /recipes/dispute-flow.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DeadlinePassedError",
@@ -2138,13 +2144,19 @@
         "class_name": "DeliveryFailedError",
         "parent": "ACTPError",
         "code": "DELIVERY_FAILED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Provider's handler threw before submitting the deliverable; the SDK transitioned the tx but no payload was attached.",
+        "fix": "This is a provider-side bug. Requester can transition to DISPUTED. Provider should examine handler logs and ensure the handler returns or throws cleanly.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DisputeRaisedError",
         "parent": "ACTPError",
         "code": "DISPUTE_RAISED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Counterparty raised a dispute on this transaction. Funds remain in escrow pending mediator decision.",
+        "fix": "Not necessarily a bug; it is a protocol path. See /recipes/dispute-flow for evidence submission and resolution. The disputer has posted bond; respond within the dispute window.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DisputeWindowActiveError",
@@ -2180,7 +2192,10 @@
         "class_name": "InsufficientFundsError",
         "parent": "ACTPError",
         "code": "INSUFFICIENT_FUNDS",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "USDC balance in your Smart Wallet is below the amount the transaction is trying to lock or transfer.",
+        "fix": "Fund the wallet at `agent.address` with the required USDC. Check `agent.balance` before high-budget calls.",
+        "recovery": "user-action"
       },
       {
         "class_name": "InvalidAddressError",
@@ -2210,43 +2225,64 @@
         "class_name": "InvalidStateTransitionError",
         "parent": "ACTPError",
         "code": "INVALID_STATE_TRANSITION",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Attempted state transition not allowed by the ACTP state machine from the current state.",
+        "fix": "Call `getTransaction(txId)` to see the actual state. The error message lists valid transitions. Don't cache transaction state locally; the on-chain state is canonical.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "NetworkError",
         "parent": "ACTPError",
         "code": "NETWORK_ERROR",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "RPC failure, transient connectivity issue, or rate limit on the upstream provider.",
+        "fix": "Retry with backoff; most NetworkErrors are transient. If persistent, switch RPC endpoint (`ACTP_RPC_URL`). Verify Base network status at status.base.org.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "NoProviderFoundError",
         "parent": "ACTPError",
         "code": "NO_PROVIDER_FOUND",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "AgentRegistry returned no providers for the requested service, or all returned providers failed the filter.",
+        "fix": "Verify the service capability tag matches one declared in /reference/agirails-md-v4. Drop the `filter` constraint or widen budget. If you pinned a provider with `provider: '0x…'`, verify the address is registered.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ProviderRejectedError",
         "parent": "ACTPError",
         "code": "PROVIDER_REJECTED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Provider refused your job explicitly: typically budget below `min_acceptable_amount` or service filter failed at their end.",
+        "fix": "Negotiate via AIP-2.1 counter-offer or increase budget. See /recipes/quote-negotiation.",
+        "recovery": "user-action"
       },
       {
         "class_name": "QueryCapExceededError",
         "parent": "ACTPError",
         "code": "QUERY_CAP_EXCEEDED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "AgentRegistry contains more than MAX_QUERY_AGENTS (1000) agents; on-chain query disabled to prevent DoS.",
+        "fix": "Migrate to an off-chain indexer: The Graph, Goldsky, or Alchemy Subgraphs. Index `AgentRegistered`, `ServiceTypeUpdated`, and `ActiveStatusUpdated` events.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ServiceConfigError",
         "parent": "ACTPError",
         "code": "SERVICE_CONFIG_ERROR",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Agent or service config is missing or incorrect. Often: missing network, missing keystore, capability tag not recognized, or pricing fields out of order.",
+        "fix": "Run `actp deploy:check --strict`. Compare your config to the V4 schema at /reference/agirails-md-v4.",
+        "recovery": "user-action"
       },
       {
         "class_name": "SignatureVerificationError",
         "parent": "ACTPError",
         "code": "SIGNATURE_VERIFICATION_FAILED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "An EIP-712 signed message (quote, counter-offer, receipt) does not recover to the expected signer address.",
+        "fix": "Verify the signer's keystore is loaded and that chainId in your EIP-712 domain matches the network. Cross-SDK byte-identical encoding is a CI invariant; if it fails it is almost always a config drift on your side.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "StorageAuthenticationError",
@@ -2258,7 +2294,10 @@
         "class_name": "StorageError",
         "parent": "ACTPError",
         "code": "STORAGE_ERROR",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "IPFS/Arweave upload, download, or pin failed. Could be auth, rate limit, or size cap.",
+        "fix": "For uploads, verify storage credentials and file size. For downloads, the CID may be unreachable; verify pinning status with your provider.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "StorageRateLimitError",
@@ -2276,19 +2315,28 @@
         "class_name": "TimeoutError",
         "parent": "ACTPError",
         "code": "TIMEOUT",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Operation exceeded its configured timeout. Most commonly: provider didn't respond, paymaster bundling slow, or RPC sluggish.",
+        "fix": "Increase `timeout` (seconds in Python, ms in TS). If repeatedly timing out, check provider health or chain network state.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "TransactionNotFoundError",
         "parent": "ACTPError",
         "code": "TRANSACTION_NOT_FOUND",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "The provided txId does not match any transaction in the kernel, or you are querying on the wrong network.",
+        "fix": "Verify `network:` matches the chain the transaction was created on. Re-check txId from the original `createTransaction` return value.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "TransactionRevertedError",
         "parent": "ACTPError",
         "code": "TRANSACTION_REVERTED",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "A kernel call reverted on-chain. Common: state guard violation, address mismatch, or fee param out of bounds.",
+        "fix": "Read the `reason` field on the error. Use `cast call --trace` or the Basescan tx trace to see the revert reason from the kernel.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "UploadTimeoutError",
@@ -2300,25 +2348,37 @@
         "class_name": "ValidationError",
         "parent": "ACTPError",
         "code": "VALIDATION_ERROR",
-        "source_file": "src/errors/index.ts"
+        "source_file": "src/errors/index.ts",
+        "cause": "Input failed shape validation (invalid address, malformed CID, amount out of bounds, etc.).",
+        "fix": "Read the error `details` field for the specific failure. Adjust your inputs to match the schema.",
+        "recovery": "user-action"
       },
       {
         "class_name": "X402AmountExceededError",
         "parent": "X402Error",
         "code": "X402_AMOUNT_EXCEEDED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "x402 server-issued price exceeds the consumer's max acceptable amount (per `pay()` config or app guard).",
+        "fix": "Raise `maxAmountPerTx`, or treat the call as too expensive and route to ACTP escrow with negotiated pricing.",
+        "recovery": "user-action"
       },
       {
         "class_name": "X402ApprovalFailedError",
         "parent": "X402Error",
         "code": "X402_APPROVAL_FAILED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "USDC `transferWithAuthorization` (EIP-3009) authorization step failed. Common: signature replay, expired authorization, or insufficient balance.",
+        "fix": "Re-sign with a fresh nonce; check USDC balance; verify the EIP-3009 typed-data domain matches Base mainnet.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "X402ConfigError",
         "parent": "X402Error",
         "code": "X402_CONFIG_ERROR",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "x402 adapter configuration is missing or invalid (no wallet, no recipient address, malformed scheme).",
+        "fix": "Read the error `details` for the specific config gap. See /recipes/per-call-api for canonical setup.",
+        "recovery": "user-action"
       },
       {
         "class_name": "X402Error",
@@ -2330,37 +2390,55 @@
         "class_name": "X402NetworkNotAllowedError",
         "parent": "X402Error",
         "code": "X402_NETWORK_NOT_ALLOWED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "x402 v2 only supports mainnet on AGIRAILS; attempted use on testnet or mock.",
+        "fix": "Switch network to `mainnet`, or use ACTP escrow on testnet for development.",
+        "recovery": "user-action"
       },
       {
         "class_name": "X402PaymentFailedError",
         "parent": "X402Error",
         "code": "X402_PAYMENT_FAILED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "x402 transfer transaction failed on-chain (revert during USDC transfer step) or server returned non-2xx.",
+        "fix": "Read the tx hash from error details, inspect on Basescan. Often: balance check failed, recipient invalid, or paymaster rejected sponsorship.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "X402PublishRequiredError",
         "parent": "X402Error",
         "code": "X402_PUBLISH_REQUIRED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "Attempted x402 settlement before publishing the agent (no AgentID, no AgentRegistry entry).",
+        "fix": "Run `actp publish` to register the agent. See /recipes/keystore-and-deployment.",
+        "recovery": "user-action"
       },
       {
         "class_name": "X402SettlementProofMissingError",
         "parent": "X402Error",
         "code": "X402_SETTLEMENT_PROOF_MISSING",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "x402 settlement attempted but the prior payment authorization proof isn't on file (server lost state, replayed stale request, or facilitator/server misbehavior).",
+        "fix": "Re-initiate the payment flow from `pay()` with a new authorization. Verify the settlement on-chain via tx hash before treating as final. State is per-request, not persisted across SDK reboots.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "X402SignatureFailedError",
         "parent": "X402Error",
         "code": "X402_SIGNATURE_FAILED",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "EIP-712 typed-data signing of the x402 payment authorization failed at the wallet provider level.",
+        "fix": "Confirm the wallet's chainId matches the network. For `wallet=auto`, ensure the keystore is loaded and the Smart Wallet is registered.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "X402UnsupportedWalletError",
         "parent": "X402Error",
         "code": "X402_UNSUPPORTED_WALLET",
-        "source_file": "src/errors/X402Errors.ts"
+        "source_file": "src/errors/X402Errors.ts",
+        "cause": "Configured wallet provider does not implement the EIP-3009 typed-data signing required by x402, or the server only offers EIP-3009 (not Permit2) and the wallet is a Smart Wallet.",
+        "fix": "Switch to `wallet=auto` (Coinbase Smart Wallet supports it via Permit2) or use an EOA wallet that implements `signTypedData_v4` per EIP-712. Or ask the server to advertise Permit2.",
+        "recovery": "user-action"
       }
     ],
     "python": [
@@ -2374,7 +2452,10 @@
         "class_name": "AgentLifecycleError",
         "parent": "ACTPError",
         "code": "AGENT_LIFECYCLE_ERROR",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "start(), stop(), pause(), or resume() called in a state where it is not allowed (e.g. stop() on a never-started agent).",
+        "fix": "Read `agent.status` before lifecycle transitions. Don't call start() twice; the SDK does not idempotent it.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ArchiveBundleValidationError",
@@ -2422,19 +2503,28 @@
         "class_name": "DeadlinePassedError",
         "parent": "ACTPError",
         "code": "DEADLINE_PASSED",
-        "source_file": "src/agirails/errors/transaction.py"
+        "source_file": "src/agirails/errors/transaction.py",
+        "cause": "The transaction's deadline (set at create_transaction, default 600s) has passed without delivery.",
+        "fix": "For new transactions, increase `deadline_seconds`. For an expired one, the requester can transition to CANCELLED. See /recipes/dispute-flow.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DeliveryFailedError",
         "parent": "ACTPError",
         "code": "DELIVERY_FAILED",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "Provider's handler threw before submitting the deliverable; the SDK transitioned the tx but no payload was attached.",
+        "fix": "This is a provider-side bug. Requester can transition to DISPUTED. Provider should examine handler logs and ensure the handler returns or throws cleanly.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DisputeRaisedError",
         "parent": "ACTPError",
         "code": "DISPUTE_RAISED",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "Counterparty raised a dispute on this transaction. Funds remain in escrow pending mediator decision.",
+        "fix": "Not necessarily a bug; it is a protocol path. See /recipes/dispute-flow for evidence submission and resolution. The disputer has posted bond; respond within the dispute window.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "DisputeWindowActiveError",
@@ -2524,7 +2614,10 @@
         "class_name": "InvalidStateTransitionError",
         "parent": "ACTPError",
         "code": "INVALID_STATE_TRANSITION",
-        "source_file": "src/agirails/errors/transaction.py"
+        "source_file": "src/agirails/errors/transaction.py",
+        "cause": "Attempted state transition not allowed by the ACTP state machine from the current state.",
+        "fix": "Call get_transaction(tx_id) to see the actual state. The error message lists valid transitions. Don't cache transaction state locally; the on-chain state is canonical.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "MockStateCorruptedError",
@@ -2548,37 +2641,55 @@
         "class_name": "NetworkError",
         "parent": "ACTPError",
         "code": "NETWORK_ERROR",
-        "source_file": "src/agirails/errors/network.py"
+        "source_file": "src/agirails/errors/network.py",
+        "cause": "RPC failure, transient connectivity issue, or rate limit on the upstream provider.",
+        "fix": "Retry with backoff; most NetworkErrors are transient. If persistent, switch RPC endpoint (`ACTP_RPC_URL`). Verify Base network status at status.base.org.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "NoProviderFoundError",
         "parent": "ACTPError",
         "code": "NO_PROVIDER_FOUND",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "AgentRegistry returned no providers for the requested service, or all returned providers failed the filter.",
+        "fix": "Verify the service capability tag matches one declared in /reference/agirails-md-v4. Drop the `filters` constraint or widen budget. If you pinned a provider with `provider: '0x…'`, verify the address is registered.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ProviderRejectedError",
         "parent": "ACTPError",
         "code": "PROVIDER_REJECTED",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "Provider refused your job explicitly: typically budget below `min_acceptable_amount` or service filter failed at their end.",
+        "fix": "Negotiate via AIP-2.1 counter-offer or increase budget. See /recipes/quote-negotiation.",
+        "recovery": "user-action"
       },
       {
         "class_name": "QueryCapExceededError",
         "parent": "ACTPError",
         "code": "QUERY_CAP_EXCEEDED",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "AgentRegistry contains more than the cap (default 1000) agents; on-chain query disabled to prevent DoS.",
+        "fix": "Migrate to an off-chain indexer: The Graph, Goldsky, or Alchemy Subgraphs. Index AgentRegistered, ServiceTypeUpdated, and ActiveStatusUpdated events.",
+        "recovery": "user-action"
       },
       {
         "class_name": "ServiceConfigError",
         "parent": "ACTPError",
         "code": "SERVICE_CONFIG_ERROR",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "Agent or service config is missing or incorrect. Often: missing network, missing keystore, capability tag not recognized, or pricing fields out of order.",
+        "fix": "Run `actp deploy:check --strict`. Compare your config to the V4 schema at /reference/agirails-md-v4.",
+        "recovery": "user-action"
       },
       {
         "class_name": "SignatureVerificationError",
         "parent": "ACTPError",
         "code": "SIGNATURE_VERIFICATION_FAILED",
-        "source_file": "src/agirails/errors/network.py"
+        "source_file": "src/agirails/errors/network.py",
+        "cause": "An EIP-712 signed message (quote, counter-offer, receipt) does not recover to the expected signer address.",
+        "fix": "Verify the signer's keystore is loaded and that chainId in your EIP-712 domain matches the network. Cross-SDK byte-identical encoding is a CI invariant; if it fails it is almost always a config drift on your side.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "SSRFProtectionError",
@@ -2596,7 +2707,10 @@
         "class_name": "StorageError",
         "parent": "ACTPError",
         "code": "STORAGE_ERROR",
-        "source_file": "src/agirails/errors/storage.py"
+        "source_file": "src/agirails/errors/storage.py",
+        "cause": "IPFS/Arweave upload, download, or pin failed. Could be auth, rate limit, or size cap.",
+        "fix": "For uploads, verify storage credentials and file size. For downloads, the CID may be unreachable; verify pinning status with your provider.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "StorageRateLimitError",
@@ -2608,7 +2722,10 @@
         "class_name": "TimeoutError",
         "parent": "ACTPError",
         "code": "TIMEOUT",
-        "source_file": "src/agirails/errors/agent.py"
+        "source_file": "src/agirails/errors/agent.py",
+        "cause": "Operation exceeded its configured timeout. Most commonly: provider didn't respond, paymaster bundling slow, or RPC sluggish.",
+        "fix": "Increase `timeout` (seconds in Python, ms in TS). If repeatedly timing out, check provider health or chain network state.",
+        "recovery": "retry-safe"
       },
       {
         "class_name": "TransactionError",
@@ -2620,13 +2737,19 @@
         "class_name": "TransactionNotFoundError",
         "parent": "ACTPError",
         "code": "TRANSACTION_NOT_FOUND",
-        "source_file": "src/agirails/errors/transaction.py"
+        "source_file": "src/agirails/errors/transaction.py",
+        "cause": "The provided txId does not match any transaction in the kernel, or you are querying on the wrong network.",
+        "fix": "Verify `network:` matches the chain the transaction was created on. Re-check txId from the original create_transaction() return value.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "TransactionRevertedError",
         "parent": "ACTPError",
         "code": "TRANSACTION_REVERTED",
-        "source_file": "src/agirails/errors/network.py"
+        "source_file": "src/agirails/errors/network.py",
+        "cause": "A kernel call reverted on-chain. Common: state guard violation, address mismatch, or fee param out of bounds.",
+        "fix": "Read the `revert_reason` field on the error. Use `cast call --trace` or the Basescan tx trace to see the revert reason from the kernel.",
+        "recovery": "must-investigate"
       },
       {
         "class_name": "TransientRPCError",
@@ -2644,7 +2767,10 @@
         "class_name": "ValidationError",
         "parent": "ACTPError",
         "code": "VALIDATION_ERROR",
-        "source_file": "src/agirails/errors/validation.py"
+        "source_file": "src/agirails/errors/validation.py",
+        "cause": "Input failed shape validation (invalid address, malformed CID, amount out of bounds, etc.).",
+        "fix": "Read the error `details` field for the specific failure. Adjust your inputs to match the schema.",
+        "recovery": "user-action"
       }
     ],
     "cross_sdk": {
@@ -3154,7 +3280,7 @@
         "ACTPKernel": {
           "address": "0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.295Z",
+          "verified_at": "2026-05-28T23:18:28.027Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212266,
           "deploy_tx": "0x0ec9bec21a33f3f316993e3b85e550132ef082651e0be0a75eb5237f08ee1104",
@@ -3168,7 +3294,7 @@
         "EscrowVault": {
           "address": "0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.295Z",
+          "verified_at": "2026-05-28T23:18:28.027Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212268,
           "deploy_tx": "0x55b44cd01b57ef7a9bf5c3672dd439c6261899880b60ac1ef9a570a415b81e64",
@@ -3179,7 +3305,7 @@
         "AgentRegistry": {
           "address": "0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.295Z",
+          "verified_at": "2026-05-28T23:18:28.027Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212269,
           "deploy_tx": "0xdbf9158ef85f8d064e2f6624e7d34ed5852b720edb7af7d0dfe548b19ba66c89",
@@ -3190,7 +3316,7 @@
         "ArchiveTreasury": {
           "address": "0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.295Z",
+          "verified_at": "2026-05-28T23:18:28.027Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212270,
           "deploy_tx": "0x4ebddaebd203afceb5d3592a927787061b8b2981d0a289bb740c397ef1ab5481",
@@ -3214,7 +3340,7 @@
         "ACTPKernel": {
           "address": "0x9d25A874f046185d9237Cd4954C88D2B74B0021b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.481Z",
+          "verified_at": "2026-05-28T23:18:28.242Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725686,
           "deploy_tx": "0xe976b7005b4a35f066fedb782d69974f2f491b3608d2803375fa46987546db5c",
@@ -3225,7 +3351,7 @@
         "EscrowVault": {
           "address": "0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.481Z",
+          "verified_at": "2026-05-28T23:18:28.242Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725687,
           "deploy_tx": "0x0194b83d02fe31482d346db0d445a1245ec8ac35d66995a465af217c22beca59",
@@ -3236,7 +3362,7 @@
         "AgentRegistry": {
           "address": "0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.481Z",
+          "verified_at": "2026-05-28T23:18:28.242Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725688,
           "deploy_tx": "0xa0b7ac96550590f8269ca245e7f6ba618ab5821dfe33d3e48f919d7bd650484c",
@@ -3254,7 +3380,7 @@
         "ArchiveTreasury": {
           "address": "0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.481Z",
+          "verified_at": "2026-05-28T23:18:28.242Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725689,
           "deploy_tx": "0xd3dc0dd2f630abb32480061a51522efde9234539687ccbae037f56ef2da36808",
@@ -3266,7 +3392,7 @@
         "X402Relay": {
           "address": "0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T12:51:50.481Z",
+          "verified_at": "2026-05-28T23:18:28.242Z",
           "deployment_claimed_verified": true,
           "deploy_block": 40239726,
           "explorer_url": "https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
@@ -3739,7 +3865,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Agent lifecycle error"
+          "doc_summary": "Agent lifecycle error."
         },
         {
           "name": "AgentRegistry",
@@ -4164,7 +4290,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Provider failed to deliver result"
+          "doc_summary": "Provider failed to deliver result."
         },
         {
           "name": "DeliveryProofBuilder",
@@ -4192,7 +4318,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Dispute raised on transaction"
+          "doc_summary": "Dispute raised on transaction."
         },
         {
           "name": "DisputeResolution",
@@ -4514,8 +4640,7 @@
           "name": "InsufficientFundsError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false,
-          "doc_summary": "Transaction Errors"
+          "tier_from_source": false
         },
         {
           "name": "InvalidAddressError",
@@ -4547,7 +4672,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "State Machine Errors"
+          "doc_summary": "Error thrown when an invalid state transition is attempted."
         },
         {
           "name": "IPFSClient",
@@ -4835,7 +4960,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "No provider found for the requested service"
+          "doc_summary": "No provider found for the requested service."
         },
         {
           "name": "OrchestratorConfig",
@@ -4971,7 +5096,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Provider rejected the job"
+          "doc_summary": "Provider rejected the job."
         },
         {
           "name": "ProviderStats",
@@ -5197,7 +5322,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Service configuration error"
+          "doc_summary": "Service configuration error."
         },
         {
           "name": "ServiceCost",
@@ -5250,8 +5375,7 @@
           "name": "SignatureVerificationError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false,
-          "doc_summary": "Signature Errors"
+          "tier_from_source": false
         },
         {
           "name": "StandardAdapter",
@@ -5290,8 +5414,7 @@
           "name": "StorageError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false,
-          "doc_summary": "Storage Errors (AIP-7)"
+          "tier_from_source": false
         },
         {
           "name": "StorageInsufficientBalanceError",
@@ -5323,7 +5446,7 @@
           "kind": "export-from",
           "tier": "standard",
           "tier_from_source": false,
-          "doc_summary": "Request timeout error"
+          "doc_summary": "Request timeout error."
         },
         {
           "name": "Transaction",
@@ -5343,8 +5466,7 @@
           "name": "TransactionRevertedError",
           "kind": "export-from",
           "tier": "standard",
-          "tier_from_source": false,
-          "doc_summary": "Blockchain Errors"
+          "tier_from_source": false
         },
         {
           "name": "TransactionState",

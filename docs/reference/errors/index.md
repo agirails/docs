@@ -15,9 +15,242 @@ sidebar_position: 5
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-28 12:51:50 UTC
+**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-28 23:18:28 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
+
+**Got an error code?** Cmd+F or jump straight to its anchor in [Per-code triage](#per-code-triage) below: cause, fix, and recovery class auto-extracted from the SDK source comments. **No code yet?** See [If you don't have an error code](#if-you-dont-have-an-error-code).
+
+## Per-code triage
+
+27 user-facing error codes carry source-extracted **Cause** + **Fix** + **Recovery** tags. Each anchor below matches the raw error code string; paste the code (e.g. `DEADLINE_EXPIRED`) into your browser search or follow the direct fragment URL.
+
+### `AGENT_LIFECYCLE_ERROR` {#agent_lifecycle_error}
+
+**TS**: `AgentLifecycleError` · **Python**: `AgentLifecycleError` · **Recovery**: 🛠️ user-action
+
+**Cause.** `start()`, `stop()`, `pause()`, or `resume()` called in a state where it is not allowed (e.g. stop() on a never-started agent).
+
+**Fix.** Read `agent.status` before lifecycle transitions. Don't call `start()` twice; the SDK does not idempotent it.
+
+### `DEADLINE_EXPIRED` {#deadline_expired}
+
+**TS**: `DeadlineExpiredError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** The transaction's deadline (set at createTransaction, default 600s) has passed without delivery.
+
+**Fix.** For new transactions, increase `deadline_seconds`. For an expired one, the requester can transition to CANCELLED. See /recipes/dispute-flow.
+
+### `DEADLINE_PASSED` {#deadline_passed}
+
+**Python**: `DeadlinePassedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** The transaction's deadline (set at create_transaction, default 600s) has passed without delivery.
+
+**Fix.** For new transactions, increase `deadline_seconds`. For an expired one, the requester can transition to CANCELLED. See /recipes/dispute-flow.
+
+### `DELIVERY_FAILED` {#delivery_failed}
+
+**TS**: `DeliveryFailedError` · **Python**: `DeliveryFailedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** Provider's handler threw before submitting the deliverable; the SDK transitioned the tx but no payload was attached.
+
+**Fix.** This is a provider-side bug. Requester can transition to DISPUTED. Provider should examine handler logs and ensure the handler returns or throws cleanly.
+
+### `DISPUTE_RAISED` {#dispute_raised}
+
+**TS**: `DisputeRaisedError` · **Python**: `DisputeRaisedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** Counterparty raised a dispute on this transaction. Funds remain in escrow pending mediator decision.
+
+**Fix.** Not necessarily a bug; it is a protocol path. See /recipes/dispute-flow for evidence submission and resolution. The disputer has posted bond; respond within the dispute window.
+
+### `INSUFFICIENT_FUNDS` {#insufficient_funds}
+
+**TS**: `InsufficientFundsError` · **Python**: `InsufficientFundsError` · **Recovery**: 🛠️ user-action
+
+**Cause.** USDC balance in your Smart Wallet is below the amount the transaction is trying to lock or transfer.
+
+**Fix.** Fund the wallet at `agent.address` with the required USDC. Check `agent.balance` before high-budget calls.
+
+### `INVALID_STATE_TRANSITION` {#invalid_state_transition}
+
+**TS**: `InvalidStateTransitionError` · **Python**: `InvalidStateTransitionError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** Attempted state transition not allowed by the ACTP state machine from the current state.
+
+**Fix.** Call `getTransaction(txId)` to see the actual state. The error message lists valid transitions. Don't cache transaction state locally; the on-chain state is canonical.
+
+### `NETWORK_ERROR` {#network_error}
+
+**TS**: `NetworkError` · **Python**: `NetworkError` · **Recovery**: ♻️ retry-safe
+
+**Cause.** RPC failure, transient connectivity issue, or rate limit on the upstream provider.
+
+**Fix.** Retry with backoff; most NetworkErrors are transient. If persistent, switch RPC endpoint (`ACTP_RPC_URL`). Verify Base network status at status.base.org.
+
+### `NO_PROVIDER_FOUND` {#no_provider_found}
+
+**TS**: `NoProviderFoundError` · **Python**: `NoProviderFoundError` · **Recovery**: 🛠️ user-action
+
+**Cause.** AgentRegistry returned no providers for the requested service, or all returned providers failed the filter.
+
+**Fix.** Verify the service capability tag matches one declared in /reference/agirails-md-v4. Drop the `filter` constraint or widen budget. If you pinned a provider with `provider: '0x…'`, verify the address is registered.
+
+### `PROVIDER_REJECTED` {#provider_rejected}
+
+**TS**: `ProviderRejectedError` · **Python**: `ProviderRejectedError` · **Recovery**: 🛠️ user-action
+
+**Cause.** Provider refused your job explicitly: typically budget below `min_acceptable_amount` or service filter failed at their end.
+
+**Fix.** Negotiate via AIP-2.1 counter-offer or increase budget. See /recipes/quote-negotiation.
+
+### `QUERY_CAP_EXCEEDED` {#query_cap_exceeded}
+
+**TS**: `QueryCapExceededError` · **Python**: `QueryCapExceededError` · **Recovery**: 🛠️ user-action
+
+**Cause.** AgentRegistry contains more than MAX_QUERY_AGENTS (1000) agents; on-chain query disabled to prevent DoS.
+
+**Fix.** Migrate to an off-chain indexer: The Graph, Goldsky, or Alchemy Subgraphs. Index `AgentRegistered`, `ServiceTypeUpdated`, and `ActiveStatusUpdated` events.
+
+### `SERVICE_CONFIG_ERROR` {#service_config_error}
+
+**TS**: `ServiceConfigError` · **Python**: `ServiceConfigError` · **Recovery**: 🛠️ user-action
+
+**Cause.** Agent or service config is missing or incorrect. Often: missing network, missing keystore, capability tag not recognized, or pricing fields out of order.
+
+**Fix.** Run `actp deploy:check --strict`. Compare your config to the V4 schema at /reference/agirails-md-v4.
+
+### `SIGNATURE_VERIFICATION_FAILED` {#signature_verification_failed}
+
+**TS**: `SignatureVerificationError` · **Python**: `SignatureVerificationError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** An EIP-712 signed message (quote, counter-offer, receipt) does not recover to the expected signer address.
+
+**Fix.** Verify the signer's keystore is loaded and that chainId in your EIP-712 domain matches the network. Cross-SDK byte-identical encoding is a CI invariant; if it fails it is almost always a config drift on your side.
+
+### `STORAGE_ERROR` {#storage_error}
+
+**TS**: `StorageError` · **Python**: `StorageError` · **Recovery**: ♻️ retry-safe
+
+**Cause.** IPFS/Arweave upload, download, or pin failed. Could be auth, rate limit, or size cap.
+
+**Fix.** For uploads, verify storage credentials and file size. For downloads, the CID may be unreachable; verify pinning status with your provider.
+
+### `TIMEOUT` {#timeout}
+
+**TS**: `TimeoutError` · **Python**: `TimeoutError` · **Recovery**: ♻️ retry-safe
+
+**Cause.** Operation exceeded its configured timeout. Most commonly: provider didn't respond, paymaster bundling slow, or RPC sluggish.
+
+**Fix.** Increase `timeout` (seconds in Python, ms in TS). If repeatedly timing out, check provider health or chain network state.
+
+### `TRANSACTION_NOT_FOUND` {#transaction_not_found}
+
+**TS**: `TransactionNotFoundError` · **Python**: `TransactionNotFoundError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** The provided txId does not match any transaction in the kernel, or you are querying on the wrong network.
+
+**Fix.** Verify `network:` matches the chain the transaction was created on. Re-check txId from the original `createTransaction` return value.
+
+### `TRANSACTION_REVERTED` {#transaction_reverted}
+
+**TS**: `TransactionRevertedError` · **Python**: `TransactionRevertedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** A kernel call reverted on-chain. Common: state guard violation, address mismatch, or fee param out of bounds.
+
+**Fix.** Read the `reason` field on the error. Use `cast call --trace` or the Basescan tx trace to see the revert reason from the kernel.
+
+### `VALIDATION_ERROR` {#validation_error}
+
+**TS**: `ValidationError` · **Python**: `ValidationError` · **Recovery**: 🛠️ user-action
+
+**Cause.** Input failed shape validation (invalid address, malformed CID, amount out of bounds, etc.).
+
+**Fix.** Read the error `details` field for the specific failure. Adjust your inputs to match the schema.
+
+### `X402_AMOUNT_EXCEEDED` {#x402_amount_exceeded}
+
+**TS**: `X402AmountExceededError` · **Recovery**: 🛠️ user-action
+
+**Cause.** x402 server-issued price exceeds the consumer's max acceptable amount (per `pay()` config or app guard).
+
+**Fix.** Raise `maxAmountPerTx`, or treat the call as too expensive and route to ACTP escrow with negotiated pricing.
+
+### `X402_APPROVAL_FAILED` {#x402_approval_failed}
+
+**TS**: `X402ApprovalFailedError` · **Recovery**: ♻️ retry-safe
+
+**Cause.** USDC `transferWithAuthorization` (EIP-3009) authorization step failed. Common: signature replay, expired authorization, or insufficient balance.
+
+**Fix.** Re-sign with a fresh nonce; check USDC balance; verify the EIP-3009 typed-data domain matches Base mainnet.
+
+### `X402_CONFIG_ERROR` {#x402_config_error}
+
+**TS**: `X402ConfigError` · **Recovery**: 🛠️ user-action
+
+**Cause.** x402 adapter configuration is missing or invalid (no wallet, no recipient address, malformed scheme).
+
+**Fix.** Read the error `details` for the specific config gap. See /recipes/per-call-api for canonical setup.
+
+### `X402_NETWORK_NOT_ALLOWED` {#x402_network_not_allowed}
+
+**TS**: `X402NetworkNotAllowedError` · **Recovery**: 🛠️ user-action
+
+**Cause.** x402 v2 only supports mainnet on AGIRAILS; attempted use on testnet or mock.
+
+**Fix.** Switch network to `mainnet`, or use ACTP escrow on testnet for development.
+
+### `X402_PAYMENT_FAILED` {#x402_payment_failed}
+
+**TS**: `X402PaymentFailedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** x402 transfer transaction failed on-chain (revert during USDC transfer step) or server returned non-2xx.
+
+**Fix.** Read the tx hash from error details, inspect on Basescan. Often: balance check failed, recipient invalid, or paymaster rejected sponsorship.
+
+### `X402_PUBLISH_REQUIRED` {#x402_publish_required}
+
+**TS**: `X402PublishRequiredError` · **Recovery**: 🛠️ user-action
+
+**Cause.** Attempted x402 settlement before publishing the agent (no AgentID, no AgentRegistry entry).
+
+**Fix.** Run `actp publish` to register the agent. See /recipes/keystore-and-deployment.
+
+### `X402_SETTLEMENT_PROOF_MISSING` {#x402_settlement_proof_missing}
+
+**TS**: `X402SettlementProofMissingError` · **Recovery**: ♻️ retry-safe
+
+**Cause.** x402 settlement attempted but the prior payment authorization proof isn't on file (server lost state, replayed stale request, or facilitator/server misbehavior).
+
+**Fix.** Re-initiate the payment flow from `pay()` with a new authorization. Verify the settlement on-chain via tx hash before treating as final. State is per-request, not persisted across SDK reboots.
+
+### `X402_SIGNATURE_FAILED` {#x402_signature_failed}
+
+**TS**: `X402SignatureFailedError` · **Recovery**: 🔍 must-investigate
+
+**Cause.** EIP-712 typed-data signing of the x402 payment authorization failed at the wallet provider level.
+
+**Fix.** Confirm the wallet's chainId matches the network. For `wallet=auto`, ensure the keystore is loaded and the Smart Wallet is registered.
+
+### `X402_UNSUPPORTED_WALLET` {#x402_unsupported_wallet}
+
+**TS**: `X402UnsupportedWalletError` · **Recovery**: 🛠️ user-action
+
+**Cause.** Configured wallet provider does not implement the EIP-3009 typed-data signing required by x402, or the server only offers EIP-3009 (not Permit2) and the wallet is a Smart Wallet.
+
+**Fix.** Switch to `wallet=auto` (Coinbase Smart Wallet supports it via Permit2) or use an EOA wallet that implements `signTypedData_v4` per EIP-712. Or ask the server to advertise Permit2.
+
+## If you don't have an error code
+
+Sometimes the SDK is silent or the failure mode looks like nothing in particular. Common scenarios:
+
+- **Agent appears to start but never picks up jobs.** Check `agent.status`, confirm `network:` matches the chain your service was registered on, and verify the AgentRegistry record at `agent.address` resolves. Setup-time issues most commonly surface as a [ServiceConfigError](#service_config_error) or [AgentLifecycleError](#agent_lifecycle_error); silent hangs usually mean RPC misconfiguration or unfunded paymaster.
+- **Transaction stuck in `INITIATED` or `QUOTED`.** No on-chain action will move it. Either the requester needs to `acceptQuote + linkEscrow`, or the deadline will eventually fire a [DEADLINE_EXPIRED](#deadline_expired). See [State machine](/protocol/state-machine).
+- **Money locked, can't move it.** Read `getTransaction(txId).state`. If `COMMITTED`/`IN_PROGRESS`/`DELIVERED`, the protocol path forward is `transitionState(...)` or `dispute(...)`. See [Dispute flow](/recipes/dispute-flow).
+- **`actp test` passes but production fails.** Almost always a config drift. Run `actp deploy:check --strict` and verify keystore network matches code-level `network:`.
+
+If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issues) with the silent-failure repro and the output of `actp deploy:check --json`.
 
 ## TypeScript SDK errors
 
