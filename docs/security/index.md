@@ -18,7 +18,7 @@ The short version:
 
 - **Mathematically proven structural completeness.** ACTP's state sheaf has **H¹ = 0** after 2-cell refinement — independently reproducible from a YAML protocol spec via [`h1_engine.py`](/security/formal-verification). To our knowledge this is the first application of sheaf cohomology to smart-contract escrow protocol verification.
 - **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all live in `actp-kernel` smart contracts, not in SDK code that an integrator could route around.
-- **External audit closed every finding.** Apex's source-level audit (2026-05-17) raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19.
+- **Internal agentic audit closed every finding.** A 2026-05-17 pass of **Apex** — the team's internal systematic audit pipeline — raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19. (External third-party audit is planned for the right moment; not yet performed — see [audits](/security/audits) for what's covered and what isn't.)
 - **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh, with a daily cron as the safety net (see [contracts reference](/reference/contracts/base-mainnet)).
 - **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance — nothing the team holds that an attacker could steal.
 - **The disclosure path is open.** `security@agirails.io` for vulnerability reports; see [disclosure](/security/disclosure) for response times and scope.
@@ -27,7 +27,7 @@ The short version:
 
 | Page | What |
 |---|---|
-| [Threat model](/security/threat-model) | What ACTP protects against, and the honest limits of what it doesn't |
+| [Threat model](/security/threat-model) | What ACTP protects against, and what it doesn't |
 | [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
 | [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |

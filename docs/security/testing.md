@@ -98,7 +98,7 @@ After packaging (`pip install`, `npm install`), the wheel-installed entry points
 
 This is cheap (~5s per package) and catches a class of bugs unit tests miss entirely.
 
-## What the test suite does NOT cover (the honest limits)
+## What the test suite does NOT cover
 
 - **Mainnet-only edge cases** — anything that only manifests on production traffic patterns (e.g., specific gas-price scenarios on Base mainnet during congestion). Mitigated by careful staged rollouts, not full coverage.
 - **Long-time-horizon attacks** — e.g., griefing strategies that take days/weeks to manifest. Out of scope for unit testing; addressed at the threat-model level.

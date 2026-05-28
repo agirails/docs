@@ -87,7 +87,7 @@ export const FAQSchema = () => (
             "name": "How are AGIRAILS contracts verified?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Every deployed contract has Sourcify EXACT_MATCH — runtime bytecode plus metadata IPFS hash both match the source on GitHub. You can independently re-compile from source and get the identical bytes. Verification is checked live on every truth-ledger refresh (daily cron). The Apex source-level audit (2026-05-17) raised 12 findings, all closed before V3 redeploy."
+              "text": "Every deployed contract has Sourcify EXACT_MATCH — runtime bytecode plus metadata IPFS hash both match the source on GitHub. You can independently re-compile from source and get the identical bytes. Verification is checked live on every truth-ledger refresh (daily cron). The 2026-05-17 pass of Apex — the team's internal agentic audit system — raised 12 findings, all closed before V3 redeploy. External third-party audit is planned for the right moment; not yet performed."
             }
           },
           {
@@ -289,7 +289,7 @@ Every deployed contract has **Sourcify EXACT_MATCH** — runtime bytecode + meta
 
 Verification is checked live on every truth-ledger run (daily cron + on-demand). Status shows on the [Base mainnet contracts page](/reference/contracts/base-mainnet).
 
-The Apex source-level audit (2026-05-17) raised 12 findings, all closed before the V3 redeploy. Full audit index at [Audits](/security/audits).
+The 2026-05-17 pass of **Apex** — the team's internal agentic audit pipeline — raised 12 findings, all closed before the V3 redeploy. External third-party audit is planned; not yet performed. Full audit index at [Audits](/security/audits).
 
 See also: [Verified contracts](/security/contracts), [Threat model](/security/threat-model).
 
@@ -385,7 +385,7 @@ It's a precise structural property, not a marketing word. The ACTP state machine
 
 The result is reproducible — anyone can clone the open-source companion code (`h1_engine.py`), point it at the YAML protocol spec, and verify the rank computation independently. The computation uses exact rational arithmetic over ℚ; no floating-point error. Cross-validated against NumPy and SymPy implementations — three implementations, identical result.
 
-Honest scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex source-level review. All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
+Scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation (external third-party audit pending). All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
 
 To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
 

@@ -5290,7 +5290,7 @@ Every deployed contract has **Sourcify EXACT_MATCH** — runtime bytecode + meta
 
 Verification is checked live on every truth-ledger run (daily cron + on-demand). Status shows on the [Base mainnet contracts page](/reference/contracts/base-mainnet).
 
-The Apex source-level audit (2026-05-17) raised 12 findings, all closed before the V3 redeploy. Full audit index at [Audits](/security/audits).
+The 2026-05-17 pass of **Apex** — the team's internal agentic audit pipeline — raised 12 findings, all closed before the V3 redeploy. External third-party audit is planned; not yet performed. Full audit index at [Audits](/security/audits).
 
 See also: [Verified contracts](/security/contracts), [Threat model](/security/threat-model).
 
@@ -5386,7 +5386,7 @@ It's a precise structural property, not a marketing word. The ACTP state machine
 
 The result is reproducible — anyone can clone the open-source companion code (`h1_engine.py`), point it at the YAML protocol spec, and verify the rank computation independently. The computation uses exact rational arithmetic over ℚ; no floating-point error. Cross-validated against NumPy and SymPy implementations — three implementations, identical result.
 
-Honest scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex source-level review. All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
+Scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer — see [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation (external third-party audit pending). All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
 
 To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
 
@@ -5476,11 +5476,16 @@ Audits
 
 # Audits
 
-External audits performed on the protocol + SDK, with every finding tracked through remediation. Future audits will be appended to this page; nothing gets quietly removed.
+Two distinct review layers run against AGIRAILS:
 
-## Apex source-level audit — 2026-05-17
+1. **Apex** — our **internal agentic audit system**. Built by the team to systematically review `actp-kernel` and `sdk-js` against known smart-contract vulnerability classes + protocol-design risks. Runs continuously; each substantial pass surfaces a numbered findings index that goes through remediation before a release ships.
+2. **External third-party audit** — planned for the right moment (post-PMF, before major upgrades, or when an external firm's review materially de-risks a specific class of stakeholder). **Not yet performed.** This page will be updated when one is scheduled.
 
-Apex performed a source-level review of `actp-kernel` (V2 at the time) and the TypeScript SDK. 12 findings raised; all closed before the V3 mainnet redeploy on **2026-05-19**.
+This page is the public record of both layers — every finding tracked through remediation, nothing quietly removed.
+
+## Apex internal agentic audit — pass dated 2026-05-17
+
+Apex performed a source-level pass over `actp-kernel` (V2 at the time) and the TypeScript SDK. **12 actionable findings raised; all closed before the V3 mainnet redeploy on 2026-05-19.**
 
 ### Findings + remediation
 
@@ -5505,7 +5510,7 @@ Apex performed a source-level review of `actp-kernel` (V2 at the time) and the T
 
 > The numbers don't add up to a clean 12 because some findings were split (FIND-002 + FIND-003 both touched CI but for different repos) and a few info-level observations were tracked alongside actionable findings. The "12 actionable" count refers to findings requiring code changes.
 
-### How to read this audit
+### How to read this index
 
 For non-auditors, here's what the table is actually telling you:
 
@@ -5516,15 +5521,33 @@ For non-auditors, here's what the table is actually telling you:
 
 Every "Closed" status is backed by either an on-chain change (kernel redeploy → V3) or a workflow change (CI hardening → visible in `.github/workflows/`). Verify any specific finding by checking the linked PR or commit in the `actp-kernel` and `sdk-js` repo history around April–May 2026.
 
-### Audit firm
+### What Apex is (and isn't)
 
-[Apex](https://example.com/apex-audits) — source-level smart-contract review specialists. Findings document delivered 2026-05-17.
+**Apex is the team's own systematic audit pipeline.** It uses a combination of agentic review, pattern-based static analysis, and structured per-finding remediation tracking. Findings come from machine-augmented internal review, not a third-party human team. The trade-offs:
 
-The full audit report PDF is not currently published — it contains internal references and was scoped as a working document. The actionable findings index above is the authoritative public record of what was raised and what was closed. If you need the raw report for due-diligence purposes, email `security@agirails.io` with context.
+- ✅ **Continuous**: runs against every substantive change, not once-a-year.
+- ✅ **Reproducible**: each finding cites the exact source location + remediation commit.
+- ✅ **Public**: the index above is the authoritative record.
+- 🟡 **Not third-party**: an internal audit pipeline shares blind spots with the team that built it. That gap is what an external audit closes.
+- 🟡 **No external sign-off**: the index has no third-party-firm letterhead. Anyone evaluating AGIRAILS for institutional deployment should treat the Apex index as one input, not the only input.
 
-## Internal review program
+We publish this index because the work is real and the remediation is verifiable — but we don't claim third-party audit until we've actually run one.
 
-Beyond external audits, the team runs a continuous internal review:
+## External audit — planned, not performed
+
+**Status**: no third-party external audit has been performed on AGIRAILS as of the date above.
+
+Decision criteria for when we'll commission one:
+
+- **Pre-major-upgrade**: before a V4 mainnet redeploy with substantive kernel logic changes, an external audit is the right gate.
+- **Stakeholder threshold**: when the protocol's economic stake (TVL, transaction volume, mediator exposure) crosses a threshold where one external firm's review materially de-risks the next class of users.
+- **Adjacent system audits**: if/when a token contract or governance system gets added post-PMF, that gets its own external audit independent of the kernel.
+
+When an external audit is scheduled, the firm, scope, and timeline will be published here. The Apex findings index will remain alongside as the internal record.
+
+## Internal review beyond Apex
+
+Apex is the named, systematic layer. The continuous discipline beneath it:
 
 - **Slither + Foundry coverage** gate on every PR to `actp-kernel`.
 - **Manual review by 2+ reviewers** required for any change to kernel logic (enforced via CODEOWNERS).
@@ -5533,20 +5556,11 @@ Beyond external audits, the team runs a continuous internal review:
 
 See [Testing](/security/testing) for the full testing depth.
 
-## Planned audits
-
-No specific firm or date announced for the next external audit. The decision criteria:
-
-- Major protocol changes (V4 mainnet redeploy with significant logic changes) trigger a fresh audit before mainnet ship.
-- Annual cadence for security hygiene, independent of major changes.
-- Targeted audits for specific high-value subsystems (e.g., post-PMF token contracts when those exist).
-
-When the next audit is scheduled, this page will be updated.
-
 ## See also
 
 - [Threat model](/security/threat-model) — what each finding closed
-- [Verified contracts](/security/contracts) — Sourcify status for every audited contract
+- [Verified contracts](/security/contracts) — Sourcify status for every reviewed contract
+- [Formal verification (H¹=0)](/security/formal-verification) — sheaf cohomology layer above code audit
 - [Testing](/security/testing) — what the continuous review covers
 - [Disclosure](/security/disclosure) — how to report new findings
 
@@ -5776,7 +5790,7 @@ Per the paper:
 
 > **Structural completeness is necessary but not sufficient for trustlessness.**
 
-This is the honest scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
+This is the scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
 
 - The protocol's state machine has no hidden seams.
 - Every reachable state composes from earlier states consistently.
@@ -5784,7 +5798,7 @@ This is the honest scope. The H¹ = 0 result on the state sheaf is a precise str
 
 What the proof does NOT claim:
 
-- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex source-level audit on the Solidity implementation.
+- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation, plus the planned external audit roadmap.
 - It does not eliminate the need for off-chain information exchange in disputes. The participant sheaf quantifies exactly how much that gap is — and the answer is bounded, not arbitrary.
 - It does not certify any specific deployed contract. The proofs are about a YAML protocol specification (labelled "ACTP v2.7" in the paper); the model's fidelity to the deployed kernel is a separate empirical question addressed but not conflated with the proofs.
 
@@ -5831,7 +5845,7 @@ Full bibliography in the paper.
 
 - [Threat model](/security/threat-model) — the structural test ACTP passes; H¹=0 is the formal version of "no hidden seam"
 - [Testing depth](/security/testing) — what 486 Foundry tests + Hypothesis stateful + cross-SDK parity cover at the code/implementation layer
-- [Audits](/security/audits) — Apex source-level audit findings + remediation (the code-layer review)
+- [Audits](/security/audits) — Apex internal audit pass + remediation index (the code-layer review)
 - [Walk-away runbook](/architecture/operate) — the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
 - [Verified contracts](/security/contracts) — Sourcify EXACT_MATCH on every deployed contract
 
@@ -5853,7 +5867,7 @@ The short version:
 
 - **Mathematically proven structural completeness.** ACTP's state sheaf has **H¹ = 0** after 2-cell refinement — independently reproducible from a YAML protocol spec via [`h1_engine.py`](/security/formal-verification). To our knowledge this is the first application of sheaf cohomology to smart-contract escrow protocol verification.
 - **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection — all live in `actp-kernel` smart contracts, not in SDK code that an integrator could route around.
-- **External audit closed every finding.** Apex's source-level audit (2026-05-17) raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19.
+- **Internal agentic audit closed every finding.** A 2026-05-17 pass of **Apex** — the team's internal systematic audit pipeline — raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19. (External third-party audit is planned for the right moment; not yet performed — see [audits](/security/audits) for what's covered and what isn't.)
 - **Every shipped contract is Sourcify-verified.** Live `EXACT_MATCH` checks run on every truth-ledger refresh, with a daily cron as the safety net (see [contracts reference](/reference/contracts/base-mainnet)).
 - **No long-lived publish credentials.** All npm + PyPI packages publish via OIDC Trusted Publisher with sigstore + SLSA provenance — nothing the team holds that an attacker could steal.
 - **The disclosure path is open.** `security@agirails.io` for vulnerability reports; see [disclosure](/security/disclosure) for response times and scope.
@@ -5862,7 +5876,7 @@ The short version:
 
 | Page | What |
 |---|---|
-| [Threat model](/security/threat-model) | What ACTP protects against, and the honest limits of what it doesn't |
+| [Threat model](/security/threat-model) | What ACTP protects against, and what it doesn't |
 | [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
 | [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |
@@ -5983,7 +5997,7 @@ After packaging (`pip install`, `npm install`), the wheel-installed entry points
 
 This is cheap (~5s per package) and catches a class of bugs unit tests miss entirely.
 
-## What the test suite does NOT cover (the honest limits)
+## What the test suite does NOT cover
 
 - **Mainnet-only edge cases** — anything that only manifests on production traffic patterns (e.g., specific gas-price scenarios on Base mainnet during congestion). Mitigated by careful staged rollouts, not full coverage.
 - **Long-time-horizon attacks** — e.g., griefing strategies that take days/weeks to manifest. Out of scope for unit testing; addressed at the threat-model level.
@@ -6028,7 +6042,7 @@ Threat model
 
 # Threat model
 
-The honest version: what ACTP **does** protect against, what it **doesn't**, and where each protection lives. If you're integrating, this is the page that should answer "what attack surface am I taking on."
+The precise version: what ACTP **does** protect against, what it **doesn't**, and where each protection lives. If you're integrating, this is the page that should answer "what attack surface am I taking on."
 
 ## What ACTP protects against
 
@@ -6042,7 +6056,7 @@ The honest version: what ACTP **does** protect against, what it **doesn't**, and
 | **Admin abuse** of mediator approvals | 2-of-4 Safe + 2-day timelocks on mediator approval / agent registry updates | On-chain (`ACTPKernel.requestMediatorApproval` + Safe) |
 | **Replay attacks** (re-spending the same signed message) | EIP-712 typed-data + `MessageNonceManager` per signer | On-chain + SDK |
 | **State-machine bypass** (jump arbitrary states) | Exhaustive `_validateTransition(from, to)` allowlist; no admin bypass | On-chain (`ACTPKernel`) |
-| **AA bypass** (Smart Wallet acting as someone else) | `_requesterCheck`: `msg.sender == requester` enforced for state transitions | On-chain (closes FIND-004 from Apex audit) |
+| **AA bypass** (Smart Wallet acting as someone else) | `_requesterCheck`: `msg.sender == requester` enforced for state transitions | On-chain (closes FIND-004 from the Apex internal audit pass) |
 | **Stale dispute bond rate** when admin changes config | Bond rate captured at creation; admin can't retroactively raise on in-flight | On-chain (INV-30) |
 | **Mediator re-approval racing** (revoke + re-approve to skip cooldown) | Timelock always resets on re-approval | On-chain (M-2 hardening) |
 | **Key exposure** (raw private key in env on mainnet) | AIP-13 fail-closed: mainnet rejects `ACTP_PRIVATE_KEY` raw env var | SDK-side |
@@ -6051,7 +6065,7 @@ The honest version: what ACTP **does** protect against, what it **doesn't**, and
 
 ## What ACTP does NOT protect against
 
-The honest limits. If your threat model needs these, layer additional defenses on top of ACTP — don't expect the protocol to handle them.
+The limits. If your threat model needs these, layer additional defenses on top of ACTP — don't expect the protocol to handle them.
 
 - **Provider delivering low-quality work**. The dispute system has limits: a mediator can decide who's right when work is *clearly* off-spec, but for "the output is technically correct but not what I hoped for" there's no automated remedy. Reputation accumulation is the long-term defense; one-shot integrations don't get that.
 - **Off-chain identity claims**. ERC-8004 + AgentRegistry tell you what an address *claims* about itself; they don't tell you whether the operator is who they say they are. If you need KYC, do it outside the protocol.
@@ -6067,7 +6081,7 @@ The honest limits. If your threat model needs these, layer additional defenses o
 
 | Layer | Who you trust |
 |---|---|
-| ACTP kernel logic | Apex audit + Sourcify exact match + the open source code itself |
+| ACTP kernel logic | Apex internal audit findings + Sourcify exact match + the open source code itself (external third-party audit pending) |
 | USDC | Circle (you'd trust this anyway if you're holding USDC at all) |
 | Base L2 | Coinbase (sequencer); reverts to L1 within the rollup's withdrawal window |
 | Coinbase Smart Wallet | Coinbase (factory contract); see their audit + Sourcify status |
@@ -6084,14 +6098,14 @@ For someone who genuinely wants to verify, not just trust:
 1. **Read the source** at [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel) (V3).
 2. **Verify Sourcify match** on each deployed address — every contract in [Base mainnet contracts](/reference/contracts/base-mainnet) has a live status badge updated on every truth-ledger refresh.
 3. **Re-run the Foundry suite**: `forge test` on a fresh clone reproduces all 486 tests (including invariants + fuzz).
-4. **Cross-check the audit**: Apex 2026-05-17 findings + remediation commits are in the repo history.
+4. **Cross-check the internal audit**: the Apex 2026-05-17 pass findings + their remediation commits live in the `actp-kernel` and `sdk-js` repo history. (External third-party audit is planned; not yet performed.)
 5. **Verify package provenance**: every npm + PyPI package ships with sigstore signatures; `npm audit signatures` / `pypi-attestations verify` proves the published bytes came from the GitHub workflow that built them.
 
 There is no "trust me bro" step anywhere in this chain. That's the design.
 
 ## See also
 
-- [Audits](/security/audits) — Apex findings + remediation index
+- [Audits](/security/audits) — Apex internal audit findings + remediation index, plus external-audit roadmap
 - [Verified contracts](/security/contracts) — Sourcify status per address
 - [Testing](/security/testing) — what the test suite actually covers
 - [Escrow mechanism](/protocol/escrow) — AIP-14 + INV-30 details

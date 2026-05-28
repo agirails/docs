@@ -67,7 +67,7 @@ Per the paper:
 
 > **Structural completeness is necessary but not sufficient for trustlessness.**
 
-This is the honest scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
+This is the scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
 
 - The protocol's state machine has no hidden seams.
 - Every reachable state composes from earlier states consistently.
@@ -75,7 +75,7 @@ This is the honest scope. The H¹ = 0 result on the state sheaf is a precise str
 
 What the proof does NOT claim:
 
-- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex source-level audit on the Solidity implementation.
+- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation, plus the planned external audit roadmap.
 - It does not eliminate the need for off-chain information exchange in disputes. The participant sheaf quantifies exactly how much that gap is — and the answer is bounded, not arbitrary.
 - It does not certify any specific deployed contract. The proofs are about a YAML protocol specification (labelled "ACTP v2.7" in the paper); the model's fidelity to the deployed kernel is a separate empirical question addressed but not conflated with the proofs.
 
@@ -122,7 +122,7 @@ Full bibliography in the paper.
 
 - [Threat model](/security/threat-model) — the structural test ACTP passes; H¹=0 is the formal version of "no hidden seam"
 - [Testing depth](/security/testing) — what 486 Foundry tests + Hypothesis stateful + cross-SDK parity cover at the code/implementation layer
-- [Audits](/security/audits) — Apex source-level audit findings + remediation (the code-layer review)
+- [Audits](/security/audits) — Apex internal audit pass + remediation index (the code-layer review)
 - [Walk-away runbook](/architecture/operate) — the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
 - [Verified contracts](/security/contracts) — Sourcify EXACT_MATCH on every deployed contract
 

@@ -1,7 +1,7 @@
 ---
 slug: /security/threat-model
 title: "Threat model"
-description: "What ACTP protects against and the honest limits of what it doesn't. Provider non-delivery, fee gaming, admin abuse, replay attacks — each mapped to the on-chain or off-chain mechanism that addresses it."
+description: "What ACTP protects against and what it doesn't. Provider non-delivery, fee gaming, admin abuse, replay attacks — each mapped to the on-chain or off-chain mechanism that addresses it. Plus what falls outside the protocol's scope."
 schema_type: TechArticle
 last_verified: 2026-05-26
 verified_against: "actp-kernel V3 mainnet + AGIRAILS.md spec"
@@ -11,7 +11,7 @@ sidebar_position: 2
 
 # Threat model
 
-The honest version: what ACTP **does** protect against, what it **doesn't**, and where each protection lives. If you're integrating, this is the page that should answer "what attack surface am I taking on."
+The precise version: what ACTP **does** protect against, what it **doesn't**, and where each protection lives. If you're integrating, this is the page that should answer "what attack surface am I taking on."
 
 ## What ACTP protects against
 
@@ -25,7 +25,7 @@ The honest version: what ACTP **does** protect against, what it **doesn't**, and
 | **Admin abuse** of mediator approvals | 2-of-4 Safe + 2-day timelocks on mediator approval / agent registry updates | On-chain (`ACTPKernel.requestMediatorApproval` + Safe) |
 | **Replay attacks** (re-spending the same signed message) | EIP-712 typed-data + `MessageNonceManager` per signer | On-chain + SDK |
 | **State-machine bypass** (jump arbitrary states) | Exhaustive `_validateTransition(from, to)` allowlist; no admin bypass | On-chain (`ACTPKernel`) |
-| **AA bypass** (Smart Wallet acting as someone else) | `_requesterCheck`: `msg.sender == requester` enforced for state transitions | On-chain (closes FIND-004 from Apex audit) |
+| **AA bypass** (Smart Wallet acting as someone else) | `_requesterCheck`: `msg.sender == requester` enforced for state transitions | On-chain (closes FIND-004 from the Apex internal audit pass) |
 | **Stale dispute bond rate** when admin changes config | Bond rate captured at creation; admin can't retroactively raise on in-flight | On-chain (INV-30) |
 | **Mediator re-approval racing** (revoke + re-approve to skip cooldown) | Timelock always resets on re-approval | On-chain (M-2 hardening) |
 | **Key exposure** (raw private key in env on mainnet) | AIP-13 fail-closed: mainnet rejects `ACTP_PRIVATE_KEY` raw env var | SDK-side |
@@ -34,7 +34,7 @@ The honest version: what ACTP **does** protect against, what it **doesn't**, and
 
 ## What ACTP does NOT protect against
 
-The honest limits. If your threat model needs these, layer additional defenses on top of ACTP — don't expect the protocol to handle them.
+The limits. If your threat model needs these, layer additional defenses on top of ACTP — don't expect the protocol to handle them.
 
 - **Provider delivering low-quality work**. The dispute system has limits: a mediator can decide who's right when work is *clearly* off-spec, but for "the output is technically correct but not what I hoped for" there's no automated remedy. Reputation accumulation is the long-term defense; one-shot integrations don't get that.
 - **Off-chain identity claims**. ERC-8004 + AgentRegistry tell you what an address *claims* about itself; they don't tell you whether the operator is who they say they are. If you need KYC, do it outside the protocol.
@@ -51,7 +51,7 @@ The honest limits. If your threat model needs these, layer additional defenses o
 
 | Layer | Who you trust |
 |---|---|
-| ACTP kernel logic | Apex audit + Sourcify exact match + the open source code itself |
+| ACTP kernel logic | Apex internal audit findings + Sourcify exact match + the open source code itself (external third-party audit pending) |
 | USDC | Circle (you'd trust this anyway if you're holding USDC at all) |
 | Base L2 | Coinbase (sequencer); reverts to L1 within the rollup's withdrawal window |
 | Coinbase Smart Wallet | Coinbase (factory contract); see their audit + Sourcify status |
@@ -68,14 +68,14 @@ For someone who genuinely wants to verify, not just trust:
 1. **Read the source** at [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel) (V3).
 2. **Verify Sourcify match** on each deployed address — every contract in [Base mainnet contracts](/reference/contracts/base-mainnet) has a live status badge updated on every truth-ledger refresh.
 3. **Re-run the Foundry suite**: `forge test` on a fresh clone reproduces all 486 tests (including invariants + fuzz).
-4. **Cross-check the audit**: Apex 2026-05-17 findings + remediation commits are in the repo history.
+4. **Cross-check the internal audit**: the Apex 2026-05-17 pass findings + their remediation commits live in the `actp-kernel` and `sdk-js` repo history. (External third-party audit is planned; not yet performed.)
 5. **Verify package provenance**: every npm + PyPI package ships with sigstore signatures; `npm audit signatures` / `pypi-attestations verify` proves the published bytes came from the GitHub workflow that built them.
 
 There is no "trust me bro" step anywhere in this chain. That's the design.
 
 ## See also
 
-- [Audits](/security/audits) — Apex findings + remediation index
+- [Audits](/security/audits) — Apex internal audit findings + remediation index, plus external-audit roadmap
 - [Verified contracts](/security/contracts) — Sourcify status per address
 - [Testing](/security/testing) — what the test suite actually covers
 - [Escrow mechanism](/protocol/escrow) — AIP-14 + INV-30 details
