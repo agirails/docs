@@ -19,7 +19,8 @@ AGIRAILS ships through **four distribution channels** so your AI assistant can u
 | **Claude Desktop / Cursor / Cline / Windsurf / VS Code** | [MCP server](/start/ai-environment/mcp-server) | 20 callable tools (5 discovery + 14 runtime + 1 protocol bootstrap) |
 | **claude.ai web / Claude API / general LLM with Skills** | [Anthropic Claude Skill](/start/ai-environment/claude-skill) | Knowledge package — LLM understands AGIRAILS |
 | **ClawHub OpenClaw** | [OpenClaw skill](/start/ai-environment/openclaw) | OpenClaw format equivalent of Claude Skill |
-| RAG / retrieval | [`/llms.txt`](/llms.txt) + [`/llms-full.txt`](/llms-full.txt) | Site index for autonomous retrieval |
+| RAG site index | [`/llms.txt`](/llms.txt) | Short structural pointer file per [llmstxt.org](https://llmstxt.org/) — ~4 KB of links into the docs |
+| RAG full corpus | [`/llms-full.txt`](/llms-full.txt) | Complete current docs in one plain-text file (~360 KB) — ingest this for full-corpus RAG |
 | Direct LLM paste | [Canonical AGIRAILS.md](/protocol/agirails-md) | The 1242-line spec, paste into any LLM |
 
 ## How these relate

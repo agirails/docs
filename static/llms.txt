@@ -1,101 +1,112 @@
 # AGIRAILS
 
-> Payment infrastructure for AI agents — blockchain-based escrow on Base L2.
+> Open trust rails for autonomous intelligence — non-custodial escrow, settlement, dispute resolution, and portable reputation in USDC on Base L2.
 
-AGIRAILS implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce. Agents can pay each other for services using USDC through smart contract escrow.
+AGIRAILS is Stripe for AI agents. It implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce: agents pay each other for services using USDC through non-custodial smart-contract escrow. Public infrastructure, not a platform.
 
-## Quick Facts
+## Quick facts
 
-- Protocol: ACTP (Agent Commerce Transaction Protocol)
-- Chain: Base (Coinbase L2) — Sepolia testnet + Mainnet
-- Token: USDC (not native ETH)
-- Fee: 1% of transaction value, $0.05 minimum
-- SDKs: TypeScript (`@agirails/sdk`), Python (`agirails`)
-- CLI: `actp` command (all commands support `--json` output)
-- Contract addresses: Auto-configured by SDK via `network` parameter. Do not hardcode.
+- **Protocol**: ACTP (Agent Commerce Transaction Protocol)
+- **Chain**: Base L2 — Sepolia testnet + Mainnet (V3 kernel mainnet · V4 sepolia)
+- **Currency**: USDC (Circle, native on Base)
+- **Fee**: 1% of transaction value, $0.05 USDC minimum (MIN_FEE), capped at 5% by kernel constant
+- **SDKs**: TypeScript (`@agirails/sdk@4.0.0`), Python (`agirails@3.0.1`)
+- **CLI**: `actp` binary (flag-driven; all commands support `--json`)
+- **Mainnet** since the V3 redeploy on 2026-05-19. First end-to-end mainnet settlement: $3.69 USDC on 2026-02-21 ([BaseScan tx](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19))
+- **Contract addresses**: auto-configured by the SDK from the `network` parameter. Do not hardcode.
 
-## Documentation
+## How to read AGIRAILS docs
 
 Every documentation page is also available as raw markdown by appending `.md` to the URL.
-For example: `https://docs.agirails.io/quick-start` (HTML) → `https://docs.agirails.io/quick-start.md` (raw markdown).
-Index pages use `/intro.md` (e.g. `https://docs.agirails.io/sdk-reference/intro.md`).
+Example: `https://docs.agirails.io/recipes/consumer-agent` (HTML) → `https://docs.agirails.io/recipes/consumer-agent.md` (raw markdown).
+Index pages use the directory path (e.g. `https://docs.agirails.io/protocol/intro.md`).
 
-- [Full documentation for LLMs](https://docs.agirails.io/llms-full.txt): Complete docs in one file
-- [Agent Integration Guide](https://docs.agirails.io/agent-integration) ([.md](https://docs.agirails.io/agent-integration.md)): For AI agents integrating programmatically
-- [SDK Reference](https://docs.agirails.io/sdk-reference) ([.md](https://docs.agirails.io/sdk-reference/intro.md)): TypeScript and Python API
-- [CLI Reference](https://docs.agirails.io/cli-reference) ([.md](https://docs.agirails.io/cli-reference.md)): All `actp` commands
-- [Error Reference](https://docs.agirails.io/error-reference) ([.md](https://docs.agirails.io/error-reference.md)): Error codes, causes, recovery
-- [Examples](https://docs.agirails.io/examples) ([.md](https://docs.agirails.io/examples/intro.md)): Runnable code samples
-- [Contract Reference](https://docs.agirails.io/contract-reference) ([.md](https://docs.agirails.io/contract-reference.md)): Smart contract docs with Basescan links
-- [SDK Manifest](https://docs.agirails.io/sdk-manifest.json): Machine-readable API schema (JSON)
+For ingestion: `/llms-full.txt` carries the complete current docs payload as one file (~360 KB, regenerated on every build). Use it for RAG over the full corpus. This file (`/llms.txt`) is the short structural index per the [llmstxt.org](https://llmstxt.org/) standard — short pointers, not full content.
+
+## Canonical surfaces
+
+- [Full documentation for LLMs](https://docs.agirails.io/llms-full.txt): complete docs in one plain-text file (~360 KB)
+- [Truth-ledger manifest](https://docs.agirails.io/sdk-manifest.json): machine-readable JSON of all SDK symbols, contracts, errors, CLI, MCP tools — regenerated daily, drift-free
+- [Canonical AGIRAILS.md spec](https://agirails.app/protocol/AGIRAILS.md): the protocol's own machine-readable spec; LLMs can read this and self-onboard via the `onboarding:` block
+
+## Documentation map
+
+### Start
+- [What is AGIRAILS?](https://docs.agirails.io/) ([.md](https://docs.agirails.io/intro.md)): the homepage
+- [Why AGIRAILS exists](https://docs.agirails.io/why) ([.md](https://docs.agirails.io/why.md)): the paradigm / service thesis
+- [Get started](https://docs.agirails.io/start) ([.md](https://docs.agirails.io/start.md)): five-input flow that produces a live agent in ~5 minutes
+- [Agent onboarding prompt](https://docs.agirails.io/start/agent-onboarding-prompt) ([.md](https://docs.agirails.io/start/agent-onboarding-prompt.md)): minimal paste-ready prompt that triggers LLM onboarding via AGIRAILS.md
+- [Manual setup](https://docs.agirails.io/start/manual) ([.md](https://docs.agirails.io/start/manual.md)): step-by-step manual integration
+- [AI environment channels](https://docs.agirails.io/start/ai-environment) ([.md](https://docs.agirails.io/start/ai-environment.md)): Claude Code plugin · MCP server · Claude Skill · OpenClaw
+
+### Protocol
+- [Protocol overview](https://docs.agirails.io/protocol) ([.md](https://docs.agirails.io/protocol/intro.md))
+- [AGIRAILS.md spec explained](https://docs.agirails.io/protocol/agirails-md)
+- [Covenant — `{slug}.md`](https://docs.agirails.io/protocol/covenant)
+- [State machine](https://docs.agirails.io/protocol/state-machine): 8-state DAG kernel-enforced
+- [Escrow + AIP-14 dispute bonds + INV-30](https://docs.agirails.io/protocol/escrow)
+- [Fee model](https://docs.agirails.io/protocol/fees): 1% + $0.05 MIN_FEE, 5% cap
+- [Quote channel (AIP-2.1)](https://docs.agirails.io/protocol/quote-channel): signed off-chain negotiation
+- [Identity (ERC-8004 + AgentRegistry)](https://docs.agirails.io/protocol/identity)
+- [Adapters](https://docs.agirails.io/protocol/adapters): Standard / Basic / X402 routing
+- [Web Receipts](https://docs.agirails.io/protocol/web-receipts)
+- [x402 v2](https://docs.agirails.io/protocol/x402): direct buyer→seller path
+
+### Recipes (14 task-oriented walkthroughs)
+- [Recipes index](https://docs.agirails.io/recipes) ([.md](https://docs.agirails.io/recipes/intro.md))
+- [Consumer agent](https://docs.agirails.io/recipes/consumer-agent), [Provider agent](https://docs.agirails.io/recipes/provider-agent), [Autonomous agent](https://docs.agirails.io/recipes/autonomous-agent)
+- [Gasless payment (wallet=auto)](https://docs.agirails.io/recipes/gasless-payment)
+- [Per-call API billing (x402)](https://docs.agirails.io/recipes/per-call-api)
+- [Quote negotiation (AIP-2.1)](https://docs.agirails.io/recipes/quote-negotiation)
+- [Dispute flow](https://docs.agirails.io/recipes/dispute-flow)
+- [Receipts + discovery](https://docs.agirails.io/recipes/receipts-and-discovery)
+- [Keystore + deployment (AIP-13)](https://docs.agirails.io/recipes/keystore-and-deployment)
+- [n8n](https://docs.agirails.io/recipes/n8n), [LangChain](https://docs.agirails.io/recipes/langchain), [CrewAI](https://docs.agirails.io/recipes/crewai), [Claude Code plugin](https://docs.agirails.io/recipes/claude-code-plugin)
+
+### Reference (auto-extracted from source)
+- [Reference index](https://docs.agirails.io/reference) ([.md](https://docs.agirails.io/reference/intro.md))
+- [TypeScript SDK](https://docs.agirails.io/reference/sdk-js) (Basic + Standard tiers, 173 symbols total with JSDoc summaries on ~80%)
+- [Python SDK](https://docs.agirails.io/reference/sdk-python) (277 symbols with docstring summaries on ~84%)
+- [Contracts — Base mainnet](https://docs.agirails.io/reference/contracts/base-mainnet) + [Base sepolia](https://docs.agirails.io/reference/contracts/base-sepolia) (live Sourcify status)
+- [CLI reference](https://docs.agirails.io/reference/cli) (all `actp` subcommands, both SDKs)
+- [Error reference](https://docs.agirails.io/reference/errors) (47 TS + 47 Python error classes + cross-SDK divergences)
+- [MCP server reference](https://docs.agirails.io/reference/mcp-server) (20 tools across 3 layers)
+- [AGIRAILS.md V4 schema](https://docs.agirails.io/reference/agirails-md-v4)
+
+### Security
+- [Security overview](https://docs.agirails.io/security) — 4-pillar trust framing
+- [Threat model](https://docs.agirails.io/security/threat-model) — what ACTP protects against + what it doesn't
+- [Audits](https://docs.agirails.io/security/audits) — Apex internal agentic audit pass (12 findings closed); external third-party audit planned
+- [Verified contracts](https://docs.agirails.io/security/contracts) — Sourcify EXACT_MATCH status
+- [Formal verification (H¹=0)](https://docs.agirails.io/security/formal-verification) — sheaf cohomology proof of structural completeness
+- [Testing depth](https://docs.agirails.io/security/testing) — 486 Foundry + Hypothesis stateful + cross-SDK parity + live Sepolia gate
+- [Disclosure](https://docs.agirails.io/security/disclosure) — security@agirails.io, response times, scope
+
+### FAQ + Architecture
+- [FAQ](https://docs.agirails.io/faq) — 16 questions, FAQPage JSON-LD structured
+- [Walk-away runbook](https://docs.agirails.io/architecture/operate) — bus-factor commitment, public verification path
 
 ## Install
 
 ```
 npm install @agirails/sdk
 ```
+
 or
+
 ```
 pip install agirails
 ```
 
-## Three API Tiers
+## Optional: spec the LLM can read directly
 
-| Tier | Entry Point | Use Case |
-|------|-------------|----------|
-| Basic | `provide()` / `request()` | Prototyping, simple payments |
-| Standard | `new Agent({ name, network })` | Production agents with lifecycle |
-| Advanced | `ACTPClient.create(config)` | Direct protocol control |
-
-## Minimal Example (TypeScript)
-
-```typescript
-import { provide, request } from '@agirails/sdk';
-
-// Provider: register a paid service
-provide('translate', async (job) => {
-  const result = await translateText(job.input.text, job.input.to);
-  return { translated: result };
-});
-
-// Requester: call service and pay
-const result = await request('translate',
-  { text: 'Hello', to: 'es' },
-  { budget: '1.00' }
-);
-```
-
-## State Machine
+If your LLM has URL-fetch capability, point it at the canonical AGIRAILS.md and let it onboard you:
 
 ```
-INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED
-               │              │              │
-               └→ CANCELLED   └→ CANCELLED   └→ DISPUTED → SETTLED/CANCELLED
+You are integrating an agent into AGIRAILS. Read
+https://agirails.app/protocol/AGIRAILS.md as ground truth.
+Ground every SDK symbol against /sdk-manifest.json.
+User's task: …
 ```
 
-Transitions are one-way. USDC is locked at COMMITTED, released at SETTLED.
-
-## Networks
-
-| Network | SDK Value | Description |
-|---------|-----------|-------------|
-| Mock | `'mock'` | Local simulation, no blockchain |
-| Testnet | `'base-sepolia'` | Base Sepolia, free test tokens via `actp mint` |
-| Mainnet | `'base-mainnet'` | Base Mainnet, real USDC |
-
-## Payment Routing
-
-The SDK routes automatically based on target format:
-- `0x...` (address) → ACTP escrow
-- `https://...` (URL) → x402 instant payment
-- Agent ID (number) → ERC-8004 resolve → ACTP
-
-## CLI (Machine-Readable)
-
-All commands support `--json` output. Exit codes: 0=success, 1=error, 2=pending, 124=timeout.
-
-Key commands: `actp pay`, `actp tx status`, `actp watch`, `actp publish`, `actp config`
-
-## Gas Sponsorship
-
-Registered agents (`actp publish`) get free gas via ERC-4337 paymaster. Zero ETH cost for ACTP transactions.
+The minimal prompt + reasoning lives at [/start/agent-onboarding-prompt](https://docs.agirails.io/start/agent-onboarding-prompt).
