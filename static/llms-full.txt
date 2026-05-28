@@ -384,7 +384,7 @@ If the answer is "depends on the team being available," the design fails. So:
 - **No off-chain dependency for settlement**. Settlement is a function of on-chain state, not of a server we operate.
 - **No revocable identity**. Reputation accumulates as on-chain [EAS](/reference/glossary#eas) attestations the team cannot delete.
 - **Public, Sourcify-verified contracts**. Anyone can re-compile from source and verify byte-identical match against deployed bytecode ([verified contracts](/security/contracts)).
-- **Structural completeness, mathematically proven**. The state machine has been formally verified via [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology: **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The result is reproducible from a YAML spec via [`h1_engine.py`](/security/formal-verification). The reader doesn't trust us; the reader runs the math.
+- **Structural completeness, mathematically proven**. The state machine has been formally verified via [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology: **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The proof, code, and reproduction recipe live at [github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology); [formal verification](/security/formal-verification) has the plain-language version. The reader doesn't trust us; the reader runs the math.
 
 This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products: the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
 
@@ -6197,7 +6197,7 @@ AGIRAILS moves USDC between agents. The first reasonable question an integrator 
 
 The short version:
 
-- **Mathematically proven structural completeness.** [ACTP](/reference/glossary#actp)'s state sheaf has **[H¹ = 0](/reference/glossary#h-0)** after 2-cell refinement, independently reproducible from a YAML protocol spec via [`h1_engine.py`](/security/formal-verification). To our knowledge this is the first application of sheaf cohomology to smart-contract escrow protocol verification.
+- **Mathematically proven structural completeness.** [ACTP](/reference/glossary#actp)'s state sheaf has **[H¹ = 0](/reference/glossary#h-0)** after 2-cell refinement, independently reproducible from a YAML protocol spec. The paper, code, and reproduction recipe are at [github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology); the [plain-language explanation](/security/formal-verification) is on the formal-verification page. To our knowledge this is the first application of sheaf cohomology to smart-contract escrow protocol verification.
 - **Money-moving logic is enforced on-chain.** Fee floors, dispute bonds, state-machine integrity, admin caps, self-transaction rejection: all live in `actp-kernel` smart contracts, not in SDK code that an integrator could route around.
 - **Internal agentic audit closed every finding.** A 2026-05-17 pass of **Apex** (the team's internal systematic audit pipeline) raised 12 actionable findings; all of them closed before the V3 mainnet redeploy on 2026-05-19. (External third-party audit is planned for the right moment; not yet performed. See [audits](/security/audits) for what's covered and what isn't.)
 - **Every shipped contract is Sourcify-verified.** Live [`EXACT_MATCH`](/reference/glossary#sourcify-exact_match) checks run on every [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) refresh, with a daily cron as the safety net (see [contracts reference](/reference/contracts/base-mainnet)).
@@ -6486,112 +6486,91 @@ Formal verification (H¹=0)
 
 # Formal verification (H¹=0)
 
-Most protocols claim "trustless" as a marketing word. [ACTP](/reference/glossary#actp) earns it as a structural property, verifiable independently of any audit, any auditor, and any AGIRAILS team member.
+## In one paragraph
 
-The claim is precise: when the protocol's local state at each step is modeled as a **cellular sheaf**, the first cohomology group **H¹ = 0** on the state sheaf after a 10-face 2-cell refinement. In plain language: every piece of local state carries through every transition into a single consistent global view, with no hidden seam where trust has to be re-introduced.
+[ACTP](/reference/glossary#actp)'s 8-state machine has been **mathematically proven to compose into one globally consistent picture**, with no hidden gap where trust has to silently slip back in. The proof uses a tool from algebraic topology called cellular sheaf cohomology; the headline number is **H¹ = 0 on the state sheaf**. Any reviewer can clone [the paper repo](https://github.com/agirails/actp-sheaf-cohomology), point `h1_lint.py` at the YAML spec, and reproduce the result. No AGIRAILS-controlled step in the verification path.
 
-Status: **arXiv submission draft (cs.CR / cs.MA)**. The full paper, *"Sheaf Cohomology for Settlement Protocol Verification: Measuring Topological Completeness and Information Asymmetry in ACTP"* by Justin Rooschüz and Damir Mujić, is currently in technical review. This page is the operational summary plus the reproducibility path.
+> **Paper**: [Sheaf Cohomology for Settlement Protocol Verification](https://github.com/agirails/actp-sheaf-cohomology/blob/main/sheaf_cohomology_actp_pub.pdf) (PDF, pre-arXiv) by Justin Rooschüz and Damir Mujić.
+> **Code + reproduction**: [github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology) (Apache-2.0, includes `h1_engine.py`, `h1_lint.py`, the YAML protocol spec, and toy validation examples).
 
-[info]
-**The structural claim:** ACTP state sheaf H¹ = 0 (after 2-cell refinement). This is computable from a YAML spec via `h1_engine.py`; the result is reproducible by anyone with the spec and the tool. **Scope:** structural completeness, not full trustlessness. Participant-information-asymmetry is a separate measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Paper: see `verified_against` frontmatter.
+## What this means for you
 
+You're building an agent on AGIRAILS. You're not going to read the proof. What you need to know:
 
-## What sheaf cohomology measures
+- **The state machine has no silent traps.** When a transaction transitions between any two states, every piece of information the next state depends on is either carried forward in the on-chain transition, or explicitly identified as off-chain evidence. There is no third category: no implicit assumption hiding in the gap.
+- **"Trustless" has a definition here.** Outside of AGIRAILS, "trustless" is usually a marketing word. Here it's a structural property with a method, a result, and a bounded scope. You can verify it without trusting us.
+- **The verification outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The proof holds whether or not AGIRAILS exists in 2030. Combined with [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract and the [walk-away runbook](/architecture/operate), this is the math behind "the protocol survives the team."
+- **The proof is composable.** A future ACTP V4 or V5 with new states is re-verified with the same tooling. If H¹ regresses, the build fails. Structural drift becomes mechanically detectable.
 
-A **cellular sheaf** is a way to attach local data to the pieces of a state space (states, transitions, dispute branches) and ask: do all the local pieces fit together into one consistent global picture?
+## What this does not mean
 
-When they do, the sheaf has a *global section*: a single coherent view that respects every local rule. **H¹** counts the obstructions to that global section. **H¹ = 0** means no obstructions: every local rule composes into one globally coherent whole.
+The proof is precise. It is also bounded.
 
-What this catches that other verification techniques don't:
+- It does **not** replace smart-contract auditing. Code-level bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the [Apex](/security/audits) internal review on the Solidity implementation, plus the planned external audit roadmap.
+- It does **not** eliminate off-chain evidence in disputes. A separate participant-information-asymmetry measurement (also in the paper) quantifies exactly how much off-chain information still needs to be exchanged: bounded, not arbitrary.
+- It does **not** certify any specific deployed contract. The proof is about the YAML protocol *specification* (labelled `ACTP v2.7` in the paper); the deployed kernel's fidelity to that spec is a separate empirical question, addressed but not conflated with the proof.
 
-- **Model checkers** (TLA⁺, Alloy) verify temporal and relational properties by enumerating reachable states. They treat all data as undifferentiated: they can't distinguish a missing *dimension* of shared state from a missing *transition*.
-- **Smart-contract auditors** (Certora, [Echidna](/reference/glossary#echidna), Slither) check code-level safety: reentrancy, overflow, access control. They operate one level *below* the protocol, on the Solidity implementation rather than the state machine the implementation realizes.
-- **Sheaf cohomology** operates at the protocol-state level itself. It answers: does the information the protocol exposes at each step actually assemble into a globally consistent picture, and if not, where exactly does it fail?
-
-All three layers are necessary. They answer different questions. Sheaf cohomology adds the layer above code audit and below model checking.
-
-## The two sheaves, orthogonal questions
-
-The paper constructs **two** sheaves over ACTP's 8-state lifecycle. They measure different things:
-
-### State-based sheaf: structural completeness
-
-- Places stalks (data dimensions) on each protocol state.
-- Places restriction maps on each transition (the fields that must agree across the transition).
-- H¹ counts dimensions of local state that fail to globalize.
-
-**Result**: H¹ = 24 when the protocol is treated as a bare graph (1-complex). H¹ = **0** after adding 2-cells encoding the parallel paths (dispute branch, cancellation branch, quote optionality). The protocol is topologically complete.
-
-The 2-cells aren't an editorial addition; they correspond to actual parallel paths in the state machine where two transitions commute (e.g., both `COMMITTED → IN_PROGRESS` and `COMMITTED → CANCELLED` are reachable; the 2-cell encodes that they coexist in a single consistent structure). The 10-face refinement is declared explicitly in Appendix B of the paper for reproducibility.
-
-### Participant-based sheaf: information asymmetry
-
-- Places stalks on the protocol's principals (requester, provider, escrow vault, kernel, [mediator](/reference/glossary#mediator)).
-- Places restriction maps on the information channels between them.
-- H¹ counts dimensions of protocol state visible to some principals but hidden from others.
-
-**Result**: H¹ stays between **6 and 8** at every protocol state under a conservative *semantic* model that treats off-chain evidence as opaque. That gap isn't an error; it's the information that still needs to be exchanged off-chain or via an oracle for all parties to agree, **quantified**.
-
-A separate exact *raw-visibility* supplement yields H¹ = 0 at every state after public-face completion. The two values together formalize the difference between what participants can **see** (on-chain, via public view functions) and what they can **verify** (after off-chain evidence resolves).
-
-## Scope: what the proof covers and what it doesn't
-
-The two sheaves answer **orthogonal** questions. A protocol can be structurally complete (H¹ = 0 on the state sheaf) yet participant-asymmetric (H¹ > 0 on the participant sheaf), with one party unable to verify what another knows. Trustlessness in the strict sense requires both.
-
-Per the paper:
+From the paper:
 
 > **Structural completeness is necessary but not sufficient for trustlessness.**
 
-This is the scope. The H¹ = 0 result on the state sheaf is a precise structural property. It does NOT mean every concrete deployment is unbreakable. It means:
+That's the precise claim. The math says the protocol has no hidden seams. The other security layers (audits, tests, contract verification) address the layers above and below it.
 
-- The protocol's state machine has no hidden seams.
-- Every reachable state composes from earlier states consistently.
-- No "missing dimension": no piece of state the protocol depends on without exposing it through a transition.
+## How to verify it yourself
 
-What the proof does NOT claim:
+Clone the paper repo, install two Python dependencies, run one command:
 
-- It does not replace smart-contract auditing. Implementation bugs (reentrancy, overflow, access control) live at a different layer. See [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation, plus the planned external audit roadmap.
-- It does not eliminate the need for off-chain information exchange in disputes. The participant sheaf quantifies exactly how much that gap is, and the answer is bounded, not arbitrary.
-- It does not certify any specific deployed contract. The proofs are about a YAML protocol specification (labelled "ACTP v2.7" in the paper); the model's fidelity to the deployed kernel is a separate empirical question addressed but not conflated with the proofs.
+```bash
+git clone https://github.com/agirails/actp-sheaf-cohomology
+cd actp-sheaf-cohomology
+pip install -r requirements.txt   # numpy, pyyaml
 
-That precision is the point. *"Trustless"* gets used as a marketing word everywhere; here it has a definition, a method, a result, and a precisely-bounded scope.
+# Main result: H¹ = 0 on the 2-complex
+python3 h1_lint.py --config protocol.yaml --2complex
 
-## Reproducibility
+# Expected output: H^1 = 0
+```
 
-Two open-source tools accompany the paper:
+For the full reproduction recipe (1-complex diagnostics, participant-sheaf supplements, rational-arithmetic cross-validation, toy validation examples) see [REPRODUCING.md](https://github.com/agirails/actp-sheaf-cohomology/blob/main/REPRODUCING.md) in the repo.
 
-| Tool | What it does |
-|---|---|
-| **`h1_engine.py`** | Core computation. Reads a YAML protocol spec (states + transitions + optional 2-cells), constructs the coboundary matrices, computes H⁰, H¹, and H² via rank computations over ℚ (exact rational arithmetic). Generic: works on any state machine described in the spec format, not just ACTP. |
-| **`h1_lint.py`** | CI integration. Wraps `h1_engine` with a pass/fail gate. Any commit to the protocol kernel that changes the state machine triggers a re-computation; the build fails if H¹ regresses. |
-
-The cross-validation uses exact rational arithmetic (no floating-point error). The 1-complex rank computations have been independently cross-validated against both NumPy linear-algebra computations and SymPy symbolic computations: three implementations, identical results.
+The verification uses exact rational arithmetic over ℚ. No floating-point error. Results have been independently cross-validated against both NumPy linear-algebra and SymPy symbolic computations: three implementations, identical results.
 
 ## Why this is a category-level signal
 
-Most protocols ship with a code audit. Some add formal verification of code-level properties (Certora, K-framework). **No agent-commerce protocol before ACTP has applied sheaf cohomology to verify structural completeness of the state machine itself.**
-
-Per the paper:
-
-> *"To our knowledge this is the first application of sheaf cohomology to smart contract escrow protocol verification."*
+Most protocols ship with a code audit. Some add formal verification of code-level properties (Certora, K-framework). To our knowledge, **no agent-commerce protocol before ACTP has applied sheaf cohomology to verify structural completeness of the state machine itself**.
 
 This matters because:
 
-1. **The proof is independent.** Anyone can clone the repository, run `h1_engine.py` against the YAML spec, and reproduce the result. There's no AGIRAILS-controlled step.
-2. **The proof outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The result holds whether or not AGIRAILS exists tomorrow.
-3. **The proof is composable.** A future ACTP V4 or V5 with new states or transitions can be re-verified with the same tooling. Drift becomes detectable.
-4. **The proof speaks to regulators.** Formal verification is the gold standard in aerospace and finance. Applying it to AI agent payments is what makes "EU AI Act traceability" a mechanical property rather than an aspirational claim. See [threat model](/security/threat-model).
+1. **The proof is independent.** Anyone can reproduce it without any AGIRAILS infrastructure.
+2. **The proof outlives the team.** The math doesn't depend on us being around.
+3. **The proof is mechanically maintained.** `h1_lint.py` runs in CI; regressions fail the build.
+4. **The proof speaks to regulators.** Formal verification is the gold standard in aerospace and finance. Applying it to AI agent payments turns "EU AI Act traceability" into a mechanical property rather than an aspirational claim. See [threat model](/security/threat-model).
 
-## Related work
+## For mathematicians: the technical summary
 
-The framework builds on:
+If you want the math, [the paper](https://github.com/agirails/actp-sheaf-cohomology/blob/main/sheaf_cohomology_actp_pub.pdf) is the canonical treatment. This section is the protocol-level shorthand.
 
-- **Felber et al. (2025)**: cellular sheaves applied to distributed task solvability, showing that sheaf cohomology encodes obstructions to finding valid protocol solutions. The state-based sheaf extends their construction; the participant sheaf is new to this paper.
-- **Ghrist (2014)** and **Curry (2014)**: cellular sheaf theory foundations.
-- **Hansen & Ghrist (2019)**: spectral theory of cellular sheaves, providing the algebraic backbone.
-- **Robinson (2014)**: sheaf theory in signal processing on networks.
+The paper constructs **two cellular sheaves** over ACTP's 8-state lifecycle, measuring orthogonal properties:
 
-Full bibliography in the paper.
+**State-based sheaf** (structural completeness):
+- Stalks (data dimensions) on each protocol state.
+- Restriction maps on each transition (the fields that must agree across the edge).
+- H¹ counts dimensions of local state that fail to globalize.
+- **Result**: H¹ = 24 on the bare 1-complex; H¹ = **0** on the 2-complex after the 10-face refinement encoding parallel paths (dispute branch, cancellation branch, quote optionality). The 2-cells are not editorial; they correspond to actual commuting transitions (e.g., `COMMITTED → IN_PROGRESS` and `COMMITTED → CANCELLED` are both reachable and the 2-cell encodes their coexistence in a single consistent structure). Theorem 3.6.
+
+**Participant-based sheaf** (information asymmetry):
+- Stalks on principals (requester, provider, escrow vault, kernel, [mediator](/reference/glossary#mediator)).
+- Restriction maps on the information channels between them.
+- H¹ counts dimensions visible to some principals but hidden from others.
+- **Result**: H¹ stays between 6 and 8 at every state under a conservative semantic model that treats off-chain evidence as opaque (Table 4, Proposition 5.1). A separate exact six-channel raw-visibility supplement yields H¹ = 0 at every state after public-face completion (Appendix E). The two values formalize the difference between what participants can *see* (on-chain) and what they can *verify* (after off-chain evidence resolves).
+
+**Why both matter together**: a protocol can be structurally complete (state-sheaf H¹ = 0) yet participant-asymmetric (participant-sheaf H¹ > 0), with one party unable to verify what another knows. Trustlessness in the strict sense requires both. The state-sheaf result is the necessary condition. The participant-sheaf result quantifies what's left for off-chain or oracle evidence.
+
+The framework builds on Felber et al. (2025) on cellular sheaves and distributed task solvability; Ghrist (2014) and Curry (2014) on cellular sheaf foundations; Hansen & Ghrist (2019) on spectral theory of cellular sheaves; and Robinson (2014) on sheaf theory in signal processing. Full bibliography in the paper.
+
+[info]
+**Structural claim**: ACTP state sheaf H¹ = 0 after 2-cell refinement on the spec at `protocol.yaml`. **Scope**: structural completeness, not full trustlessness. **Reproducibility**: clone [agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology), run `python3 h1_lint.py --config protocol.yaml --2complex`. **Citation**: see [CITATION.cff](https://github.com/agirails/actp-sheaf-cohomology/blob/main/CITATION.cff).
+
 
 ## See also
 
@@ -6603,9 +6582,10 @@ Full bibliography in the paper.
 
 External:
 
-- Paper: *Sheaf Cohomology for Settlement Protocol Verification: Measuring Topological Completeness and Information Asymmetry in ACTP*, Rooschüz & Mujić (arXiv submission draft, cs.CR / cs.MA, currently in technical review)
-- Tooling: `h1_engine.py` + `h1_lint.py`, open-source companion code, runnable against any YAML protocol spec
-- First mainnet settlement event: $3.69 USDC on Base mainnet, 2026-02-21, referenced in the paper as implementation evidence ([BaseScan tx](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19))
+- **Paper**: [Sheaf Cohomology for Settlement Protocol Verification](https://github.com/agirails/actp-sheaf-cohomology/blob/main/sheaf_cohomology_actp_pub.pdf) by Justin Rooschüz and Damir Mujić (pre-arXiv snapshot; PDF + LaTeX source in the repo).
+- **Code + reproduction**: [github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology) (Apache-2.0). `h1_engine.py` core engine, `h1_lint.py` CI gate, `verify_rational.py` exact-arithmetic cross-validation, `protocol.yaml` spec, plus toy escrow examples (`toy_escrow_protocol.yaml` clean, `toy_escrow_broken.yaml` H¹=4 failure case).
+- **Citation**: [CITATION.cff](https://github.com/agirails/actp-sheaf-cohomology/blob/main/CITATION.cff) machine-readable, plus BibTeX in the repo README.
+- **First mainnet settlement event**: $3.69 USDC on Base mainnet, 2026-02-21, referenced in the paper as implementation evidence ([BaseScan tx](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19)).
 
 ============================================================
 Testing depth
@@ -7082,7 +7062,7 @@ The result is reproducible. Anyone can clone the open-source companion code (`h1
 
 Scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer; see [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation (external third-party audit pending). All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
 
-To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
+To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the plain-language explanation and the [paper repo at github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology) for the full mathematical treatment plus runnable verification code.
 
 ---
 

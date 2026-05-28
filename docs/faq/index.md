@@ -407,7 +407,7 @@ The result is reproducible. Anyone can clone the open-source companion code (`h1
 
 Scope: structural completeness is necessary but not sufficient for trustlessness in the strict sense. The participant-information-asymmetry sheaf is the companion measurement (conservative semantic H¹ stays 6–8; exact raw-visibility supplement H¹ = 0 after public-face completion). Code-level safety (reentrancy, overflow, access control) lives at a different layer; see [audits](/security/audits) for the Apex internal audit pass on the Solidity implementation (external third-party audit pending). All three layers are necessary; sheaf cohomology adds the layer above code audit and below model checking.
 
-To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the full mathematical treatment and reproducibility path.
+To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. See [formal verification](/security/formal-verification) for the plain-language explanation and the [paper repo at github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology) for the full mathematical treatment plus runnable verification code.
 
 ---
 
