@@ -9,6 +9,7 @@
     "truth-ledger": "tsx scripts/build-truth-ledger.ts",
     "truth-ledger:dry": "tsx scripts/build-truth-ledger.ts --dry-run",
     "truth-ledger:check": "tsx scripts/build-truth-ledger.ts --check",
+    "truth-ledger:bump-pins": "tsx scripts/bump-pins.ts",
     "regen-report-metrics": "tsx scripts/regen-report-metrics.ts",
     "render-reference": "tsx scripts/render-reference.ts",
     "verify:recipes": "tsx scripts/verify-recipes.ts",

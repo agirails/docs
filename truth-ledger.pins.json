@@ -1,0 +1,42 @@
+{
+  "_doc": "Pinned SHAs and coverage floors for the truth-ledger extractor inputs. The extractor verifies each pinned repo's HEAD matches the declared sha before reading source files. Mismatches fail the build (strict) or warn (loose). This is the trust gate on the verifier itself: a compromise of any upstream is forced to also update its pin here, making the pin bump the explicit review point. Bump via: npm run truth-ledger:bump-pins (writes current HEADs to this file; the resulting diff is what you review in PR).",
+  "_updated_at": "2026-05-29",
+  "_strict_mode_env": "Set TRUTH_LEDGER_PINS=strict to fail on mismatch. Default is warn-only so a developer pulling new SDK source can iterate; CI sets strict.",
+  "source_pins": {
+    "sdk-js": {
+      "expected_path": "SDK and Runtime/sdk-js",
+      "head_sha": "ef499b9d92526bac9185df32f4b613af331fb77d",
+      "notes": "TS SDK. Wave A.19 part 2 (per-error JSDoc tags) was the last bump."
+    },
+    "python-sdk-v2": {
+      "expected_path": "SDK and Runtime/python-sdk-v2",
+      "head_sha": "f12f3015aa857f045ea4b31b8bd875f7fa69e06a",
+      "notes": "Python SDK. Wave A.19 part 2 added docstring triage tags."
+    },
+    "agirails-mcp-server": {
+      "expected_path": "Platform/agirails-mcp-server",
+      "head_sha": "0e2c2d0e9bc55d0a4558df821a83a173de3b971a",
+      "notes": "MCP server. Wave A.18 source em-dash cleanup; per-tool schema extraction added later in docs-side extractor."
+    },
+    "actp-kernel": {
+      "expected_path": "Protocol/actp-kernel",
+      "head_sha": "c34ec49931a46352fba46a1a53b480b168d9a80d",
+      "notes": "Kernel contracts + deployments. Wave A.18 cleaned USDC deploy note em-dash."
+    },
+    "agirails.app/web": {
+      "expected_path": "Platform/agirails.app/web",
+      "head_sha": "fa9895df123ce51b8ad818c585da2d23d8298479",
+      "notes": "Canonical AGIRAILS.md spec source. Wave A.16 references block + hallucination guard."
+    }
+  },
+  "coverage_floors": {
+    "_doc": "Minimum acceptable counts per surface. If actual extracted count falls below floor, the build fails (or warns in non-strict mode). Floors are set slightly below current values to allow normal deprecations without false-positive alerts.",
+    "ts_symbols": 270,
+    "python_symbols": 265,
+    "ts_errors": 40,
+    "python_errors": 40,
+    "mcp_tools": 18,
+    "ts_cli_commands": 24,
+    "python_cli_commands": 32
+  }
+}

@@ -26,6 +26,13 @@ import { computeDivergences } from './truth-ledger/diverge.ts';
 import { emitManifest } from './truth-ledger/emit.ts';
 import { KNOWN_NAME_DIFFS, KNOWN_BEHAVIORAL_DIFFS, TIER_MAP } from './truth-ledger/tier-map.ts';
 import type { RawSurface } from './truth-ledger/types.ts';
+import {
+  loadPins,
+  verifyPins,
+  verifyFloors,
+  reportViolations,
+  emitManifestDiff,
+} from './truth-ledger/pins.ts';
 
 function readSourceVersions(config: ReturnType<typeof resolveConfig>): Record<string, string> {
   const versions: Record<string, string> = {};
@@ -94,6 +101,20 @@ async function main(): Promise<void> {
     return;
   }
 
+  // Verify source SHA pins BEFORE running extractors. A compromised
+  // upstream cannot silently propagate into the manifest without also
+  // moving its declared pin (which is a deliberate review act). See
+  // truth-ledger.pins.json + scripts/truth-ledger/pins.ts.
+  const docsSiteRoot = path.resolve(__dirname, '..');
+  const pins = loadPins(docsSiteRoot);
+  const pinsStrict = process.env.TRUTH_LEDGER_PINS === 'strict' || config.strict;
+  if (pins) {
+    const violations = verifyPins(pins, config.repoRoot);
+    reportViolations(violations, pinsStrict);
+  } else {
+    console.log('[truth-ledger:pins] no truth-ledger.pins.json found; skipping pin verification');
+  }
+
   const sourceVersions = readSourceVersions(config);
 
   console.log('[truth-ledger] starting build');
@@ -134,8 +155,44 @@ async function main(): Promise<void> {
     knownBehavioralDiffs: KNOWN_BEHAVIORAL_DIFFS,
   });
 
+  // Verify coverage floors AFTER normalization. A silent extractor
+  // regression (symbols dropped without obvious failure) shows up here:
+  // counts dropping below declared minimums fail the build in strict
+  // mode. Defends against the "in-sync improves while coverage
+  // regresses" failure mode flagged in Apex DR-2.
+  if (pins) {
+    const counts = {
+      ts_symbols: (manifest.sdk_api as { ts?: { count?: number } }).ts?.count ?? 0,
+      python_symbols: (manifest.sdk_api as { python?: { count?: number } }).python?.count ?? 0,
+      ts_errors: (manifest.errors as { ts?: unknown[] }).ts?.length ?? 0,
+      python_errors: (manifest.errors as { python?: unknown[] }).python?.length ?? 0,
+      mcp_tools: (manifest.mcp as { total?: number }).total ?? 0,
+      ts_cli_commands: (manifest.cli as { counts?: { ts?: number } }).counts?.ts ?? 0,
+      python_cli_commands: (manifest.cli as { counts?: { python?: number } }).counts?.python ?? 0,
+    };
+    const floorViolations = verifyFloors(pins, counts);
+    reportViolations(floorViolations, pinsStrict);
+  }
+
+  // Load previous manifest before overwriting so the diff has both sides.
+  let previousManifest: unknown | null = null;
+  if (!dryRun && fs.existsSync(MANIFEST_OUTPUT_PATH)) {
+    try {
+      previousManifest = JSON.parse(fs.readFileSync(MANIFEST_OUTPUT_PATH, 'utf-8'));
+    } catch {
+      previousManifest = null;
+    }
+  }
+
   // Atomic write (or dry-run report).
   emitManifest(manifest, MANIFEST_OUTPUT_PATH, { dryRun });
+
+  // Emit a human-readable manifest diff so PR review sees what changed.
+  // The diff lives next to the manifest in static/ for direct linking.
+  if (!dryRun) {
+    const diffPath = path.join(path.dirname(MANIFEST_OUTPUT_PATH), 'sdk-manifest-diff.md');
+    emitManifestDiff(previousManifest, manifest, diffPath);
+  }
 
   // Regenerate the audit report's "Verifiable state" block from the
   // freshly-written manifest so its metrics never drift from the source
