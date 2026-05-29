@@ -87,16 +87,20 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol ([ACTP](/reference
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-// Level 0: Basic API - One-liners for quick integration
+// Level 0: Basic API
+// Defaults to network: 'mock' for local exploration. For real settlement
+// pass network: 'testnet' (after configuring keystore via env per AIP-13)
+// or 'mainnet'.
 import { provide, request } from '@agirails/sdk';
 
-// Provider: Create a paid service (1 line!)
-provide('echo', async (job) => job.input);
+// Provider: register a service
+provide('echo', async (job) => job.input, { network: 'testnet' });
 
-// Requester: Pay for a service (1 line!)
+// Requester: pay for a service
 const { result } = await request('echo', {
   input: { text: 'Hello, AGIRAILS!' },
-  budget: 10,  // $10 USDC
+  budget: 10,        // $10 USDC
+  network: 'testnet',
 });
 
 console.log('Result:', result);
@@ -106,16 +110,20 @@ console.log('Result:', result);
 <TabItem value="py" label="Python">
 
 ```python
-# Level 0: Basic API - One-liners for quick integration
+# Level 0: Basic API
+# Defaults to network='mock' for local exploration. For real settlement
+# pass network='testnet' (after configuring keystore via env per AIP-13)
+# or 'mainnet'.
 from agirails import provide, request
 
-# Provider: Create a paid service (1 line!)
-provide('echo', lambda job: job.input)
+# Provider: register a service
+provide('echo', lambda job: job.input, network='testnet')
 
-# Requester: Pay for a service (1 line!)
+# Requester: pay for a service
 result = await request('echo', {
     'input': {'text': 'Hello, AGIRAILS!'},
-    'budget': 10,  # $10 USDC
+    'budget': 10,         # $10 USDC
+    'network': 'testnet',
 })
 
 print('Result:', result)
@@ -124,7 +132,7 @@ print('Result:', result)
 </TabItem>
 </Tabs>
 
-**That's the whole thing.** Provider earns USDC. Requester receives the result. The contract handles every step in between. You write the work; the protocol carries the trust.
+Provider earns USDC. Requester receives the result. The contract handles every step in between. You write the work; the protocol carries the trust.
 
 ---
 
@@ -172,7 +180,7 @@ print('Result:', result)
 | **3. Work** | Provider performs the service | Provider |
 | **4. Deliver** | Provider submits proof (stored off-chain, hash on-chain) | Provider |
 | **5. Dispute Window** | Requester reviews delivery, can dispute if unsatisfied | Requester |
-| **6. Settle** | Admin/bot executes payout (requester can request anytime; provider after dispute window) | Admin/bot |
+| **6. Settle** | USDC released to provider. Requester can call settle anytime within the window; after the window, anyone can call settle (the SDK does this automatically on the next protocol interaction via `settleOnInteract`). | Either party |
 
 :::warning Critical: Dispute Window
 After delivery, the requester has a limited time (dispute window) to challenge. **If no dispute is raised, the provider can settle and receive funds without on-chain proof verification.** Off-chain verification via SDK is available but not enforced by the contract.

@@ -354,7 +354,7 @@ See: [Formal verification](/security/formal-verification).
 
 **A property-based fuzzer for Solidity contracts.** Runs continuously against the kernel to check the EscrowVault solvency invariant under random adversarial sequences.
 
-### H⁰ / H¹ / H²
+### H⁰ / H¹ / H² {#h0-h1-h2}
 
 **Cohomology groups of the state sheaf.** Computed exactly over ℚ (no floating-point) via `h1_engine.py`. H¹ measures obstructions to a globally consistent view; H¹ = 0 means none.
 
