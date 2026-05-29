@@ -1,6 +1,6 @@
 # docs.agirails.io Rewrite: Audit Report
 
-**Scope**: Wave A.2 through Wave A.18 (April–May 2026)
+**Scope**: Wave A.2 through Wave A.22 (April–May 2026)
 **Site**: https://docs.agirails.io
 **Source repos touched**: `agirails/docs` (primary), `agirails/sdk-js`, `agirails/sdk-python`, `agirails/agirails-mcp-server`, `agirails/agirails.app`, `agirails/actp-kernel`
 **Reviewer audience**: external auditor evaluating documentation quality, drift-resistance, and editorial discipline of AGIRAILS public-facing documentation.
@@ -11,10 +11,10 @@
 
 The previous docs site carried five structural problems: aspirational API usage that didn't exist in the shipped SDKs, stale URLs from a pre-V3 information architecture, pre-Apex audit framing that misled readers about which audit had been performed, vendor-marketing voice with weak-signal qualifiers, and no machine-readable source of truth that could be cross-checked against the SDK source.
 
-The rewrite (Wave A.2 → A.18) replaced the docs surface end to end and added a truth-ledger pipeline that enforces source-of-truth grounding through CI. The principles are:
+The rewrite (Wave A.2 → A.22) replaced the docs surface end to end, added a truth-ledger pipeline that enforces source-of-truth grounding through CI, and closed an Apex review pass (DR-1 through DR-9) that hardened the trust boundary at the extraction layer. The principles are:
 
 1. **Manifest > prose**: every SDK symbol, contract address, CLI command, error code, MCP tool, and protocol field is auto-extracted from source into a single manifest (`/sdk-manifest.json`) regenerated daily. Reference pages render from the manifest. Drift between docs and code becomes a CI failure.
-2. **V1-literal recipes**: every code example in `/recipes/*` is verified against the live SDK surface by a CI gate (`scripts/verify-recipes.ts`, 25 banned-pattern checks). Aspirational APIs are rejected at PR time.
+2. **V1-literal recipes**: every code example in `/recipes/*` is verified against the live SDK surface by a CI gate (`scripts/verify-recipes.ts`, 27 banned-pattern checks). Aspirational APIs are rejected at PR time.
 3. **AGIRAILS.md as the onboarding entry**: the canonical protocol spec is structured so an LLM can fetch one URL and complete onboarding without further prompting. Out-of-band cleverness moved into the spec; the prompt collapsed to one line.
 4. **Voice discipline**: no weak signals ("honest", "essentially", "transparent" as trust-me assertion), Apex framed correctly as the team's internal agentic audit (not an external firm), em-dashes removed across the entire surface (em-dashes correlate folk-heuristically with LLM-generated text in 2026; the cleanup is a reader-trust hedge, not a research-grade claim).
 5. **Public artifacts only**: docs link only to publicly-reachable resources. The non-public "vision essay" linked from the original draft was replaced with the public manifest at `agirails.io/manifest/`.
@@ -63,7 +63,7 @@ Every claim in the reference docs is traceable to source. `BuyerNegotiationConte
 
 ### V1-literal recipes (`scripts/verify-recipes.ts`)
 
-Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering every invented API surface known from the pre-rewrite audit. The verifier runs on every PR. An `EXPLANATORY_PHRASES` allowlist tolerates prose mentions of deprecated APIs (e.g. "the V1 SDK does NOT expose `agent.dispute()`") so the verifier-gate doesn't fight legitimate documentation of what doesn't exist.
+Hand-written recipes are gated by a verifier with 27 `BAD_PATTERNS` covering every invented API surface known from the pre-rewrite audit. The verifier runs on every PR. An `EXPLANATORY_PHRASES` allowlist tolerates prose mentions of deprecated APIs (e.g. "the V1 SDK does NOT expose `agent.dispute()`") so the verifier-gate doesn't fight legitimate documentation of what doesn't exist.
 
 ---
 
@@ -84,7 +84,7 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 
 ### Wave A.10 to A.13: Drift gates and verifier sweep
 
-- `verify-recipes.ts` CI gate added with 25 BAD_PATTERNS; runs on every PR.
+- `verify-recipes.ts` CI gate added with 25 BAD_PATTERNS (later expanded to 27 in Wave A.22); runs on every PR.
 - Verifier sweep against V1 SDK surface; 60+ corrections landed across recipes.
 - Lighthouse 86/97/96/100 desktop after a11y fixes (link underlines, Prism contrast for both themes).
 - Docusaurus `experimental_faster` enabled (rspack + SWC); build time dropped meaningfully.
@@ -114,13 +114,42 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 - Eliminated in three passes: (1) `render-reference.ts` template fix (~374 instances in auto-generated reference docs), (2) four parallel agents rewriting 38 hand-written content pages (~635 instances) with context-aware replacements, (3) cleanup of 27 code-block comments + source comments in 5 upstream repos (sdk-js, sdk-python, mcp-server, actp-kernel) so daily render doesn't reintroduce em-dashes from JSDoc/docstring summaries.
 - Replacement rules applied consistently: parenthetical → comma or split; appositive → colon (defines) or period (sequential); list-item header → colon; title separator → colon; range → en-dash (–) or "to"; brief amplification → comma; long restructure → two sentences.
 
+### Wave A.19: Errors, formal verification, first mainnet transaction
+
+- **Per-code error triage extracted from SDK source** (parts 1-2). Each error class in `sdk-js/src/errors.ts` annotated with `@cause` / `@fix` / `@recovery` JSDoc tags; truth-ledger errors extractor reads the tags and renders `/reference/errors` with per-code triage instead of a flat catalog. A reader hitting `INSUFFICIENT_FUNDS` in their logs gets a direct anchor link with cause, fix, and recovery class. Stale "If you don't have an error code" symptom flow added as the no-code path.
+- **Formal verification page rewritten for accessibility** (part 3). Replaces a paper-link-and-three-paragraphs stub with first-principles explanation: what H¹=0 actually proves, what it doesn't, who benefits ("for mathematicians" section). Paper repo (`agirails/proofs-paper`) linked inline; verification commands `lake build` + `make verify` documented for readers who want to re-run the proof themselves.
+- **First mainnet transaction walkthrough** (part 4). The exact transaction shape that closed the first commercial AGIRAILS settlement, anonymized at the design partner's request, with BaseScan trace links. Demonstrates the canonical lifecycle (INITIATED → SETTLED in ~38 seconds, $3.69 USDC) without leaking the design partner's service identity. Replaces an aspirational "what a transaction looks like" stub.
+
+### Wave A.20: Production checklist, MCP per-tool schemas, cross-SDK divergence page
+
+- **Production checklist** (`/recipes/production-checklist`) added: orchestration-layer page for taking an agent from testnet to mainnet, organized as pre-launch → launch day → day 1 → ongoing → incident response. Each item is a gate the team should answer yes to before moving on; details deferred to the underlying recipe. Authored against the team's first mainnet operational experience, not aspirational.
+- **MCP per-tool schemas**: per-tool reference pages for all 20 tools in `agirails-mcp-server` rendered from the truth-ledger MCP extractor. Each page shows input schema, output schema, example invocation. Previously documented as a single overview index.
+- **Cross-SDK divergence page** (`/reference/cross-sdk-divergence`) added: explicit table of intentional name differences between TS and Python SDKs (`KNOWN_NAME_DIFFS` source-of-truth), plus the small set of truly diverged behaviors. Reader question "is this missing from Python or different?" gets an answer without source-reading.
+
+### Wave A.21: Apex review response (DR-1 through DR-9)
+
+The Apex agentic audit pipeline produced nine findings on the rewrite itself (DR-1 through DR-9). Closed in five parts, sequenced by load-bearing first.
+
+- **Part 1 (DR-4)**: paymaster framing precision. Earlier docs said "the paymaster can refuse"; source inspection showed dual-provider (Coinbase primary + Pimlico backup) with automatic failover. Updated `wallet`/`paymaster` reference + recipes to reflect actual fallback, not a single point of failure. The fix was documenting reality more accurately, not weakening the recommendation.
+- **Part 2 (DR-1)**: REWRITE_REPORT metrics drift. The `## Verifiable state` table was hand-maintained and drifted between report updates. Replaced with a comment-marker pair populated by `scripts/regen-report-metrics.ts` on every truth-ledger build. Source: `static/sdk-manifest.json`. Drift = CI failure. The live table is at the end of this report.
+- **Part 3 (DR-2)**: truth-ledger trust boundary. The pipeline reads from upstream source repos; nothing pinned which commit those repos were at. Added `truth-ledger.pins.json` (per-repo SHA + minimum extraction coverage floor); `verifyPins` blocks build if upstream HEAD doesn't match the pin, `verifyFloors` blocks if extraction coverage drops, `emitManifestDiff` produces a per-symbol change set on every PR. `bump-pins.ts` is the deliberate path to advance the pin (no auto-bump). A poisoned upstream commit can no longer silently land in the rendered docs.
+- **Part 4 (DR-3)**: "Stripe for AI agents" constitutional counter-framing. The tagline (canonical per GTM §5.4) implies custodial vendor positioning; AGIRAILS is non-custodial protocol. Counter-framing added inline on all four surfaces where the tagline appears (the agent should walk away from us if we fail; the protocol settles without our involvement). The tagline stays for analogical clarity; the inline counter-frame keeps the analogy from over-extending.
+- **Part 5 (tactical batch, DR-5 through DR-9)**: audit hygiene docs landed under `.audit/` for findings whose mitigation was operational rather than code. `CROSS_REPO_COMMIT_POLICY.md` (commit-pattern hygiene for supply-chain hardening), `DEPENDABOT_TRACKING.md` (per-repo vulnerability cadence: runtime on `agirails.app` monthly, build-time on `agirails/docs` quarterly with layered mitigations — OIDC trusted publisher, SHA-pinned actions, truth-ledger pins), `GEO_PROBE.md` (measurement deferred but tracked). SUMMARY corrections and REWRITE_REPORT heuristic reframings landed alongside.
+
+### Wave A.22: Design partner insights + production-checklist actually shippable
+
+- **Extracted operational insights from a design partner mainnet-listener guide** into four existing recipe surfaces (Option A: extract, don't migrate). `provider-agent.md` gained "Listener architecture: the agent is outbound-only" (most teams expect an HTTP server; the SDK is a JsonRpcProvider client; clarifies when an endpoint IS needed, i.e. x402 only). `autonomous-agent.md` gained "Integration patterns" (everything-in-process vs forward-events-to-existing-infra) so teams with prior orchestration don't rebuild. `dispute-flow.md` gained lower-level subscription pattern for standalone monitoring daemons (no Agent instance, via `runtime.getEvents().onStateChanged`). `production-checklist.md` gained "Automation boundary" tables (auto-safe by default / human-in-the-loop by default) covering which state transitions an agent may handle unattended on day one.
+- **Pre-existing bug caught by `verify:recipes`** in production-checklist.md: `agent.on('payment:sent', ...)` does not exist in V1 (only `payment:received` fires). Reframed to `payment:received` on provider side; `agent.stats.totalSpent` polling on consumer side. The drift gate introduced in Wave A.19 caught it before merge — the exact defense-in-depth case the gate was built for.
+- **`.gitignore` fix unblocking the production checklist**: the `*CHECKLIST*.md` pattern (intended for local-only working notes) was silently swallowing the intentional `docs/recipes/production-checklist.md` file. Wave A.20 wired the Docusaurus sidebar entry, but the file itself never reached git. Added explicit allowlist exception (`!docs/recipes/production-checklist.md`). The page is now actually shippable to docs.agirails.io.
+- **Verify-recipes expanded to 27 banned patterns** (from 25) to cover the additional V1-surface drift caught in this Wave.
+
 ---
 
 ## Old vs new comparison
 
 | Dimension | Pre-rewrite | Post-rewrite (current) |
 |---|---|---|
-| **API examples** | Hallucinated symbols (`Agent.create`, `agent.dispute`, `x402Client`, `behavior.budget`, `requirePayment`, …) | Literal V1 surface, CI-gated against 25 banned patterns |
+| **API examples** | Hallucinated symbols (`Agent.create`, `agent.dispute`, `x402Client`, `behavior.budget`, `requirePayment`, …) | Literal V1 surface, CI-gated against 27 banned patterns |
 | **Reference docs** | Hand-maintained, manually edited, prone to drift | Auto-extracted daily from source; rendered pages committed; drift = CI failure |
 | **Symbol coverage** | Partial, names guessed | 283 TS symbols, 277 Python; per-symbol cross-SDK status |
 | **Contract addresses** | Hardcoded in prose | Auto-pulled from `actp-kernel/deployments/*.json` with live Sourcify check |
@@ -132,7 +161,7 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 | **Em-dashes** | 1036 across surface | 0 across `docs/` + `static/llms*.txt`; source comments cleaned to prevent regen |
 | **Vision/manifest links** | Linked to non-public "vision essay" | Linked to public `agirails.io/manifest/` |
 | **Reference auto-extraction** | None | TS SDK 76% JSDoc coverage, Python SDK 84% docstring coverage |
-| **CI gates** | None | `verify-recipes.ts` (25 patterns), truth-ledger build, 43 invariant tests |
+| **CI gates** | None | `verify-recipes.ts` (27 patterns), truth-ledger build with SHA-pinned source repos + coverage floors + manifest diff (Wave A.21 part 3), 43 invariant tests, auto-regenerated report metrics block |
 | **Recipes count** | Partial, marketing-shaped | 14 task-oriented walkthroughs with V1-caveat banner + verified-against footer |
 | **JSON-LD structured data** | None | FAQPage on `/faq` (16 entries), TechArticle on protocol/security pages |
 | **Lighthouse desktop** | Not measured | 86/97/96/100 |
@@ -176,28 +205,42 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 | Banned-pattern entries in verify-recipes | 27 | `grep -cE "^\s*pattern:" scripts/verify-recipes.ts` |
 | Verified contracts (Sourcify EXACT_MATCH) | 9/10 | `/security/contracts` live check |
 | FAQ Q&A entries (JSON-LD) | 17 | `grep -c '"@type": "Question"' docs/faq/index.md` |
-| Glossary cross-link occurrences | 276 | `grep -rc "/reference/glossary#" docs/` |
+| Glossary cross-link occurrences | 279 | `grep -rc "/reference/glossary#" docs/` |
 | Docs files in IA | 60 | `find docs -name "*.md" -not -path "*/img/*" \| wc -l` |
-| llms-full.txt size | ~444 KB | `wc -c static/llms-full.txt` |
+| llms-full.txt size | ~451 KB | `wc -c static/llms-full.txt` |
 | Apex findings closed | 12/12 before V3 redeploy | `/security/audits` index (FIND-001 through FIND-016, twelve actionable) |
 
 <!-- METRICS:end -->
 
 ## Known gaps and open items
 
-### Closed (verified this turn)
-- Em-dash elimination across docs + source comments
-- Truth-ledger parity bugs (3 fixes landed in normalize/render/extractor)
-- Audit framing carry-through (index.md + disclosure.md)
-- Hallucination-prevention guard in AGIRAILS.md
-- "SDK pins" overclaim corrected
+### Closed (Wave A.17 → A.22)
+- Em-dash elimination across docs + source comments (A.18)
+- Truth-ledger parity bugs (3 fixes landed in normalize/render/extractor) (A.17)
+- Audit framing carry-through (index.md + disclosure.md) (A.17)
+- Hallucination-prevention guard in AGIRAILS.md (A.17)
+- "SDK pins" overclaim corrected (A.17)
+- Per-code error triage extracted from SDK source `@cause`/`@fix`/`@recovery` tags (A.19)
+- Formal verification page rewritten with "for mathematicians" section + paper repo + verification commands (A.19)
+- First-mainnet-transaction walkthrough with anonymized real trace (A.19)
+- Production checklist as orchestration layer over the recipes (A.20)
+- MCP per-tool schema pages for all 20 tools (A.20)
+- Cross-SDK divergence reference page (A.20)
+- **Apex DR-1**: REWRITE_REPORT metrics auto-generated from `static/sdk-manifest.json` via `scripts/regen-report-metrics.ts` (A.21 part 2)
+- **Apex DR-2**: truth-ledger SHA-pinned to upstream source repos + coverage floors + per-PR manifest diff via `truth-ledger.pins.json` (A.21 part 3)
+- **Apex DR-3**: "Stripe for AI agents" constitutional counter-framing inline on all four surfaces (A.21 part 4)
+- **Apex DR-4**: dual-provider paymaster (Coinbase + Pimlico failover) documented as actual reality (A.21 part 1)
+- **Apex DR-5/6/7/8/9**: audit hygiene docs (CROSS_REPO_COMMIT_POLICY, DEPENDABOT_TRACKING, GEO_PROBE) + SUMMARY corrections + heuristic reframings (A.21 part 5)
+- Design partner mainnet-listener insights extracted into four existing recipes (A.22)
+- Production checklist `.gitignore` blocker resolved (Wave A.20 wired the sidebar but the file never reached git; allowlist exception added) (A.22)
+- `verify:recipes` caught pre-existing `payment:sent` V1-surface drift in production-checklist before merge (A.22)
 
 ### Open (deferred by design)
 - **External third-party audit**: not yet performed. Decision criteria documented in `/security/audits`. Will be commissioned pre-V4 mainnet upgrade or at a stakeholder threshold (TVL, mediator exposure).
 - **Per-symbol detailed reference**: current pages are "index of what exists" with JSDoc summaries. Full prose reference (parameter docs, return types, examples) is a deferred enhancement; the index suffices for V1.
 - **Programmatic SEO (`/solutions/*`)**: 0/500 per GTM §9.2.8. Separate workstream.
 - **Foundational Essay #4**: blocked on B2/B3 work outside docs scope.
-- **Dependabot vulnerabilities** flagged on both `agirails/docs` (23H/34M/1L) and `agirails/agirails.app` (15H/9M). Pre-existing; not introduced by the rewrite. Scheduled separately.
+- **Dependabot vulnerabilities** tracked in `.audit/DEPENDABOT_TRACKING.md` with per-repo cadence: `agirails/agirails.app` (runtime, monthly batch for HIGH; quarterly for MEDIUM); `agirails/docs` (build-time only, quarterly batch for HIGH; semi-annual for MEDIUM). Layered build-pipeline mitigations documented in the same file: OIDC trusted publisher, SHA-pinned actions, truth-ledger SHA pins, per-branch Vercel deploy isolation. Pre-existing; not introduced by the rewrite.
 
 ### Not in scope for this rewrite
 - Marketing site content (`agirails.io`)
