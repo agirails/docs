@@ -4,6 +4,20 @@
 **Scope**: 48 markdown files under `docs-site/docs/`, audited against `@agirails/sdk@4.0.0` + `agirails@3.0.1` + V3 mainnet / V4 sepolia contracts + canonical AGIRAILS.md V4.
 **Sources**: [`01-root-and-concepts.md`](./01-root-and-concepts.md) (Agent A), [`02-guides-and-cookbook.md`](./02-guides-and-cookbook.md) (Agent B), [`03-reference.md`](./03-reference.md) (Agent C).
 
+## Corrections (post-rewrite, 2026-05-29)
+
+This pre-rewrite audit was the input that motivated building the truth-ledger. The truth-ledger itself surfaced false negatives in this very audit. Per Apex DR-7, those need to be back-propagated so the record is honest about its own approximation.
+
+Confirmed false negatives in this audit:
+
+- **`actp time` was claimed to not exist** (table row 6, line 80, and elsewhere). The truth-ledger manifest confirms `actp time` ships at [`python-sdk-v2/src/agirails/cli/main.py:146`](https://github.com/agirails/sdk-python/blob/main/src/agirails/cli/main.py#L146) as `app.add_typer(time_cmd.time_app, name="time")` and is present in the auto-extracted CLI surface (`manifest.cli.python.commands`). This was not a deprecated-but-still-shipping case; it was a manual-audit miss against a command that was there the whole time. It is the origin story for the truth-ledger as a source-of-truth gate.
+
+Implications for the 54%-P0 headline:
+
+The **54% P0** figure was derived from the same manual-grade approximation that produced the `actp time` false negative. Treat it as a directional severity signal, not a precise count. The rewrite (Waves A.1 through A.21) replaced the whole audited surface anyway, so the P0/P1/P2 split here mostly serves as historical context for what we were responding to, not as a load-bearing claim today. If you want a current-state figure, run the truth-ledger build and read [REWRITE_REPORT.md](./REWRITE_REPORT.md) (the metrics block auto-regenerates from manifest, so it cannot drift from reality the way this audit did).
+
+Other false-claim entries in 03-reference.md flagging non-existent commands were not re-graded against current source individually. The truth-ledger build catches any future divergence: if `actp time` (or any other Typer-registered command) is missing from the manifest, the CLI extractor warns, and the coverage floor in `truth-ledger.pins.json` fails the build if Python CLI commands drop below the configured minimum.
+
 ## Executive summary
 
 **54% of audited pages are P0** — broken or misleading on copy-paste. The docs reflect the pre-2026-05-19 protocol surface (V2 mainnet kernel, 15-field `TransactionView`, no Smart Wallet, no Web Receipts, no AIP-2.1, no LLM onboarding) almost across the board.

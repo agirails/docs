@@ -16,7 +16,7 @@ The rewrite (Wave A.2 → A.18) replaced the docs surface end to end and added a
 1. **Manifest > prose**: every SDK symbol, contract address, CLI command, error code, MCP tool, and protocol field is auto-extracted from source into a single manifest (`/sdk-manifest.json`) regenerated daily. Reference pages render from the manifest. Drift between docs and code becomes a CI failure.
 2. **V1-literal recipes**: every code example in `/recipes/*` is verified against the live SDK surface by a CI gate (`scripts/verify-recipes.ts`, 25 banned-pattern checks). Aspirational APIs are rejected at PR time.
 3. **AGIRAILS.md as the onboarding entry**: the canonical protocol spec is structured so an LLM can fetch one URL and complete onboarding without further prompting. Out-of-band cleverness moved into the spec; the prompt collapsed to one line.
-4. **Voice discipline**: no weak signals ("honest", "essentially", "transparent" as trust-me assertion), Apex framed correctly as the team's internal agentic audit (not an external firm), em-dashes removed across the entire surface (LLM-tell).
+4. **Voice discipline**: no weak signals ("honest", "essentially", "transparent" as trust-me assertion), Apex framed correctly as the team's internal agentic audit (not an external firm), em-dashes removed across the entire surface (em-dashes correlate folk-heuristically with LLM-generated text in 2026; the cleanup is a reader-trust hedge, not a research-grade claim).
 5. **Public artifacts only**: docs link only to publicly-reachable resources. The non-public "vision essay" linked from the original draft was replaced with the public manifest at `agirails.io/manifest/`.
 
 Final state: 0 em-dashes, 0 aspirational API usages, 100% of reference content auto-extracted, 56-section canonical IA, 43/43 truth-ledger tests passing, deployed at https://docs.agirails.io.
@@ -110,7 +110,7 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 
 ### Wave A.18: Em-dash elimination
 
-- 1036 em-dashes removed across docs surface. Em-dash is an LLM-tell: readers identify AI-generated text by it, and competitors weaponize the signal.
+- 1036 em-dashes removed across docs surface. The justification is a folk-heuristic, not evidence: em-dashes correlate in popular 2026 commentary with LLM-generated text, and readers (and competitors) use them as a low-cost prior. The cleanup is a reader-trust hedge against that prior. Spending blast radius across security-sensitive repos for a contested heuristic was a defensible call; flagging it explicitly so it isn't asserted as fact.
 - Eliminated in three passes: (1) `render-reference.ts` template fix (~374 instances in auto-generated reference docs), (2) four parallel agents rewriting 38 hand-written content pages (~635 instances) with context-aware replacements, (3) cleanup of 27 code-block comments + source comments in 5 upstream repos (sdk-js, sdk-python, mcp-server, actp-kernel) so daily render doesn't reintroduce em-dashes from JSDoc/docstring summaries.
 - Replacement rules applied consistently: parenthetical → comma or split; appositive → colon (defines) or period (sequential); list-item header → colon; title separator → colon; range → en-dash (–) or "to"; brief amplification → comma; long restructure → two sentences.
 
@@ -155,7 +155,7 @@ Hand-written recipes are gated by a verifier with 25 `BAD_PATTERNS` covering eve
 
 7. **Source-cleanup propagates**. When an em-dash or weak signal lives in a JSDoc or docstring that propagates through the truth-ledger, the fix lands in the SDK source repo (committed back through the relevant package), not as a patch on the rendered docs. This keeps the pipeline robust against re-render.
 
-8. **LLM-tells are removed proactively**. Em-dashes are the canonical AI-generated-text signal in 2026. Their removal across 1036 instances is purely about reader-trust: docs that don't read like LLM output build more credibility per word.
+8. **Folk-heuristic voice signals are addressed proactively, named as heuristics**. Em-dashes correlate with LLM-generated text in popular 2026 commentary. This is a heuristic, not evidence; we treat it as a reader-trust hedge rather than a research finding. Removing them across 1036 instances is purely about not triggering the reader's "this is AI sludge" prior; the technical accuracy of the underlying claim is unaffected. Naming it as a heuristic protects against the same weak-signal trap we close on words like "honest" or "trustless".
 
 ---
 
