@@ -24,7 +24,7 @@ You're building an agent on AGIRAILS. You're not going to read the proof. What y
 
 - **The state machine has no silent traps.** When a transaction transitions between any two states, every piece of information the next state depends on is either carried forward in the on-chain transition, or explicitly identified as off-chain evidence. There is no third category: no implicit assumption hiding in the gap.
 - **"Trustless" has a definition here.** Outside of AGIRAILS, "trustless" is usually a marketing word. Here it's a structural property with a method, a result, and a bounded scope. You can verify it without trusting us.
-- **The verification outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The proof holds whether or not AGIRAILS exists in 2030. Combined with [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract and the [walk-away runbook](/architecture/operate), this is the math behind "the protocol survives the team."
+- **The verification outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The proof holds whether or not AGIRAILS exists in 2030. Combined with [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract and the [walk-away runbook](/protocol/walk-away), this is the math behind "the protocol survives the team."
 - **The proof is composable.** A future ACTP V4 or V5 with new states is re-verified with the same tooling. If H¹ regresses, the build fails. Structural drift becomes mechanically detectable.
 
 ## What this does not mean
@@ -102,7 +102,7 @@ The framework builds on Felber et al. (2025) on cellular sheaves and distributed
 - [Threat model](/security/threat-model): the structural test ACTP passes; H¹=0 is the formal version of "no hidden seam"
 - [Testing depth](/security/testing): what 486 Foundry tests + Hypothesis stateful + cross-SDK parity cover at the code/implementation layer
 - [Audits](/security/audits): Apex internal audit pass + remediation index (the code-layer review)
-- [Walk-away runbook](/architecture/operate): the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
+- [Walk-away runbook](/protocol/walk-away): the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
 - [Verified contracts](/security/contracts): Sourcify EXACT_MATCH on every deployed contract
 
 External:

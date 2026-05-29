@@ -69,6 +69,7 @@ const sidebars: SidebarsConfig = {
         'protocol/x402',
         'protocol/first-mainnet-transaction',
         'protocol/design-decisions',
+        'protocol/walk-away',
       ],
     },
 
@@ -151,13 +152,6 @@ const sidebars: SidebarsConfig = {
       label: 'FAQ',
     },
 
-    {
-      type: 'category',
-      label: 'Architecture',
-      items: [
-        'architecture/operate/index',
-      ],
-    },
   ],
 };
 

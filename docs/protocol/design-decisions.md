@@ -14,7 +14,7 @@ sidebar_position: 11
 
 Each of the choices below is load-bearing: change it and the protocol stops doing the work it claims to do. None of them are obvious from looking at the kernel source. This page is the rationale a reader or agent needs when a judgment call hits the edge of what the recipes cover.
 
-The structural test every choice has to pass: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** See [walk-away runbook](/architecture/operate) for the auditable property; the choices below are how we earn it.
+The structural test every choice has to pass: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** See [walk-away runbook](/protocol/walk-away) for the auditable property; the choices below are how we earn it.
 
 ## Why on-chain escrow
 
@@ -137,7 +137,7 @@ See [actp-kernel invariants](https://github.com/agirails/actp-kernel) source for
 ## See also
 
 - [/why](/why): the paradigm framing (open trust rails, non-custodial settlement, service thesis)
-- [/architecture/operate](/architecture/operate): the walk-away runbook (the property these choices earn)
+- [/protocol/walk-away](/protocol/walk-away): the walk-away runbook (the property these choices earn)
 - [/security/formal-verification](/security/formal-verification): H¹ = 0 proof on the state sheaf
 - [/protocol/state-machine](/protocol/state-machine): the DAG these choices enforce
 - [/protocol/escrow](/protocol/escrow): EscrowVault contract + INV-30

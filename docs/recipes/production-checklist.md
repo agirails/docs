@@ -107,6 +107,6 @@ The goal: have a known response, not improvisation under pressure.
 - [Autonomous agent recipe](/recipes/autonomous-agent): production-ish provider pattern with observability + supervisors
 - [Dispute flow](/recipes/dispute-flow): the protocol path when things are contested
 - [Error reference](/reference/errors): per-code triage
-- [Walk-away runbook](/architecture/operate): what the protocol guarantees even if AGIRAILS the team disappears
+- [Walk-away runbook](/protocol/walk-away): what the protocol guarantees even if AGIRAILS the team disappears
 - [Threat model](/security/threat-model): what to guard against, what is already guarded for you
 - [Disclosure](/security/disclosure): how to report a vulnerability

@@ -392,7 +392,7 @@ If the answer is "depends on the team being available," the design fails. So:
 - **Public, Sourcify-verified contracts**. Anyone can re-compile from source and verify byte-identical match against deployed bytecode ([verified contracts](/security/contracts)).
 - **Structural completeness, mathematically proven**. The state machine has been formally verified via [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology: **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement. To our knowledge ACTP is the first escrow protocol with a published sheaf-cohomology proof of structural completeness. The proof, code, and reproduction recipe live at [github.com/agirails/actp-sheaf-cohomology](https://github.com/agirails/actp-sheaf-cohomology); [formal verification](/security/formal-verification) has the plain-language version. The reader doesn't trust us; the reader runs the math.
 
-This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products: the protocol survives the entity that ships it. The [walk-away runbook](/architecture/operate) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
+This isn't security theater. It's the same property that makes TCP/IP and HTTP infrastructure rather than products: the protocol survives the entity that ships it. The [walk-away runbook](/protocol/walk-away) makes that property auditable; the [H¹ = 0 proof](/security/formal-verification) makes it mathematically precise.
 
 This category has a precise name: [**non-custodial settlement**](https://agirails.io/learn/non-custodial-settlement/). Custody re-introduces a human in the loop by definition, and autonomy stops at the boundary of the custodian's control. For agents, that's not acceptable.
 
@@ -981,7 +981,7 @@ Machine-readable spec: [`/sdk-manifest.json`](/sdk-manifest.json) (`protocol.sta
 
 **ACTP is escrow-with-receipts for AI agents.** Money locks in a Base L2 smart contract; the protocol walks the transaction through a one-way state machine (`INITIATED → COMMITTED → IN_PROGRESS → DELIVERED → SETTLED`), with dispute branches gated by on-chain bonds. The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md): every fee bound, every state transition, every onboarding question is defined there. This `/protocol/` subtree explains what's in the canonical spec; the spec itself remains the source of truth.
 
-The protocol is shaped by one structural test: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** Every architectural choice below (no admin function over user funds, immutable per-transaction terms ([INV-30](/reference/glossary#inv-30)), [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract) exists so the answer stays *yes*. The [walk-away runbook](/architecture/operate) makes the property auditable.
+The protocol is shaped by one structural test: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** Every architectural choice below (no admin function over user funds, immutable per-transaction terms ([INV-30](/reference/glossary#inv-30)), [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract) exists so the answer stays *yes*. The [walk-away runbook](/protocol/walk-away) makes the property auditable.
 
 The state machine itself has been **formally verified**: [cellular sheaf](/reference/glossary#cellular-sheaf) cohomology gives **[H¹ = 0](/reference/glossary#h-0)** on the state sheaf after 2-cell refinement, meaning every local state composes into one globally consistent view with no hidden seam. Reproducible from a YAML spec via `h1_engine.py`; see [formal verification](/security/formal-verification). For the paradigm framing (open trust rails, non-custodial settlement, service thesis), see [Why AGIRAILS exists](/why).
 
@@ -3521,7 +3521,7 @@ The goal: have a known response, not improvisation under pressure.
 - [Autonomous agent recipe](/recipes/autonomous-agent): production-ish provider pattern with observability + supervisors
 - [Dispute flow](/recipes/dispute-flow): the protocol path when things are contested
 - [Error reference](/reference/errors): per-code triage
-- [Walk-away runbook](/architecture/operate): what the protocol guarantees even if AGIRAILS the team disappears
+- [Walk-away runbook](/protocol/walk-away): what the protocol guarantees even if AGIRAILS the team disappears
 - [Threat model](/security/threat-model): what to guard against, what is already guarded for you
 - [Disclosure](/security/disclosure): how to report a vulnerability
 
@@ -6983,7 +6983,7 @@ You're building an agent on AGIRAILS. You're not going to read the proof. What y
 
 - **The state machine has no silent traps.** When a transaction transitions between any two states, every piece of information the next state depends on is either carried forward in the on-chain transition, or explicitly identified as off-chain evidence. There is no third category: no implicit assumption hiding in the gap.
 - **"Trustless" has a definition here.** Outside of AGIRAILS, "trustless" is usually a marketing word. Here it's a structural property with a method, a result, and a bounded scope. You can verify it without trusting us.
-- **The verification outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The proof holds whether or not AGIRAILS exists in 2030. Combined with [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract and the [walk-away runbook](/architecture/operate), this is the math behind "the protocol survives the team."
+- **The verification outlives the team.** Sheaf cohomology is a 1950s mathematical framework. The proof holds whether or not AGIRAILS exists in 2030. Combined with [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract and the [walk-away runbook](/protocol/walk-away), this is the math behind "the protocol survives the team."
 - **The proof is composable.** A future ACTP V4 or V5 with new states is re-verified with the same tooling. If H¹ regresses, the build fails. Structural drift becomes mechanically detectable.
 
 ## What this does not mean
@@ -7061,7 +7061,7 @@ The framework builds on Felber et al. (2025) on cellular sheaves and distributed
 - [Threat model](/security/threat-model): the structural test ACTP passes; H¹=0 is the formal version of "no hidden seam"
 - [Testing depth](/security/testing): what 486 Foundry tests + Hypothesis stateful + cross-SDK parity cover at the code/implementation layer
 - [Audits](/security/audits): Apex internal audit pass + remediation index (the code-layer review)
-- [Walk-away runbook](/architecture/operate): the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
+- [Walk-away runbook](/protocol/walk-away): the protocol's bus-factor guarantee; H¹=0 is the math the runbook relies on
 - [Verified contracts](/security/contracts): Sourcify EXACT_MATCH on every deployed contract
 
 External:
@@ -7560,103 +7560,6 @@ To our knowledge, ACTP is the first escrow protocol with a published sheaf-cohom
 - [Security](/security): audits, threat model, disclosure
 - [Reference](/reference): auto-extracted CLI, contracts, MCP tools, errors
 
-============================================================
-Walk-away runbook
-============================================================
-
-# Walk-away runbook
-
-The premise of this page is a question we ask ourselves often: **if the AGIRAILS team disappears tomorrow (hit by a bus, retired to a farm, lost interest), what survives, what breaks gracefully, and how does the protocol keep serving the people who came to depend on it?**
-
-This is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfers) stay in the team's internal docs by design. What you'll find here is everything an outsider needs to **independently verify** that ACTP keeps working without us, because a protocol that requires its makers to keep showing up isn't really a protocol. It's a service in a costume.
-
-## The Vitalik test
-
-Vitalik Buterin's framing: *"An ideal protocol fits onto a single page."* The corollary: if you can't explain the whole thing in a single diagram, the protocol is too complex to walk away from.
-
-ACTP passes this test:
-
-```text
-INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
-                                          │              │
-                                          └─→ CANCELLED  └─→ DISPUTED ─→ SETTLED / CANCELLED
-```
-
-Everything else (fees, dispute bonds, identity, receipts) is layered on top of those 8 states. Anyone who understands this diagram and reads the source can rebuild the protocol.
-
-## What survives without AGIRAILS
-
-| Asset | How it survives | What it needs |
-|---|---|---|
-| **`actp-kernel` contracts** on Base mainnet | Immutable on-chain; admin changes are bounded by hardcoded caps | Base L2 continues operating |
-| **[EscrowVault](/reference/glossary#escrowvault)** USDC custody | Solvency invariant enforced by contract; no admin drain function | Base L2 + USDC contract |
-| **[Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match)** of all contracts | Sourcify is a public service; metadata pinned to IPFS | Sourcify + IPFS |
-| **Open-source SDKs** (`@agirails/sdk`, `agirails`) | npm + PyPI + GitHub | npm/PyPI registries continue serving |
-| **AGIRAILS.md canonical spec** | Forkable; can be re-hosted anywhere | Any public host (GitHub, IPFS, archive.org) |
-| **[Web Receipts](/reference/glossary#web-receipt)** of past transactions | Pinned to IPFS via Filebase/Pinata | Any IPFS gateway can resolve by [CID](/reference/glossary#cid) |
-| **[EAS](/reference/glossary#eas) attestations** of reputation + deliveries | Live on EAS infrastructure; chain-native | EAS contract on Base |
-| **Agent registrations** in [AgentRegistry](/reference/glossary#agentregistry) | On-chain mapping survives independently | Base L2 |
-
-## What breaks (gracefully) without AGIRAILS
-
-| Asset | Failure mode | Recovery path |
-|---|---|---|
-| **[Mediator](/reference/glossary#mediator) role** | Disputes pile up unresolved | Anyone running an alternative ACTP fork can stand up a community mediator, or migrate to a decentralized mediator implementation. Until then, disputes time out and escrow refunds per state-machine rules. |
-| **docs.agirails.io site** | Vercel hosting could lapse | Source is open on `github.com/agirails/docs`; anyone can rebuild + deploy a Docusaurus site to any static host |
-| **agirails.app web app** | Operational UI goes dark | Direct kernel interaction still works via SDK + raw RPC. The web app is a convenience, not a dependency. |
-| **[MCP server](/reference/glossary#mcp-server)** | If AGIRAILS-published version isn't updated, gets stale | Anyone can fork + publish their own (npm + open source) |
-| **`actp serve` policy daemon** ([AIP-2.1](/reference/glossary#aip-21)) | Counter-offer routing breaks | Counter-offers can still be exchanged manually via [EIP-712](/reference/glossary#eip-712) signing; daemon is for convenience |
-| **Filebase/Pinata pinning** for new receipts | New receipts wouldn't auto-pin | Anyone can pin via any IPFS pinning service; the protocol doesn't depend on a specific pinner |
-| **Daily [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) refresh** in CI | Reference pages go stale | Manual refresh via `npm run truth-ledger`; or stale data, since contract addresses don't change |
-
-## What an inheriting team needs to do
-
-For someone (or some DAO) inheriting ACTP and wanting to keep it running:
-
-1. **Fork the four repos**:
-   - `actp-kernel` (contracts, do NOT redeploy unless absolutely needed; existing deployments are immutable + verified)
-   - `sdk-js` (TypeScript SDK)
-   - `sdk-python` (Python SDK)
-   - `mcp-server` (MCP integration layer)
-2. **Verify the existing deployments**:
-   - Sourcify EXACT_MATCH on all 8 contracts (mainnet + sepolia)
-   - Foundry test suite passes on a fresh clone
-   - SDK CI green
-3. **Set up the mediator role**:
-   - Mediator address on mainnet kernel is configurable via the admin Safe
-   - Without a mediator, disputes never resolve (escrow stays locked). This is the most urgent operational continuity item.
-   - Options: community DAO votes per-dispute, third-party mediator service, automated heuristics
-4. **Publish updates via your own npm/PyPI scope**. Don't try to take over `@agirails/*` packages; just fork and rename if necessary.
-5. **Rehost the docs**. Clone `agirails/docs`, deploy to any static host, update DNS or just publish a new URL.
-6. **Operate the canonical AGIRAILS.md**. Fork it, version it, keep it updated as you ship changes. The spec doesn't need to live at `agirails.app`; it just needs to live somewhere stable.
-
-The protocol doesn't need any one party, including the original AGIRAILS team, to keep running. That's the design.
-
-## Verifying without us
-
-If you don't trust the assertions here and want to verify independently:
-
-1. **Read the spec**: [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) (or mirror it to IPFS via `ipfs add`).
-2. **Read the contracts**: pick any address from [Base mainnet contracts](/reference/contracts/base-mainnet), open Sourcify, view the source side-by-side with the deployed bytecode.
-3. **Re-compile the contracts**: `git clone github.com/agirails/actp-kernel && forge build && diff <(forge inspect ACTPKernel deployedBytecode) `. They match.
-4. **Run the SDK against the live kernel**: `pip install agirails && python -c "from agirails import Agent; ..."` against Base Sepolia. The SDK speaks directly to the kernel; no AGIRAILS-controlled middleman.
-5. **Inspect a Web Receipt**: pick any IPFS CID from a settled transaction's receipt field; fetch via any public IPFS gateway; verify the signature against the on-chain attestation hash.
-
-None of these steps require any AGIRAILS-controlled infrastructure. The trust is in the **chain + open source code + public IPFS**, not in us.
-
-## What this section does NOT cover
-
-- **Internal operational details**: Safe signer ownership, deploy keystore handling, internal CI/CD, domain ownership. Those are in the AGIRAILS team's private repo. Knowing them isn't necessary for protocol continuity; they're operational shortcuts for the current team, not requirements.
-- **Future roadmap**: what AGIRAILS plans to build next is documented elsewhere; this runbook is about what survives if those plans never materialize.
-- **Token economics / governance**: no governance token exists. Post-PMF, if/when one is introduced, governance mechanics will be documented separately.
-
-## See also
-
-- [Security](/security): the trust model this runbook builds on
-- [Verified contracts](/security/contracts): the immutability claim verified live
-- [Protocol overview](/protocol): the single-page protocol mental model
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json): machine-readable reference of everything deployed
-
 
 ============================================================
 Additional Documentation
@@ -7687,7 +7590,7 @@ Design decisions: why ACTP looks the way it does
 
 Each of the choices below is load-bearing: change it and the protocol stops doing the work it claims to do. None of them are obvious from looking at the kernel source. This page is the rationale a reader or agent needs when a judgment call hits the edge of what the recipes cover.
 
-The structural test every choice has to pass: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** See [walk-away runbook](/architecture/operate) for the auditable property; the choices below are how we earn it.
+The structural test every choice has to pass: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** See [walk-away runbook](/protocol/walk-away) for the auditable property; the choices below are how we earn it.
 
 ## Why on-chain escrow
 
@@ -7810,12 +7713,104 @@ See [actp-kernel invariants](https://github.com/agirails/actp-kernel) source for
 ## See also
 
 - [/why](/why): the paradigm framing (open trust rails, non-custodial settlement, service thesis)
-- [/architecture/operate](/architecture/operate): the walk-away runbook (the property these choices earn)
+- [/protocol/walk-away](/protocol/walk-away): the walk-away runbook (the property these choices earn)
 - [/security/formal-verification](/security/formal-verification): H¹ = 0 proof on the state sheaf
 - [/protocol/state-machine](/protocol/state-machine): the DAG these choices enforce
 - [/protocol/escrow](/protocol/escrow): EscrowVault contract + INV-30
 - [/protocol/fees](/protocol/fees): the 1% / $0.05 / 5%-cap model
 - [/protocol/identity](/protocol/identity): ERC-8004 cross-chain ID
+
+============================================================
+Walk-away runbook
+============================================================
+
+# Walk-away runbook
+
+The premise of this page is a question we ask ourselves often: **if the AGIRAILS team disappears tomorrow (hit by a bus, retired to a farm, lost interest), what survives, what breaks gracefully, and how does the protocol keep serving the people who came to depend on it?**
+
+This is the public answer. The private operational details (signer slot ownership, deploy keys, domain transfers) stay in the team's internal docs by design. What you'll find here is everything an outsider needs to **independently verify** that ACTP keeps working without us, because a protocol that requires its makers to keep showing up isn't really a protocol. It's a service in a costume.
+
+## The Vitalik test
+
+Vitalik Buterin's framing: *"An ideal protocol fits onto a single page."* The corollary: if you can't explain the whole thing in a single diagram, the protocol is too complex to walk away from.
+
+ACTP passes this test:
+
+
+Everything else (fees, dispute bonds, identity, receipts) is layered on top of those 8 states. Anyone who understands this diagram and reads the source can rebuild the protocol.
+
+## What survives without AGIRAILS
+
+| Asset | How it survives | What it needs |
+|---|---|---|
+| **`actp-kernel` contracts** on Base mainnet | Immutable on-chain; admin changes are bounded by hardcoded caps | Base L2 continues operating |
+| **[EscrowVault](/reference/glossary#escrowvault)** USDC custody | Solvency invariant enforced by contract; no admin drain function | Base L2 + USDC contract |
+| **[Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match)** of all contracts | Sourcify is a public service; metadata pinned to IPFS | Sourcify + IPFS |
+| **Open-source SDKs** (`@agirails/sdk`, `agirails`) | npm + PyPI + GitHub | npm/PyPI registries continue serving |
+| **AGIRAILS.md canonical spec** | Forkable; can be re-hosted anywhere | Any public host (GitHub, IPFS, archive.org) |
+| **[Web Receipts](/reference/glossary#web-receipt)** of past transactions | Pinned to IPFS via Filebase/Pinata | Any IPFS gateway can resolve by [CID](/reference/glossary#cid) |
+| **[EAS](/reference/glossary#eas) attestations** of reputation + deliveries | Live on EAS infrastructure; chain-native | EAS contract on Base |
+| **Agent registrations** in [AgentRegistry](/reference/glossary#agentregistry) | On-chain mapping survives independently | Base L2 |
+
+## What breaks (gracefully) without AGIRAILS
+
+| Asset | Failure mode | Recovery path |
+|---|---|---|
+| **[Mediator](/reference/glossary#mediator) role** | Disputes pile up unresolved | Anyone running an alternative ACTP fork can stand up a community mediator, or migrate to a decentralized mediator implementation. Until then, disputes time out and escrow refunds per state-machine rules. |
+| **docs.agirails.io site** | Vercel hosting could lapse | Source is open on `github.com/agirails/docs`; anyone can rebuild + deploy a Docusaurus site to any static host |
+| **agirails.app web app** | Operational UI goes dark | Direct kernel interaction still works via SDK + raw RPC. The web app is a convenience, not a dependency. |
+| **[MCP server](/reference/glossary#mcp-server)** | If AGIRAILS-published version isn't updated, gets stale | Anyone can fork + publish their own (npm + open source) |
+| **`actp serve` policy daemon** ([AIP-2.1](/reference/glossary#aip-21)) | Counter-offer routing breaks | Counter-offers can still be exchanged manually via [EIP-712](/reference/glossary#eip-712) signing; daemon is for convenience |
+| **Filebase/Pinata pinning** for new receipts | New receipts wouldn't auto-pin | Anyone can pin via any IPFS pinning service; the protocol doesn't depend on a specific pinner |
+| **Daily [truth-ledger manifest](/reference/glossary#truth-ledger-manifest) refresh** in CI | Reference pages go stale | Manual refresh via `npm run truth-ledger`; or stale data, since contract addresses don't change |
+
+## What an inheriting team needs to do
+
+For someone (or some DAO) inheriting ACTP and wanting to keep it running:
+
+1. **Fork the four repos**:
+   - `actp-kernel` (contracts, do NOT redeploy unless absolutely needed; existing deployments are immutable + verified)
+   - `sdk-js` (TypeScript SDK)
+   - `sdk-python` (Python SDK)
+   - `mcp-server` (MCP integration layer)
+2. **Verify the existing deployments**:
+   - Sourcify EXACT_MATCH on all 8 contracts (mainnet + sepolia)
+   - Foundry test suite passes on a fresh clone
+   - SDK CI green
+3. **Set up the mediator role**:
+   - Mediator address on mainnet kernel is configurable via the admin Safe
+   - Without a mediator, disputes never resolve (escrow stays locked). This is the most urgent operational continuity item.
+   - Options: community DAO votes per-dispute, third-party mediator service, automated heuristics
+4. **Publish updates via your own npm/PyPI scope**. Don't try to take over `@agirails/*` packages; just fork and rename if necessary.
+5. **Rehost the docs**. Clone `agirails/docs`, deploy to any static host, update DNS or just publish a new URL.
+6. **Operate the canonical AGIRAILS.md**. Fork it, version it, keep it updated as you ship changes. The spec doesn't need to live at `agirails.app`; it just needs to live somewhere stable.
+
+The protocol doesn't need any one party, including the original AGIRAILS team, to keep running. That's the design.
+
+## Verifying without us
+
+If you don't trust the assertions here and want to verify independently:
+
+1. **Read the spec**: [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md) (or mirror it to IPFS via `ipfs add`).
+2. **Read the contracts**: pick any address from [Base mainnet contracts](/reference/contracts/base-mainnet), open Sourcify, view the source side-by-side with the deployed bytecode.
+3. **Re-compile the contracts**: `git clone github.com/agirails/actp-kernel && forge build && diff <(forge inspect ACTPKernel deployedBytecode) `. They match.
+4. **Run the SDK against the live kernel**: `pip install agirails && python -c "from agirails import Agent; ..."` against Base Sepolia. The SDK speaks directly to the kernel; no AGIRAILS-controlled middleman.
+5. **Inspect a Web Receipt**: pick any IPFS CID from a settled transaction's receipt field; fetch via any public IPFS gateway; verify the signature against the on-chain attestation hash.
+
+None of these steps require any AGIRAILS-controlled infrastructure. The trust is in the **chain + open source code + public IPFS**, not in us.
+
+## What this section does NOT cover
+
+- **Internal operational details**: Safe signer ownership, deploy keystore handling, internal CI/CD, domain ownership. Those are in the AGIRAILS team's private repo. Knowing them isn't necessary for protocol continuity; they're operational shortcuts for the current team, not requirements.
+- **Future roadmap**: what AGIRAILS plans to build next is documented elsewhere; this runbook is about what survives if those plans never materialize.
+- **Token economics / governance**: no governance token exists. Post-PMF, if/when one is introduced, governance mechanics will be documented separately.
+
+## See also
+
+- [Security](/security): the trust model this runbook builds on
+- [Verified contracts](/security/contracts): the immutability claim verified live
+- [Protocol overview](/protocol): the single-page protocol mental model
+- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json): machine-readable reference of everything deployed
 
 ============================================================
 TypeScript SDK: Simple

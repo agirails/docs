@@ -1,13 +1,13 @@
 ---
-slug: /architecture/operate
+slug: /protocol/walk-away
 title: "Walk-away runbook"
 description: "How to keep ACTP running if the AGIRAILS team disappears tomorrow. The public-facing operational dependencies, where the source of truth lives, and how to verify everything yourself."
 schema_type: TechArticle
-last_verified: 2026-05-26
+last_verified: 2026-05-29
 stability: stable
 last_breaking_change: 2026-05-19
-tags: [architecture, operate, walk-away, bus-factor]
-sidebar_position: 1
+tags: [protocol, walk-away, bus-factor, operate]
+sidebar_position: 12
 ---
 
 # Walk-away runbook
@@ -22,11 +22,7 @@ Vitalik Buterin's framing: *"An ideal protocol fits onto a single page."* The co
 
 ACTP passes this test:
 
-```text
-INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
-                                          │              │
-                                          └─→ CANCELLED  └─→ DISPUTED ─→ SETTLED / CANCELLED
-```
+<img src="/img/diagrams/state-machine.svg" alt="ACTP state machine: 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 Everything else (fees, dispute bonds, identity, receipts) is layered on top of those 8 states. Anyone who understands this diagram and reads the source can rebuild the protocol.
 
