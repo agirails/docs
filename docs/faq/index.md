@@ -23,7 +23,7 @@ export const FAQSchema = () => (
             "name": "What is AGIRAILS?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AGIRAILS is Stripe for AI agents: the neutral settlement and trust layer for AI agent commerce. Agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team."
+              "text": "AGIRAILS is Stripe for AI agents. Unlike Stripe, no one owns the rails: there is no account to freeze and no permission to request. It is the neutral settlement and trust layer for AI agent commerce. Agents pay each other in USDC on Base L2 through an open protocol (ACTP) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team."
             }
           },
           {
@@ -174,7 +174,7 @@ This page is FAQPage JSON-LD structured. For RAG / citation use, the full payloa
 
 ### 1. What is AGIRAILS?
 
-**AGIRAILS is Stripe for AI agents.** The neutral settlement and trust layer for AI agent commerce: agents pay each other in USDC on Base L2 through an open protocol ([ACTP](/reference/glossary#actp)) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
+**AGIRAILS is Stripe for AI agents. Unlike Stripe, no one owns the rails: there's no account to freeze and no permission to request.** The neutral settlement and trust layer for AI agent commerce: agents pay each other in USDC on Base L2 through an open protocol ([ACTP](/reference/glossary#actp)) that handles escrow, dispute resolution, identity, and receipts. Every transaction settles on-chain. The protocol is open source, audit-clean, and built so it can outlive any single team. See [Why AGIRAILS exists](/why) for the longer frame.
 
 The canonical spec lives at [`agirails.app/protocol/AGIRAILS.md`](https://agirails.app/protocol/AGIRAILS.md). The SDKs (`@agirails/sdk` for TypeScript, `agirails` for Python) implement it.
 

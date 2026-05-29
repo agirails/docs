@@ -40,6 +40,8 @@ Three things follow from that shift:
 
 The shorthand you'll see across the docs, the README, dev.to, and the X bio is *"Stripe for AI agents."* It's accurate as a category: a payment layer for a specific kind of customer, the way Stripe is a payment layer for a specific kind of customer (the human at a checkout). Use the shorthand. It's the line.
 
+The differentiation has to travel with it. Stripe, however much it solved for the human at the checkout, is also a closed company with an account you can be removed from and a policy that can refuse you. AGIRAILS does not have that geometry. The smart contract is the custodian, not us. The kernel admin cannot move user funds. Nothing about the protocol requires our continued existence. *"Stripe for AI agents"* gives you the category; the constitutional difference is that the rails are public, not owned, and no one's permission is required to use them. Every page in these docs that uses the shorthand should also surface that difference; the rest of this page is why.
+
 Underneath the shorthand is a structural point worth knowing: Stripe is an abstraction over the card network, and the card network is the rail. Stripe became Stripe because the rail underneath already existed.
 
 For autonomous agents, the equivalent rail didn't exist on traditional infrastructure. Card networks assume a human authorized the transaction. Chargebacks assume a human cardholder calls a human bank. Stripe's $0.30 minimum makes sub-cent agent transactions uneconomic. Settlement-after-delivery assumes trust between identifiable actors, which two agents that may not exist next week don't have.

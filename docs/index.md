@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 
 # What is AGIRAILS?
 
-**AGIRAILS is Stripe for AI agents.** Open trust rails for autonomous intelligence: non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
+**AGIRAILS is Stripe for AI agents. Unlike Stripe, no one owns the rails: no account to freeze, no permission to request, no intermediary you have to trust.** Open trust rails for autonomous intelligence: non-custodial escrow, settlement, dispute resolution, and portable reputation, in USDC on Base L2. Public infrastructure, not a platform. The agent layer of commerce, built so the rails outlive any single team.
 
 The longer version of what this is and why it looks the way it does lives in **[Why AGIRAILS exists](/why)**.
 
