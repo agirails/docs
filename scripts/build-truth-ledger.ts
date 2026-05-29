@@ -137,6 +137,26 @@ async function main(): Promise<void> {
   // Atomic write (or dry-run report).
   emitManifest(manifest, MANIFEST_OUTPUT_PATH, { dryRun });
 
+  // Regenerate the audit report's "Verifiable state" block from the
+  // freshly-written manifest so its metrics never drift from the source
+  // they cite. Skipped in dry-run mode (the report patch is a side
+  // effect of the real build).
+  if (!dryRun) {
+    try {
+      const { spawnSync } = await import('node:child_process');
+      const tsx = path.join(process.cwd(), 'node_modules', '.bin', 'tsx');
+      const script = path.join(__dirname, 'regen-report-metrics.ts');
+      if (fs.existsSync(tsx) && fs.existsSync(script)) {
+        const result = spawnSync(tsx, [script], { stdio: 'inherit' });
+        if (result.status !== 0) {
+          console.warn('[truth-ledger] regen-report-metrics returned non-zero; check output');
+        }
+      }
+    } catch (err) {
+      console.warn('[truth-ledger] regen-report-metrics skipped:', err instanceof Error ? err.message : String(err));
+    }
+  }
+
   console.log('[truth-ledger] done');
 }
 
