@@ -183,7 +183,7 @@ So dispute when you genuinely have a case, not as a haggling tool.
 
 ## See also
 
-- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-14.md): dispute bonds
+- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIP-14.md): dispute bonds
 - [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps): why bonds can't be changed mid-flight
 - [Escrow mechanism](/protocol/escrow): what happens to USDC during DISPUTED
 - [State machine](/protocol/state-machine): DELIVERED → DISPUTED → SETTLED/CANCELLED paths

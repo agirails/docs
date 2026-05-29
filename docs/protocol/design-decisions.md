@@ -57,7 +57,7 @@ We chose DAG-enforcement-in-kernel because:
 2. **Formal verifiability.** The state sheaf has been verified to have **[H¹ = 0](/reference/glossary#h-0)** (cellular sheaf cohomology), meaning every local state composes into one globally consistent picture with no hidden seam. This proof requires the DAG; an event log has no such property. See [formal verification](/security/formal-verification).
 3. **Walk-away.** A new team rebuilding from the kernel source recovers the full protocol semantics from the state machine alone. An event log requires re-deriving the interpretation rules.
 
-The cost is rigidity: adding a new state requires a contract upgrade. We treat that as a feature, not a bug. See [Vitalik's note on protocol simplicity](https://vitalik.ca/general/2024/05/17/decentralization.html) for the broader frame.
+The cost is rigidity: adding a new state requires a contract upgrade. We treat that as a feature, not a bug. See [Vitalik's note on protocol simplicity](https://vitalik.eth.limo/general/2024/05/17/decentralization.html) for the broader frame.
 
 ## Why ERC-4337 Smart Wallets (not EOAs)
 
@@ -116,7 +116,7 @@ The bond is locked in the kernel at `createTransaction` time per [INV-30](/refer
 
 ## Why MCP for discovery (not SDK-first)
 
-Service-name discovery is not exposed at the V1 Agent class level. The canonical path is the [MCP `discoverAgents` tool](/reference/mcp-tools); the SDK has fallback access to the underlying registry. See [discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the full breakdown.
+Service-name discovery is not exposed at the V1 Agent class level. The canonical path is the [MCP `discoverAgents` tool](/reference/mcp-server); the SDK has fallback access to the underlying registry. See [discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the full breakdown.
 
 The reasoning: discovery is a search problem (on-chain query + freshness + ranking + reputation overlay). That work belongs in one place, not duplicated across every SDK consumer. The MCP server abstracts it; SDK consumers can fall back to the raw registry query when MCP isn't available. Agent-first design says the primary user is an LLM, and LLMs natively speak MCP.
 
@@ -132,7 +132,7 @@ A recurring choice across the kernel: when we could add a feature OR add an inva
 
 Invariants are properties an auditor can verify without running the code. Features are surface area we have to maintain. We optimize for surface that has to stay correct for a hundred years; features come from the SDK + recipe layer, where iteration is cheap.
 
-See [CLAUDE.md `.claude-docs/invariants.md`](https://github.com/agirails/agirails/blob/main/.claude-docs/invariants.md) for the full invariant catalog.
+See [actp-kernel invariants](https://github.com/agirails/actp-kernel) source for the full invariant catalog.
 
 ## See also
 

@@ -349,7 +349,7 @@ You're here to build something. Before the SDK docs, one page that explains the 
 
 That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it: no admin function over user funds, immutable per-transaction terms ([INV-30](/reference/glossary#inv-30)), [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
 
-The full thesis lives at [agirails.io](https://agirails.io): the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
+The full thesis lives at [agirails.io](https://agirails.io): the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [articles](https://agirails.io/articles/). This page is the bridge, not the full argument.
 
 ## The shift you're building into
 
@@ -470,8 +470,8 @@ This page is short on purpose. The technical docs are where the work lives.
 - [What is non-custodial settlement?](https://agirails.io/learn/non-custodial-settlement/)
 - [What is agent escrow?](https://agirails.io/learn/agent-escrow/)
 - [What is Outcome-as-a-Service?](https://agirails.io/learn/outcome-as-a-service/)
-- [The agent economy is not automation. It is trade.](https://agirails.io/blog/agent-economy-is-not-automation/)
-- [Outcome-as-a-Service: the architecture Salesforce just made inevitable](https://agirails.io/blog/outcome-as-a-service/)
+- [The agent economy is not automation. It is trade.](https://agirails.io/articles/agent-economy-is-not-automation/)
+- [Outcome-as-a-Service: the architecture Salesforce just made inevitable](https://agirails.io/articles/outcome-as-a-service/)
 
 ---
 
@@ -926,7 +926,7 @@ See [MCP tool reference](/reference/mcp-server) for the auto-extracted per-tool 
 
 - [Claude Code plugin](/start/ai-environment/claude-code): if you're on Claude Code, prefer the plugin
 - [Claude Skill](/start/ai-environment/claude-skill): knowledge-only, no tool calls
-- [MCP server source on GitHub](https://github.com/agirails/mcp-server)
+- [MCP server on npm](https://www.npmjs.com/package/@agirails/mcp-server)
 
 ============================================================
 AGIRAILS OpenClaw skill (ClawHub)
@@ -1177,7 +1177,7 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 
 ## Why DAG-only on-chain
 
-State machine integrity is one of the three [critical invariants](https://github.com/agirails/actp-kernel/blob/main/.claude-docs/invariants.md) of ACTP. If a transaction could move backwards or jump arbitrarily, escrow becomes uncomposable: anyone could re-trigger a refund after settlement, or skip the delivery check entirely.
+State machine integrity is one of the three critical invariants of ACTP (escrow solvency, state-machine integrity, fee bounds; enforced in [`actp-kernel`](https://github.com/agirails/actp-kernel) source). If a transaction could move backwards or jump arbitrarily, escrow becomes uncomposable: anyone could re-trigger a refund after settlement, or skip the delivery check entirely.
 
 The kernel enforces this via a single `_validateTransition(from, to)` function that exhaustively lists the allowed `(from → to)` pairs. There is no admin function that bypasses it. Even the mediator can only resolve `DISPUTED` to `SETTLED` or `CANCELLED`, never back to `IN_PROGRESS`.
 
@@ -1264,7 +1264,7 @@ Bond amount = `max(amount * disputeBondBps / 10000, MIN_DISPUTE_BOND)`.
 
 Enforced in `_payoutProviderAmount` since the V3 mainnet redeploy on 2026-05-19.
 
-## INV-30: per-transaction locked-bps
+## INV-30: per-transaction locked-bps {#inv-30--per-transaction-locked-bps}
 
 `disputeBondBpsLocked` is captured at transaction creation time and immutable thereafter. This means admin-side `updateDisputeBondBps()` changes affect only **new** transactions; **in-flight** transactions use the rate they were created under.
 
@@ -1368,7 +1368,7 @@ On sepolia, the deprecated `X402Relay` contract takes a configurable small bps c
 - [INV-30](/protocol/escrow#inv-30--per-transaction-locked-bps): fee locking guarantees
 - [x402 v2](/protocol/x402): the zero-fee alternative path
 - [Contracts: mainnet ACTPKernel](/reference/contracts/base-mainnet): `platformFeeBps` current value
-- [AIP-5 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-5.md): fee locking
+- [AIP-5 spec](https://github.com/agirails/aips/blob/main/AIP-5.md): fee locking
 
 ============================================================
 AIP-2.1 quote channel
@@ -2680,7 +2680,7 @@ For mainnet, fund the SCW address (`agent.address`) with real USDC via any stand
 - [`wallet=auto` deep-dive](/protocol/x402): the on-chain mechanics
 - [Provider agent recipe](/recipes/provider-agent): earning side
 - [Consumer agent recipe](/recipes/consumer-agent): paying side
-- [AIP-12 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-12.md): wallet-mode auto-detection
+- [AIP-12 spec](https://github.com/agirails/aips/blob/main/AIP-12-DRAFT.md): wallet-mode auto-detection
 
 ---
 
@@ -3141,7 +3141,7 @@ So dispute when you genuinely have a case, not as a haggling tool.
 
 ## See also
 
-- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-14.md): dispute bonds
+- [AIP-14 spec](https://github.com/agirails/aips/blob/main/AIP-14.md): dispute bonds
 - [INV-30 explainer](/protocol/escrow#inv-30--per-transaction-locked-bps): why bonds can't be changed mid-flight
 - [Escrow mechanism](/protocol/escrow): what happens to USDC during DISPUTED
 - [State machine](/protocol/state-machine): DELIVERED → DISPUTED → SETTLED/CANCELLED paths
@@ -3183,7 +3183,7 @@ discoverAgents({ service: "translate", network: "mainnet", limit: 10 })
 
 This is the right path for **agent-driven discovery** (the LLM picks the provider, you don't write code). It's also the right path for **scripted discovery** if your environment has the MCP server running; the tool is callable from any MCP client, not just LLMs.
 
-See [/reference/mcp-tools](/reference/mcp-tools) for the full input/output schema.
+See [/reference/mcp-server](/reference/mcp-server) for the full input/output schema.
 
 ### Fallback: SDK-level
 
@@ -3446,7 +3446,7 @@ The protocol has no "rotate in place"; each EOA is a separate identity. Your rep
 
 ## See also
 
-- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-13.md): fail-closed key policy
+- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIP-13.md): fail-closed key policy
 - [Provider agent](/recipes/provider-agent): first place you'll need the keystore
 - [Consumer agent](/recipes/consumer-agent): same
 - [Identity](/protocol/identity): what the EOA/SCW addresses represent on-chain
@@ -3744,7 +3744,7 @@ If you want margin closer to 1% (cleanest economics), raise the per-job budget a
 
 ### Importable template
 
-The workflow JSON is published in the [n8n-nodes-actp templates folder](https://github.com/agirails/n8n-nodes-actp/tree/main/templates). Clone the `pay-per-translation.json` template and import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
+The workflow JSON is published in the [n8n-nodes-actp repo](https://github.com/agirails/n8n-nodes-actp); look for the `pay-per-translation.json` template. Import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
 
 ### Testing the workflow
 
@@ -7624,7 +7624,7 @@ Yes. Core repos:
 - **`actp-kernel`**: smart contracts (Foundry), [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel)
 - **`sdk-js`**: TypeScript SDK, [github.com/agirails/sdk-js](https://github.com/agirails/sdk-js)
 - **`sdk-python`**: Python SDK, [github.com/agirails/sdk-python](https://github.com/agirails/sdk-python)
-- **`mcp-server`**: MCP server, [github.com/agirails/mcp-server](https://github.com/agirails/mcp-server)
+- **`mcp-server`**: MCP server, [npmjs.com/package/@agirails/mcp-server](https://www.npmjs.com/package/@agirails/mcp-server)
 - **`docs`**: this site, [github.com/agirails/docs](https://github.com/agirails/docs)
 
 License: MIT for SDKs + MCP server; the actp-kernel contracts are MIT with on-chain immutability (you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network).
@@ -7837,7 +7837,7 @@ We chose DAG-enforcement-in-kernel because:
 2. **Formal verifiability.** The state sheaf has been verified to have **[H¹ = 0](/reference/glossary#h-0)** (cellular sheaf cohomology), meaning every local state composes into one globally consistent picture with no hidden seam. This proof requires the DAG; an event log has no such property. See [formal verification](/security/formal-verification).
 3. **Walk-away.** A new team rebuilding from the kernel source recovers the full protocol semantics from the state machine alone. An event log requires re-deriving the interpretation rules.
 
-The cost is rigidity: adding a new state requires a contract upgrade. We treat that as a feature, not a bug. See [Vitalik's note on protocol simplicity](https://vitalik.ca/general/2024/05/17/decentralization.html) for the broader frame.
+The cost is rigidity: adding a new state requires a contract upgrade. We treat that as a feature, not a bug. See [Vitalik's note on protocol simplicity](https://vitalik.eth.limo/general/2024/05/17/decentralization.html) for the broader frame.
 
 ## Why ERC-4337 Smart Wallets (not EOAs)
 
@@ -7896,7 +7896,7 @@ The bond is locked in the kernel at `createTransaction` time per [INV-30](/refer
 
 ## Why MCP for discovery (not SDK-first)
 
-Service-name discovery is not exposed at the V1 Agent class level. The canonical path is the [MCP `discoverAgents` tool](/reference/mcp-tools); the SDK has fallback access to the underlying registry. See [discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the full breakdown.
+Service-name discovery is not exposed at the V1 Agent class level. The canonical path is the [MCP `discoverAgents` tool](/reference/mcp-server); the SDK has fallback access to the underlying registry. See [discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the full breakdown.
 
 The reasoning: discovery is a search problem (on-chain query + freshness + ranking + reputation overlay). That work belongs in one place, not duplicated across every SDK consumer. The MCP server abstracts it; SDK consumers can fall back to the raw registry query when MCP isn't available. Agent-first design says the primary user is an LLM, and LLMs natively speak MCP.
 
@@ -7912,7 +7912,7 @@ A recurring choice across the kernel: when we could add a feature OR add an inva
 
 Invariants are properties an auditor can verify without running the code. Features are surface area we have to maintain. We optimize for surface that has to stay correct for a hundred years; features come from the SDK + recipe layer, where iteration is cheap.
 
-See [CLAUDE.md `.claude-docs/invariants.md`](https://github.com/agirails/agirails/blob/main/.claude-docs/invariants.md) for the full invariant catalog.
+See [actp-kernel invariants](https://github.com/agirails/actp-kernel) source for the full invariant catalog.
 
 ## See also
 

@@ -81,4 +81,4 @@ On sepolia, the deprecated `X402Relay` contract takes a configurable small bps c
 - [INV-30](/protocol/escrow#inv-30--per-transaction-locked-bps): fee locking guarantees
 - [x402 v2](/protocol/x402): the zero-fee alternative path
 - [Contracts: mainnet ACTPKernel](/reference/contracts/base-mainnet): `platformFeeBps` current value
-- [AIP-5 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-5.md): fee locking
+- [AIP-5 spec](https://github.com/agirails/aips/blob/main/AIP-5.md): fee locking

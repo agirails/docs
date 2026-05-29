@@ -20,7 +20,7 @@ You're here to build something. Before the SDK docs, one page that explains the 
 
 That's the line we return to when a decision gets hard. The technical choices in `/protocol/*` all follow from it: no admin function over user funds, immutable per-transaction terms ([INV-30](/reference/glossary#inv-30)), [Sourcify EXACT_MATCH](/reference/glossary#sourcify-exact_match) on every contract, a walk-away runbook published in the open. Every *"why does this contract not have a pause function?"* answer traces back to this sentence.
 
-The full thesis lives at [agirails.io](https://agirails.io): the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [blog](https://agirails.io/blog/). This page is the bridge, not the full argument.
+The full thesis lives at [agirails.io](https://agirails.io): the [manifest](https://agirails.io/manifest/), the [learn pages](https://agirails.io/learn/) on each primitive, the [articles](https://agirails.io/articles/). This page is the bridge, not the full argument.
 
 ## The shift you're building into
 
@@ -141,8 +141,8 @@ This page is short on purpose. The technical docs are where the work lives.
 - [What is non-custodial settlement?](https://agirails.io/learn/non-custodial-settlement/)
 - [What is agent escrow?](https://agirails.io/learn/agent-escrow/)
 - [What is Outcome-as-a-Service?](https://agirails.io/learn/outcome-as-a-service/)
-- [The agent economy is not automation. It is trade.](https://agirails.io/blog/agent-economy-is-not-automation/)
-- [Outcome-as-a-Service: the architecture Salesforce just made inevitable](https://agirails.io/blog/outcome-as-a-service/)
+- [The agent economy is not automation. It is trade.](https://agirails.io/articles/agent-economy-is-not-automation/)
+- [Outcome-as-a-Service: the architecture Salesforce just made inevitable](https://agirails.io/articles/outcome-as-a-service/)
 
 ---
 

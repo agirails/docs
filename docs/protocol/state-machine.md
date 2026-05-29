@@ -42,7 +42,7 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 
 ## Why DAG-only on-chain
 
-State machine integrity is one of the three [critical invariants](https://github.com/agirails/actp-kernel/blob/main/.claude-docs/invariants.md) of ACTP. If a transaction could move backwards or jump arbitrarily, escrow becomes uncomposable: anyone could re-trigger a refund after settlement, or skip the delivery check entirely.
+State machine integrity is one of the three critical invariants of ACTP (escrow solvency, state-machine integrity, fee bounds; enforced in [`actp-kernel`](https://github.com/agirails/actp-kernel) source). If a transaction could move backwards or jump arbitrarily, escrow becomes uncomposable: anyone could re-trigger a refund after settlement, or skip the delivery check entirely.
 
 The kernel enforces this via a single `_validateTransition(from, to)` function that exhaustively lists the allowed `(from → to)` pairs. There is no admin function that bypasses it. Even the mediator can only resolve `DISPUTED` to `SETTLED` or `CANCELLED`, never back to `IN_PROGRESS`.
 

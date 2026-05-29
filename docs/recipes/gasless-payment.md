@@ -139,7 +139,7 @@ For mainnet, fund the SCW address (`agent.address`) with real USDC via any stand
 - [`wallet=auto` deep-dive](/protocol/x402): the on-chain mechanics
 - [Provider agent recipe](/recipes/provider-agent): earning side
 - [Consumer agent recipe](/recipes/consumer-agent): paying side
-- [AIP-12 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-12.md): wallet-mode auto-detection
+- [AIP-12 spec](https://github.com/agirails/aips/blob/main/AIP-12-DRAFT.md): wallet-mode auto-detection
 
 ---
 

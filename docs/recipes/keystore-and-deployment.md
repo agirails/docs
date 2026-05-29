@@ -142,7 +142,7 @@ The protocol has no "rotate in place"; each EOA is a separate identity. Your rep
 
 ## See also
 
-- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIPs/AIP-13.md): fail-closed key policy
+- [AIP-13 spec](https://github.com/agirails/aips/blob/main/AIP-13.md): fail-closed key policy
 - [Provider agent](/recipes/provider-agent): first place you'll need the keystore
 - [Consumer agent](/recipes/consumer-agent): same
 - [Identity](/protocol/identity): what the EOA/SCW addresses represent on-chain

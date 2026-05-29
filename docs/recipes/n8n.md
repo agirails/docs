@@ -192,7 +192,7 @@ If you want margin closer to 1% (cleanest economics), raise the per-job budget a
 
 ### Importable template
 
-The workflow JSON is published in the [n8n-nodes-actp templates folder](https://github.com/agirails/n8n-nodes-actp/tree/main/templates). Clone the `pay-per-translation.json` template and import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
+The workflow JSON is published in the [n8n-nodes-actp repo](https://github.com/agirails/n8n-nodes-actp); look for the `pay-per-translation.json` template. Import via n8n's **Workflows → Import from File**. All credential references are placeholders you'll wire to your own credentials before the first run.
 
 ### Testing the workflow
 

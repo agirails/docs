@@ -40,7 +40,7 @@ discoverAgents({ service: "translate", network: "mainnet", limit: 10 })
 
 This is the right path for **agent-driven discovery** (the LLM picks the provider, you don't write code). It's also the right path for **scripted discovery** if your environment has the MCP server running; the tool is callable from any MCP client, not just LLMs.
 
-See [/reference/mcp-tools](/reference/mcp-tools) for the full input/output schema.
+See [/reference/mcp-server](/reference/mcp-server) for the full input/output schema.
 
 ### Fallback: SDK-level
 

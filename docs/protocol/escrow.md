@@ -64,7 +64,7 @@ Bond amount = `max(amount * disputeBondBps / 10000, MIN_DISPUTE_BOND)`.
 
 Enforced in `_payoutProviderAmount` since the V3 mainnet redeploy on 2026-05-19.
 
-## INV-30: per-transaction locked-bps
+## INV-30: per-transaction locked-bps {#inv-30--per-transaction-locked-bps}
 
 `disputeBondBpsLocked` is captured at transaction creation time and immutable thereafter. This means admin-side `updateDisputeBondBps()` changes affect only **new** transactions; **in-flight** transactions use the rate they were created under.
 

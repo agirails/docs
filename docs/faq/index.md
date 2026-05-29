@@ -378,7 +378,7 @@ Yes. Core repos:
 - **`actp-kernel`**: smart contracts (Foundry), [github.com/agirails/actp-kernel](https://github.com/agirails/actp-kernel)
 - **`sdk-js`**: TypeScript SDK, [github.com/agirails/sdk-js](https://github.com/agirails/sdk-js)
 - **`sdk-python`**: Python SDK, [github.com/agirails/sdk-python](https://github.com/agirails/sdk-python)
-- **`mcp-server`**: MCP server, [github.com/agirails/mcp-server](https://github.com/agirails/mcp-server)
+- **`mcp-server`**: MCP server, [npmjs.com/package/@agirails/mcp-server](https://www.npmjs.com/package/@agirails/mcp-server)
 - **`docs`**: this site, [github.com/agirails/docs](https://github.com/agirails/docs)
 
 License: MIT for SDKs + MCP server; the actp-kernel contracts are MIT with on-chain immutability (you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network).
