@@ -64,22 +64,7 @@ session:
 
 ## End-to-end flow
 
-```text
-Requester                Provider                          Chain
-─────────                ────────                          ─────
-createTransaction()     (idle)                            INITIATED
-   │
-   │   POST counter-offer (EIP-712 signed)
-   ├────────────────────────────►
-   │                              actp serve verifies sig
-   │                              applies policy
-   │                              accepts (or counters)
-   │   POST counter-accept (signed)
-   │◄────────────────────────────
-   │
-acceptQuote(txId, newAmount) ────────────────────────────► QUOTED → COMMITTED
-linkEscrow(txId, newAmount)  ────────────────────────────► USDC locked
-```
+<img src="/img/diagrams/quote-channel-flow.svg" alt="AIP-2.1 quote channel end-to-end flow: requester createTransaction lands INITIATED on-chain; requester POSTs an EIP-712-signed counter-offer to the provider's actp serve daemon, which verifies the signature and applies policy; provider returns a signed counter-accept; requester calls acceptQuote → QUOTED then linkEscrow → COMMITTED on-chain." style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## Cancellation
 

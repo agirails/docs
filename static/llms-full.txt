@@ -1031,18 +1031,6 @@ The canonical AGIRAILS.md spec
 
 Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts: the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
 
-```text
-canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
-                                         │
-                                         walks owner through onboarding Q&A
-                                         │
-                          generates  ────┴────  generates
-                              │                     │
-                              ▼                     ▼
-                    owner-local AGIRAILS.md   {slug}.md covenant
-                    (operational doc,         (public business card,
-                     kept locally)             on-chain via AgentRegistry)
-```
 
 ## The three forms (never confuse)
 
@@ -1150,12 +1138,6 @@ ACTP state machine
 
 The 8 [ACTP](/reference/glossary#actp) states are **enforced in the kernel itself**. Every state transition is gated by `requester` / `provider` / [`mediator`](/reference/glossary#mediator) access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
 
-
-```text
-INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
-                                                        │
-                                                        └─→ DISPUTED ─→ SETTLED
-```
 
 - `INITIATED` can **skip** `QUOTED` and go straight to `COMMITTED` when no negotiation is needed (most direct-pay flows).
 - `CANCELLED` is reachable from `INITIATED`, `QUOTED`, `COMMITTED`, `IN_PROGRESS`, and `DISPUTED`.
@@ -1428,22 +1410,6 @@ session:
 
 ## End-to-end flow
 
-```text
-Requester                Provider                          Chain
-─────────                ────────                          ─────
-createTransaction()     (idle)                            INITIATED
-   │
-   │   POST counter-offer (EIP-712 signed)
-   ├────────────────────────────►
-   │                              actp serve verifies sig
-   │                              applies policy
-   │                              accepts (or counters)
-   │   POST counter-accept (signed)
-   │◄────────────────────────────
-   │
-acceptQuote(txId, newAmount) ────────────────────────────► QUOTED → COMMITTED
-linkEscrow(txId, newAmount)  ────────────────────────────► USDC locked
-```
 
 ## Cancellation
 

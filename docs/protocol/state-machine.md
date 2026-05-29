@@ -15,12 +15,6 @@ The 8 [ACTP](/reference/glossary#actp) states are **enforced in the kernel itsel
 
 <img src="/img/diagrams/state-machine.svg" alt="ACTP state machine: 8 states with terminal SETTLED + CANCELLED, dispute branch from DELIVERED" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
-```text
-INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─→ SETTLED
-                                                        │
-                                                        └─→ DISPUTED ─→ SETTLED
-```
-
 - `INITIATED` can **skip** `QUOTED` and go straight to `COMMITTED` when no negotiation is needed (most direct-pay flows).
 - `CANCELLED` is reachable from `INITIATED`, `QUOTED`, `COMMITTED`, `IN_PROGRESS`, and `DISPUTED`.
 - `SETTLED` and `CANCELLED` are **terminal**; no transitions out.

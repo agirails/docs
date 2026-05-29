@@ -23,18 +23,7 @@ sidebar_position: 2
 
 Most "config files" tell the SDK what to do. AGIRAILS.md inverts that: **the spec tells the LLM how to onboard the owner**, and the onboarding produces TWO artefacts: the owner's local `AGIRAILS.md` (a template-filled copy of the canonical spec) and the public `{slug}.md` covenant (a V4-schema business card the SDK parses).
 
-```text
-canonical AGIRAILS.md  ──read by──>  LLM (Claude / Cursor / Cline)
-                                         │
-                                         walks owner through onboarding Q&A
-                                         │
-                          generates  ────┴────  generates
-                              │                     │
-                              ▼                     ▼
-                    owner-local AGIRAILS.md   {slug}.md covenant
-                    (operational doc,         (public business card,
-                     kept locally)             on-chain via AgentRegistry)
-```
+<img src="/img/diagrams/agirails-md-three-forms.svg" alt="AGIRAILS.md three forms: canonical spec is read by an LLM, which walks the owner through an onboarding Q&A; the answers generate two artefacts: the owner-local AGIRAILS.md (operational doc, kept locally) and the {slug}.md covenant (public business card, published on-chain via AgentRegistry)." style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 ## The three forms (never confuse)
 

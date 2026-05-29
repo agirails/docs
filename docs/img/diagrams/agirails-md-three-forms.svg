@@ -1,0 +1,50 @@
+<svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="380" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="28" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">From one canonical spec to two per-agent artefacts</text>
+
+  <!-- Canonical AGIRAILS.md (top, purple) -->
+  <rect x="320" y="50" width="260" height="56" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="450" y="76" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">canonical AGIRAILS.md</text>
+  <text x="450" y="94" text-anchor="middle" fill="#A78BFA" font-family="system-ui, -apple-system, sans-serif" font-size="10">single global spec, immutable per version</text>
+
+  <!-- Arrow: canonical → LLM with "read by" label -->
+  <line x1="450" y1="106" x2="450" y2="146" stroke="#0EA5E9" stroke-width="2"/>
+  <polygon points="450,151 444,142 456,142" fill="#0EA5E9"/>
+  <text x="466" y="132" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic">read by</text>
+
+  <!-- LLM (middle, blue) -->
+  <rect x="290" y="151" width="320" height="66" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="450" y="177" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">LLM (Claude / Cursor / Cline)</text>
+  <text x="450" y="197" text-anchor="middle" fill="#7DD3FC" font-family="system-ui, -apple-system, sans-serif" font-size="10">walks owner through onboarding Q&amp;A</text>
+
+  <!-- Fork from LLM down to two outputs -->
+  <!-- vertical stub from LLM -->
+  <line x1="450" y1="217" x2="450" y2="244" stroke="#10B981" stroke-width="2"/>
+  <!-- horizontal split -->
+  <line x1="220" y1="244" x2="680" y2="244" stroke="#10B981" stroke-width="2"/>
+  <!-- left leg down -->
+  <line x1="220" y1="244" x2="220" y2="278" stroke="#10B981" stroke-width="2"/>
+  <polygon points="220,283 214,274 226,274" fill="#10B981"/>
+  <!-- right leg down -->
+  <line x1="680" y1="244" x2="680" y2="278" stroke="#10B981" stroke-width="2"/>
+  <polygon points="680,283 674,274 686,274" fill="#10B981"/>
+
+  <!-- "generates" labels on the fork -->
+  <text x="290" y="237" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic">generates</text>
+  <text x="610" y="237" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic">generates</text>
+
+  <!-- Owner-local AGIRAILS.md (bottom-left, green) -->
+  <rect x="60" y="283" width="320" height="76" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="220" y="308" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">owner-local AGIRAILS.md</text>
+  <text x="220" y="328" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">operational doc, kept locally</text>
+  <text x="220" y="345" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">template-filled copy of canonical</text>
+
+  <!-- {slug}.md covenant (bottom-right, green) -->
+  <rect x="520" y="283" width="320" height="76" rx="8" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="680" y="308" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">{slug}.md covenant</text>
+  <text x="680" y="328" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">public business card</text>
+  <text x="680" y="345" text-anchor="middle" fill="#6EE7B7" font-family="system-ui, -apple-system, sans-serif" font-size="10">on-chain via AgentRegistry</text>
+</svg>

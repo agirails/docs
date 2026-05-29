@@ -1,0 +1,74 @@
+<svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="900" height="420" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="450" y="26" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="500">AIP-2.1 quote channel: counter-offer → counter-accept → on-chain settle</text>
+
+  <!-- Lane headers -->
+  <rect x="40" y="50" width="220" height="36" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="150" y="73" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">Requester</text>
+
+  <rect x="340" y="50" width="220" height="36" rx="8" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="450" y="73" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">Provider</text>
+
+  <rect x="640" y="50" width="220" height="36" rx="8" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="750" y="73" text-anchor="middle" fill="#8B5CF6" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700">Chain</text>
+
+  <!-- Lane lines (vertical dotted) -->
+  <line x1="150" y1="90" x2="150" y2="395" stroke="#27272A" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="450" y1="90" x2="450" y2="395" stroke="#27272A" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="750" y1="90" x2="750" y2="395" stroke="#27272A" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Step 1: createTransaction() → INITIATED -->
+  <rect x="55" y="105" width="190" height="34" rx="6" fill="#0EA5E9" fill-opacity="0.10" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="150" y="126" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">createTransaction()</text>
+
+  <!-- arrow R → Chain -->
+  <line x1="245" y1="122" x2="690" y2="122" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="695,122 686,117 686,127" fill="#0EA5E9"/>
+
+  <!-- Chain state: INITIATED -->
+  <rect x="695" y="105" width="110" height="34" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="750" y="126" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">INITIATED</text>
+
+  <!-- Step 2: counter-offer (off-chain, EIP-712) -->
+  <text x="300" y="172" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic">counter-offer (EIP-712 signed)</text>
+  <line x1="155" y1="180" x2="445" y2="180" stroke="#9CA3AF" stroke-width="1.5"/>
+  <polygon points="450,180 441,175 441,185" fill="#9CA3AF"/>
+
+  <!-- Provider verify + policy -->
+  <rect x="355" y="195" width="190" height="50" rx="6" fill="#0EA5E9" fill-opacity="0.10" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="450" y="214" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">actp serve verifies sig</text>
+  <text x="450" y="229" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600">applies policy</text>
+  <text x="450" y="240" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9">(accept or counter)</text>
+
+  <!-- Step 3: counter-accept back to requester -->
+  <text x="300" y="271" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-style="italic">counter-accept (signed)</text>
+  <line x1="155" y1="279" x2="445" y2="279" stroke="#9CA3AF" stroke-width="1.5"/>
+  <polygon points="150,279 159,274 159,284" fill="#9CA3AF"/>
+
+  <!-- Step 4: acceptQuote → QUOTED -->
+  <rect x="55" y="300" width="190" height="34" rx="6" fill="#0EA5E9" fill-opacity="0.10" stroke="#0EA5E9" stroke-width="1.5"/>
+  <text x="150" y="321" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">acceptQuote(txId, amount)</text>
+
+  <line x1="245" y1="317" x2="690" y2="317" stroke="#0EA5E9" stroke-width="1.5"/>
+  <polygon points="695,317 686,312 686,322" fill="#0EA5E9"/>
+
+  <rect x="695" y="300" width="110" height="34" rx="6" fill="#0EA5E9" fill-opacity="0.15" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="750" y="321" text-anchor="middle" fill="#0EA5E9" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">QUOTED</text>
+
+  <!-- Step 5: linkEscrow → COMMITTED -->
+  <rect x="55" y="350" width="190" height="34" rx="6" fill="#10B981" fill-opacity="0.10" stroke="#10B981" stroke-width="1.5"/>
+  <text x="150" y="371" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">linkEscrow(txId)</text>
+
+  <line x1="245" y1="367" x2="690" y2="367" stroke="#10B981" stroke-width="1.5"/>
+  <polygon points="695,367 686,362 686,372" fill="#10B981"/>
+
+  <rect x="695" y="350" width="110" height="34" rx="6" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2"/>
+  <text x="750" y="371" text-anchor="middle" fill="#10B981" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">COMMITTED</text>
+
+  <!-- Tag for off-chain region -->
+  <rect x="270" y="155" width="160" height="135" rx="8" fill="none" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <text x="350" y="152" text-anchor="middle" fill="#9CA3AF" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-style="italic" opacity="0.7">off-chain · AIP-2.1</text>
+</svg>
