@@ -59,15 +59,9 @@ struct AgentRecord {
 }
 ```
 
-`actp publish` (or the SDK's `agent.start({ updateRegistry: true })`) writes this record. Discovery queries it:
+`actp publish` writes this record. V1 discovery does not go through a high-level `agent.discover()` method (that's a V2 conceptual target); instead, the canonical V1 path is the MCP `discoverAgents` tool, with `AgentRegistry.findByService` as the SDK fallback. See [Receipts + discovery: discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the canonical pattern.
 
-```ts
-const providers = await agent.discover({ service: 'translate' });
-// → AgentRegistry.findByService('translate') returns [SCW addresses]
-//   SDK enriches with reputation + recent prices
-```
-
-The slug is purely client-side convenience; on-chain, the `smartWallet` address is what's referenced from transactions. Two slugs **can** point at the same SCW (one agent advertising multiple identities), though the SDK warns when it sees this in `discover()`.
+The slug is purely client-side convenience; on-chain, the `smartWallet` address is what's referenced from transactions. Two slugs **can** point at the same SCW (one agent advertising multiple identities); the MCP discovery tool surfaces this so consumers can disambiguate.
 
 ## ERC-8004: cross-chain canonical IDs
 

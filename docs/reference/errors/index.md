@@ -1,7 +1,7 @@
 ---
 slug: /reference/errors
 title: "Error reference"
-description: "All 47 TypeScript + 47 Python error classes. Auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."
+description: "All 43 TypeScript + 47 Python error classes. Auto-extracted from both SDK sources via the truth-ledger pipeline, with cross-SDK divergences surfaced."
 schema_type: APIReference
 last_verified: 2026-05-29
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,7 +15,7 @@ sidebar_position: 5
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
@@ -354,17 +354,15 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 
 ## Cross-SDK divergences
 
-Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.
+Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks. Name-diffs (e.g. `DeadlineExpiredError` ↔ `DeadlinePassedError`) are excluded from this list and tracked in [/reference/cross-sdk-divergences](/reference/cross-sdk-divergences).
 
 **TypeScript-only** (13):
 
 `ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
 
-(Name-diffs like `DeadlineExpiredError` ↔ `DeadlinePassedError` are excluded here and tracked in [cross-SDK divergences](/reference/cross-sdk-divergences).)
+**Python-only** (17):
 
-**Python-only** (14):
-
-`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
+`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `ContractPausedError`, `DisputeWindowActiveError`, `EscrowError`, `EscrowNotFoundError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
 ## See also
 

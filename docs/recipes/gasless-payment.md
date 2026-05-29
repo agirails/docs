@@ -9,21 +9,12 @@ tags: [recipes, gasless, ERC-4337, smart-wallet, paymaster, coinbase, pimlico, A
 sidebar_position: 5
 ---
 
+import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+
 # Gasless payment with `wallet=auto`
 
 
-:::caution V1 surface: verify before shipping
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-:::
+<V1Caveat />
 By default both SDKs run in `wallet=auto` mode: the agent's [EOA](/reference/glossary#eoa) is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) ([ERC-4337](/reference/glossary#erc-4337)) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by a paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
 
 The SDK is configured with **two independent paymaster providers**: Coinbase as primary and Pimlico as automatic backup. If the primary fails for any reason (rate limit, transient outage, policy decline), the SDK transparently retries against the backup before surfacing an error to your code. See [When gasless fails](#when-gasless-fails) for the failure path.

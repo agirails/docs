@@ -17,7 +17,7 @@ sidebar_position: 2
 
 Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exact-match verification.
 
-**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 ## MockUSDC
 
@@ -29,7 +29,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x9d25A874f046185d9237Cd4954C88D2B74B0021b`](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -43,7 +43,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB`](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -57,7 +57,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656`](https://sepolia.basescan.org/address/0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -79,7 +79,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb`](https://sepolia.basescan.org/address/0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -94,7 +94,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b`](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 :::warning Deprecated
 This contract is marked deprecated and retained only for legacy integration paths. Do not use for new code.

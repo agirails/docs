@@ -55,6 +55,7 @@ The state machine itself has been **formally verified**: [cellular sheaf](/refer
 | [Adapters](/protocol/adapters) | StandardAdapter / BasicAdapter / X402Adapter routing rules |
 | [Web Receipts](/protocol/web-receipts) | [EIP-712](/reference/glossary#eip-712) ReceiptWrite + agirails.app upload |
 | [x402](/protocol/x402) | x402 v2 direct buyer→seller, mainnet zero-fee |
+| [Design decisions](/protocol/design-decisions) | First-principles rationale: why USDC, why Base, why DAG, why ERC-4337, why on-chain escrow, why 1%/$0.05/5%-cap, why ERC-8004, why MCP for discovery |
 
 ## The three AGIRAILS.md forms
 

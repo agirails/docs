@@ -68,6 +68,7 @@ const sidebars: SidebarsConfig = {
         'protocol/web-receipts',
         'protocol/x402',
         'protocol/first-mainnet-transaction',
+        'protocol/design-decisions',
       ],
     },
 

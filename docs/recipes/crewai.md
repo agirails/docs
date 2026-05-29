@@ -9,21 +9,12 @@ tags: [recipes, crewai, integration, multi-agent]
 sidebar_position: 13
 ---
 
+import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+
 # CrewAI integration
 
 
-:::caution V1 surface: verify before shipping
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-:::
+<V1Caveat />
 CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP, useful when:
 
 <img src="/img/diagrams/crewai-integration.svg" alt="CrewAI integration: paid tools between crew agents via AGIRAILS" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />

@@ -9,21 +9,12 @@ tags: [recipes, receipts, discovery, ERC-8004, EAS]
 sidebar_position: 9
 ---
 
+import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+
 # Receipts + discovery
 
 
-:::caution V1 surface: verify before shipping
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-:::
+<V1Caveat />
 Every settled ACTP transaction produces two artifacts:
 
 1. **On-chain attestation** (EAS): small, canonical, points at the deliverable.
@@ -33,11 +24,42 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 
 ## Discovering agents
 
-Service-name discovery is **not** exposed at the V1 Agent level. The two V1 paths:
+Service-name discovery is **not** exposed at the V1 `Agent` class level. The canonical V1 path is the **MCP `discoverAgents` tool**; the SDK has fallback access to the on-chain registry. Pick by what you're integrating from.
 
-**1. [MCP server](/reference/glossary#mcp-server) `discoverAgents` tool**: if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
+### Canonical: MCP `discoverAgents` tool
 
-**2. Direct AgentRegistry query**: read the contract directly via `agent.client`:
+Discovery is fundamentally a search problem: on-chain query → freshness check → reputation + price ranking → result. That work belongs in one place, not duplicated across every SDK consumer. The MCP server exposes it as a single tool any [MCP-compatible client](/start/ai-environment/mcp-server) (Claude Desktop, Cursor, Cline, Windsurf, VS Code-with-MCP) can call directly.
+
+```text
+discoverAgents({ service: "translate", network: "mainnet", limit: 10 })
+→ [
+    { address: "0x…", slug: "polylex", services: ["translate"], reputation: 0.94, … },
+    …
+  ]
+```
+
+This is the right path for **agent-driven discovery** (the LLM picks the provider, you don't write code). It's also the right path for **scripted discovery** if your environment has the MCP server running; the tool is callable from any MCP client, not just LLMs.
+
+See [/reference/mcp-tools](/reference/mcp-tools) for the full input/output schema.
+
+### Fallback: SDK-level
+
+Two SDK-level paths exist for environments without MCP. Both are lower-level than the MCP tool: you do your own ranking, your own freshness handling, and you stay on the SDK version you're pinned to.
+
+**Python**: a higher-level `ServiceDirectory` is exported:
+
+```python
+from agirails import Agent, AgentConfig, ServiceDirectory
+
+agent = Agent(AgentConfig(name="ConsumerWithDiscovery", network="mainnet"))
+await agent.start()
+
+directory = ServiceDirectory(agent.client)
+results = await directory.discover_agents("translate")
+# results is a list of {address, slug, services, reputation, …}
+```
+
+**TypeScript**: `ServiceDirectory` is not exported at V1 (tracked in [cross-SDK divergences](/reference/cross-sdk-divergences)). Query the AgentRegistry contract directly via the runtime adapter:
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -49,17 +71,13 @@ const agent = new Agent({
 });
 await agent.start();
 
-// The Agent class doesn't expose a high-level discover() in V1.
-// Drop to the underlying AgentRegistry contract read:
 const contracts = agent.client.contracts;
 const registry = contracts.agentRegistry; // ethers.Contract instance
 const addresses = await registry.findByService('translate');
-console.log('providers offering translate:', addresses);
-
-// For each address, you can pull config + reputation via additional reads.
+// For each address, additional contract reads give config + reputation.
 ```
 
-For ranking by reputation + price, layer your own logic on top. A first-class `agent.discover()` is on the V2 roadmap.
+A first-class `agent.discover()` in both SDKs is on the V2 roadmap. For V1, treat MCP as the canonical path and the SDK methods as fallbacks for environments where MCP is not available.
 
 ## Publishing your provider so others can find you
 

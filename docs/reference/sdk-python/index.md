@@ -15,7 +15,7 @@ sidebar_position: 4
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 

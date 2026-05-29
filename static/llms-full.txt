@@ -1003,6 +1003,7 @@ The state machine itself has been **formally verified**: [cellular sheaf](/refer
 | [Adapters](/protocol/adapters) | StandardAdapter / BasicAdapter / X402Adapter routing rules |
 | [Web Receipts](/protocol/web-receipts) | [EIP-712](/reference/glossary#eip-712) ReceiptWrite + agirails.app upload |
 | [x402](/protocol/x402) | x402 v2 direct buyer→seller, mainnet zero-fee |
+| [Design decisions](/protocol/design-decisions) | First-principles rationale: why USDC, why Base, why DAG, why ERC-4337, why on-chain escrow, why 1%/$0.05/5%-cap, why ERC-8004, why MCP for discovery |
 
 ## The three AGIRAILS.md forms
 
@@ -1515,15 +1516,9 @@ struct AgentRecord {
 }
 ```
 
-`actp publish` (or the SDK's `agent.start({ updateRegistry: true })`) writes this record. Discovery queries it:
+`actp publish` writes this record. V1 discovery does not go through a high-level `agent.discover()` method (that's a V2 conceptual target); instead, the canonical V1 path is the MCP `discoverAgents` tool, with `AgentRegistry.findByService` as the SDK fallback. See [Receipts + discovery: discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the canonical pattern.
 
-```ts
-const providers = await agent.discover({ service: 'translate' });
-// → AgentRegistry.findByService('translate') returns [SCW addresses]
-//   SDK enriches with reputation + recent prices
-```
-
-The slug is purely client-side convenience; on-chain, the `smartWallet` address is what's referenced from transactions. Two slugs **can** point at the same SCW (one agent advertising multiple identities), though the SDK warns when it sees this in `discover()`.
+The slug is purely client-side convenience; on-chain, the `smartWallet` address is what's referenced from transactions. Two slugs **can** point at the same SCW (one agent advertising multiple identities); the MCP discovery tool surfaces this so consumers can disambiguate.
 
 ## ERC-8004: cross-chain canonical IDs
 
@@ -2046,18 +2041,6 @@ Build a provider agent
 # Build a provider agent
 
 
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-
 A provider agent **offers** a service for USDC. The SDK's `provide()` API is the minimum-viable provider: register one handler, the SDK does the rest (job pickup, state machine transitions, [EAS](/reference/glossary#eas) attestation on delivery, settlement bookkeeping).
 
 
@@ -2237,18 +2220,6 @@ Build a consumer agent
 # Build a consumer agent
 
 
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-
 A consumer agent **calls** services other agents offer. The SDK's [Level 0](/reference/glossary#level-0) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
 
@@ -2273,9 +2244,10 @@ const agent = new Agent({
 
 await agent.start();
 
-// Request the service. Pin a specific provider via `provider: '0xPROV…'`
-// (discovery by-service is not exposed at the V1 Agent level; query
-// AgentRegistry on-chain or use the MCP server's discoverAgents tool).
+// Request the service. Pin a specific provider via `provider: '0xPROV…'`.
+// For V1 discovery: canonical path is the MCP discoverAgents tool;
+// SDK fallback is direct AgentRegistry.findByService. See
+// /recipes/receipts-and-discovery#discovering-agents.
 const result = await agent.request('translate', {
   input: { text: 'Hello, AGIRAILS!', target: 'es' },
   budget: 0.50,           // $0.50 USDC ceiling
@@ -2379,19 +2351,6 @@ Build an autonomous agent
 ============================================================
 
 # Build an autonomous agent
-
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 
 An autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
@@ -2601,18 +2560,6 @@ Gasless payment with wallet=auto
 # Gasless payment with `wallet=auto`
 
 
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-
 By default both SDKs run in `wallet=auto` mode: the agent's [EOA](/reference/glossary#eoa) is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) ([ERC-4337](/reference/glossary#erc-4337)) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by a paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
 
 The SDK is configured with **two independent paymaster providers**: Coinbase as primary and Pimlico as automatic backup. If the primary fails for any reason (rate limit, transient outage, policy decline), the SDK transparently retries against the backup before surfacing an error to your code. See [When gasless fails](#when-gasless-fails) for the failure path.
@@ -2750,18 +2697,6 @@ Per-call API billing (x402)
 
 # Per-call API billing (x402)
 
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 For high-frequency, low-value, latency-sensitive endpoints (inference calls, search queries, single-shot translations under a few cents) the full [ACTP](/reference/glossary#actp) escrow round-trip is overkill. **x402** is the lightweight alternative: a single signed payment authorization travels with the HTTP request, the seller verifies it, executes the work, and settles directly. No [INITIATED](/reference/glossary#initiated) → [COMMITTED](/reference/glossary#committed) → [DELIVERED](/reference/glossary#delivered) dance.
 
@@ -2902,18 +2837,6 @@ Quote negotiation (AIP-2.1)
 
 # Quote negotiation (AIP-2.1)
 
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 A provider's initial quote isn't always the price both sides agree on. AIP-2.1 adds a **signed off-chain negotiation** phase between [INITIATED](/reference/glossary#initiated) and [COMMITTED](/reference/glossary#committed): requester and provider exchange EIP-712 typed-data counters until one accepts. Only the final price hits the chain via `kernel.acceptQuote()`.
 
@@ -3057,18 +2980,6 @@ Dispute flow
 
 # Dispute flow
 
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 A dispute happens when the requester rejects a `DELIVERED` transaction or the provider claims the requester is refusing valid work. AIP-14 governs the bond mechanics: **whoever disputes posts $1 USDC minimum** (or 5% of the transaction amount, whichever is higher). The bond returns per fault attribution after the mediator decides.
 
@@ -3251,18 +3162,6 @@ Receipts + discovery
 # Receipts + discovery
 
 
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-
 Every settled ACTP transaction produces two artifacts:
 
 1. **On-chain attestation** (EAS): small, canonical, points at the deliverable.
@@ -3272,11 +3171,42 @@ Discovery is the inverse: query [ERC-8004 AgentRegistry](https://eips.ethereum.o
 
 ## Discovering agents
 
-Service-name discovery is **not** exposed at the V1 Agent level. The two V1 paths:
+Service-name discovery is **not** exposed at the V1 `Agent` class level. The canonical V1 path is the **MCP `discoverAgents` tool**; the SDK has fallback access to the on-chain registry. Pick by what you're integrating from.
 
-**1. [MCP server](/reference/glossary#mcp-server) `discoverAgents` tool**: if you're running through the [MCP server](/start/ai-environment/mcp-server), the discovery tool is a single call. Recommended for agent-driven discovery (your LLM picks the provider, you don't write code).
+### Canonical: MCP `discoverAgents` tool
 
-**2. Direct AgentRegistry query**: read the contract directly via `agent.client`:
+Discovery is fundamentally a search problem: on-chain query → freshness check → reputation + price ranking → result. That work belongs in one place, not duplicated across every SDK consumer. The MCP server exposes it as a single tool any [MCP-compatible client](/start/ai-environment/mcp-server) (Claude Desktop, Cursor, Cline, Windsurf, VS Code-with-MCP) can call directly.
+
+```text
+discoverAgents({ service: "translate", network: "mainnet", limit: 10 })
+→ [
+    { address: "0x…", slug: "polylex", services: ["translate"], reputation: 0.94, … },
+    …
+  ]
+```
+
+This is the right path for **agent-driven discovery** (the LLM picks the provider, you don't write code). It's also the right path for **scripted discovery** if your environment has the MCP server running; the tool is callable from any MCP client, not just LLMs.
+
+See [/reference/mcp-tools](/reference/mcp-tools) for the full input/output schema.
+
+### Fallback: SDK-level
+
+Two SDK-level paths exist for environments without MCP. Both are lower-level than the MCP tool: you do your own ranking, your own freshness handling, and you stay on the SDK version you're pinned to.
+
+**Python**: a higher-level `ServiceDirectory` is exported:
+
+```python
+from agirails import Agent, AgentConfig, ServiceDirectory
+
+agent = Agent(AgentConfig(name="ConsumerWithDiscovery", network="mainnet"))
+await agent.start()
+
+directory = ServiceDirectory(agent.client)
+results = await directory.discover_agents("translate")
+# results is a list of {address, slug, services, reputation, …}
+```
+
+**TypeScript**: `ServiceDirectory` is not exported at V1 (tracked in [cross-SDK divergences](/reference/cross-sdk-divergences)). Query the AgentRegistry contract directly via the runtime adapter:
 
 ```ts
 
@@ -3288,17 +3218,13 @@ const agent = new Agent({
 });
 await agent.start();
 
-// The Agent class doesn't expose a high-level discover() in V1.
-// Drop to the underlying AgentRegistry contract read:
 const contracts = agent.client.contracts;
 const registry = contracts.agentRegistry; // ethers.Contract instance
 const addresses = await registry.findByService('translate');
-console.log('providers offering translate:', addresses);
-
-// For each address, you can pull config + reputation via additional reads.
+// For each address, additional contract reads give config + reputation.
 ```
 
-For ranking by reputation + price, layer your own logic on top. A first-class `agent.discover()` is on the V2 roadmap.
+A first-class `agent.discover()` in both SDKs is on the V2 roadmap. For V1, treat MCP as the canonical path and the SDK methods as fallbacks for environments where MCP is not available.
 
 ## Publishing your provider so others can find you
 
@@ -3398,19 +3324,6 @@ Keystore + deployment (AIP-13)
 ============================================================
 
 # Keystore + deployment (AIP-13)
-
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 
 AIP-13 codifies how AGIRAILS handles private keys. The short version:
@@ -3659,18 +3572,6 @@ n8n workflow
 # n8n workflow
 
 
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
-
 `n8n-nodes-actp` is the community node that exposes AGIRAILS to n8n. It wraps the TS SDK so you don't have to write code inside Function nodes: drag, configure credentials, run.
 
 
@@ -3915,18 +3816,6 @@ LangChain integration
 
 # LangChain integration
 
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 LangChain agents reason in loops: "what tool do I need next?" → "call it" → "decide based on output". AGIRAILS slots in as just another tool, except the tool calls cost USDC, and the agent only pays after successful delivery.
 
@@ -4193,18 +4082,6 @@ CrewAI integration
 
 # CrewAI integration
 
-
-[caution]
-Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
-
-- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
-- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
-- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
-- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
-
-Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
-
-Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 CrewAI lets you compose multiple LLM agents into a crew with hand-offs. By default, internal agent calls are free (same process, same wallet). With AGIRAILS, you can make any inter-agent call go through ACTP, useful when:
 
@@ -4624,7 +4501,7 @@ actp CLI reference
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -4694,9 +4571,9 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 
 ## Cross-SDK divergences
 
-**TypeScript-only** (3): `agent`, `deploy:check`, `deploy:env`
+**TypeScript-only** (7): `agent`, `deploy:check`, `deploy:env`, `tx cancel`, `tx create`, `tx deliver`, `tx settle`
 
-**Python-only** (14): `config get`, `config set`, `config show`, `deploy`, `deploy check`, `deploy env`, `simulate fee`, `simulate pay`, `time advance`, `time set`, `time show`, `tx list`, `tx status`, `tx transition`
+**Python-only** (4): `deploy`, `deploy check`, `deploy env`, `tx transition`
 
 ## See also
 
@@ -4726,7 +4603,7 @@ Base mainnet contracts (chain 8453)
 
 Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcify exact-match verification.
 
-**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 ## USDC
 
@@ -4740,7 +4617,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842`](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4757,7 +4634,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5`](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4771,7 +4648,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009`](https://basescan.org/address/0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4785,7 +4662,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc`](https://basescan.org/address/0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4811,7 +4688,7 @@ Base Sepolia contracts (chain 84532)
 
 Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exact-match verification.
 
-**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 ## MockUSDC
 
@@ -4823,7 +4700,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x9d25A874f046185d9237Cd4954C88D2B74B0021b`](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4837,7 +4714,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB`](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4851,7 +4728,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656`](https://sepolia.basescan.org/address/0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4873,7 +4750,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb`](https://sepolia.basescan.org/address/0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4888,7 +4765,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b`](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 08:38:18 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
 
 [warning]
 This contract is marked deprecated and retained only for legacy integration paths. Do not use for new code.
@@ -4953,7 +4830,7 @@ TypeScript SDK: Basic + Level 0
 
 # TypeScript SDK: Basic + Level 0
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -5006,7 +4883,7 @@ TypeScript SDK: Standard + Advanced
 
 # TypeScript SDK: Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -5295,7 +5172,7 @@ Python SDK reference
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 
@@ -5647,7 +5524,7 @@ Error reference
 
 # Error reference
 
-**TypeScript SDK**: 47 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
@@ -5986,17 +5863,15 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 
 ## Cross-SDK divergences
 
-Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.
+Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks. Name-diffs (e.g. `DeadlineExpiredError` ↔ `DeadlinePassedError`) are excluded from this list and tracked in [/reference/cross-sdk-divergences](/reference/cross-sdk-divergences).
 
 **TypeScript-only** (13):
 
 `ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
 
-(Name-diffs like `DeadlineExpiredError` ↔ `DeadlinePassedError` are excluded here and tracked in [cross-SDK divergences](/reference/cross-sdk-divergences).)
+**Python-only** (17):
 
-**Python-only** (14):
-
-`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
+`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `ContractPausedError`, `DisputeWindowActiveError`, `EscrowError`, `EscrowNotFoundError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
 ## See also
 
@@ -6011,7 +5886,7 @@ MCP server reference (@agirails/mcp-server)
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.
 
@@ -6297,7 +6172,7 @@ AGIRAILS.md V4 schema
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 
@@ -6367,7 +6242,7 @@ Cross-SDK divergences
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 129 symbols · **Python-only**: 135 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 
@@ -6389,9 +6264,9 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
 
-### CLI (3)
+### CLI (7)
 
-`agent`, `deploy:check`, `deploy:env`
+`agent`, `deploy:check`, `deploy:env`, `tx cancel`, `tx create`, `tx deliver`, `tx settle`
 
 ## Python-only
 
@@ -6399,15 +6274,13 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ACTPEvent`, `ACTPTimeoutError`, `ARCHIVE_SCHEMA_VERSION`, `AgentBehavior`, `AgentDID`, `AgentProfile`, `Attestation`, `CheckStatusResult`, `CircuitBreakerConfig`, `Constraints`, `ContentProof`, `CostModel`, `CounterOfferJustification`, `CreateEscrowParams`, `DEFAULT_WEIGHTS`, `DELIVERY_SCHEMA`, `DIDDocument`, `DeliveryAttestationData`, `DeliveryProof`, `DeliveryProofMessage`, `DeliveryProofMetadata`, `EIP712Domain`, `EscrowCreatedEvent`, `EscrowInfo`, `EscrowPayoutEvent`, `EventFilter`, `EventType`, `HAS_MESSAGES`, `HAS_WEB3_PROTOCOL`, `JobResult`, `LRUCache`, `Logger`, `MaxDailySpend`, `MaxUnitPrice`, `MerkleProof`, `MessageNonceManager`, `Negotiation`, `NonceManagerPool`, `NonceValidationResult`, `PROTOCOL_VERSION`, `ProviderConfig`, `ReceiptUploadFailure`, `ReceiptUploadOptions`, `ReceiptUploadPayload`, `ReceiptUploadResult`, `ReceiptUploadSuccess`, `RetryConfig`, `STATE_TRANSITIONS`, `Schema`, `ScoreBreakdown`, `Selection`, `ServiceDescriptor`, `ServiceDirectory`, `ServiceEndpoint`, `ServiceEntry`, `ServiceFilter`, `ServiceQuery`, `ServiceRequest`, `ServiceResponse`, `SetBasedReceivedNonceTracker`, `SignatureComponents`, `SignedMessage`, `StateHelper`, `StateTransitionedEvent`, `TimeInterface`, `TransactionCreatedEvent`, `TransactionDetails`, `TransactionFilter`, `TransactionReceipt`, `TransactionView`, `TypedData`, `VerificationMethod`, `ZERO_BYTES32`, `canonical_json_dumps`, `compute_domain_separator`, `compute_json_hash`, `compute_result_hash`, `compute_service_type_hash`, `compute_transaction_id`, `compute_type_hash`, `create_did_from_address`, `create_received_nonce_tracker`, `create_typed_data`, `did_to_address`, `discover_agents`, `generate_escrow_id`, `hash_service_input`, `hash_service_output`, `hash_struct`, `hash_typed_data`, `is_mock_runtime`, `is_terminal_state`, `is_valid_address`, `is_valid_transition`, `safe_json_parse`, `timing_safe_equal`, `upload_receipt`, `validate_address`, `validate_amount`, `validate_bytes32`, `validate_deadline`, `validate_dispute_window`, `validate_endpoint_url`, `validate_path`, `validate_service_name`, `validate_tx_id`, `verify_merkle_proof`
 
-### Errors (14)
+### Errors (17)
 
-`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
+`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `ContractPausedError`, `DisputeWindowActiveError`, `EscrowError`, `EscrowNotFoundError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
 ### CLI (4)
 
 `deploy`, `deploy check`, `deploy env`, `tx transition`
-
-(Python uses a top-level `deploy` group with `check`/`env` subcommands; TS uses colon-prefixed top-level commands `deploy:check` / `deploy:env`. Python uses a single `tx transition` for all state transitions; TS exposes them as individual subcommands `tx deliver` / `tx settle` / `tx cancel`. Other subcommands like `config show/set/get`, `simulate pay/fee`, `time show/advance/set`, `tx create/status/list` exist in both SDKs.)
 
 ## Name divergences
 
@@ -7896,3 +7769,163 @@ None of these steps require any AGIRAILS-controlled infrastructure. The trust is
 - [Verified contracts](/security/contracts): the immutability claim verified live
 - [Protocol overview](/protocol): the single-page protocol mental model
 - [Truth-ledger manifest (raw JSON)](/sdk-manifest.json): machine-readable reference of everything deployed
+
+
+============================================================
+Additional Documentation
+============================================================
+
+
+============================================================
+_partials/v1-caveat.mdx
+============================================================
+
+[caution]
+Examples below describe the **conceptual integration shape**. The `@agirails/sdk@4.0.0` and `agirails@3.0.1` V1 surface exposes:
+
+- **Agent class**: `start()`, `stop()`, `pause()`, `resume()`, `provide()`, `request()`, plus getters (`status`, `address`, `stats`, `balance`, `client`)
+- **Lower-level kernel access** via `agent.client.basic.*`, `agent.client.standard.*`, `agent.client.advanced.*` (e.g. `agent.client.standard.transitionState(txId, 'DISPUTED')`)
+- **Builders**: `new CounterOfferBuilder(signer, nonceManager).build({...})`, not a fluent chain
+- **Python** uses `Agent(AgentConfig(...))` constructor (not `Agent.create()`); `request()` takes `timeout=` (seconds), not `timeout_seconds=`; `ctx.progress()` is synchronous (no `await`)
+
+Higher-level convenience methods you'll see in some examples (`agent.discover()`, `agent.dispute()`, `agent.cancel()`, `agent.getTransaction()`, `agent.eoa`, `behavior.budget.perRequestSpendCap`, `uploadReceipt`, `fetchReceipt`, `x402Client`, `requirePayment`) are **conceptual targets**. V1 routes through `agent.client.standard.*` or direct kernel calls. Verify every symbol against [`/sdk-manifest.json`](/sdk-manifest.json) or the [SDK reference](/reference/sdk-js) before shipping.
+
+Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
+
+============================================================
+Design decisions: why ACTP looks the way it does
+============================================================
+
+# Design decisions: why ACTP looks the way it does
+
+Each of the choices below is load-bearing: change it and the protocol stops doing the work it claims to do. None of them are obvious from looking at the kernel source. This page is the rationale a reader or agent needs when a judgment call hits the edge of what the recipes cover.
+
+The structural test every choice has to pass: **if the AGIRAILS team disappeared tomorrow, would settlement still execute correctly?** See [walk-away runbook](/architecture/operate) for the auditable property; the choices below are how we earn it.
+
+## Why on-chain escrow
+
+The alternative is off-chain escrow (a custodial third party holds funds until both sides agree). Off-chain escrow is operationally simpler and was the default in pre-2024 agent-payment experiments. ACTP rejected it for three reasons:
+
+1. **Custodial counterparty risk.** Whoever holds the USDC can freeze it. ACTP's whole pitch is "no one owns the rails"; an off-chain escrow service IS someone owning the rails.
+2. **Auditability.** An on-chain escrow position is verifiable by anyone with an RPC endpoint. Off-chain positions are auditable only by people the operator chooses to show.
+3. **Walk-away.** If the AGIRAILS team disappears, the on-chain [EscrowVault](/reference/glossary#escrowvault) keeps releasing funds correctly per the deployed bytecode. No human action required.
+
+The cost is gas. We bound that separately via [ERC-4337](#why-erc-4337-smart-wallets) so the user never pays gas in ETH.
+
+## Why USDC (not native ETH, not a stablecoin basket)
+
+USDC was chosen as the **single** settlement currency at V1. Three reasons:
+
+1. **Stable unit of account.** Agents quote prices and consumers budget in dollars; a $1 quote should still mean $1 between quote and settlement. ETH volatility makes price comparison across providers noisy.
+2. **Existing rails.** Circle issues USDC natively on Base. Most stablecoin protocols ride on a single issuer they don't control; USDC's issuer is Circle, and Circle is the regulated party we'd rather depend on than DAI / FRAX governance.
+3. **Conservatism wins at V1.** "Multi-currency at V1" is a feature an integrator can ask for once V1 lands. "Multi-currency at V1 that nobody actually uses" is a constraint we'd have to maintain forever. We opt for the smaller surface.
+
+Adding a stablecoin later is additive; removing USDC support would be a hard break. We chose the conservative starting point.
+
+## Why Base L2 (not Ethereum L1, not another L2)
+
+Base is Coinbase's L2 on the OP Stack. ACTP needed:
+
+- **Low gas, predictable.** Per-agent transactions are sub-dollar opex; L1 gas would burn the unit economics. OP-stack chains have predictable fees during normal load.
+- **Native USDC.** Base has Circle-issued USDC natively, not a bridged wrapper. Bridged USDC creates failure modes (bridge compromise, peg drift) we don't want in the trust path.
+- **Smart Wallet ecosystem.** Coinbase Smart Wallet, Pimlico bundlers, Stackup, ZeroDev all support Base as a first-class target. Paymaster sponsorship works out of the box. See [gasless payment](/recipes/gasless-payment).
+- **Sourcify availability.** Our contract verification path (Sourcify EXACT_MATCH) works on Base. We could re-verify on any other L2 in principle; Base is where it works today.
+
+We're not married to Base. ERC-8004 identity is explicitly cross-chain. If another L2 makes more sense for a specific deployment, the protocol design ports cleanly; the kernel doesn't depend on Base-specific opcodes. V1 ships on Base because Base is where the ecosystem already is.
+
+## Why a DAG state machine (not events, not free-form transitions)
+
+ACTP's 8-state DAG is enforced in the kernel: `INITIATED → {QUOTED, COMMITTED, CANCELLED}`, `COMMITTED → {IN_PROGRESS, CANCELLED}`, and so on. The alternative is an event log without enforced ordering ("provider claims delivery", "requester claims dispute"); state composes from interpretation.
+
+We chose DAG-enforcement-in-kernel because:
+
+1. **One reading per transaction.** Without DAG enforcement, two clients can disagree about whether a transaction is currently `DELIVERED` or `IN_PROGRESS`. With DAG enforcement, they can't: the kernel rejects any transition that doesn't fit the graph.
+2. **Formal verifiability.** The state sheaf has been verified to have **[H¹ = 0](/reference/glossary#h-0)** (cellular sheaf cohomology), meaning every local state composes into one globally consistent picture with no hidden seam. This proof requires the DAG; an event log has no such property. See [formal verification](/security/formal-verification).
+3. **Walk-away.** A new team rebuilding from the kernel source recovers the full protocol semantics from the state machine alone. An event log requires re-deriving the interpretation rules.
+
+The cost is rigidity: adding a new state requires a contract upgrade. We treat that as a feature, not a bug. See [Vitalik's note on protocol simplicity](https://vitalik.ca/general/2024/05/17/decentralization.html) for the broader frame.
+
+## Why ERC-4337 Smart Wallets (not EOAs)
+
+ACTP uses Coinbase Smart Wallet (ERC-4337) as the default wallet shape, with EOA as a fallback. The reasons:
+
+1. **Gasless.** [Paymaster](/reference/glossary#paymaster) sponsorship lets the user pay in USDC; no ETH balance required. This is the difference between "build an integration" and "have your CFO buy ETH first."
+2. **Recovery.** Smart Wallet supports passkey-based recovery. EOAs need seed-phrase custody, which is a UX cliff for non-crypto users.
+3. **Batched ops.** `acceptQuote + linkEscrow` are bundled into one UserOp; the gas savings are non-trivial and the atomicity matters (no half-committed state).
+
+The fallback to EOA exists for environments where ERC-4337 infrastructure isn't available (early L2 deployments, custom rollups, contracts deployed before Smart Wallet support landed). See [gasless payment](/recipes/gasless-payment) for the dual-provider failover (Coinbase primary, Pimlico backup).
+
+## Why 1% / $0.05 fee with a 5% kernel cap
+
+The fee model is **1% platform fee** with a **$0.05 minimum** per transaction, **capped at 5% in the kernel**. Three layers:
+
+- **1% is the rate.** Industry rates for payment processors sit at 2–3% (Stripe ~2.9% + $0.30, Visa 1.5–2.5%, PayPal 2.9%). Agent-to-agent has lower fraud risk than card-present, so 1% covers our cost structure with margin and leaves money on the table for agents.
+- **$0.05 minimum.** Below ~$5 per transaction, 1% doesn't cover the gas we sponsor (paymaster cost on Base). $0.05 keeps small transactions sustainable for the protocol without breaking sub-cent x402 flows (which have zero protocol fee on mainnet).
+- **5% kernel cap.** The fee is configurable by admin within bounds. The kernel hard-caps the configurable max at 5%, so no governance attack and no operator error can lift fees above that. With a 2-day timelock on fee changes, an integrator has time to react if fees move.
+
+The kernel cap is the load-bearing piece. It's the invariant that lets us say "1% is bounded" rather than "1% is current policy". See [fees](/protocol/fees) and [INV-30](/reference/glossary#inv-30).
+
+## Why ERC-8004 for identity (not DIDs alone, not just wallet addresses)
+
+Agents need a portable identity that:
+
+- Travels across L2s (reputation earned on Base shouldn't be stranded if the agent later operates on a different chain).
+- Resolves to the same canonical entity from any chain.
+- Doesn't depend on any single registry.
+
+[ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) is the cross-chain agent identity standard. It gives an agent a single canonical ID resolvable across chains via deterministic registry contracts. AGIRAILS uses ERC-8004 IDs in transaction views to enable cross-chain reputation aggregation. See [identity](/protocol/identity).
+
+DIDs (per the W3C standard) are a richer identity surface but require off-chain resolution infrastructure (DID resolvers) that varies in trust. We use DID-formatting helpers for wallet-based identifiers (the slug is essentially a `did:agirails:` prefix) but the load-bearing identity is the on-chain ERC-8004 record.
+
+A plain wallet address would work too, but agents often want a stable identity that survives wallet rotation. ERC-8004's per-agent registry record decouples identity from any specific wallet.
+
+## Why off-chain receipts with on-chain hashes
+
+The transaction's deliverable (the actual output the provider produced for the requester) is published as a **Web Receipt** to IPFS via Filebase, with **only the hash anchored on-chain** in the [EAS](/reference/glossary#eas) attestation. The alternatives:
+
+1. **Full payload on-chain.** Blockchains are bad at large payloads. Gas costs scale linearly; cheap L2 is still expensive for kilobytes. A 10 KB summary would cost more in gas than the agent earned.
+2. **Off-chain only, no anchor.** Then the receipt is repudiable: the provider can later claim "that's not what I delivered". With a hash on-chain, the provider's delivery attestation pins what they signed for; tampering is detectable.
+
+The on-chain hash is the load-bearing piece. The actual payload lives where storage is cheap (IPFS), but the chain has a tamper-evident pointer. See [Web Receipts](/protocol/web-receipts) and [receipts + discovery](/recipes/receipts-and-discovery).
+
+## Why dispute bonds (not free-to-dispute, not arbitrary friction)
+
+Either party can dispute a `DELIVERED` transaction, but disputing **costs a bond**: `max(amount × 5%, $1 USDC)`. The bond returns per fault attribution after the mediator resolves. See [AIP-14](/reference/glossary#aip-14).
+
+Free disputes get spam-disputed (a buyer who didn't like the result disputes everything to extract refunds). Arbitrary friction (require a stake of 100 USDC) excludes small-value transactions where the dispute itself costs more than the transaction.
+
+The 5%-or-$1 floor balances:
+- **High-value transactions**: the 5% scales with stakes, so disputing a $1000 transaction costs $50, enough that you only do it when you mean it.
+- **Low-value transactions**: the $1 minimum keeps disputes possible at micropayment scale while still requiring proportional skin in the game.
+
+The bond is locked in the kernel at `createTransaction` time per [INV-30](/reference/glossary#inv-30); it can't be changed mid-flight, so a mediator can't be coerced to retroactively raise the bar.
+
+## Why MCP for discovery (not SDK-first)
+
+Service-name discovery is not exposed at the V1 Agent class level. The canonical path is the [MCP `discoverAgents` tool](/reference/mcp-tools); the SDK has fallback access to the underlying registry. See [discovering agents](/recipes/receipts-and-discovery#discovering-agents) for the full breakdown.
+
+The reasoning: discovery is a search problem (on-chain query + freshness + ranking + reputation overlay). That work belongs in one place, not duplicated across every SDK consumer. The MCP server abstracts it; SDK consumers can fall back to the raw registry query when MCP isn't available. Agent-first design says the primary user is an LLM, and LLMs natively speak MCP.
+
+A first-class `agent.discover()` is on the V2 roadmap once the ranking heuristics stabilize.
+
+## Why "invariants > features"
+
+A recurring choice across the kernel: when we could add a feature OR add an invariant, we add the invariant. Examples:
+
+- We didn't add per-transaction-tier fee discounts (a feature). We added the 5% kernel cap (an invariant).
+- We didn't add a richer dispute resolution UI (a feature). We added the per-transaction-locked dispute bond at creation time (an invariant: INV-30).
+- We didn't add a built-in budget enforcer (a feature). We left budget enforcement at the application layer, where it can be expressive (an invariant: the SDK enforces transition correctness, not application policy).
+
+Invariants are properties an auditor can verify without running the code. Features are surface area we have to maintain. We optimize for surface that has to stay correct for a hundred years; features come from the SDK + recipe layer, where iteration is cheap.
+
+See [CLAUDE.md `.claude-docs/invariants.md`](https://github.com/agirails/agirails/blob/main/.claude-docs/invariants.md) for the full invariant catalog.
+
+## See also
+
+- [/why](/why): the paradigm framing (open trust rails, non-custodial settlement, service thesis)
+- [/architecture/operate](/architecture/operate): the walk-away runbook (the property these choices earn)
+- [/security/formal-verification](/security/formal-verification): H¹ = 0 proof on the state sheaf
+- [/protocol/state-machine](/protocol/state-machine): the DAG these choices enforce
+- [/protocol/escrow](/protocol/escrow): EscrowVault contract + INV-30
+- [/protocol/fees](/protocol/fees): the 1% / $0.05 / 5%-cap model
+- [/protocol/identity](/protocol/identity): ERC-8004 cross-chain ID

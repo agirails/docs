@@ -1,7 +1,7 @@
 ---
 slug: /reference/cross-sdk-divergences
 title: "Cross-SDK divergences"
-description: "Every TypeScript-only symbol, every Python-only symbol, plus curated name and behavioral differences across the two SDKs. Auto-extracted from the truth-ledger manifest: 129 TS-only + 135 Python-only + 1 name diff + 1 behavioral diff."
+description: "Every TypeScript-only symbol, every Python-only symbol, plus curated name and behavioral differences across the two SDKs. Auto-extracted from the truth-ledger manifest: 133 TS-only + 128 Python-only + 1 name diff + 1 behavioral diff."
 schema_type: APIReference
 last_verified: 2026-05-29
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,7 +15,7 @@ sidebar_position: 8
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 129 symbols · **Python-only**: 135 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 
@@ -37,9 +37,9 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
 
-### CLI (3)
+### CLI (7)
 
-`agent`, `deploy:check`, `deploy:env`
+`agent`, `deploy:check`, `deploy:env`, `tx cancel`, `tx create`, `tx deliver`, `tx settle`
 
 ## Python-only
 
@@ -47,15 +47,13 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ACTPEvent`, `ACTPTimeoutError`, `ARCHIVE_SCHEMA_VERSION`, `AgentBehavior`, `AgentDID`, `AgentProfile`, `Attestation`, `CheckStatusResult`, `CircuitBreakerConfig`, `Constraints`, `ContentProof`, `CostModel`, `CounterOfferJustification`, `CreateEscrowParams`, `DEFAULT_WEIGHTS`, `DELIVERY_SCHEMA`, `DIDDocument`, `DeliveryAttestationData`, `DeliveryProof`, `DeliveryProofMessage`, `DeliveryProofMetadata`, `EIP712Domain`, `EscrowCreatedEvent`, `EscrowInfo`, `EscrowPayoutEvent`, `EventFilter`, `EventType`, `HAS_MESSAGES`, `HAS_WEB3_PROTOCOL`, `JobResult`, `LRUCache`, `Logger`, `MaxDailySpend`, `MaxUnitPrice`, `MerkleProof`, `MessageNonceManager`, `Negotiation`, `NonceManagerPool`, `NonceValidationResult`, `PROTOCOL_VERSION`, `ProviderConfig`, `ReceiptUploadFailure`, `ReceiptUploadOptions`, `ReceiptUploadPayload`, `ReceiptUploadResult`, `ReceiptUploadSuccess`, `RetryConfig`, `STATE_TRANSITIONS`, `Schema`, `ScoreBreakdown`, `Selection`, `ServiceDescriptor`, `ServiceDirectory`, `ServiceEndpoint`, `ServiceEntry`, `ServiceFilter`, `ServiceQuery`, `ServiceRequest`, `ServiceResponse`, `SetBasedReceivedNonceTracker`, `SignatureComponents`, `SignedMessage`, `StateHelper`, `StateTransitionedEvent`, `TimeInterface`, `TransactionCreatedEvent`, `TransactionDetails`, `TransactionFilter`, `TransactionReceipt`, `TransactionView`, `TypedData`, `VerificationMethod`, `ZERO_BYTES32`, `canonical_json_dumps`, `compute_domain_separator`, `compute_json_hash`, `compute_result_hash`, `compute_service_type_hash`, `compute_transaction_id`, `compute_type_hash`, `create_did_from_address`, `create_received_nonce_tracker`, `create_typed_data`, `did_to_address`, `discover_agents`, `generate_escrow_id`, `hash_service_input`, `hash_service_output`, `hash_struct`, `hash_typed_data`, `is_mock_runtime`, `is_terminal_state`, `is_valid_address`, `is_valid_transition`, `safe_json_parse`, `timing_safe_equal`, `upload_receipt`, `validate_address`, `validate_amount`, `validate_bytes32`, `validate_deadline`, `validate_dispute_window`, `validate_endpoint_url`, `validate_path`, `validate_service_name`, `validate_tx_id`, `verify_merkle_proof`
 
-### Errors (14)
+### Errors (17)
 
-`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
+`ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `ContractPausedError`, `DisputeWindowActiveError`, `EscrowError`, `EscrowNotFoundError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
 ### CLI (4)
 
 `deploy`, `deploy check`, `deploy env`, `tx transition`
-
-(Python uses a top-level `deploy` group with `check`/`env` subcommands; TS uses colon-prefixed top-level commands `deploy:check` / `deploy:env`. Python uses a single `tx transition` for all state transitions; TS exposes them as individual subcommands `tx deliver` / `tx settle` / `tx cancel`. Other subcommands like `config show/set/get`, `simulate pay/fee`, `time show/advance/set`, `tx create/status/list` exist in both SDKs.)
 
 ## Name divergences
 

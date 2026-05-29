@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 28 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 08:38:18 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 10:42:13 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -85,9 +85,9 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 
 ## Cross-SDK divergences
 
-**TypeScript-only** (3): `agent`, `deploy:check`, `deploy:env`
+**TypeScript-only** (7): `agent`, `deploy:check`, `deploy:env`, `tx cancel`, `tx create`, `tx deliver`, `tx settle`
 
-**Python-only** (14): `config get`, `config set`, `config show`, `deploy`, `deploy check`, `deploy env`, `simulate fee`, `simulate pay`, `time advance`, `time set`, `time show`, `tx list`, `tx status`, `tx transition`
+**Python-only** (4): `deploy`, `deploy check`, `deploy env`, `tx transition`
 
 ## See also
 
