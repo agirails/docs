@@ -55,7 +55,7 @@ The limits. If your threat model needs these, layer additional defenses on top o
 | USDC | Circle (you'd trust this anyway if you're holding USDC at all) |
 | Base L2 | Coinbase (sequencer); reverts to L1 within the rollup's withdrawal window |
 | Coinbase Smart Wallet | Coinbase (factory contract); see their audit + Sourcify status |
-| Coinbase [Paymaster](/reference/glossary#paymaster) | Coinbase (gas sponsorship); failure mode is graceful, your tx falls back to [`wallet=eoa`](/reference/glossary#walleteoa) |
+| [Paymaster](/reference/glossary#paymaster) (gasless) | **Two independent providers**: Coinbase (primary) + Pimlico (automatic backup). Failure mode is graceful: single-provider decline transparently fails over; joint decline throws and your tx falls back to [`wallet=eoa`](/reference/glossary#walleteoa). The protocol never depends on either provider to function. |
 | EAS attestation infrastructure | EAS protocol + the schema deployed at the network-specific address |
 | Filebase / Pinata for receipt pinning | The IPFS network (any pinning service can fetch by [CID](/reference/glossary#cid)); single-provider failure doesn't break verification, only convenience |
 

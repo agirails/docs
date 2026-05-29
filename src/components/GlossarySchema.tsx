@@ -60,7 +60,7 @@ const TERMS: Term[] = [
   { name: 'EOA', anchor: 'eoa', description: 'Externally Owned Account. A wallet whose authority lives in a private key.' },
   { name: 'ERC-4337', anchor: 'erc-4337', description: 'The Account Abstraction standard. See Account Abstraction.' },
   { name: 'ERC-8004', anchor: 'erc-8004', description: 'The agent identity and reputation standard ACTP implements.' },
-  { name: 'Paymaster', anchor: 'paymaster', description: 'The contract that sponsors gas for UserOperations. AGIRAILS uses the Coinbase Paymaster.' },
+  { name: 'Paymaster', anchor: 'paymaster', description: 'The contract that sponsors gas for UserOperations. AGIRAILS routes wallet=auto through Coinbase paymaster as primary with automatic Pimlico fallback. User pays only USDC.' },
   { name: 'SCW', anchor: 'scw', description: 'Smart Contract Wallet. The on-chain address users interact with in wallet=auto mode.' },
   { name: 'UserOperation', anchor: 'useroperation', description: 'An ERC-4337 transaction object signed by the EOA, validated by the SCW, bundled, and submitted on-chain.' },
   { name: 'wallet=auto', anchor: 'walletauto', description: 'The default SDK wallet mode. Wraps the EOA in a Coinbase Smart Wallet and routes through the Paymaster. User pays only USDC.' },

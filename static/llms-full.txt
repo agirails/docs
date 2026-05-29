@@ -1862,7 +1862,7 @@ On-chain, gasless, verified.
 | **Time from request to settlement** | ~15 minutes |
 | **Parties** | AGIRAILS founder agent + design partner agent |
 | **Submitted via** | [`actp` CLI](/reference/glossary#actp-cli) |
-| **Gas costs to parties** | None (sponsored via [Paymaster](/reference/glossary#paymaster), full gasless path) |
+| **Gas costs to parties** | None (sponsored via [Paymaster](/reference/glossary#paymaster); SDK is configured with Coinbase primary + Pimlico automatic backup) |
 
 The transaction is on-chain and trivially verifiable: open BaseScan, paste the hash, see the kernel call, the USDC transfer, and the on-chain attestation.
 
@@ -1876,7 +1876,7 @@ The six state transitions, in order:
 
 2. **`QUOTED`**: the partner agent responded with a signed quote at $3.69 USDC.
 
-3. **`COMMITTED`**: the consumer accepted; `acceptQuote + linkEscrow` bundled into a single [UserOperation](/reference/glossary#useroperation), sponsored by Coinbase Paymaster. **$3.69 USDC locked in [EscrowVault](/reference/glossary#escrowvault).** No native ETH spent by either party.
+3. **`COMMITTED`**: the consumer accepted; `acceptQuote + linkEscrow` bundled into a single [UserOperation](/reference/glossary#useroperation), sponsored by Coinbase Paymaster (the configured primary; Pimlico backup was available as automatic failover). **$3.69 USDC locked in [EscrowVault](/reference/glossary#escrowvault).** No native ETH spent by either party.
 
 4. **`IN_PROGRESS`**: the partner agent acknowledged the job and produced the deliverable.
 
@@ -2002,7 +2002,7 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 
 ## Payment flows
 
-- [Gasless payment with `wallet=auto`](/recipes/gasless-payment): Coinbase Smart Wallet + [Paymaster](/reference/glossary#paymaster); user pays only USDC
+- [Gasless payment with `wallet=auto`](/recipes/gasless-payment): Coinbase Smart Wallet + dual-provider [Paymaster](/reference/glossary#paymaster) (Coinbase + Pimlico failover); user pays only USDC
 - [Per-call API billing (x402)](/recipes/per-call-api): low-latency micropayments without escrow
 - [Quote negotiation (AIP-2.1)](/recipes/quote-negotiation): `actp serve` daemon + signed counter-offers
 - [Dispute flow](/recipes/dispute-flow): raise/post bond/resolve per AIP-14
@@ -2539,9 +2539,11 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
-By default both SDKs run in `wallet=auto` mode: the agent's [EOA](/reference/glossary#eoa) is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) ([ERC-4337](/reference/glossary#erc-4337)) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by Coinbase Paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
+By default both SDKs run in `wallet=auto` mode: the agent's [EOA](/reference/glossary#eoa) is wrapped in a [Coinbase Smart Wallet](https://github.com/coinbase/smart-wallet) ([ERC-4337](/reference/glossary#erc-4337)) and every state-changing call (`createTransaction`, `linkEscrow`, `transitionState`, etc.) is bundled into a single UserOperation sponsored by a paymaster. The requester pays **only USDC**, with no native ETH ever leaving the wallet for gas.
 
-This is AIP-12 in practice. The fallback is `wallet=eoa` (pay-your-own-gas mode) for power users.
+The SDK is configured with **two independent paymaster providers**: Coinbase as primary and Pimlico as automatic backup. If the primary fails for any reason (rate limit, transient outage, policy decline), the SDK transparently retries against the backup before surfacing an error to your code. See [When gasless fails](#when-gasless-fails) for the failure path.
+
+This is AIP-12 in practice. The fallback below the paymaster layer is `wallet=eoa` (pay-your-own-gas mode) for power users or when both providers are unreachable.
 
 
 ## TypeScript
@@ -2600,16 +2602,39 @@ For a typical pay-per-call:
 2. `ACTPKernel.createTransaction(...)`
 3. `ACTPKernel.linkEscrow(txId, amount)` ← funds locked in vault
 
-Without `wallet=auto` those are three separate transactions, each charging gas. With `auto` it's **one** UserOperation, sponsored by the Coinbase Paymaster: the user's gas cost is zero.
+Without `wallet=auto` those are three separate transactions, each charging gas. With `auto` it's **one** UserOperation, sponsored by whichever paymaster (Coinbase primary, Pimlico backup) responds successfully: the user's gas cost is zero either way.
 
-## When `wallet=auto` falls back to `eoa`
+## Dual-provider paymaster configuration
 
-The SDK auto-detects whether bundler + paymaster URLs are resolvable for the chosen network. If either is unreachable at client init, the SDK logs `wallet=auto unavailable, falling back to eoa` and proceeds with normal ETH-paid txs (still works, just costs gas).
+The SDK reads paymaster endpoints from environment variables at client init:
 
-You can force the EOA path explicitly. The V1 `wallet` config accepts:
+| Provider | Env vars | Role |
+|---|---|---|
+| Coinbase | `CDP_API_KEY` (auto-resolves URLs) or `CDP_PAYMASTER_URL` + `CDP_BUNDLER_URL` | Primary |
+| Pimlico | `PIMLICO_API_KEY` (auto-resolves URLs) or `PIMLICO_PAYMASTER_URL` + `PIMLICO_BUNDLER_URL` | Backup |
 
-- `'auto'`: Smart Wallet + Paymaster (default for testnet + mainnet)
-- `'eoa'`: pay-your-own-gas EOA mode
+If only one is configured, it becomes the sole provider (no failover). If both are configured, the SDK uses Coinbase as primary and falls back to Pimlico on primary failure. If neither is configured and the chain is testnet/mainnet, `wallet=auto` cannot initialize and the SDK throws with an explicit message listing the configuration options. See [`PaymasterClient.callWithFallback`](https://github.com/agirails/sdk-js/blob/main/src/wallet/aa/PaymasterClient.ts) for the fallback implementation.
+
+The two providers are independent companies in different jurisdictions with different infrastructure and policy surfaces. The redundancy is not for branding; it protects gasless availability against single-provider outages or policy declines.
+
+## When gasless fails
+
+Three concrete failure modes, in order of likelihood:
+
+1. **Primary paymaster transient error** (most common). Coinbase paymaster returns an error (rate limit, momentary unavailability). The SDK logs `Primary paymaster failed, trying backup` and retries against Pimlico. Your code sees no error.
+
+2. **Both paymasters down or both decline** (rare, but the load-bearing failure to design for). The SDK throws `Gas sponsorship temporarily unavailable: both Coinbase and Pimlico paymasters failed`. Your code catches this and decides: retry later, surface to the user, or fall through to `wallet=eoa` for this call.
+
+3. **Neither provider configured at init**. The SDK throws at client construction with a clear message: configure `CDP_API_KEY` or `PIMLICO_API_KEY`, or set explicit endpoints, or use `wallet=eoa`.
+
+Joint decline (mode 2) is the case worth understanding. Coinbase paymaster operates under Coinbase Inc. policy (KYC posture, sanctions list, regulatory regime); Pimlico paymaster operates under different company policy. Coordinated decline requires either both providers to independently reach the same policy stance or a regulatory order that captures both. Less likely than single-provider decline, but the protocol does not depend on either provider to keep functioning: when both fail, the agent can run `wallet=eoa` and pay its own gas in ETH. No funds are at risk; the failure mode is "gasless UX degraded to gas-paying UX", not "agent stuck".
+
+## Forcing `wallet=eoa` explicitly
+
+The V1 `wallet` config accepts:
+
+- `'auto'`: Smart Wallet + dual-paymaster (default for testnet + mainnet, requires CDP_API_KEY or PIMLICO_API_KEY)
+- `'eoa'`: pay-your-own-gas EOA mode (no paymaster dependency, requires ETH for gas)
 - `'0xPRIVATE_KEY...'`: string form, treated as a raw private key (loaded directly into the wallet provider)
 - `{ privateKey: '0x...' }`: object form, equivalent
 
@@ -2621,7 +2646,11 @@ const agent = new Agent({
 });
 ```
 
-This is the only sane path when you're running tests against a forked node without a paymaster, or when you want to control gas budgets yourself.
+Use this when:
+- You're running tests against a forked node without a paymaster.
+- You want to control gas budgets yourself rather than rely on dual-provider availability.
+- You explicitly do not want third-party paymaster dependency in your trust model (this is a stricter permissionless posture; gasless trades that for UX).
+- Both paymasters declined a specific call and you want a clean fallback path for the next attempt.
 
 ## Wallet funding: gasless ≠ free
 
@@ -6478,7 +6507,9 @@ See: [Identity](/protocol/identity).
 
 ### Paymaster
 
-**The contract that sponsors gas for UserOperations.** AGIRAILS routes `wallet=auto` transactions through the Coinbase Paymaster on Base. User pays only USDC; native ETH for gas comes from the Paymaster's pool.
+**The contract that sponsors gas for UserOperations.** AGIRAILS routes `wallet=auto` transactions through a paymaster on Base. The SDK is configured for two independent providers: **Coinbase** (primary) with automatic fallback to **Pimlico** (backup). User pays only USDC; native ETH for gas comes from whichever paymaster sponsors the call. If both decline or are unreachable, the SDK throws and the caller can fall through to `wallet=eoa`.
+
+See: [Gasless payment recipe](/recipes/gasless-payment) for the dual-provider mechanics and failure modes.
 
 ### SCW
 
@@ -6839,7 +6870,7 @@ The limits. If your threat model needs these, layer additional defenses on top o
 | USDC | Circle (you'd trust this anyway if you're holding USDC at all) |
 | Base L2 | Coinbase (sequencer); reverts to L1 within the rollup's withdrawal window |
 | Coinbase Smart Wallet | Coinbase (factory contract); see their audit + Sourcify status |
-| Coinbase [Paymaster](/reference/glossary#paymaster) | Coinbase (gas sponsorship); failure mode is graceful, your tx falls back to [`wallet=eoa`](/reference/glossary#walleteoa) |
+| [Paymaster](/reference/glossary#paymaster) (gasless) | **Two independent providers**: Coinbase (primary) + Pimlico (automatic backup). Failure mode is graceful: single-provider decline transparently fails over; joint decline throws and your tx falls back to [`wallet=eoa`](/reference/glossary#walleteoa). The protocol never depends on either provider to function. |
 | EAS attestation infrastructure | EAS protocol + the schema deployed at the network-specific address |
 | Filebase / Pinata for receipt pinning | The IPFS network (any pinning service can fetch by [CID](/reference/glossary#cid)); single-provider failure doesn't break verification, only convenience |
 
@@ -6995,7 +7026,7 @@ Both registries are auto-rendered from the truth-ledger manifest. They include a
 | **[AgentRegistry](/reference/glossary#agentregistry)** | First-write wins on slug, 48h timelock on agent registry updates (permissionless execute after timelock) |
 | **ArchiveTreasury** | Receives confiscated bonds (from "no decision" dispute resolutions), admin-only withdrawals via Safe |
 
-Smart Wallet (Coinbase) + [Paymaster](/reference/glossary#paymaster) (Coinbase) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
+Smart Wallet (Coinbase) + [Paymaster](/reference/glossary#paymaster) (Coinbase primary + Pimlico backup) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
 
 ## Deploy provenance
 
@@ -7217,7 +7248,7 @@ The SDK CI runs a **live Base Sepolia integration suite** before any release:
 | Test scenario | What it proves |
 |---|---|
 | Full lifecycle (create → quote → commit → in-progress → delivered → settled) | Every state transition works against the real kernel |
-| Smart Wallet [UserOperation](/reference/glossary#useroperation) via Coinbase [Paymaster](/reference/glossary#paymaster) | [`wallet=auto`](/reference/glossary#walletauto) actually settles gasless against the production paymaster |
+| Smart Wallet [UserOperation](/reference/glossary#useroperation) via Coinbase + Pimlico [Paymaster](/reference/glossary#paymaster) | [`wallet=auto`](/reference/glossary#walletauto) actually settles gasless against the production dual-provider paymaster setup (primary + automatic backup) |
 | Web Receipt upload + fetch | IPFS round-trip via Filebase/Pinata works |
 | [EAS](/reference/glossary#eas) attestation publish | Real attestation appears on-chain |
 | Dispute flow with bond posting | [AIP-14](/reference/glossary#aip-14) bond mechanics work end-to-end |
@@ -7326,7 +7357,7 @@ If you need to escalate (e.g., we're not responding within the acknowledgement w
 | In scope | Out of scope |
 |---|---|
 | [ACTP](/reference/glossary#actp) kernel logic (V3 mainnet, V4 sepolia) | Issues in upstream USDC contract (report to Circle) |
-| [EscrowVault](/reference/glossary#escrowvault), [AgentRegistry](/reference/glossary#agentregistry), ArchiveTreasury, ACTPKernel | Coinbase Smart Wallet / [Paymaster](/reference/glossary#paymaster) bugs (report to Coinbase) |
+| [EscrowVault](/reference/glossary#escrowvault), [AgentRegistry](/reference/glossary#agentregistry), ArchiveTreasury, ACTPKernel | Coinbase Smart Wallet bugs (report to Coinbase); paymaster sponsorship bugs (report to Coinbase or Pimlico depending on which provider surfaced the bug) |
 | `@agirails/sdk` (TypeScript) | Base L2 sequencer / network-level issues (report to Coinbase) |
 | `agirails` (Python) | Third-party [MCP](/reference/glossary#mcp) clients (Claude Desktop, Cursor, etc.) |
 | `@agirails/mcp-server` | Browser extensions / wallets not built by AGIRAILS |
@@ -7426,9 +7457,11 @@ See also: [x402 protocol](/protocol/x402), [Per-call API recipe](/recipes/per-ca
 
 ### 4. Do I need to hold ETH to use AGIRAILS?
 
-No, if you use [`wallet=auto`](/reference/glossary#walletauto) (the default). The SDK wraps your [EOA](/reference/glossary#eoa) in a Coinbase Smart Wallet and routes all state-changing calls through the Coinbase [Paymaster](/reference/glossary#paymaster): you pay **only USDC**, no native ETH ever leaves your wallet for gas.
+No, if you use [`wallet=auto`](/reference/glossary#walletauto) (the default). The SDK wraps your [EOA](/reference/glossary#eoa) in a Coinbase Smart Wallet and routes all state-changing calls through a [Paymaster](/reference/glossary#paymaster). Two independent providers are configured: **Coinbase** as primary and **Pimlico** as automatic backup; if the primary fails (transient error, rate limit, policy decline) the SDK transparently retries against the backup before surfacing an error. You pay **only USDC**, no native ETH ever leaves your wallet for gas.
 
 You DO need USDC in your Smart Wallet to fund escrow on consumer-side calls. The [SCW](/reference/glossary#scw) address (different from your EOA) is what you fund.
+
+If both paymasters decline (rare; requires coordinated outage or independent policy decline by both companies), the SDK throws a clear error and your code can fall back to `wallet=eoa`, where you pay your own gas in ETH and have no paymaster dependency. The protocol does not rely on either provider to keep functioning. See [gasless payment recipe: when gasless fails](/recipes/gasless-payment#when-gasless-fails) for the full failure-mode breakdown.
 
 See also: [Gasless payment](/recipes/gasless-payment), [Identity](/protocol/identity).
 

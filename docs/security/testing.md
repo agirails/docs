@@ -81,7 +81,7 @@ The SDK CI runs a **live Base Sepolia integration suite** before any release:
 | Test scenario | What it proves |
 |---|---|
 | Full lifecycle (create → quote → commit → in-progress → delivered → settled) | Every state transition works against the real kernel |
-| Smart Wallet [UserOperation](/reference/glossary#useroperation) via Coinbase [Paymaster](/reference/glossary#paymaster) | [`wallet=auto`](/reference/glossary#walletauto) actually settles gasless against the production paymaster |
+| Smart Wallet [UserOperation](/reference/glossary#useroperation) via Coinbase + Pimlico [Paymaster](/reference/glossary#paymaster) | [`wallet=auto`](/reference/glossary#walletauto) actually settles gasless against the production dual-provider paymaster setup (primary + automatic backup) |
 | Web Receipt upload + fetch | IPFS round-trip via Filebase/Pinata works |
 | [EAS](/reference/glossary#eas) attestation publish | Real attestation appears on-chain |
 | Dispute flow with bond posting | [AIP-14](/reference/glossary#aip-14) bond mechanics work end-to-end |

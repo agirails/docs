@@ -214,7 +214,9 @@ See: [Identity](/protocol/identity).
 
 ### Paymaster
 
-**The contract that sponsors gas for UserOperations.** AGIRAILS routes `wallet=auto` transactions through the Coinbase Paymaster on Base. User pays only USDC; native ETH for gas comes from the Paymaster's pool.
+**The contract that sponsors gas for UserOperations.** AGIRAILS routes `wallet=auto` transactions through a paymaster on Base. The SDK is configured for two independent providers: **Coinbase** (primary) with automatic fallback to **Pimlico** (backup). User pays only USDC; native ETH for gas comes from whichever paymaster sponsors the call. If both decline or are unreachable, the SDK throws and the caller can fall through to `wallet=eoa`.
+
+See: [Gasless payment recipe](/recipes/gasless-payment) for the dual-provider mechanics and failure modes.
 
 ### SCW
 

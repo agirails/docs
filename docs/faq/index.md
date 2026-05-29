@@ -47,7 +47,7 @@ export const FAQSchema = () => (
             "name": "Do I need to hold ETH to use AGIRAILS?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No, if you use wallet=auto (the default). The SDK wraps your EOA in a Coinbase Smart Wallet and routes state-changing calls through the Coinbase Paymaster: you pay only USDC, no native ETH leaves your wallet for gas. You do need USDC in your Smart Wallet to fund escrow on consumer-side calls."
+              "text": "No, if you use wallet=auto (the default). The SDK wraps your EOA in a Coinbase Smart Wallet and routes state-changing calls through a paymaster. Two independent providers are configured: Coinbase as primary and Pimlico as automatic backup; if the primary fails the SDK transparently retries against the backup. You pay only USDC, no native ETH leaves your wallet for gas. If both providers decline you can fall back to wallet=eoa and pay your own gas in ETH. You still need USDC in your Smart Wallet to fund escrow on consumer-side calls."
             }
           },
           {
@@ -217,9 +217,11 @@ See also: [x402 protocol](/protocol/x402), [Per-call API recipe](/recipes/per-ca
 
 ### 4. Do I need to hold ETH to use AGIRAILS?
 
-No, if you use [`wallet=auto`](/reference/glossary#walletauto) (the default). The SDK wraps your [EOA](/reference/glossary#eoa) in a Coinbase Smart Wallet and routes all state-changing calls through the Coinbase [Paymaster](/reference/glossary#paymaster): you pay **only USDC**, no native ETH ever leaves your wallet for gas.
+No, if you use [`wallet=auto`](/reference/glossary#walletauto) (the default). The SDK wraps your [EOA](/reference/glossary#eoa) in a Coinbase Smart Wallet and routes all state-changing calls through a [Paymaster](/reference/glossary#paymaster). Two independent providers are configured: **Coinbase** as primary and **Pimlico** as automatic backup; if the primary fails (transient error, rate limit, policy decline) the SDK transparently retries against the backup before surfacing an error. You pay **only USDC**, no native ETH ever leaves your wallet for gas.
 
 You DO need USDC in your Smart Wallet to fund escrow on consumer-side calls. The [SCW](/reference/glossary#scw) address (different from your EOA) is what you fund.
+
+If both paymasters decline (rare; requires coordinated outage or independent policy decline by both companies), the SDK throws a clear error and your code can fall back to `wallet=eoa`, where you pay your own gas in ETH and have no paymaster dependency. The protocol does not rely on either provider to keep functioning. See [gasless payment recipe: when gasless fails](/recipes/gasless-payment#when-gasless-fails) for the full failure-mode breakdown.
 
 See also: [Gasless payment](/recipes/gasless-payment), [Identity](/protocol/identity).
 

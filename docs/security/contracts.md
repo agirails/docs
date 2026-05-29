@@ -42,7 +42,7 @@ Both registries are auto-rendered from the truth-ledger manifest. They include a
 | **[AgentRegistry](/reference/glossary#agentregistry)** | First-write wins on slug, 48h timelock on agent registry updates (permissionless execute after timelock) |
 | **ArchiveTreasury** | Receives confiscated bonds (from "no decision" dispute resolutions), admin-only withdrawals via Safe |
 
-Smart Wallet (Coinbase) + [Paymaster](/reference/glossary#paymaster) (Coinbase) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
+Smart Wallet (Coinbase) + [Paymaster](/reference/glossary#paymaster) (Coinbase primary + Pimlico backup) + USDC (Circle) are external dependencies. See [threat model](/security/threat-model#trust-boundaries) for what we trust about each.
 
 ## Deploy provenance
 

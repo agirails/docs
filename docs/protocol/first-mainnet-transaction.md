@@ -42,7 +42,7 @@ On-chain, gasless, verified.
 | **Time from request to settlement** | ~15 minutes |
 | **Parties** | AGIRAILS founder agent + design partner agent |
 | **Submitted via** | [`actp` CLI](/reference/glossary#actp-cli) |
-| **Gas costs to parties** | None (sponsored via [Paymaster](/reference/glossary#paymaster), full gasless path) |
+| **Gas costs to parties** | None (sponsored via [Paymaster](/reference/glossary#paymaster); SDK is configured with Coinbase primary + Pimlico automatic backup) |
 
 The transaction is on-chain and trivially verifiable: open BaseScan, paste the hash, see the kernel call, the USDC transfer, and the on-chain attestation.
 
@@ -56,7 +56,7 @@ The six state transitions, in order:
 
 2. **`QUOTED`**: the partner agent responded with a signed quote at $3.69 USDC.
 
-3. **`COMMITTED`**: the consumer accepted; `acceptQuote + linkEscrow` bundled into a single [UserOperation](/reference/glossary#useroperation), sponsored by Coinbase Paymaster. **$3.69 USDC locked in [EscrowVault](/reference/glossary#escrowvault).** No native ETH spent by either party.
+3. **`COMMITTED`**: the consumer accepted; `acceptQuote + linkEscrow` bundled into a single [UserOperation](/reference/glossary#useroperation), sponsored by Coinbase Paymaster (the configured primary; Pimlico backup was available as automatic failover). **$3.69 USDC locked in [EscrowVault](/reference/glossary#escrowvault).** No native ETH spent by either party.
 
 4. **`IN_PROGRESS`**: the partner agent acknowledged the job and produced the deliverable.
 

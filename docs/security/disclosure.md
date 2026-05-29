@@ -57,7 +57,7 @@ If you need to escalate (e.g., we're not responding within the acknowledgement w
 | In scope | Out of scope |
 |---|---|
 | [ACTP](/reference/glossary#actp) kernel logic (V3 mainnet, V4 sepolia) | Issues in upstream USDC contract (report to Circle) |
-| [EscrowVault](/reference/glossary#escrowvault), [AgentRegistry](/reference/glossary#agentregistry), ArchiveTreasury, ACTPKernel | Coinbase Smart Wallet / [Paymaster](/reference/glossary#paymaster) bugs (report to Coinbase) |
+| [EscrowVault](/reference/glossary#escrowvault), [AgentRegistry](/reference/glossary#agentregistry), ArchiveTreasury, ACTPKernel | Coinbase Smart Wallet bugs (report to Coinbase); paymaster sponsorship bugs (report to Coinbase or Pimlico depending on which provider surfaced the bug) |
 | `@agirails/sdk` (TypeScript) | Base L2 sequencer / network-level issues (report to Coinbase) |
 | `agirails` (Python) | Third-party [MCP](/reference/glossary#mcp) clients (Claude Desktop, Cursor, etc.) |
 | `@agirails/mcp-server` | Browser extensions / wallets not built by AGIRAILS |
