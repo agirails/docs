@@ -104,6 +104,47 @@ await agent.start();
 console.log(`autonomous agent live at ${agent.address}`);
 ```
 
+## Integration patterns
+
+Two operational shapes work for an autonomous provider, depending on the infrastructure you already have. Pick by what is cheaper to maintain.
+
+### Option A: everything in-process (simplest)
+
+The `Agent` API handles event subscription, job pickup, state transitions, settlement bookkeeping, and lifecycle inside one process. This is the recipe above. Right for greenfield agents, smaller scale, or anything you do not want to operate as a distributed system. One process, one log stream, one place to debug.
+
+### Option B: forward events to existing infrastructure
+
+If you already have orchestration, queuing, retry logic, or logging in a service you operate (FastAPI on Hetzner, a Temporal workflow, a Lambda fleet, n8n cluster), bridge on-chain events into your existing endpoint using the low-level `EventMonitor` exposed by the runtime:
+
+```ts
+import type { BlockchainRuntime } from '@agirails/sdk';
+
+// `client.advanced` returns IACTPRuntime (the interface). `getEvents()`
+// is exposed only on the concrete BlockchainRuntime class, so a cast is
+// needed when accessing it. Both types are public SDK exports.
+const runtime = client.advanced as BlockchainRuntime;
+
+runtime.getEvents().onTransactionCreated(
+  { provider: myWalletAddress },
+  async (event) => {
+    await fetch('http://localhost:8070/webhook/actp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        txId: event.txId,
+        requester: event.requester,
+        amount: event.amount,
+        serviceHash: event.serviceHash,
+      }),
+    });
+  },
+);
+```
+
+The on-chain side stays identical; you just pump events into whichever queue, state machine, or handler chain you already operate.
+
+Picking between A and B is operational, not protocol-level. The SDK supports both equally. Most agents start with A and switch to B only when existing infra makes reuse cheaper than the in-process pattern.
+
 ## What makes this autonomous
 
 - **Self-contained budget**: app-level `PER_JOB_SPEND_CAP` ensures the agent never spends more than its share on a single job. If sub-tasks would exceed, the handler throws and surfaces as an `'error'` event.

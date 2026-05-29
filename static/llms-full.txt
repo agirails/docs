@@ -2055,6 +2055,28 @@ A provider agent **offers** a service for USDC. The SDK's `provide()` API is the
 
 This recipe assumes Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` when ready.
 
+## Listener architecture: the agent is outbound-only
+
+A provider agent does NOT run as an HTTP server. It does not need an open port, a webhook endpoint, an SSL certificate, or any inbound firewall hole. The agent connects out to a Base RPC node and subscribes to on-chain events; jobs arrive through the blockchain, not through HTTP. There is no DDoS attack surface on the agent itself.
+
+```text
+Requester  ->  Base L2  ->  RPC node  ->  your agent
+```
+
+The agent behaves as a client, not a server. This is fundamentally different from [x402](/reference/glossary#x402) (where the seller IS an HTTP server). For [ACTP](/reference/glossary#actp) escrow jobs, the blockchain is the coordination layer.
+
+### How event subscription works
+
+The SDK's `EventMonitor` subscribes to `ACTPKernel` contract events (`TransactionCreated`, `StateTransitioned`, `EscrowReleased`) via ethers.js `Contract.on()`. Filtering happens at the RPC node level via indexed event parameters (provider / requester address as indexed topics), so the agent receives only events relevant to it.
+
+Event-delivery latency depends on your RPC provider and Base block time (about two seconds). The SDK uses `JsonRpcProvider` internally and inherits its transport semantics.
+
+`Agent.start()` and `provide()` wire all of this for you. You only drop to `client.advanced.getEvents()` directly when bridging into an existing service (see [Autonomous agent: integration patterns](/recipes/autonomous-agent#integration-patterns)).
+
+### When you DO need an endpoint
+
+Only one case requires an HTTP server: receiving [x402](/reference/glossary#x402) instant payments, where the buyer sends an HTTP request directly to your service. For all ACTP escrow flows, you never need an open port. See [Per-call API billing (x402)](/recipes/per-call-api).
+
 ## TypeScript
 
 ```ts
@@ -2441,6 +2463,47 @@ agent.provide('summarize', async (job, ctx) => {
 await agent.start();
 console.log(`autonomous agent live at ${agent.address}`);
 ```
+
+## Integration patterns
+
+Two operational shapes work for an autonomous provider, depending on the infrastructure you already have. Pick by what is cheaper to maintain.
+
+### Option A: everything in-process (simplest)
+
+The `Agent` API handles event subscription, job pickup, state transitions, settlement bookkeeping, and lifecycle inside one process. This is the recipe above. Right for greenfield agents, smaller scale, or anything you do not want to operate as a distributed system. One process, one log stream, one place to debug.
+
+### Option B: forward events to existing infrastructure
+
+If you already have orchestration, queuing, retry logic, or logging in a service you operate (FastAPI on Hetzner, a Temporal workflow, a Lambda fleet, n8n cluster), bridge on-chain events into your existing endpoint using the low-level `EventMonitor` exposed by the runtime:
+
+```ts
+
+
+// `client.advanced` returns IACTPRuntime (the interface). `getEvents()`
+// is exposed only on the concrete BlockchainRuntime class, so a cast is
+// needed when accessing it. Both types are public SDK exports.
+const runtime = client.advanced as BlockchainRuntime;
+
+runtime.getEvents().onTransactionCreated(
+  { provider: myWalletAddress },
+  async (event) => {
+    await fetch('http://localhost:8070/webhook/actp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        txId: event.txId,
+        requester: event.requester,
+        amount: event.amount,
+        serviceHash: event.serviceHash,
+      }),
+    });
+  },
+);
+```
+
+The on-chain side stays identical; you just pump events into whichever queue, state machine, or handler chain you already operate.
+
+Picking between A and B is operational, not protocol-level. The SDK supports both equally. Most agents start with A and switch to B only when existing infra makes reuse cheaper than the in-process pattern.
 
 ## What makes this autonomous
 
@@ -3101,6 +3164,30 @@ agent.on('dispute:resolved', ({ txId, decision, escrowResolution }) => {
 });
 ```
 
+**Important**: do NOT auto-respond to disputes. Surface to a human queue, alert your on-call, or pause the agent. A dispute is a high-stakes decision; the protocol intentionally puts a human in this loop.
+
+### Lower-level alternative (no Agent instance)
+
+If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), subscribe to state transitions on the runtime directly and filter for `DISPUTED`:
+
+```ts
+
+
+const runtime = client.advanced as BlockchainRuntime;
+runtime.getEvents().onStateChanged(
+  { provider: client.getAddress() },
+  (event) => {
+    if (event.newState === 'DISPUTED') {
+      // Alert path: a requester has just disputed delivery.
+      // Page on-call, post to Slack, queue for manual review.
+      console.warn('DISPUTE on tx:', event.txId);
+    }
+  },
+);
+```
+
+This is the lower layer the high-level `agent.on('dispute:raised')` is built on top of. Use it when you do not have an `Agent` instance to attach to (the high-level event listener requires one).
+
 ## What evidence the mediator looks at
 
 | Source | What's in it |
@@ -3474,10 +3561,33 @@ The goal: switch `network: 'mainnet'` and run the same lifecycle that worked on 
 The goal: catch problems while traffic is small and you're paying attention.
 
 - [ ] **Logs ship to a queryable destination** (Datadog, Honeycomb, Logtail, BetterStack, anything you can search). Stdout to terminal does not count as observability.
-- [ ] **Earnings metrics are tracked** at minimum: USDC earned, USDC spent, fee paid, jobs completed, jobs failed. Wire `agent.on('payment:received', ...)` and `agent.on('payment:sent', ...)` to your metrics layer. See [autonomous agent observability](/recipes/autonomous-agent#observability) for the canonical pattern.
+- [ ] **Earnings metrics are tracked** at minimum: USDC earned, USDC spent, fee paid, jobs completed, jobs failed. Wire `agent.on('payment:received', ...)` for the provider side; on the consumer side, read `agent.stats.totalSpent` before each `request()` call (V1 does not emit a `payment:sent` event). See [autonomous agent observability](/recipes/autonomous-agent#observability) for the canonical pattern.
 - [ ] **You have alerts on the failure tail.** Specifically: rate of `DISPUTE_RAISED`, `DELIVERY_FAILED`, `TRANSACTION_REVERTED` per hour. Sudden spikes mean something changed; absent alerts you only learn about it from a user.
 - [ ] **Smart Wallet balance is monitored.** Threshold below which an alert fires. The default isn't "wait until it's empty"; the default is "alert at 24 hours of typical burn rate remaining".
 - [ ] **You can correlate a Basescan tx hash to a log line.** Both directions: log → tx, tx → log. Without this, debugging is guessing.
+
+## Automation boundary: what to let the agent do unattended
+
+Different state transitions carry different risk. The table below is the default for a first mainnet deployment; tighten further if your stakes are higher.
+
+### Auto-safe by default
+
+| Transition | Why it is safe |
+|---|---|
+| `COMMITTED → IN_PROGRESS` (`startWork`) | Funds are in escrow, not yours yet. Accepting a job costs nothing. |
+| `IN_PROGRESS → DELIVERED` (`deliver`) | Safe IF your handler produces deterministic, verifiable output. If it does not, surface the case to a human queue instead. |
+| `DELIVERED → SETTLED` past dispute window | The SDK's `settleOnInteract` automatically sweeps expired `DELIVERED` transactions on the next `pay()` / `startWork()` / `deliver()` call. Anyone can release after expiry; the kernel does not require it be you. |
+
+### Human-in-the-loop by default
+
+| Action | Why it needs a human |
+|---|---|
+| `openDispute` (provider initiating) | High-stakes irreversible move. Always manual. |
+| Refunds and cancellations | Edge cases that require judgment. Wrong choices here are visible on-chain and shape reputation. |
+| Jobs above budget cap | Surface to your queue and decide explicitly. The SDK's `filter.maxBudget` rejects these by default; if you raise the cap, make it a deliberate act. |
+| Responding to a `DISPUTE_RAISED` event | See [Dispute flow: subscribing to dispute events](/recipes/dispute-flow#subscribing-to-dispute-events). Page on-call, do not auto-respond. |
+
+The `Agent` config knob is `behavior.autoAccept`; the `provide()` knob is the top-level `autoAccept` option. Both accept a boolean or a predicate; start with a predicate that encodes your minimum constraints (budget cap, service whitelist, allowed counterparty list), not bare `true`. See [provider agent recipe](/recipes/provider-agent#throwing-from-your-handler) for the `behavior.autoAccept` predicate pattern.
 
 ## Ongoing operations
 

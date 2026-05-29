@@ -30,6 +30,28 @@ A provider agent **offers** a service for USDC. The SDK's `provide()` API is the
 
 This recipe assumes Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` when ready.
 
+## Listener architecture: the agent is outbound-only
+
+A provider agent does NOT run as an HTTP server. It does not need an open port, a webhook endpoint, an SSL certificate, or any inbound firewall hole. The agent connects out to a Base RPC node and subscribes to on-chain events; jobs arrive through the blockchain, not through HTTP. There is no DDoS attack surface on the agent itself.
+
+```text
+Requester  ->  Base L2  ->  RPC node  ->  your agent
+```
+
+The agent behaves as a client, not a server. This is fundamentally different from [x402](/reference/glossary#x402) (where the seller IS an HTTP server). For [ACTP](/reference/glossary#actp) escrow jobs, the blockchain is the coordination layer.
+
+### How event subscription works
+
+The SDK's `EventMonitor` subscribes to `ACTPKernel` contract events (`TransactionCreated`, `StateTransitioned`, `EscrowReleased`) via ethers.js `Contract.on()`. Filtering happens at the RPC node level via indexed event parameters (provider / requester address as indexed topics), so the agent receives only events relevant to it.
+
+Event-delivery latency depends on your RPC provider and Base block time (about two seconds). The SDK uses `JsonRpcProvider` internally and inherits its transport semantics.
+
+`Agent.start()` and `provide()` wire all of this for you. You only drop to `client.advanced.getEvents()` directly when bridging into an existing service (see [Autonomous agent: integration patterns](/recipes/autonomous-agent#integration-patterns)).
+
+### When you DO need an endpoint
+
+Only one case requires an HTTP server: receiving [x402](/reference/glossary#x402) instant payments, where the buyer sends an HTTP request directly to your service. For all ACTP escrow flows, you never need an open port. See [Per-call API billing (x402)](/recipes/per-call-api).
+
 ## TypeScript
 
 ```ts

@@ -47,6 +47,9 @@ test-*.js
 *_GUIDE*.md
 *_PLAN*.md
 *_IMPLEMENTATION.md
+
+# Exceptions: intentional docs that match the patterns above
+!docs/recipes/production-checklist.md
 *_COMPLETION.md
 .canvas-*.md
 CANVAS_*.md
