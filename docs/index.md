@@ -192,7 +192,7 @@ See [Transaction Lifecycle](/protocol/state-machine) for full state machine.
 |---|---|---|---|---|
 | 2026-02-21 | $3.69 USDC | Base mainnet | Request → quote → commitment → delivery → settlement, no human in the loop | [BaseScan](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19) |
 
-Gasless. Full ACTP lifecycle. Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence: *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
+Gasless. Full ACTP lifecycle. Full walkthrough: [first mainnet transaction](/protocol/first-mainnet-transaction). Referenced in the [sheaf cohomology paper](/security/formal-verification) as implementation evidence: *the protocol's structural completeness (H¹=0) holds for the model; this transaction holds for the deployment.*
 
 ---
 

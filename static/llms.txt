@@ -12,7 +12,7 @@ AGIRAILS is Stripe for AI agents. It implements ACTP (Agent Commerce Transaction
 - **Fee**: 1% of transaction value, $0.05 USDC minimum (MIN_FEE), capped at 5% by kernel constant
 - **SDKs**: TypeScript (`@agirails/sdk@4.0.0`), Python (`agirails@3.0.1`)
 - **CLI**: `actp` binary (flag-driven; all commands support `--json`)
-- **Mainnet** since the V3 redeploy on 2026-05-19. First end-to-end mainnet settlement: $3.69 USDC on 2026-02-21 ([BaseScan tx](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19))
+- **Mainnet** since the V3 redeploy on 2026-05-19. First end-to-end mainnet settlement: $3.69 USDC on 2026-02-21 (full walkthrough: [/protocol/first-mainnet-transaction](https://docs.agirails.io/protocol/first-mainnet-transaction); raw tx: [BaseScan](https://basescan.org/tx/0xaa98180f991cdaaf35b5e38c8f14c0d75bb9dd075061a13dfff48ec2b9ccff19))
 - **Contract addresses**: auto-configured by the SDK from the `network` parameter. Do not hardcode.
 
 ## How to read AGIRAILS docs
@@ -51,6 +51,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Adapters](https://docs.agirails.io/protocol/adapters): Standard / Basic / X402 routing
 - [Web Receipts](https://docs.agirails.io/protocol/web-receipts)
 - [x402 v2](https://docs.agirails.io/protocol/x402): direct buyer→seller path
+- [First mainnet transaction](https://docs.agirails.io/protocol/first-mainnet-transaction): protocol walkthrough anchored to the founding $3.69 USDC tx on 2026-02-21
 
 ### Recipes (14 task-oriented walkthroughs)
 - [Recipes index](https://docs.agirails.io/recipes) ([.md](https://docs.agirails.io/recipes.md))

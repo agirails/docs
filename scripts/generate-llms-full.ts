@@ -43,6 +43,7 @@ const ORDERED_FILES = [
   'protocol/adapters.md',
   'protocol/web-receipts.md',
   'protocol/x402.md',
+  'protocol/first-mainnet-transaction.md',
 
   // Recipes
   'recipes/index.md',
