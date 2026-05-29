@@ -249,7 +249,10 @@ function buildMetricsBlock(): string {
 
 function patchReport(): void {
   if (!fs.existsSync(REPORT_PATH)) {
-    throw new Error(`Report not found: ${REPORT_PATH}`);
+    // .audit/ is gitignored (internal-only); the report is not present
+    // in CI checkouts. Soft-skip rather than fail the truth-ledger build.
+    console.log(`[regen-report-metrics] skipped: ${path.relative(ROOT, REPORT_PATH)} not present (likely CI; .audit/ is gitignored)`);
+    return;
   }
   const src = fs.readFileSync(REPORT_PATH, 'utf-8');
 

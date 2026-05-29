@@ -25,5 +25,3 @@ Everything in this section is **auto-extracted from source** by the [truth-ledge
 ## How current is this?
 
 Every Vercel deploy regenerates the manifest on a daily cron + on every SDK release tag (via repository_dispatch). The `_generatedAt` field in the manifest reports last refresh. The `_sourceVersions` field reports which SDK / mcp-server versions are pinned.
-
-See the truth-ledger architecture in [`.audit/ARCH_A2.md`](https://github.com/agirails/docs/blob/main/.audit/ARCH_A2.md) for the pipeline design.

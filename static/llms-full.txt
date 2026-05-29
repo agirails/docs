@@ -335,10 +335,6 @@ Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026
 
 **Questions, ideas, things you'd build if a piece were different?** [Discord](https://discord.gg/nuhCt75qe4) is where the team is.
 
----
-
-*Open source. Live on Base mainnet. Audit clean. Free to use, free to verify, free to fork.*
-
 ============================================================
 Why AGIRAILS exists
 ============================================================
@@ -4492,8 +4488,6 @@ Everything in this section is **auto-extracted from source** by the [truth-ledge
 ## How current is this?
 
 Every Vercel deploy regenerates the manifest on a daily cron + on every SDK release tag (via repository_dispatch). The `_generatedAt` field in the manifest reports last refresh. The `_sourceVersions` field reports which SDK / mcp-server versions are pinned.
-
-See the truth-ledger architecture in [`.audit/ARCH_A2.md`](https://github.com/agirails/docs/blob/main/.audit/ARCH_A2.md) for the pipeline design.
 
 ============================================================
 actp CLI reference

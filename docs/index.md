@@ -341,7 +341,3 @@ import Link from '@docusaurus/Link';
 ---
 
 **Questions, ideas, things you'd build if a piece were different?** [Discord](https://discord.gg/nuhCt75qe4) is where the team is.
-
----
-
-*Open source. Live on Base mainnet. Audit clean. Free to use, free to verify, free to fork.*
