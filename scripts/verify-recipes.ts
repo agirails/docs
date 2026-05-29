@@ -217,6 +217,21 @@ const BAD_PATTERNS: Rule[] = [
     fix: 'Pass string literals: client.standard.transitionState(txId, \'DELIVERED\', proof)',
     allowIfLineMatches: /Python|type annotation|from agirails/i,
   },
+  {
+    pattern: /agent\.on\(['"]dispute:(raised|resolved)['"]/,
+    reason: "'dispute:raised' / 'dispute:resolved' are not V1 Agent events",
+    fix: "Use runtime.getEvents().onStateChanged(..., (e) => { if (e.newState === 'DISPUTED') ... })",
+  },
+  {
+    pattern: /\btx[?]?\.deliveryProofUri\b/,
+    reason: 'Transaction has no deliveryProofUri field in V1',
+    fix: 'Use tx.attestationUID and decode the EAS attestation to recover the receipt CID',
+  },
+  {
+    pattern: /\be\.reason\b/,
+    reason: 'DisputeRaisedError (and other ACTPError subclasses) have no .reason attribute',
+    fix: 'Use str(e) for the error message',
+  },
 ];
 
 interface Violation {

@@ -202,12 +202,12 @@ The Apex agentic audit pipeline produced nine findings on the rewrite itself (DR
 | Python SDK symbol count | 277 (84% with docstring summary) | `jq '.sdk_api.python.count' static/sdk-manifest.json` |
 | in-sync / TS-only / Python-only / diverged | 179 / 113 / 107 / 2 | `jq '.tiers \| to_entries \| map(.value.sync_status) \| group_by(.) \| map({status:.[0],n:length})' static/sdk-manifest.json` |
 | Recipes (content + index) | 14 + 1 | `ls docs/recipes/*.md \| wc -l` |
-| Banned-pattern entries in verify-recipes | 27 | `grep -cE "^\s*pattern:" scripts/verify-recipes.ts` |
+| Banned-pattern entries in verify-recipes | 30 | `grep -cE "^\s*pattern:" scripts/verify-recipes.ts` |
 | Verified contracts (Sourcify EXACT_MATCH) | 9/10 | `/security/contracts` live check |
 | FAQ Q&A entries (JSON-LD) | 17 | `grep -c '"@type": "Question"' docs/faq/index.md` |
-| Glossary cross-link occurrences | 279 | `grep -rc "/reference/glossary#" docs/` |
+| Glossary cross-link occurrences | 281 | `grep -rc "/reference/glossary#" docs/` |
 | Docs files in IA | 60 | `find docs -name "*.md" -not -path "*/img/*" \| wc -l` |
-| llms-full.txt size | ~451 KB | `wc -c static/llms-full.txt` |
+| llms-full.txt size | ~453 KB | `wc -c static/llms-full.txt` |
 | Apex findings closed | 12/12 before V3 redeploy | `/security/audits` index (FIND-001 through FIND-016, twelve actionable) |
 
 <!-- METRICS:end -->

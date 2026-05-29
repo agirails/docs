@@ -51,9 +51,11 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
-### CLI (14)
+### CLI (4)
 
-`config get`, `config set`, `config show`, `deploy`, `deploy check`, `deploy env`, `simulate fee`, `simulate pay`, `time advance`, `time set`, `time show`, `tx list`, `tx status`, `tx transition`
+`deploy`, `deploy check`, `deploy env`, `tx transition`
+
+(Python uses a top-level `deploy` group with `check`/`env` subcommands; TS uses colon-prefixed top-level commands `deploy:check` / `deploy:env`. Python uses a single `tx transition` for all state transitions; TS exposes them as individual subcommands `tx deliver` / `tx settle` / `tx cancel`. Other subcommands like `config show/set/get`, `simulate pay/fee`, `time show/advance/set`, `tx create/status/list` exist in both SDKs.)
 
 ## Name divergences
 

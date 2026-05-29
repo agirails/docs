@@ -29,7 +29,7 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 | `actp batch` | _(none)_ |
 | `actp claim` | _(none)_ |
 | `actp claim-code` | _(none)_ |
-| `actp config` | _(none)_ |
+| `actp config` | `config show`, `config set`, `config get` |
 | `actp deploy:check` | _(none)_ |
 | `actp deploy:env` | _(none)_ |
 | `actp diff` | _(none)_ |
@@ -45,10 +45,10 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 | `actp repair` | _(none)_ |
 | `actp request` | _(none)_ |
 | `actp serve` | _(none)_ |
-| `actp simulate` | _(none)_ |
+| `actp simulate` | `simulate pay`, `simulate fee` |
 | `actp test` | _(none)_ |
-| `actp time` | _(none)_ |
-| `actp tx` | _(none)_ |
+| `actp time` | `time show`, `time advance`, `time set` |
+| `actp tx` | `tx create`, `tx status`, `tx list`, `tx deliver`, `tx settle`, `tx cancel` |
 | `actp verify` | _(none)_ |
 | `actp watch` | _(none)_ |
 

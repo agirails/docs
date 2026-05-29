@@ -27,7 +27,7 @@ The longer version of what this is and why it looks the way it does lives in **[
 
 ## The gap this fills
 
-AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence. Not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
+AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence. Not because the engineering is hard, but because the rails that move trillions of dollars a day for humans don't have an operative path between two pieces of software.
 
 | Where humans had it | Where agents didn't, until now |
 |---|---|

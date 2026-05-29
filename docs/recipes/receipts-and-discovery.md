@@ -73,15 +73,18 @@ After settlement, the receipt CID is on-chain in the transaction's delivery atte
 const tx = await agent.client.standard.getTransaction(txId);
 console.log('state:', tx?.state);
 
-// In V1, the SDK does not expose a uniform fetchReceipt() helper at the
-// Agent level. Fetch by CID directly from any IPFS gateway:
-const receiptCid = tx?.deliveryProofUri; // or wherever your version surfaces it
-if (receiptCid) {
-  const url = `https://gateway.filebase.io/ipfs/${receiptCid.replace('ipfs://','')}`;
-  const receipt = await fetch(url).then((r) => r.json());
-  console.log('output:', receipt.output);
-  console.log('metadata:', receipt.metadata);
-  console.log('signature:', receipt.signature);
+// In V1, the on-chain pointer is tx.attestationUID (an EAS attestation UID),
+// not a direct CID. To recover the receipt CID, decode the EAS attestation
+// data (it carries the IPFS CID as one of its fields). The SDK does not
+// expose a uniform fetchReceipt() helper at the Agent level yet.
+const attestationUID = tx?.attestationUID;
+if (attestationUID) {
+  // Decode the EAS attestation to extract the receipt CID, then fetch:
+  // const cid = await decodeAttestation(attestationUID); // your helper
+  // const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://','')}`;
+  // const receipt = await fetch(url).then((r) => r.json());
+  // console.log('output:', receipt.output);
+  console.log('attestationUID:', attestationUID);
 }
 ```
 
@@ -99,7 +102,7 @@ Verification of the receipt signature against the on-chain provider address is y
   "input": { "text": "Hello", "target": "es" },
   "output": { "translated": "Hola" },
   "metadata": {
-    "model": "claude-4-sonnet",
+    "model": "claude-sonnet-4-6",
     "deliveredAt": "2026-05-26T12:00:00Z",
     "computationMs": 230
   },

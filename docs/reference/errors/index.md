@@ -262,14 +262,10 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 | `ArweaveTimeoutError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `ArweaveUploadError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `ContentNotFoundError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
-| `ContractPausedError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DeadlineExpiredError` | `ACTPError` | `DEADLINE_EXPIRED` | `src/errors/index.ts` |
-| `DeadlinePassedError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DeliveryFailedError` | `ACTPError` | `DELIVERY_FAILED` | `src/errors/index.ts` |
 | `DisputeRaisedError` | `ACTPError` | `DISPUTE_RAISED` | `src/errors/index.ts` |
-| `DisputeWindowActiveError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DownloadTimeoutError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
-| `EscrowNotFoundError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `FileSizeLimitExceededError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `InsufficientBalanceError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `InsufficientFundsError` | `ACTPError` | `INSUFFICIENT_FUNDS` | `src/errors/index.ts` |
@@ -360,9 +356,11 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 
 Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.
 
-**TypeScript-only** (14):
+**TypeScript-only** (13):
 
-`ArweaveTimeoutError`, `DeadlineExpiredError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
+`ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
+
+(Name-diffs like `DeadlineExpiredError` ↔ `DeadlinePassedError` are excluded here and tracked in [cross-SDK divergences](/reference/cross-sdk-divergences).)
 
 **Python-only** (14):
 

@@ -53,4 +53,4 @@ See [MCP tool reference](/reference/mcp-server) for the auto-extracted per-tool 
 
 - [Claude Code plugin](/start/ai-environment/claude-code): if you're on Claude Code, prefer the plugin
 - [Claude Skill](/start/ai-environment/claude-skill): knowledge-only, no tool calls
-- [MCP server source on GitHub](https://github.com/agirails/agirails-mcp-server)
+- [MCP server source on GitHub](https://github.com/agirails/mcp-server)

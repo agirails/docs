@@ -60,7 +60,10 @@ const TS_ERROR_FILES = [
   'src/errors/ACTPError.ts',
   'src/errors/index.ts',
   'src/errors/X402Errors.ts',
-  'src/runtime/MockRuntime.ts', // inlines a few error subclasses
+  // MockRuntime.ts is intentionally excluded: it inlines test-fixture
+  // error classes (DeadlinePassedError, ContractPausedError,
+  // EscrowNotFoundError, DisputeWindowActiveError) that extend Error
+  // directly, not ACTPError, and aren't part of the public surface.
 ] as const;
 
 /**

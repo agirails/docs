@@ -131,7 +131,7 @@ If you're integrating against an older SDK (e.g. `@agirails/sdk@3.x`) explicitly
 - [Claude skill (Anthropic Skills)](/start/ai-environment/claude-skill): the other distribution channel
 - [Consumer agent](/recipes/consumer-agent): what the wizard generates for the consumer side
 - [Provider agent](/recipes/provider-agent): same for providers
-- [Plugin source on GitHub](https://github.com/agirails/claude-code-plugin)
+- [Plugin source on GitHub](https://github.com/agirails/claude-plugin)
 
 ---
 

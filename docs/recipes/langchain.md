@@ -68,7 +68,7 @@ import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { ChatAnthropic } from '@langchain/anthropic';
 
 const agent = createReactAgent({
-  llm: new ChatAnthropic({ model: 'claude-4-sonnet' }),
+  llm: new ChatAnthropic({ model: 'claude-sonnet-4-6' }),
   tools: [translateTool],
 });
 

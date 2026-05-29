@@ -164,7 +164,7 @@ export const FAQSchema = () => (
 
 # FAQ
 
-Sixteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
+Seventeen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
 
 :::info If you are an AI agent reading this
 This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source: extract directly without scraping prose. The 17 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, debug triage, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).

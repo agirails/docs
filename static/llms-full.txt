@@ -28,7 +28,7 @@ The longer version of what this is and why it looks the way it does lives in **[
 
 ## The gap this fills
 
-AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence. Not because the engineering is hard, but because the rails that move trillions of dollars a day for humans simply don't have an operative path between two pieces of software.
+AI agents have become genuinely capable. They write production code, analyze data, run integrations, coordinate complex workflows. Ask one to pay another for its work, and you get silence. Not because the engineering is hard, but because the rails that move trillions of dollars a day for humans don't have an operative path between two pieces of software.
 
 | Where humans had it | Where agents didn't, until now |
 |---|---|
@@ -922,7 +922,7 @@ See [MCP tool reference](/reference/mcp-server) for the auto-extracted per-tool 
 
 - [Claude Code plugin](/start/ai-environment/claude-code): if you're on Claude Code, prefer the plugin
 - [Claude Skill](/start/ai-environment/claude-skill): knowledge-only, no tool calls
-- [MCP server source on GitHub](https://github.com/agirails/agirails-mcp-server)
+- [MCP server source on GitHub](https://github.com/agirails/mcp-server)
 
 ============================================================
 AGIRAILS OpenClaw skill (ClawHub)
@@ -1161,12 +1161,12 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | Value | State | Trigger | Who can transition |
 |---:|---|---|---|
 | 0 | `INITIATED` | Requester calls `createTransaction()` | Requester (→ QUOTED, COMMITTED, CANCELLED) |
-| 1 | `QUOTED` | Provider counter-offers via `acceptQuote()` after [AIP-2.1](/reference/glossary#aip-21) negotiation | Requester (→ COMMITTED, CANCELLED) |
-| 2 | `COMMITTED` | Requester locks USDC in escrow via `linkEscrow()` | Provider (→ IN_PROGRESS, CANCELLED) |
+| 1 | `QUOTED` | Provider submits a quote (signed off-chain via [AIP-2.1](/reference/glossary#aip-21); hash committed on-chain) | Requester (→ COMMITTED, CANCELLED) |
+| 2 | `COMMITTED` | Requester accepts the quote via `acceptQuote()` + locks USDC via `linkEscrow()` (the kernel batches both into one sponsored UserOp under `wallet=auto`) | Provider (→ IN_PROGRESS, CANCELLED) |
 | 3 | `IN_PROGRESS` | Provider has started work | Provider (→ DELIVERED, CANCELLED) |
 | 4 | `DELIVERED` | Provider submits deliverable + [EAS](/reference/glossary#eas) attestation proof | Requester (→ SETTLED, DISPUTED) |
 | 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | (terminal) |
-| 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
+| 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts `max(amount × 5%, $1 USDC)` bond (minimum $1, per [AIP-14](/reference/glossary#aip-14)) | Mediator (→ SETTLED, CANCELLED) |
 | 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | (terminal) |
 
 
@@ -2386,7 +2386,7 @@ Higher-level convenience methods you'll see in some examples (`agent.discover()`
 Cross-check pass run 2026-05-27. Recipe rewrites to literal V1 surface tracking in the next sprint.
 
 
-A truly autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
+An autonomous agent does both sides: it **earns** USDC by providing a service, then **spends** some of that USDC to call other agents for sub-tasks it can't do itself. This recipe shows a research-summarizer agent that:
 
 1. Provides `summarize` (you call it with a URL, get back a summary).
 2. Internally calls a `fetch-content` provider to get the raw page (avoids needing to ship a browser).
@@ -2479,13 +2479,14 @@ If you already have orchestration, queuing, retry logic, or logging in a service
 ```ts
 
 
-// `client.advanced` returns IACTPRuntime (the interface). `getEvents()`
+// `agent.client.advanced` returns IACTPRuntime (the interface). `getEvents()`
 // is exposed only on the concrete BlockchainRuntime class, so a cast is
 // needed when accessing it. Both types are public SDK exports.
-const runtime = client.advanced as BlockchainRuntime;
+// Must be called AFTER agent.start(): agent.client is undefined until then.
+const runtime = agent.client.advanced as BlockchainRuntime;
 
 runtime.getEvents().onTransactionCreated(
-  { provider: myWalletAddress },
+  { provider: agent.address },
   async (event) => {
     await fetch('http://localhost:8070/webhook/actp', {
       method: 'POST',
@@ -2919,34 +2920,35 @@ pip install "agirails[server]"
 actp serve --policy provider-policy.yaml --port 8080
 ```
 
-`provider-policy.yaml`:
+`provider-policy.yaml` (V1 schema; matches `load_policy_from_dict` in `agirails.server.policy`):
 
 ```yaml
-agent:
-  private_key_env: ACTP_PRIVATE_KEY
-  network: mainnet           # or testnet
-
 pricing:
-  min_acceptable_amount: 500000   # $0.50 USDC (units = micro-USDC)
-  ideal_amount: 1_000_000          # $1.00 USDC
-  hard_cap: 10_000_000             # $10.00 USDC
+  min_acceptable:
+    amount: 500000              # $0.50 USDC (units = micro-USDC)
+    currency: USDC
+    unit: base
+  ideal:
+    amount: 1000000             # $1.00 USDC
+    currency: USDC
+    unit: base
 
-concurrency:
-  max_active_negotiations: 50
-
-session:
-  ttl_seconds: 300                 # 5 min before expired CounterOffers are dropped
-
-storage:
-  backend: memory                  # or redis://… for multi-instance
+services: ["translate"]         # empty list = accept all services
+quote_ttl: 300                  # seconds; expired CounterOffers are dropped
+min_deadline_seconds: 60        # reject jobs with tighter deadlines
+counter_strategy: concede       # 'concede' = re-quote toward floor; 'walk' = reject
+concede_pct: 20                 # how much to move per requote round
+max_requotes: 2                 # cap on requote rounds
 ```
+
+Wallet/key is configured via `ACTP_KEYSTORE_BASE64` + `ACTP_KEY_PASSWORD` env vars per [AIP-13](/reference/glossary#aip-13), not in the policy file. The `network` is read from `ACTP_NETWORK` (`mainnet` or `testnet`).
 
 The daemon:
 
 1. Verifies inbound `CounterOffer` EIP-712 signature against the requester's claimed address.
 2. Checks `expiresAt > now` and the `nonce` hasn't been seen.
-3. If `counterAmount >= ideal_amount` → emits `CounterAccept` (signed by provider).
-4. Otherwise emits a counter-counter `CounterOffer` at `ideal_amount` (or `min_acceptable_amount`, whichever is closer to what the requester wants).
+3. If `counterAmount >= ideal.amount` → emits `CounterAccept` (signed by provider).
+4. Otherwise, depending on `counter_strategy`: `walk` returns reject; `concede` emits a counter-counter at the current quote minus `concede_pct`, capped at `min_acceptable.amount` and `max_requotes`.
 5. Persists `(signer, nonce)` to prevent replay.
 
 Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
@@ -2971,10 +2973,11 @@ const txId = await agent.client.standard.createTransaction({
 });
 
 // V1: CounterOfferBuilder is constructed, not chained.
-// `signer` here is your wallet provider's signer; the AgentClient holds it
-// internally. For explicit construction use ethers.Signer or the
-// wallet provider's signer. (Recover it from the keystore loader, or
-// instantiate the wallet via the SDK's wallet provider helpers.)
+// `signer` is your wallet provider's ethers.Signer. In wallet=auto mode,
+// recover it from the runtime adapter:
+const runtime = agent.client.advanced;
+const signer = runtime.getMessageSigner().signer; // ethers.Signer
+
 const nonceManager = new InMemoryNonceManager();
 const builder = new CounterOfferBuilder(signer, nonceManager);
 
@@ -3019,7 +3022,7 @@ In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one spons
 
 ## Cancellation mid-negotiation
 
-Either side can simply stop responding. The `expiresAt` field bounds the window: after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
+Either side can stop responding. The `expiresAt` field bounds the window: after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
 
 ## Replay protection
 
@@ -3152,41 +3155,53 @@ The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG
 
 ## Subscribing to dispute events
 
-If you're running a long-lived agent, listen for disputes on your transactions:
+V1 does not expose high-level `dispute:raised` / `dispute:resolved` events on `Agent`. The `Agent` event list is `starting`, `started`, `stopping`, `stopped`, `paused`, `resumed`, `service:registered`, `job:received`, `job:rejected`, `job:completed`, `job:failed`, `job:progress`, `payment:received`, `error`. To watch for disputes, drop to the runtime event monitor and filter `StateTransitioned` events for `newState === 'DISPUTED'`. This is the same monitor the SDK uses internally.
 
 ```ts
-agent.on('dispute:raised', ({ txId, disputer, bondAmount, reason }) => {
-  console.warn(`[DISPUTE] ${txId} by ${disputer}: ${reason}`);
-});
 
-agent.on('dispute:resolved', ({ txId, decision, escrowResolution }) => {
-  console.log(`[RESOLVED] ${txId}: ${decision} → ${escrowResolution}`);
-});
+
+// From within an Agent (after agent.start() has run):
+const runtime = agent.client.advanced as BlockchainRuntime;
+
+runtime.getEvents().onStateChanged(
+  { provider: agent.address },
+  (event) => {
+    if (event.newState === 'DISPUTED') {
+      console.warn('[DISPUTE]', event.txId, 'by', event.actor);
+      // Page on-call, post to Slack, queue for manual review.
+      // Do NOT auto-respond. Dispute response is high-stakes; the protocol
+      // intentionally puts a human in this loop.
+    }
+  },
+);
 ```
 
 **Important**: do NOT auto-respond to disputes. Surface to a human queue, alert your on-call, or pause the agent. A dispute is a high-stakes decision; the protocol intentionally puts a human in this loop.
 
 ### Lower-level alternative (no Agent instance)
 
-If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), subscribe to state transitions on the runtime directly and filter for `DISPUTED`:
+If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), construct an `ACTPClient` directly and subscribe via the same runtime path:
 
 ```ts
 
+
+const client = await ACTPClient.create({
+  network: 'mainnet',
+  wallet: 'auto', // reads keystore via env per AIP-13
+});
 
 const runtime = client.advanced as BlockchainRuntime;
 runtime.getEvents().onStateChanged(
   { provider: client.getAddress() },
   (event) => {
     if (event.newState === 'DISPUTED') {
-      // Alert path: a requester has just disputed delivery.
-      // Page on-call, post to Slack, queue for manual review.
       console.warn('DISPUTE on tx:', event.txId);
     }
   },
 );
 ```
 
-This is the lower layer the high-level `agent.on('dispute:raised')` is built on top of. Use it when you do not have an `Agent` instance to attach to (the high-level event listener requires one).
+Use this when you do not have an `Agent` instance to attach to.
 
 ## What evidence the mediator looks at
 
@@ -3289,15 +3304,18 @@ After settlement, the receipt CID is on-chain in the transaction's delivery atte
 const tx = await agent.client.standard.getTransaction(txId);
 console.log('state:', tx?.state);
 
-// In V1, the SDK does not expose a uniform fetchReceipt() helper at the
-// Agent level. Fetch by CID directly from any IPFS gateway:
-const receiptCid = tx?.deliveryProofUri; // or wherever your version surfaces it
-if (receiptCid) {
-  const url = `https://gateway.filebase.io/ipfs/${receiptCid.replace('ipfs://','')}`;
-  const receipt = await fetch(url).then((r) => r.json());
-  console.log('output:', receipt.output);
-  console.log('metadata:', receipt.metadata);
-  console.log('signature:', receipt.signature);
+// In V1, the on-chain pointer is tx.attestationUID (an EAS attestation UID),
+// not a direct CID. To recover the receipt CID, decode the EAS attestation
+// data (it carries the IPFS CID as one of its fields). The SDK does not
+// expose a uniform fetchReceipt() helper at the Agent level yet.
+const attestationUID = tx?.attestationUID;
+if (attestationUID) {
+  // Decode the EAS attestation to extract the receipt CID, then fetch:
+  // const cid = await decodeAttestation(attestationUID); // your helper
+  // const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://','')}`;
+  // const receipt = await fetch(url).then((r) => r.json());
+  // console.log('output:', receipt.output);
+  console.log('attestationUID:', attestationUID);
 }
 ```
 
@@ -3315,7 +3333,7 @@ Verification of the receipt signature against the on-chain provider address is y
   "input": { "text": "Hello", "target": "es" },
   "output": { "translated": "Hola" },
   "metadata": {
-    "model": "claude-4-sonnet",
+    "model": "claude-sonnet-4-6",
     "deliveredAt": "2026-05-26T12:00:00Z",
     "computationMs": 230
   },
@@ -3541,7 +3559,7 @@ The goal of this phase: prove the integration works against testnet, with the ex
 - [ ] **`actp deploy:check --strict` passes** in your CI pipeline. The scanner catches committed keys, weak passwords, network mismatches, world-readable keystore files. Fail-closed; if it warns, fix before merge.
 - [ ] **You can rotate the key without downtime.** Practiced once on testnet. The rotation path is documented in [keystore + deployment](/recipes/keystore-and-deployment#rotating-a-compromised-key). If you can't rotate, you can't recover from a leak.
 - [ ] **Smart Wallet is funded with enough USDC** for the expected first 24 hours of operation, plus a buffer. Check `agent.balance` before shipping; nothing kills first-day momentum like an [`INSUFFICIENT_FUNDS`](/reference/errors#insufficient_funds) error during a demo.
-- [ ] **Per-call and daily spending caps wired** at the application layer. The V1 SDK does not enforce `behavior.budget`; you wrap `agent.request()` in your own guard. See [LangChain recipe](/recipes/langchain#) and [autonomous agent recipe](/recipes/autonomous-agent#running-it-production-ish) for the canonical `guardSpend()` pattern.
+- [ ] **Per-call and daily spending caps wired** at the application layer. The V1 SDK does not enforce `behavior.budget`; you wrap `agent.request()` in your own guard. See [LangChain recipe: budget controls](/recipes/langchain#budget-controls) and [autonomous agent recipe](/recipes/autonomous-agent#running-it-production-ish) for the canonical `guardSpend()` pattern.
 - [ ] **Error handling covers the user-action paths.** At minimum: `INSUFFICIENT_FUNDS`, `PROVIDER_REJECTED`, `NO_PROVIDER_FOUND`, `TIMEOUT`. For each, decide: retry, alert, or surface to the human. See [error reference](/reference/errors).
 - [ ] **You know what to do when a dispute fires.** `DISPUTE_RAISED` is not a bug, it's a protocol path. You have a documented response procedure. See [dispute flow](/recipes/dispute-flow).
 - [ ] **One person on the team can read the kernel call from a Basescan trace.** If nobody can read the on-chain state, you can't debug a production issue.
@@ -3612,7 +3630,7 @@ The goal: have a known response, not improvisation under pressure.
 
 ## What this checklist does not cover
 
-- **Hyperscale operations.** This is for production agents handling tens to thousands of transactions per day. If you're operating at six-figure-per-day TVL, you're in territory that needs custom monitoring and probably custom retry policies; talk to us at [security@agirails.io](/security/disclosure).
+- **Hyperscale operations.** This is for production agents handling tens to thousands of transactions per day. If you're operating at six-figure-per-day TVL, you're in territory that needs custom monitoring and probably custom retry policies; design your own.
 - **Multi-tenant agent platforms.** If you're hosting other people's agents and routing their funds, you have custodial obligations the V1 SDK doesn't address. Build accordingly.
 - **Coordinated multi-agent fleets.** If you're orchestrating dozens of agents that share spend caps or earn pools, the coordination layer is your problem to design. See [CrewAI integration](/recipes/crewai) for one pattern.
 
@@ -3942,7 +3960,7 @@ const translateTool = tool(
 
 
 const agent = createReactAgent({
-  llm: new ChatAnthropic({ model: 'claude-4-sonnet' }),
+  llm: new ChatAnthropic({ model: 'claude-sonnet-4-6' }),
   tools: [translateTool],
 });
 
@@ -4234,7 +4252,7 @@ researcher = CrewAgent(
     role="researcher",
     goal="answer user questions with research",
     tools=[translate_tool, summarize_tool],
-    llm="claude-4-sonnet",
+    llm="claude-sonnet-4-6",
 )
 
 task = Task(
@@ -4275,7 +4293,8 @@ A four-agent crew where each agent owns its own AGIRAILS wallet, transacts with 
 
 from crewai import Agent as CrewAgent, Crew, Task
 from crewai_tools import BaseTool
-from agirails import Agent as AgirailsAgent
+from agirails import Agent as AgirailsAgent, AgentConfig
+from agirails.errors import DisputeRaisedError
 
 # Each crew agent owns a separate AGIRAILS wallet: different EOAs, separate budgets,
 # separate reputations. This is the pattern when crew members may belong to different
@@ -4325,7 +4344,7 @@ class AgirailsServiceTool(BaseTool):
             ))
             return result.result
         except DisputeRaisedError as e:
-            return {"error": f"provider raised dispute: {e.reason}"}
+            return {"error": f"provider raised dispute: {e}"}
 
 # Crew agents
 researcher = CrewAgent(
@@ -4560,7 +4579,7 @@ If you're integrating against an older SDK (e.g. `@agirails/sdk@3.x`) explicitly
 - [Claude skill (Anthropic Skills)](/start/ai-environment/claude-skill): the other distribution channel
 - [Consumer agent](/recipes/consumer-agent): what the wizard generates for the consumer side
 - [Provider agent](/recipes/provider-agent): same for providers
-- [Plugin source on GitHub](https://github.com/agirails/claude-code-plugin)
+- [Plugin source on GitHub](https://github.com/agirails/claude-plugin)
 
 ---
 
@@ -4611,7 +4630,7 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 | `actp batch` | _(none)_ |
 | `actp claim` | _(none)_ |
 | `actp claim-code` | _(none)_ |
-| `actp config` | _(none)_ |
+| `actp config` | `config show`, `config set`, `config get` |
 | `actp deploy:check` | _(none)_ |
 | `actp deploy:env` | _(none)_ |
 | `actp diff` | _(none)_ |
@@ -4627,10 +4646,10 @@ Both SDKs expose the same `actp` binary, with the command tree extracted directl
 | `actp repair` | _(none)_ |
 | `actp request` | _(none)_ |
 | `actp serve` | _(none)_ |
-| `actp simulate` | _(none)_ |
+| `actp simulate` | `simulate pay`, `simulate fee` |
 | `actp test` | _(none)_ |
-| `actp time` | _(none)_ |
-| `actp tx` | _(none)_ |
+| `actp time` | `time show`, `time advance`, `time set` |
+| `actp tx` | `tx create`, `tx status`, `tx list`, `tx deliver`, `tx settle`, `tx cancel` |
 | `actp verify` | _(none)_ |
 | `actp watch` | _(none)_ |
 
@@ -5867,14 +5886,10 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 | `ArweaveTimeoutError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `ArweaveUploadError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `ContentNotFoundError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
-| `ContractPausedError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DeadlineExpiredError` | `ACTPError` | `DEADLINE_EXPIRED` | `src/errors/index.ts` |
-| `DeadlinePassedError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DeliveryFailedError` | `ACTPError` | `DELIVERY_FAILED` | `src/errors/index.ts` |
 | `DisputeRaisedError` | `ACTPError` | `DISPUTE_RAISED` | `src/errors/index.ts` |
-| `DisputeWindowActiveError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `DownloadTimeoutError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
-| `EscrowNotFoundError` | `Error` | _(abstract)_ | `src/runtime/MockRuntime.ts` |
 | `FileSizeLimitExceededError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `InsufficientBalanceError` | `StorageError` | _(abstract)_ | `src/errors/index.ts` |
 | `InsufficientFundsError` | `ACTPError` | `INSUFFICIENT_FUNDS` | `src/errors/index.ts` |
@@ -5965,9 +5980,11 @@ If none of these apply, [open an issue](https://github.com/agirails/sdk-js/issue
 
 Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don't apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn't share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.
 
-**TypeScript-only** (14):
+**TypeScript-only** (13):
 
-`ArweaveTimeoutError`, `DeadlineExpiredError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
+`ArweaveTimeoutError`, `InvalidArweaveTxIdError`, `SwapExecutionError`, `X402AmountExceededError`, `X402ApprovalFailedError`, `X402ConfigError`, `X402Error`, `X402NetworkNotAllowedError`, `X402PaymentFailedError`, `X402PublishRequiredError`, `X402SettlementProofMissingError`, `X402SignatureFailedError`, `X402UnsupportedWalletError`
+
+(Name-diffs like `DeadlineExpiredError` ↔ `DeadlinePassedError` are excluded here and tracked in [cross-SDK divergences](/reference/cross-sdk-divergences).)
 
 **Python-only** (14):
 
@@ -6378,9 +6395,11 @@ Name divergences and behavioral divergences are **curated**, not derived from se
 
 `ArchiveBundleValidationError`, `ArweaveError`, `CircuitBreakerOpenError`, `EscrowError`, `FileSizeLimitError`, `FilebaseDownloadError`, `FilebaseError`, `FilebaseUploadError`, `MockStateCorruptedError`, `MockStateLockError`, `MockStateVersionError`, `SSRFProtectionError`, `TransactionError`, `TransientRPCError`
 
-### CLI (14)
+### CLI (4)
 
-`config get`, `config set`, `config show`, `deploy`, `deploy check`, `deploy env`, `simulate fee`, `simulate pay`, `time advance`, `time set`, `time show`, `tx list`, `tx status`, `tx transition`
+`deploy`, `deploy check`, `deploy env`, `tx transition`
+
+(Python uses a top-level `deploy` group with `check`/`env` subcommands; TS uses colon-prefixed top-level commands `deploy:check` / `deploy:env`. Python uses a single `tx transition` for all state transitions; TS exposes them as individual subcommands `tx deliver` / `tx settle` / `tx cancel`. Other subcommands like `config show/set/get`, `simulate pay/fee`, `time show/advance/set`, `tx create/status/list` exist in both SDKs.)
 
 ## Name divergences
 
@@ -6763,7 +6782,7 @@ See: [Formal verification](/security/formal-verification).
 
 **Cohomology groups of the state sheaf.** Computed exactly over ℚ (no floating-point) via `h1_engine.py`. H¹ measures obstructions to a globally consistent view; H¹ = 0 means none.
 
-### H¹ = 0
+### H¹ = 0 {#h-0}
 
 **The structural completeness result.** Computed on ACTP's state sheaf after a 2-cell refinement. Means every local state composes into one globally consistent picture, with no hidden seam where trust has to be reintroduced. Reproducible from a YAML spec via `h1_engine.py`.
 
@@ -6781,7 +6800,7 @@ See [Cellular sheaf](#cellular-sheaf) and [H¹ = 0](#h-0).
 
 ### Sourcify EXACT_MATCH
 
-**The strongest contract verification level.** Both runtime bytecode and metadata IPFS hash match the source code on GitHub. Any reviewer can re-compile from source and get byte-identical output. All 8 AGIRAILS contracts (4 mainnet + 4 Sepolia) verified EXACT_MATCH.
+**The strongest contract verification level.** Both runtime bytecode and metadata IPFS hash match the source code on GitHub. Any reviewer can re-compile from source and get byte-identical output. 9 of 10 AGIRAILS contracts verified EXACT_MATCH (all 4 mainnet; 5 of 6 Sepolia; the `AGIRAILSIdentityRegistry` on Sepolia is not Sourcify-verified). See [/security/contracts](/security/contracts) for the live status.
 
 See: [Verified contracts](/security/contracts).
 
@@ -6833,7 +6852,7 @@ See: [OpenClaw integration](/start/ai-environment/openclaw).
 
 **`/sdk-manifest.json`.** The machine-readable JSON of every SDK symbol, contract address, CLI command, error class, MCP tool, and protocol field, auto-extracted from source and regenerated daily by CI. Drift-free per design.
 
-See: [How to read AGIRAILS docs](#) (link to llms.txt section).
+See: [/sdk-manifest.json](/sdk-manifest.json) (live file) and [llms.txt](/llms.txt) (LLM discovery pointer).
 
 ---
 
@@ -7516,7 +7535,7 @@ export const FAQSchema = () => (
 
 # FAQ
 
-Sixteen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
+Seventeen questions integrators, evaluators, and LLMs ask most often. Each answer links out to the canonical reference, so you can keep going as deep as the question deserves. Nothing here is the last word; everything here is true.
 
 [info]
 This page is FAQPage JSON-LD structured. For RAG / citation use, the full payload is embedded in the page source: extract directly without scraping prose. The 17 Q/A entries cover: protocol overview, ACTP-vs-x402 decision, fees, gasless mechanics, disputes, integration paths, identity layers, AGIRAILS.md, debug triage, testnet, open source, walk-away test, formal verification (H¹=0). For deeper machine-readable surfaces: [`/sdk-manifest.json`](/sdk-manifest.json), [`/llms-full.txt`](/llms-full.txt).

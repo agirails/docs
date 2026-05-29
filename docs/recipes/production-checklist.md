@@ -26,7 +26,7 @@ The goal of this phase: prove the integration works against testnet, with the ex
 - [ ] **`actp deploy:check --strict` passes** in your CI pipeline. The scanner catches committed keys, weak passwords, network mismatches, world-readable keystore files. Fail-closed; if it warns, fix before merge.
 - [ ] **You can rotate the key without downtime.** Practiced once on testnet. The rotation path is documented in [keystore + deployment](/recipes/keystore-and-deployment#rotating-a-compromised-key). If you can't rotate, you can't recover from a leak.
 - [ ] **Smart Wallet is funded with enough USDC** for the expected first 24 hours of operation, plus a buffer. Check `agent.balance` before shipping; nothing kills first-day momentum like an [`INSUFFICIENT_FUNDS`](/reference/errors#insufficient_funds) error during a demo.
-- [ ] **Per-call and daily spending caps wired** at the application layer. The V1 SDK does not enforce `behavior.budget`; you wrap `agent.request()` in your own guard. See [LangChain recipe](/recipes/langchain#) and [autonomous agent recipe](/recipes/autonomous-agent#running-it-production-ish) for the canonical `guardSpend()` pattern.
+- [ ] **Per-call and daily spending caps wired** at the application layer. The V1 SDK does not enforce `behavior.budget`; you wrap `agent.request()` in your own guard. See [LangChain recipe: budget controls](/recipes/langchain#budget-controls) and [autonomous agent recipe](/recipes/autonomous-agent#running-it-production-ish) for the canonical `guardSpend()` pattern.
 - [ ] **Error handling covers the user-action paths.** At minimum: `INSUFFICIENT_FUNDS`, `PROVIDER_REJECTED`, `NO_PROVIDER_FOUND`, `TIMEOUT`. For each, decide: retry, alert, or surface to the human. See [error reference](/reference/errors).
 - [ ] **You know what to do when a dispute fires.** `DISPUTE_RAISED` is not a bug, it's a protocol path. You have a documented response procedure. See [dispute flow](/recipes/dispute-flow).
 - [ ] **One person on the team can read the kernel call from a Basescan trace.** If nobody can read the on-chain state, you can't debug a production issue.
@@ -97,7 +97,7 @@ The goal: have a known response, not improvisation under pressure.
 
 ## What this checklist does not cover
 
-- **Hyperscale operations.** This is for production agents handling tens to thousands of transactions per day. If you're operating at six-figure-per-day TVL, you're in territory that needs custom monitoring and probably custom retry policies; talk to us at [security@agirails.io](/security/disclosure).
+- **Hyperscale operations.** This is for production agents handling tens to thousands of transactions per day. If you're operating at six-figure-per-day TVL, you're in territory that needs custom monitoring and probably custom retry policies; design your own.
 - **Multi-tenant agent platforms.** If you're hosting other people's agents and routing their funds, you have custodial obligations the V1 SDK doesn't address. Build accordingly.
 - **Coordinated multi-agent fleets.** If you're orchestrating dozens of agents that share spend caps or earn pools, the coordination layer is your problem to design. See [CrewAI integration](/recipes/crewai) for one pattern.
 

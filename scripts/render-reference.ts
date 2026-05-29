@@ -490,7 +490,7 @@ function renderSymptomFallback(lines: string[]): void {
   lines.push('');
 }
 
-function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): string {
+function renderErrorsPage(errors: Manifest['errors'], divergences: Manifest['divergences'], generatedAt: string): string {
   const lines: string[] = [];
   lines.push('---');
   lines.push('slug: /reference/errors');
@@ -539,21 +539,26 @@ function renderErrorsPage(errors: Manifest['errors'], generatedAt: string): stri
   renderTable('TypeScript', errors.ts);
   renderTable('Python', errors.python);
 
-  if (errors.cross_sdk.ts_only.length > 0 || errors.cross_sdk.python_only.length > 0) {
+  // Use divergences.*_only.errors (filtered via KNOWN_NAME_DIFFS in diverge.ts)
+  // rather than errors.cross_sdk (unfiltered raw extractor output). The two
+  // structures must agree with /reference/cross-sdk-divergences.md.
+  const tsOnlyErrors = divergences.ts_only.errors;
+  const pythonOnlyErrors = divergences.python_only.errors;
+  if (tsOnlyErrors.length > 0 || pythonOnlyErrors.length > 0) {
     lines.push('## Cross-SDK divergences');
     lines.push('');
-    lines.push('Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don\'t apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn\'t share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks.');
+    lines.push('Errors that exist in one SDK but not the other. Some are intentional (TypeScript-side x402 payment integration errors don\'t apply to Python; Python-side circuit-breaker + Filebase + Arweave errors are runtime concerns the TS SDK doesn\'t share), others are gaps the [parity sprint](https://github.com/agirails/sdk-python) tracks. Name-diffs (e.g. `DeadlineExpiredError` ↔ `DeadlinePassedError`) are excluded from this list and tracked in [/reference/cross-sdk-divergences](/reference/cross-sdk-divergences).');
     lines.push('');
-    if (errors.cross_sdk.ts_only.length > 0) {
-      lines.push(`**TypeScript-only** (${errors.cross_sdk.ts_only.length}):`);
+    if (tsOnlyErrors.length > 0) {
+      lines.push(`**TypeScript-only** (${tsOnlyErrors.length}):`);
       lines.push('');
-      lines.push(errors.cross_sdk.ts_only.map((c) => `\`${c}\``).join(', '));
+      lines.push(tsOnlyErrors.map((c) => `\`${c}\``).join(', '));
       lines.push('');
     }
-    if (errors.cross_sdk.python_only.length > 0) {
-      lines.push(`**Python-only** (${errors.cross_sdk.python_only.length}):`);
+    if (pythonOnlyErrors.length > 0) {
+      lines.push(`**Python-only** (${pythonOnlyErrors.length}):`);
       lines.push('');
-      lines.push(errors.cross_sdk.python_only.map((c) => `\`${c}\``).join(', '));
+      lines.push(pythonOnlyErrors.map((c) => `\`${c}\``).join(', '));
       lines.push('');
     }
   }
@@ -1079,7 +1084,7 @@ function main(): void {
   writeFile('reference/contracts/base-sepolia.md', renderContractsPage('base-sepolia', m.contracts['base-sepolia'], m._generatedAt));
   writeFile('reference/cli/index.md', renderCliPage(m.cli, m._generatedAt));
   writeFile('reference/mcp-server/index.md', renderMcpPage(m.mcp, m._generatedAt));
-  writeFile('reference/errors/index.md', renderErrorsPage(m.errors, m._generatedAt));
+  writeFile('reference/errors/index.md', renderErrorsPage(m.errors, m.divergences, m._generatedAt));
   writeFile('reference/sdk-js/index.md', renderSdkTsIndex(m, m._generatedAt));
   writeFile('reference/sdk-js/basic.md', renderSdkTsPage('basic', m, m._generatedAt));
   writeFile('reference/sdk-js/standard.md', renderSdkTsPage('standard', m, m._generatedAt));

@@ -30,12 +30,12 @@ INITIATED ─→ QUOTED ─→ COMMITTED ─→ IN_PROGRESS ─→ DELIVERED ─
 | Value | State | Trigger | Who can transition |
 |---:|---|---|---|
 | 0 | `INITIATED` | Requester calls `createTransaction()` | Requester (→ QUOTED, COMMITTED, CANCELLED) |
-| 1 | `QUOTED` | Provider counter-offers via `acceptQuote()` after [AIP-2.1](/reference/glossary#aip-21) negotiation | Requester (→ COMMITTED, CANCELLED) |
-| 2 | `COMMITTED` | Requester locks USDC in escrow via `linkEscrow()` | Provider (→ IN_PROGRESS, CANCELLED) |
+| 1 | `QUOTED` | Provider submits a quote (signed off-chain via [AIP-2.1](/reference/glossary#aip-21); hash committed on-chain) | Requester (→ COMMITTED, CANCELLED) |
+| 2 | `COMMITTED` | Requester accepts the quote via `acceptQuote()` + locks USDC via `linkEscrow()` (the kernel batches both into one sponsored UserOp under `wallet=auto`) | Provider (→ IN_PROGRESS, CANCELLED) |
 | 3 | `IN_PROGRESS` | Provider has started work | Provider (→ DELIVERED, CANCELLED) |
 | 4 | `DELIVERED` | Provider submits deliverable + [EAS](/reference/glossary#eas) attestation proof | Requester (→ SETTLED, DISPUTED) |
 | 5 | `SETTLED` | Requester accepts delivery → USDC released to provider | (terminal) |
-| 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts $1 USDC bond | Mediator (→ SETTLED, CANCELLED) |
+| 6 | `DISPUTED` | Either party calls `transitionState(DISPUTED)` + posts `max(amount × 5%, $1 USDC)` bond (minimum $1, per [AIP-14](/reference/glossary#aip-14)) | Mediator (→ SETTLED, CANCELLED) |
 | 7 | `CANCELLED` | Various paths; refund to requester (minus penalty if applicable) | (terminal) |
 
 <img src="/img/diagrams/transaction-lifecycle.svg" alt="Transaction lifecycle: full path from INITIATED through QUOTED/COMMITTED/IN_PROGRESS/DELIVERED to terminal SETTLED, with CANCELLED + DISPUTED branches" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />

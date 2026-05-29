@@ -358,7 +358,7 @@ See: [Formal verification](/security/formal-verification).
 
 **Cohomology groups of the state sheaf.** Computed exactly over ℚ (no floating-point) via `h1_engine.py`. H¹ measures obstructions to a globally consistent view; H¹ = 0 means none.
 
-### H¹ = 0
+### H¹ = 0 {#h-0}
 
 **The structural completeness result.** Computed on ACTP's state sheaf after a 2-cell refinement. Means every local state composes into one globally consistent picture, with no hidden seam where trust has to be reintroduced. Reproducible from a YAML spec via `h1_engine.py`.
 
@@ -376,7 +376,7 @@ See [Cellular sheaf](#cellular-sheaf) and [H¹ = 0](#h-0).
 
 ### Sourcify EXACT_MATCH
 
-**The strongest contract verification level.** Both runtime bytecode and metadata IPFS hash match the source code on GitHub. Any reviewer can re-compile from source and get byte-identical output. All 8 AGIRAILS contracts (4 mainnet + 4 Sepolia) verified EXACT_MATCH.
+**The strongest contract verification level.** Both runtime bytecode and metadata IPFS hash match the source code on GitHub. Any reviewer can re-compile from source and get byte-identical output. 9 of 10 AGIRAILS contracts verified EXACT_MATCH (all 4 mainnet; 5 of 6 Sepolia; the `AGIRAILSIdentityRegistry` on Sepolia is not Sourcify-verified). See [/security/contracts](/security/contracts) for the live status.
 
 See: [Verified contracts](/security/contracts).
 
@@ -428,7 +428,7 @@ See: [OpenClaw integration](/start/ai-environment/openclaw).
 
 **`/sdk-manifest.json`.** The machine-readable JSON of every SDK symbol, contract address, CLI command, error class, MCP tool, and protocol field, auto-extracted from source and regenerated daily by CI. Drift-free per design.
 
-See: [How to read AGIRAILS docs](#) (link to llms.txt section).
+See: [/sdk-manifest.json](/sdk-manifest.json) (live file) and [llms.txt](/llms.txt) (LLM discovery pointer).
 
 ---
 

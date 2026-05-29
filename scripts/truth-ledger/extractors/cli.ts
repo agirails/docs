@@ -202,17 +202,27 @@ function extractTsCli(config: ExtractorConfig, warnings: string[]): CliSurfaceDa
       cmdSrc.match(/\.command\s*\(\s*['"]([^'"]+)['"]/);
     if (nameMatch) {
       const name = nameMatch[1];
-      // Sub-commands inside this file: .command('sub') anywhere after the top.
-      const subRegex = /\.command\s*\(\s*['"]([^'"]+)['"]/g;
+      // Sub-commands inside this file. TS CLI uses two registration patterns:
+      //   (a) `.command('sub')` chained (Commander pattern 2)
+      //   (b) `cmd.addCommand(createXxxCommand())` where createXxxCommand
+      //       returns `new Command('sub')` (Commander pattern 1 nested)
+      // Walk every `new Command('x')` and `.command('x')` occurrence and
+      // treat anything after the first as a subcommand. Suppress duplicates
+      // and the parent name itself.
+      const subRegex = /(?:new\s+Command|\.command)\s*\(\s*['"]([^'"]+)['"]/g;
       const subs: string[] = [];
+      const seen = new Set<string>();
       let sm: RegExpExecArray | null;
       let firstSkipped = false;
       while ((sm = subRegex.exec(cmdSrc)) !== null) {
         if (!firstSkipped) {
-          firstSkipped = true; // the first .command() is the parent itself if pattern 2
+          firstSkipped = true; // the first match is the parent command itself
           continue;
         }
-        if (sm[1] !== name) subs.push(sm[1]);
+        const sub = sm[1];
+        if (sub === name || seen.has(sub)) continue;
+        seen.add(sub);
+        subs.push(sub);
       }
       commands.push({
         name,

@@ -37,34 +37,35 @@ pip install "agirails[server]"
 actp serve --policy provider-policy.yaml --port 8080
 ```
 
-`provider-policy.yaml`:
+`provider-policy.yaml` (V1 schema; matches `load_policy_from_dict` in `agirails.server.policy`):
 
 ```yaml
-agent:
-  private_key_env: ACTP_PRIVATE_KEY
-  network: mainnet           # or testnet
-
 pricing:
-  min_acceptable_amount: 500000   # $0.50 USDC (units = micro-USDC)
-  ideal_amount: 1_000_000          # $1.00 USDC
-  hard_cap: 10_000_000             # $10.00 USDC
+  min_acceptable:
+    amount: 500000              # $0.50 USDC (units = micro-USDC)
+    currency: USDC
+    unit: base
+  ideal:
+    amount: 1000000             # $1.00 USDC
+    currency: USDC
+    unit: base
 
-concurrency:
-  max_active_negotiations: 50
-
-session:
-  ttl_seconds: 300                 # 5 min before expired CounterOffers are dropped
-
-storage:
-  backend: memory                  # or redis://… for multi-instance
+services: ["translate"]         # empty list = accept all services
+quote_ttl: 300                  # seconds; expired CounterOffers are dropped
+min_deadline_seconds: 60        # reject jobs with tighter deadlines
+counter_strategy: concede       # 'concede' = re-quote toward floor; 'walk' = reject
+concede_pct: 20                 # how much to move per requote round
+max_requotes: 2                 # cap on requote rounds
 ```
+
+Wallet/key is configured via `ACTP_KEYSTORE_BASE64` + `ACTP_KEY_PASSWORD` env vars per [AIP-13](/reference/glossary#aip-13), not in the policy file. The `network` is read from `ACTP_NETWORK` (`mainnet` or `testnet`).
 
 The daemon:
 
 1. Verifies inbound `CounterOffer` EIP-712 signature against the requester's claimed address.
 2. Checks `expiresAt > now` and the `nonce` hasn't been seen.
-3. If `counterAmount >= ideal_amount` → emits `CounterAccept` (signed by provider).
-4. Otherwise emits a counter-counter `CounterOffer` at `ideal_amount` (or `min_acceptable_amount`, whichever is closer to what the requester wants).
+3. If `counterAmount >= ideal.amount` → emits `CounterAccept` (signed by provider).
+4. Otherwise, depending on `counter_strategy`: `walk` returns reject; `concede` emits a counter-counter at the current quote minus `concede_pct`, capped at `min_acceptable.amount` and `max_requotes`.
 5. Persists `(signer, nonce)` to prevent replay.
 
 Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
@@ -89,10 +90,11 @@ const txId = await agent.client.standard.createTransaction({
 });
 
 // V1: CounterOfferBuilder is constructed, not chained.
-// `signer` here is your wallet provider's signer; the AgentClient holds it
-// internally. For explicit construction use ethers.Signer or the
-// wallet provider's signer. (Recover it from the keystore loader, or
-// instantiate the wallet via the SDK's wallet provider helpers.)
+// `signer` is your wallet provider's ethers.Signer. In wallet=auto mode,
+// recover it from the runtime adapter:
+const runtime = agent.client.advanced;
+const signer = runtime.getMessageSigner().signer; // ethers.Signer
+
 const nonceManager = new InMemoryNonceManager();
 const builder = new CounterOfferBuilder(signer, nonceManager);
 
@@ -137,7 +139,7 @@ In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one spons
 
 ## Cancellation mid-negotiation
 
-Either side can simply stop responding. The `expiresAt` field bounds the window: after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
+Either side can stop responding. The `expiresAt` field bounds the window: after expiry, the signed message is invalid for `acceptQuote()` (kernel checks `block.timestamp <= expiresAt`). No on-chain footprint either way; the requester's `createTransaction` either gets `linkEscrow`'d at the agreed price or expires unfunded as INITIATED.
 
 ## Replay protection
 

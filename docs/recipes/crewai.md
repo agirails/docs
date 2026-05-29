@@ -79,7 +79,7 @@ researcher = CrewAgent(
     role="researcher",
     goal="answer user questions with research",
     tools=[translate_tool, summarize_tool],
-    llm="claude-4-sonnet",
+    llm="claude-sonnet-4-6",
 )
 
 task = Task(
@@ -120,7 +120,8 @@ import asyncio
 import os
 from crewai import Agent as CrewAgent, Crew, Task
 from crewai_tools import BaseTool
-from agirails import Agent as AgirailsAgent
+from agirails import Agent as AgirailsAgent, AgentConfig
+from agirails.errors import DisputeRaisedError
 
 # Each crew agent owns a separate AGIRAILS wallet: different EOAs, separate budgets,
 # separate reputations. This is the pattern when crew members may belong to different
@@ -170,7 +171,7 @@ class AgirailsServiceTool(BaseTool):
             ))
             return result.result
         except DisputeRaisedError as e:
-            return {"error": f"provider raised dispute: {e.reason}"}
+            return {"error": f"provider raised dispute: {e}"}
 
 # Crew agents
 researcher = CrewAgent(

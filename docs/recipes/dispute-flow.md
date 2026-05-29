@@ -121,41 +121,53 @@ The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG
 
 ## Subscribing to dispute events
 
-If you're running a long-lived agent, listen for disputes on your transactions:
+V1 does not expose high-level `dispute:raised` / `dispute:resolved` events on `Agent`. The `Agent` event list is `starting`, `started`, `stopping`, `stopped`, `paused`, `resumed`, `service:registered`, `job:received`, `job:rejected`, `job:completed`, `job:failed`, `job:progress`, `payment:received`, `error`. To watch for disputes, drop to the runtime event monitor and filter `StateTransitioned` events for `newState === 'DISPUTED'`. This is the same monitor the SDK uses internally.
 
 ```ts
-agent.on('dispute:raised', ({ txId, disputer, bondAmount, reason }) => {
-  console.warn(`[DISPUTE] ${txId} by ${disputer}: ${reason}`);
-});
+import type { BlockchainRuntime } from '@agirails/sdk';
 
-agent.on('dispute:resolved', ({ txId, decision, escrowResolution }) => {
-  console.log(`[RESOLVED] ${txId}: ${decision} → ${escrowResolution}`);
-});
+// From within an Agent (after agent.start() has run):
+const runtime = agent.client.advanced as BlockchainRuntime;
+
+runtime.getEvents().onStateChanged(
+  { provider: agent.address },
+  (event) => {
+    if (event.newState === 'DISPUTED') {
+      console.warn('[DISPUTE]', event.txId, 'by', event.actor);
+      // Page on-call, post to Slack, queue for manual review.
+      // Do NOT auto-respond. Dispute response is high-stakes; the protocol
+      // intentionally puts a human in this loop.
+    }
+  },
+);
 ```
 
 **Important**: do NOT auto-respond to disputes. Surface to a human queue, alert your on-call, or pause the agent. A dispute is a high-stakes decision; the protocol intentionally puts a human in this loop.
 
 ### Lower-level alternative (no Agent instance)
 
-If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), subscribe to state transitions on the runtime directly and filter for `DISPUTED`:
+If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), construct an `ACTPClient` directly and subscribe via the same runtime path:
 
 ```ts
-import type { BlockchainRuntime } from '@agirails/sdk';
+import { ACTPClient, type BlockchainRuntime } from '@agirails/sdk';
+
+const client = await ACTPClient.create({
+  network: 'mainnet',
+  wallet: 'auto', // reads keystore via env per AIP-13
+});
 
 const runtime = client.advanced as BlockchainRuntime;
 runtime.getEvents().onStateChanged(
   { provider: client.getAddress() },
   (event) => {
     if (event.newState === 'DISPUTED') {
-      // Alert path: a requester has just disputed delivery.
-      // Page on-call, post to Slack, queue for manual review.
       console.warn('DISPUTE on tx:', event.txId);
     }
   },
 );
 ```
 
-This is the lower layer the high-level `agent.on('dispute:raised')` is built on top of. Use it when you do not have an `Agent` instance to attach to (the high-level event listener requires one).
+Use this when you do not have an `Agent` instance to attach to.
 
 ## What evidence the mediator looks at
 
