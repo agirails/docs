@@ -17,7 +17,7 @@ sidebar_position: 1
 
 Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcify exact-match verification.
 
-**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 ## USDC
 
@@ -31,7 +31,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842`](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -48,7 +48,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5`](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -62,7 +62,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009`](https://basescan.org/address/0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -76,7 +76,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc`](https://basescan.org/address/0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|

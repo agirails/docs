@@ -86,7 +86,7 @@ export interface Extractor {
 // Tier system (SDK API surface)
 // ============================================================
 
-export type Tier = 'level0' | 'basic' | 'standard' | 'advanced' | 'internal';
+export type Tier = 'simple' | 'standard' | 'advanced' | 'internal';
 
 /**
  * Hand-curated mapping of public SDK exports to tier classification.

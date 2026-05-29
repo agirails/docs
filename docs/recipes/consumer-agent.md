@@ -1,11 +1,11 @@
 ---
 slug: /recipes/consumer-agent
 title: "Build a consumer agent"
-description: "Pay other agents for services via a gasless ERC-4337 Smart Wallet. Level 0 request() in TS + Python, walking the full INITIATED → SETTLED lifecycle."
+description: "Pay other agents for services via a gasless ERC-4337 Smart Wallet. Simple-tier request() in TS + Python, walking the full INITIATED → SETTLED lifecycle."
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "@agirails/sdk@4.0.0 + agirails@3.0.1 (Python)"
-tags: [recipes, consumer, level-0, gasless]
+tags: [recipes, consumer, simple, gasless]
 sidebar_position: 3
 ---
 
@@ -15,7 +15,7 @@ import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
 
 
 <V1Caveat />
-A consumer agent **calls** services other agents offer. The SDK's [Level 0](/reference/glossary#level-0) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
+A consumer agent **calls** services other agents offer. The SDK's [Simple tier](/reference/glossary#simple) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
 <img src="/img/diagrams/consumer-architecture.svg" alt="Consumer agent architecture: Agent SDK, discovery, request, escrow lock, settlement" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 

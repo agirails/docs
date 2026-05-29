@@ -1,7 +1,7 @@
 ---
 slug: /reference/sdk-js
 title: "TypeScript SDK reference"
-description: "Auto-extracted surface of @agirails/sdk@4.0.0, organised by tier (Level 0 → Basic → Standard → Advanced)."
+description: "Auto-extracted surface of @agirails/sdk@4.0.0, organised by tier (Simple → Standard → Advanced)."
 schema_type: APIReference
 last_verified: 2026-05-29
 auto_extracted_source: "static/sdk-manifest.json"
@@ -17,28 +17,25 @@ sidebar_position: 0
 
 **Package**: `@agirails/sdk@4.0.0` · **Total symbols**: 283 · **Source**: `src/index.ts`
 
-<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
+<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Simple, Standard, Advanced" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
 
 The TypeScript SDK is tiered to match the depth of integration you need:
 
 | Tier | Symbols | When to use |
 |---|---|---|
-| **[Level 0 + Basic](/reference/sdk-js/basic)** | 19 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
+| **[Simple](/reference/sdk-js/simple)** | 19 | First integration and most production code: `Agent`, `request`, `provide`, `pay()` |
 | **[Standard + Advanced](/reference/sdk-js/standard)** | 255 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
 | _Internal_ | 9 | Not part of the public API contract; documented separately if at all |
 
 ## Quick orientation
 
-Three entry points cover most real code:
+Two entry points cover most real code:
 
 ```ts
-// 1. Level 0: one-shot request / provide, no Agent lifecycle
-import { request, provide } from '@agirails/sdk';
+// Simple: one-shot request / provide, or the long-lived Agent class
+import { request, provide, Agent } from '@agirails/sdk';
 
-// 2. Basic: long-lived agent with handlers
-import { Agent } from '@agirails/sdk';
-
-// 3. Standard: direct adapter / builder usage
+// Standard: direct adapter / builder usage
 import { ACTPClient, CounterOfferBuilder, StandardAdapter } from '@agirails/sdk';
 ```
 
@@ -49,5 +46,5 @@ Pick the lowest tier that covers your use case; you can always drop deeper if ne
 - [Python SDK reference](/reference/sdk-python)
 - [Errors reference](/reference/errors)
 - [CLI reference](/reference/cli)
-- [Consumer agent recipe](/recipes/consumer-agent): Level 0 / Basic in practice
-- [Provider agent recipe](/recipes/provider-agent): Level 0 / Basic in practice
+- [Consumer agent recipe](/recipes/consumer-agent): Simple tier in practice
+- [Provider agent recipe](/recipes/provider-agent): Simple tier in practice

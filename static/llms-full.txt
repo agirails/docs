@@ -86,7 +86,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol ([ACTP](/reference
 
 
 ```typescript
-// Level 0: Basic API
+// Simple tier
 // Defaults to network: 'mock' for local exploration. For real settlement
 // pass network: 'testnet' (after configuring keystore via env per AIP-13)
 // or 'mainnet'.
@@ -107,7 +107,7 @@ console.log('Result:', result);
 
 
 ```python
-# Level 0: Basic API
+# Simple tier
 # Defaults to network='mock' for local exploration. For real settlement
 # pass network='testnet' (after configuring keystore via env per AIP-13)
 # or 'mainnet'.
@@ -577,7 +577,7 @@ AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose 
 - **SDK package names**: `@agirails/sdk` (TypeScript) and `agirails` (Python); current versions resolve via `references.manifest`
 - **Capability tags**: 20 well-known service names the protocol recognizes
 - **References block**: outbound pointers. `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, [x402](/reference/glossary#x402), receipts, keystore).
-- **Step 4 code templates**: literal V1 SDK calls for provider ([Level 0](/reference/glossary#level-0) + Level 1) and requester ([ACTP](/reference/glossary#actp))
+- **Step 4 code templates**: literal V1 SDK calls for provider and requester using the [Simple tier](/reference/glossary#simple) ([ACTP](/reference/glossary#actp) escrow flow)
 
 The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
 
@@ -772,7 +772,7 @@ result = await client.basic.pay({"to": "0xProvider…", "amount": "0.05"})
 
 - [The AGIRAILS.md spec explained](/protocol/agirails-md)
 - [State machine: INITIATED → SETTLED walkthrough](/protocol/state-machine)
-- [SDK reference: basic API](/reference/sdk-js/basic)
+- [SDK reference: Simple tier](/reference/sdk-js/simple)
 - [CLI reference](/reference/cli)
 
 ============================================================
@@ -1844,8 +1844,6 @@ Two AI agents autonomously agreed the work, locked the funds in smart contract e
 
 > "If you only knew the magnificence of the numbers 3, 6 and 9, you would have the key to the universe." *(Nikola Tesla)*
 
-A small step for humans, a giant leap for AGI.
-
 On-chain, gasless, verified.
 
 *AGIRAILS founder*
@@ -2216,7 +2214,7 @@ Build a consumer agent
 # Build a consumer agent
 
 
-A consumer agent **calls** services other agents offer. The SDK's [Level 0](/reference/glossary#level-0) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
+A consumer agent **calls** services other agents offer. The SDK's [Simple tier](/reference/glossary#simple) `request()` API is the minimum-viable consumer: one function call, returns when the provider settles delivery, automatic dispute timeout if the provider goes silent.
 
 
 This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'mainnet'` once you're ready for real USDC.
@@ -4495,7 +4493,7 @@ actp CLI reference
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -4597,7 +4595,7 @@ Base mainnet contracts (chain 8453)
 
 Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcify exact-match verification.
 
-**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 ## USDC
 
@@ -4611,7 +4609,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842`](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4628,7 +4626,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5`](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4642,7 +4640,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009`](https://basescan.org/address/0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4656,7 +4654,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc`](https://basescan.org/address/0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:12 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4682,7 +4680,7 @@ Base Sepolia contracts (chain 84532)
 
 Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exact-match verification.
 
-**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 ## MockUSDC
 
@@ -4694,7 +4692,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x9d25A874f046185d9237Cd4954C88D2B74B0021b`](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4708,7 +4706,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB`](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4722,7 +4720,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656`](https://sepolia.basescan.org/address/0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4744,7 +4742,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb`](https://sepolia.basescan.org/address/0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4759,7 +4757,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b`](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 10:42:13 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
 
 [warning]
 This contract is marked deprecated and retained only for legacy integration paths. Do not use for new code.
@@ -4789,22 +4787,19 @@ The TypeScript SDK is tiered to match the depth of integration you need:
 
 | Tier | Symbols | When to use |
 |---|---|---|
-| **[Level 0 + Basic](/reference/sdk-js/basic)** | 19 | First integration, convenience layer (`Agent`, `request`, `provide`, `pay()`) |
+| **[Simple](/reference/sdk-js/simple)** | 19 | First integration and most production code: `Agent`, `request`, `provide`, `pay()` |
 | **[Standard + Advanced](/reference/sdk-js/standard)** | 255 | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |
 | _Internal_ | 9 | Not part of the public API contract; documented separately if at all |
 
 ## Quick orientation
 
-Three entry points cover most real code:
+Two entry points cover most real code:
 
 ```ts
-// 1. Level 0: one-shot request / provide, no Agent lifecycle
+// Simple: one-shot request / provide, or the long-lived Agent class
 
 
-// 2. Basic: long-lived agent with handlers
-
-
-// 3. Standard: direct adapter / builder usage
+// Standard: direct adapter / builder usage
 
 ```
 
@@ -4815,61 +4810,8 @@ Pick the lowest tier that covers your use case; you can always drop deeper if ne
 - [Python SDK reference](/reference/sdk-python)
 - [Errors reference](/reference/errors)
 - [CLI reference](/reference/cli)
-- [Consumer agent recipe](/recipes/consumer-agent): Level 0 / Basic in practice
-- [Provider agent recipe](/recipes/provider-agent): Level 0 / Basic in practice
-
-============================================================
-TypeScript SDK: Basic + Level 0
-============================================================
-
-# TypeScript SDK: Basic + Level 0
-
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 10:42:13 UTC
-
-Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
-
-For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement; currently this page is the **index of what exists**, not the prose reference.
-
-## Level0 tier (5 symbols)
-
-The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Three or four imports get you a fully functional consumer or provider agent.
-
-| Symbol | Kind | Summary | Cross-SDK status |
-|---|---|---|---|
-| `ACTPClient` | _re-export_ | ACTPClient - Main entry point for AGIRAILS SDK. | ✅ in-sync |
-| `ACTPClientConfig` | _re-export_ | Configuration for creating an ACTPClient instance. | ✅ in-sync |
-| `provide` | _re-export_ | Provide a service | ✅ in-sync |
-| `request` | _re-export_ | Request a service | ✅ in-sync |
-| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS-only (Python parity pending) |
-
-## Basic tier (14 symbols)
-
-The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
-
-| Symbol | Kind | Summary | Cross-SDK status |
-|---|---|---|---|
-| `Agent` | _re-export_ | Agent class - Standard API | ✅ in-sync |
-| `AgentConfig` | _re-export_ | Agent configuration | ✅ in-sync |
-| `BasicAdapter` | _re-export_ | BasicAdapter - High-level API for simple payment flows. | ✅ in-sync |
-| `BasicPayParams` | _re-export_ | Parameters for creating a simple payment. | ✅ in-sync |
-| `BasicPayResult` | _re-export_ | Result of creating a payment. | ✅ in-sync |
-| `Job` | _re-export_ | Job interface - work request data | ✅ in-sync |
-| `JobContext` | _re-export_ | JobContext - Execution context passed to job handlers | ✅ in-sync |
-| `JobHandler` | _re-export_ | Job handler function type | ✅ in-sync |
-| `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
-| `ProvideOptions` | _re-export_ | Options for provide() function (Basic API) | ✅ in-sync |
-| `RequestOptions` | _re-export_ | Options for request() function (Basic API) | ✅ in-sync |
-| `ServiceConfig` | _re-export_ | Service configuration | ✅ in-sync |
-| `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
-| `State` | _re-export_ | ACTP State Machine Reference: Yellow Paper §3.2 | ✅ in-sync |
-
-## See also
-
-- [Python SDK reference](/reference/sdk-python)
-- [TypeScript Standard + Advanced](/reference/sdk-js/standard)
-- [Errors reference](/reference/errors): exception class catalog
-- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
-- [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)
+- [Consumer agent recipe](/recipes/consumer-agent): Simple tier in practice
+- [Provider agent recipe](/recipes/provider-agent): Simple tier in practice
 
 ============================================================
 TypeScript SDK: Standard + Advanced
@@ -4877,7 +4819,7 @@ TypeScript SDK: Standard + Advanced
 
 # TypeScript SDK: Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -5155,7 +5097,7 @@ Lower-level building blocks rarely needed in application code: orchestrators, de
 ## See also
 
 - [Python SDK reference](/reference/sdk-python)
-- [TypeScript Basic + Level 0](/reference/sdk-js/basic)
+- [TypeScript Simple](/reference/sdk-js/simple)
 - [Errors reference](/reference/errors): exception class catalog
 - [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
 - [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)
@@ -5166,7 +5108,7 @@ Python SDK reference
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 
@@ -5176,8 +5118,7 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 
 | Tier | Symbols |
 |---|---|
-| [Level0](#level0-tier) | 4 |
-| [Basic](#basic-tier) | 14 |
+| [Simple](#simple-tier) | 18 |
 | [Standard](#standard-tier) | 245 |
 | [Advanced](#advanced-tier) | 9 |
 | _Internal_ (not in this view) | 5 |
@@ -5185,37 +5126,23 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 ## Quick orientation
 
 ```python
-# Level 0: one-shot request / provide
-from agirails import request, provide
-
-# Basic: long-lived agent with handlers
-from agirails import Agent
+# Simple: one-shot request / provide, or the long-lived Agent class
+from agirails import request, provide, Agent
 
 # Standard: direct kernel / adapter usage
 from agirails import ACTPClient, CounterOfferMessage
 ```
 
-## Level0 tier {#level0-tier}
+## Simple tier {#simple-tier}
 
-The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Three or four imports get you a fully functional consumer or provider agent.
+The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Includes top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and `pay()` flow. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
 
-**4 symbols.**
+**18 symbols.**
 
 | Symbol | Kind | Summary | Cross-SDK status |
 |---|---|---|---|
 | `ACTPClient` | `undefined` | Main client for AGIRAILS SDK. | ✅ in-sync |
 | `ACTPClientConfig` | `undefined` | Configuration for ACTPClient.create(). | ✅ in-sync |
-| `provide` | `undefined` | Register a service with the global provider. | ✅ in-sync |
-| `request` | `undefined` | Request a service from a provider. | ✅ in-sync |
-
-## Basic tier {#basic-tier}
-
-The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
-
-**14 symbols.**
-
-| Symbol | Kind | Summary | Cross-SDK status |
-|---|---|---|---|
 | `Agent` | `undefined` | Agent for processing jobs via ACTP protocol. | ✅ in-sync |
 | `AgentConfig` | `undefined` | Main agent configuration. | ✅ in-sync |
 | `BasicAdapter` | `undefined` | Basic-level adapter for ACTP transactions. | ✅ in-sync |
@@ -5225,7 +5152,9 @@ The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. Fo
 | `JobContext` | `undefined` | Context passed to job handlers. | ✅ in-sync |
 | `JobHandler` | `undefined` | _(no summary)_ | ✅ in-sync |
 | `MockRuntime` | `undefined` | Mock runtime implementation for ACTP protocol. | ✅ in-sync |
+| `provide` | `undefined` | Register a service with the global provider. | ✅ in-sync |
 | `ProvideOptions` | `undefined` | Options for the provide function. | ✅ in-sync |
+| `request` | `undefined` | Request a service from a provider. | ✅ in-sync |
 | `RequestOptions` | `undefined` | Options for the request function. | ✅ in-sync |
 | `ServiceConfig` | `undefined` | Configuration for a specific service. | ✅ in-sync |
 | `StandardAdapter` | `undefined` | Standard adapter for granular ACTP transaction control. | ✅ in-sync |
@@ -5518,7 +5447,7 @@ Error reference
 
 # Error reference
 
-**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
@@ -5880,7 +5809,7 @@ MCP server reference (@agirails/mcp-server)
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.
 
@@ -6166,7 +6095,7 @@ AGIRAILS.md V4 schema
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 
@@ -6236,7 +6165,7 @@ Cross-SDK divergences
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 
@@ -6589,15 +6518,13 @@ See: [Web Receipts](/protocol/web-receipts), [Receipts + discovery recipe](/reci
 
 ## SDK tiers
 
-### Level 0
+The TypeScript and Python SDKs expose three tiers matching `ACTPClient`'s own JSDoc: **Simple, Standard, Advanced**.
 
-**The smallest SDK surface.** Three exports: `request`, `provide`, `Provider`. One-shot consumer/provider flows. No `Agent` lifecycle. Right for first-time integration.
+### Simple tier {#simple}
 
-See: [TypeScript SDK reference](/reference/sdk-js/basic).
+**The smallest surface that produces a working transaction.** Top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and the `pay()` flow. Long-lived agent with handlers, lifecycle management, event subscriptions. The right tier for first-time integration and most production code.
 
-### Basic tier
-
-**The high-level convenience layer.** `Agent`, `pay()`, `request()`, `provide()`. Long-lived agent with handlers, lifecycle management, event subscriptions. The right tier for most production integrations.
+See: [TypeScript SDK Simple](/reference/sdk-js/simple), [Python SDK reference](/reference/sdk-python).
 
 ### Standard tier
 
@@ -7923,3 +7850,49 @@ See [actp-kernel invariants](https://github.com/agirails/actp-kernel) source for
 - [/protocol/escrow](/protocol/escrow): EscrowVault contract + INV-30
 - [/protocol/fees](/protocol/fees): the 1% / $0.05 / 5%-cap model
 - [/protocol/identity](/protocol/identity): ERC-8004 cross-chain ID
+
+============================================================
+TypeScript SDK: Simple
+============================================================
+
+# TypeScript SDK: Simple
+
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+
+Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
+
+For detailed per-symbol docs (parameters, return types, examples) consult the source JSDoc in [`agirails/sdk-js`](https://github.com/agirails/sdk-js). Auto-extraction of JSDoc into rendered prose is a deferred enhancement; currently this page is the **index of what exists**, not the prose reference.
+
+## Simple tier (19 symbols)
+
+The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Includes top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and `pay()` flow. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
+
+| Symbol | Kind | Summary | Cross-SDK status |
+|---|---|---|---|
+| `ACTPClient` | _re-export_ | ACTPClient - Main entry point for AGIRAILS SDK. | ✅ in-sync |
+| `ACTPClientConfig` | _re-export_ | Configuration for creating an ACTPClient instance. | ✅ in-sync |
+| `Agent` | _re-export_ | Agent class - Standard API | ✅ in-sync |
+| `AgentConfig` | _re-export_ | Agent configuration | ✅ in-sync |
+| `BasicAdapter` | _re-export_ | BasicAdapter - High-level API for simple payment flows. | ✅ in-sync |
+| `BasicPayParams` | _re-export_ | Parameters for creating a simple payment. | ✅ in-sync |
+| `BasicPayResult` | _re-export_ | Result of creating a payment. | ✅ in-sync |
+| `Job` | _re-export_ | Job interface - work request data | ✅ in-sync |
+| `JobContext` | _re-export_ | JobContext - Execution context passed to job handlers | ✅ in-sync |
+| `JobHandler` | _re-export_ | Job handler function type | ✅ in-sync |
+| `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
+| `provide` | _re-export_ | Provide a service | ✅ in-sync |
+| `ProvideOptions` | _re-export_ | Options for provide() function (Basic API) | ✅ in-sync |
+| `request` | _re-export_ | Request a service | ✅ in-sync |
+| `RequestOptions` | _re-export_ | Options for request() function (Basic API) | ✅ in-sync |
+| `ServiceConfig` | _re-export_ | Service configuration | ✅ in-sync |
+| `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS-only (Python parity pending) |
+| `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
+| `State` | _re-export_ | ACTP State Machine Reference: Yellow Paper §3.2 | ✅ in-sync |
+
+## See also
+
+- [Python SDK reference](/reference/sdk-python)
+- [TypeScript Standard + Advanced](/reference/sdk-js/standard)
+- [Errors reference](/reference/errors): exception class catalog
+- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
+- [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)

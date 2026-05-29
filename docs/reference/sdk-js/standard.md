@@ -15,7 +15,7 @@ sidebar_position: 2
 
 # TypeScript SDK: Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -293,7 +293,7 @@ Lower-level building blocks rarely needed in application code: orchestrators, de
 ## See also
 
 - [Python SDK reference](/reference/sdk-python)
-- [TypeScript Basic + Level 0](/reference/sdk-js/basic)
+- [TypeScript Simple](/reference/sdk-js/simple)
 - [Errors reference](/reference/errors): exception class catalog
 - [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)
 - [Source: `@agirails/sdk@4.0.0`](https://github.com/agirails/sdk-js)

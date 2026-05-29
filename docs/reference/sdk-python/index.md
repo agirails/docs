@@ -1,7 +1,7 @@
 ---
 slug: /reference/sdk-python
 title: "Python SDK reference"
-description: "Auto-extracted surface of agirails@3.0.1, organised by tier (Level 0 → Basic → Standard → Advanced)."
+description: "Auto-extracted surface of agirails@3.0.1, organised by tier (Simple → Standard → Advanced)."
 schema_type: APIReference
 last_verified: 2026-05-29
 auto_extracted_source: "static/sdk-manifest.json"
@@ -15,7 +15,7 @@ sidebar_position: 4
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 
@@ -25,8 +25,7 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 
 | Tier | Symbols |
 |---|---|
-| [Level0](#level0-tier) | 4 |
-| [Basic](#basic-tier) | 14 |
+| [Simple](#simple-tier) | 18 |
 | [Standard](#standard-tier) | 245 |
 | [Advanced](#advanced-tier) | 9 |
 | _Internal_ (not in this view) | 5 |
@@ -34,37 +33,23 @@ For detailed per-symbol docs (parameters, return types, examples) consult the so
 ## Quick orientation
 
 ```python
-# Level 0: one-shot request / provide
-from agirails import request, provide
-
-# Basic: long-lived agent with handlers
-from agirails import Agent
+# Simple: one-shot request / provide, or the long-lived Agent class
+from agirails import request, provide, Agent
 
 # Standard: direct kernel / adapter usage
 from agirails import ACTPClient, CounterOfferMessage
 ```
 
-## Level0 tier {#level0-tier}
+## Simple tier {#simple-tier}
 
-The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Three or four imports get you a fully functional consumer or provider agent.
+The smallest surface that produces a working transaction. If you're integrating for the first time, this is where to start. Includes top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and `pay()` flow. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
 
-**4 symbols.**
+**18 symbols.**
 
 | Symbol | Kind | Summary | Cross-SDK status |
 |---|---|---|---|
 | `ACTPClient` | `undefined` | Main client for AGIRAILS SDK. | ✅ in-sync |
 | `ACTPClientConfig` | `undefined` | Configuration for ACTPClient.create(). | ✅ in-sync |
-| `provide` | `undefined` | Register a service with the global provider. | ✅ in-sync |
-| `request` | `undefined` | Request a service from a provider. | ✅ in-sync |
-
-## Basic tier {#basic-tier}
-
-The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn't expose.
-
-**14 symbols.**
-
-| Symbol | Kind | Summary | Cross-SDK status |
-|---|---|---|---|
 | `Agent` | `undefined` | Agent for processing jobs via ACTP protocol. | ✅ in-sync |
 | `AgentConfig` | `undefined` | Main agent configuration. | ✅ in-sync |
 | `BasicAdapter` | `undefined` | Basic-level adapter for ACTP transactions. | ✅ in-sync |
@@ -74,7 +59,9 @@ The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. Fo
 | `JobContext` | `undefined` | Context passed to job handlers. | ✅ in-sync |
 | `JobHandler` | `undefined` | _(no summary)_ | ✅ in-sync |
 | `MockRuntime` | `undefined` | Mock runtime implementation for ACTP protocol. | ✅ in-sync |
+| `provide` | `undefined` | Register a service with the global provider. | ✅ in-sync |
 | `ProvideOptions` | `undefined` | Options for the provide function. | ✅ in-sync |
+| `request` | `undefined` | Request a service from a provider. | ✅ in-sync |
 | `RequestOptions` | `undefined` | Options for the request function. | ✅ in-sync |
 | `ServiceConfig` | `undefined` | Configuration for a specific service. | ✅ in-sync |
 | `StandardAdapter` | `undefined` | Standard adapter for granular ACTP transaction control. | ✅ in-sync |

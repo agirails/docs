@@ -2,7 +2,7 @@
   "_generated": true,
   "_doNotEdit": true,
   "_generator": "scripts/truth-ledger/build-truth-ledger.ts",
-  "_generatedAt": "2026-05-29T10:42:13.126Z",
+  "_generatedAt": "2026-05-29T17:18:25.325Z",
   "_sourceVersions": {
     "sdk-js": "4.0.0",
     "agirails-python": "3.0.1",
@@ -316,13 +316,13 @@
       "sync_status": "local-ahead"
     },
     "ACTPClient": {
-      "ts": "level0",
-      "python": "level0",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "ACTPClientConfig": {
-      "ts": "level0",
-      "python": "level0",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "ACTPClientInfo": {
@@ -371,8 +371,8 @@
       "sync_status": "in-sync"
     },
     "Agent": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "AgentBalance": {
@@ -381,8 +381,8 @@
       "sync_status": "in-sync"
     },
     "AgentConfig": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "AgentLifecycleError": {
@@ -507,18 +507,18 @@
       "sync_status": "in-sync"
     },
     "BasicAdapter": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "BasicPayParams": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "BasicPayResult": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "BatchedPayParams": {
@@ -996,18 +996,18 @@
       "sync_status": "in-sync"
     },
     "Job": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "JobContext": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "JobHandler": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "MAX_DEADLINE_DAYS": {
@@ -1064,8 +1064,8 @@
       "sync_status": "in-sync"
     },
     "MockRuntime": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "MockState": {
@@ -1182,13 +1182,13 @@
       "sync_status": "local-ahead"
     },
     "provide": {
-      "ts": "level0",
-      "python": "level0",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "ProvideOptions": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "Provider": {
@@ -1328,13 +1328,13 @@
       "sync_status": "local-ahead"
     },
     "request": {
-      "ts": "level0",
-      "python": "level0",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "RequestOptions": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "RequestResult": {
@@ -1371,8 +1371,8 @@
       "sync_status": "in-sync"
     },
     "ServiceConfig": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "ServiceConfigError": {
@@ -1385,7 +1385,7 @@
       "sync_status": "local-ahead"
     },
     "serviceDirectory": {
-      "ts": "level0",
+      "ts": "simple",
       "sync_status": "local-ahead"
     },
     "ServiceHash": {
@@ -1418,8 +1418,8 @@
       "sync_status": "in-sync"
     },
     "StandardAdapter": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "StandardTransactionParams": {
@@ -1428,8 +1428,8 @@
       "sync_status": "in-sync"
     },
     "State": {
-      "ts": "basic",
-      "python": "basic",
+      "ts": "simple",
+      "python": "simple",
       "sync_status": "in-sync"
     },
     "StateHelpers": {
@@ -3343,7 +3343,7 @@
         "ACTPKernel": {
           "address": "0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:12.944Z",
+          "verified_at": "2026-05-29T17:18:25.132Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212266,
           "deploy_tx": "0x0ec9bec21a33f3f316993e3b85e550132ef082651e0be0a75eb5237f08ee1104",
@@ -3357,7 +3357,7 @@
         "EscrowVault": {
           "address": "0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:12.944Z",
+          "verified_at": "2026-05-29T17:18:25.132Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212268,
           "deploy_tx": "0x55b44cd01b57ef7a9bf5c3672dd439c6261899880b60ac1ef9a570a415b81e64",
@@ -3368,7 +3368,7 @@
         "AgentRegistry": {
           "address": "0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:12.944Z",
+          "verified_at": "2026-05-29T17:18:25.132Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212269,
           "deploy_tx": "0xdbf9158ef85f8d064e2f6624e7d34ed5852b720edb7af7d0dfe548b19ba66c89",
@@ -3379,7 +3379,7 @@
         "ArchiveTreasury": {
           "address": "0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:12.944Z",
+          "verified_at": "2026-05-29T17:18:25.132Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212270,
           "deploy_tx": "0x4ebddaebd203afceb5d3592a927787061b8b2981d0a289bb740c397ef1ab5481",
@@ -3403,7 +3403,7 @@
         "ACTPKernel": {
           "address": "0x9d25A874f046185d9237Cd4954C88D2B74B0021b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:13.126Z",
+          "verified_at": "2026-05-29T17:18:25.325Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725686,
           "deploy_tx": "0xe976b7005b4a35f066fedb782d69974f2f491b3608d2803375fa46987546db5c",
@@ -3414,7 +3414,7 @@
         "EscrowVault": {
           "address": "0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:13.126Z",
+          "verified_at": "2026-05-29T17:18:25.325Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725687,
           "deploy_tx": "0x0194b83d02fe31482d346db0d445a1245ec8ac35d66995a465af217c22beca59",
@@ -3425,7 +3425,7 @@
         "AgentRegistry": {
           "address": "0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:13.126Z",
+          "verified_at": "2026-05-29T17:18:25.325Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725688,
           "deploy_tx": "0xa0b7ac96550590f8269ca245e7f6ba618ab5821dfe33d3e48f919d7bd650484c",
@@ -3443,7 +3443,7 @@
         "ArchiveTreasury": {
           "address": "0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:13.126Z",
+          "verified_at": "2026-05-29T17:18:25.325Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725689,
           "deploy_tx": "0xd3dc0dd2f630abb32480061a51522efde9234539687ccbae037f56ef2da36808",
@@ -3455,7 +3455,7 @@
         "X402Relay": {
           "address": "0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-29T10:42:13.126Z",
+          "verified_at": "2026-05-29T17:18:25.325Z",
           "deployment_claimed_verified": true,
           "deploy_block": 40239726,
           "explorer_url": "https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
@@ -4259,14 +4259,14 @@
         {
           "name": "ACTPClient",
           "kind": "export-from",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "ACTPClient - Main entry point for AGIRAILS SDK."
         },
         {
           "name": "ACTPClientConfig",
           "kind": "export-from",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Configuration for creating an ACTPClient instance."
         },
@@ -4343,7 +4343,7 @@
         {
           "name": "Agent",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Agent class - Standard API"
         },
@@ -4357,7 +4357,7 @@
         {
           "name": "AgentConfig",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Agent configuration"
         },
@@ -4534,21 +4534,21 @@
         {
           "name": "BasicAdapter",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "BasicAdapter - High-level API for simple payment flows."
         },
         {
           "name": "BasicPayParams",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Parameters for creating a simple payment."
         },
         {
           "name": "BasicPayResult",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Result of creating a payment."
         },
@@ -5266,21 +5266,21 @@
         {
           "name": "Job",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Job interface - work request data"
         },
         {
           "name": "JobContext",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "JobContext - Execution context passed to job handlers"
         },
         {
           "name": "JobHandler",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Job handler function type"
         },
@@ -5363,7 +5363,7 @@
         {
           "name": "MockRuntime",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "MockRuntime - Core mock blockchain engine for ACTP protocol testing."
         },
@@ -5530,14 +5530,14 @@
         {
           "name": "provide",
           "kind": "export-from",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Provide a service"
         },
         {
           "name": "ProvideOptions",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Options for provide() function (Basic API)"
         },
@@ -5754,14 +5754,14 @@
         {
           "name": "request",
           "kind": "export-from",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Request a service"
         },
         {
           "name": "RequestOptions",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Options for request() function (Basic API)"
         },
@@ -5814,7 +5814,7 @@
         {
           "name": "ServiceConfig",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Service configuration"
         },
@@ -5835,7 +5835,7 @@
         {
           "name": "serviceDirectory",
           "kind": "export-from",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "Singleton instance"
         },
@@ -5881,7 +5881,7 @@
         {
           "name": "StandardAdapter",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "StandardAdapter - Balanced API for transaction lifecycle control."
         },
@@ -5895,7 +5895,7 @@
         {
           "name": "State",
           "kind": "export-from",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "doc_summary": "ACTP State Machine Reference: Yellow Paper §3.2"
         },
@@ -6168,14 +6168,14 @@
       "symbols": [
         {
           "name": "ACTPClient",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Main client for AGIRAILS SDK."
         },
         {
           "name": "ACTPClientConfig",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Configuration for ACTPClient.create()."
@@ -6229,7 +6229,7 @@
         },
         {
           "name": "Agent",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Agent for processing jobs via ACTP protocol."
@@ -6250,7 +6250,7 @@
         },
         {
           "name": "AgentConfig",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Main agent configuration."
@@ -6428,21 +6428,21 @@
         },
         {
           "name": "BasicAdapter",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Basic-level adapter for ACTP transactions."
         },
         {
           "name": "BasicPayParams",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Parameters for basic pay() method."
         },
         {
           "name": "BasicPayResult",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Result from basic pay() method."
@@ -7171,21 +7171,21 @@
         },
         {
           "name": "Job",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Represents a job to be processed by an agent."
         },
         {
           "name": "JobContext",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Context passed to job handlers."
         },
         {
           "name": "JobHandler",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py"
         },
@@ -7297,7 +7297,7 @@
         },
         {
           "name": "MockRuntime",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Mock runtime implementation for ACTP protocol."
@@ -7453,14 +7453,14 @@
         },
         {
           "name": "provide",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Register a service with the global provider."
         },
         {
           "name": "ProvideOptions",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Options for the provide function."
@@ -7561,14 +7561,14 @@
         },
         {
           "name": "request",
-          "tier": "level0",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Request a service from a provider."
         },
         {
           "name": "RequestOptions",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Options for the request function."
@@ -7641,7 +7641,7 @@
         },
         {
           "name": "ServiceConfig",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Configuration for a specific service."
@@ -7772,7 +7772,7 @@
         },
         {
           "name": "StandardAdapter",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "Standard adapter for granular ACTP transaction control."
@@ -7786,7 +7786,7 @@
         },
         {
           "name": "State",
-          "tier": "basic",
+          "tier": "simple",
           "tier_from_source": false,
           "source_file": "src/agirails/__init__.py",
           "doc_summary": "ACTP transaction states."

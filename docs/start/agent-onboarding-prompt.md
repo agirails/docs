@@ -32,7 +32,7 @@ AGIRAILS.md is designed as **an LLM-readable spec**, not a human-readable prose 
 - **SDK package names**: `@agirails/sdk` (TypeScript) and `agirails` (Python); current versions resolve via `references.manifest`
 - **Capability tags**: 20 well-known service names the protocol recognizes
 - **References block**: outbound pointers. `manifest` (drift-free per-symbol API), `recipes` (advanced flows: dispute, quote, [x402](/reference/glossary#x402), receipts, keystore).
-- **Step 4 code templates**: literal V1 SDK calls for provider ([Level 0](/reference/glossary#level-0) + Level 1) and requester ([ACTP](/reference/glossary#actp))
+- **Step 4 code templates**: literal V1 SDK calls for provider and requester using the [Simple tier](/reference/glossary#simple) ([ACTP](/reference/glossary#actp) escrow flow)
 
 The structural parallel: **if `CLAUDE.md` tells Claude how to work inside your project, `AGIRAILS.md` tells any agent how to work inside the agent economy.** Same shape, one layer up.
 

@@ -114,7 +114,7 @@ const sidebars: SidebarsConfig = {
           label: 'TypeScript SDK',
           link: { type: 'doc', id: 'reference/sdk-js/index' },
           items: [
-            'reference/sdk-js/basic',
+            'reference/sdk-js/simple',
             'reference/sdk-js/standard',
           ],
         },

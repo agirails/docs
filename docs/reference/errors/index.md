@@ -15,7 +15,7 @@ sidebar_position: 5
 
 # Error reference
 
-**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 

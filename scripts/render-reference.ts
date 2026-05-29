@@ -586,10 +586,8 @@ function syncBadge(status: string): string {
 
 function tierIntro(tier: string): string {
   switch (tier) {
-    case 'level0':
-      return 'The smallest surface that produces a working transaction. If you\'re integrating for the first time, this is where to start. Three or four imports get you a fully functional consumer or provider agent.';
-    case 'basic':
-      return 'The high-level convenience layer: `Agent`, `pay()`, `request()`, `provide()`. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn\'t expose.';
+    case 'simple':
+      return 'The smallest surface that produces a working transaction. If you\'re integrating for the first time, this is where to start. Includes top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and `pay()` flow. For most integrations this is all you need; you only drop to lower tiers when you need to customise something the convenience layer doesn\'t expose.';
     case 'standard':
       return 'Production-stable surface for non-trivial integrations: adapters, builders, message-signing utilities, escrow + state-machine helpers, error classes, type definitions. If your code touches the kernel directly (rather than going through `Agent`), it lives here.';
     case 'advanced':
@@ -641,26 +639,26 @@ function renderSymbolTable(
 }
 
 function renderSdkTsPage(
-  tier: 'basic' | 'standard',
+  tier: 'simple' | 'standard',
   manifest: Manifest,
   generatedAt: string,
 ): string {
   const sdk = manifest.sdk_api.ts;
-  // Bucketing: basic page also includes level0 (since level0 is the smallest convenience surface);
-  // standard page also includes advanced (so the long tail isn't hidden behind a separate stub).
+  // Bucketing: standard page also includes advanced (so the long tail
+  // isn't hidden behind a separate stub).
   const buckets: Record<string, string[]> = {
-    basic: ['level0', 'basic'],
+    simple: ['simple'],
     standard: ['standard', 'advanced'],
   };
   const includedTiers = buckets[tier];
   const symbols = sdk.symbols.filter((s) => includedTiers.includes(s.tier));
 
-  const title = tier === 'basic' ? 'TypeScript SDK: Basic + Level 0' : 'TypeScript SDK: Standard + Advanced';
-  const desc = tier === 'basic'
-    ? `Convenience tier of @agirails/sdk@${sdk.package_version}: Level 0 imports (\`request\`, \`provide\`) plus the \`Agent\` class and basic \`pay()\` flow.`
+  const title = tier === 'simple' ? 'TypeScript SDK: Simple' : 'TypeScript SDK: Standard + Advanced';
+  const desc = tier === 'simple'
+    ? `Simple tier of @agirails/sdk@${sdk.package_version}: top-level convenience (\`request\`, \`provide\`, \`serviceDirectory\`) plus the \`Agent\` class and \`pay()\` flow.`
     : `Production-stable surface of @agirails/sdk@${sdk.package_version}: adapters, builders, message-signing utilities, runtime helpers, plus the advanced building blocks.`;
   const slug = `/reference/sdk-js/${tier}`;
-  const sidebar = tier === 'basic' ? 1 : 2;
+  const sidebar = tier === 'simple' ? 1 : 2;
 
   const lines: string[] = [];
   lines.push('---');
@@ -704,10 +702,10 @@ function renderSdkTsPage(
   lines.push('## See also');
   lines.push('');
   lines.push('- [Python SDK reference](/reference/sdk-python)');
-  if (tier === 'basic') {
+  if (tier === 'simple') {
     lines.push('- [TypeScript Standard + Advanced](/reference/sdk-js/standard)');
   } else {
-    lines.push('- [TypeScript Basic + Level 0](/reference/sdk-js/basic)');
+    lines.push('- [TypeScript Simple](/reference/sdk-js/simple)');
   }
   lines.push('- [Errors reference](/reference/errors): exception class catalog');
   lines.push('- [Truth-ledger manifest (raw JSON)](/sdk-manifest.json)');
@@ -726,7 +724,7 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('---');
   lines.push('slug: /reference/sdk-js');
   lines.push('title: "TypeScript SDK reference"');
-  lines.push(`description: "Auto-extracted surface of @agirails/sdk@${sdk.package_version}, organised by tier (Level 0 → Basic → Standard → Advanced)."`);
+  lines.push(`description: "Auto-extracted surface of @agirails/sdk@${sdk.package_version}, organised by tier (Simple → Standard → Advanced)."`);
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
@@ -742,28 +740,25 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('');
   lines.push(`**Package**: \`@agirails/sdk@${sdk.package_version}\` · **Total symbols**: ${sdk.count} · **Source**: \`${sdk.source_file}\``);
   lines.push('');
-  lines.push('<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Level 0, Basic, Standard with Advanced/Internal beyond" style={{maxWidth: \'100%\', height: \'auto\', margin: \'1.5rem 0\'}} />');
+  lines.push('<img src="/img/diagrams/three-tier-api.svg" alt="Three-tier SDK API: Simple, Standard, Advanced" style={{maxWidth: \'100%\', height: \'auto\', margin: \'1.5rem 0\'}} />');
   lines.push('');
   lines.push('The TypeScript SDK is tiered to match the depth of integration you need:');
   lines.push('');
   lines.push('| Tier | Symbols | When to use |');
   lines.push('|---|---|---|');
-  lines.push(`| **[Level 0 + Basic](/reference/sdk-js/basic)** | ${(tierCounts['level0'] ?? 0) + (tierCounts['basic'] ?? 0)} | First integration, convenience layer (\`Agent\`, \`request\`, \`provide\`, \`pay()\`) |`);
+  lines.push(`| **[Simple](/reference/sdk-js/simple)** | ${tierCounts['simple'] ?? 0} | First integration and most production code: \`Agent\`, \`request\`, \`provide\`, \`pay()\` |`);
   lines.push(`| **[Standard + Advanced](/reference/sdk-js/standard)** | ${(tierCounts['standard'] ?? 0) + (tierCounts['advanced'] ?? 0)} | Production-stable depth: adapters, builders, signers, runtime helpers, orchestrators |`);
   lines.push(`| _Internal_ | ${tierCounts['internal'] ?? 0} | Not part of the public API contract; documented separately if at all |`);
   lines.push('');
   lines.push('## Quick orientation');
   lines.push('');
-  lines.push('Three entry points cover most real code:');
+  lines.push('Two entry points cover most real code:');
   lines.push('');
   lines.push('```ts');
-  lines.push('// 1. Level 0: one-shot request / provide, no Agent lifecycle');
-  lines.push('import { request, provide } from \'@agirails/sdk\';');
+  lines.push('// Simple: one-shot request / provide, or the long-lived Agent class');
+  lines.push('import { request, provide, Agent } from \'@agirails/sdk\';');
   lines.push('');
-  lines.push('// 2. Basic: long-lived agent with handlers');
-  lines.push('import { Agent } from \'@agirails/sdk\';');
-  lines.push('');
-  lines.push('// 3. Standard: direct adapter / builder usage');
+  lines.push('// Standard: direct adapter / builder usage');
   lines.push('import { ACTPClient, CounterOfferBuilder, StandardAdapter } from \'@agirails/sdk\';');
   lines.push('```');
   lines.push('');
@@ -774,8 +769,8 @@ function renderSdkTsIndex(manifest: Manifest, generatedAt: string): string {
   lines.push('- [Python SDK reference](/reference/sdk-python)');
   lines.push('- [Errors reference](/reference/errors)');
   lines.push('- [CLI reference](/reference/cli)');
-  lines.push('- [Consumer agent recipe](/recipes/consumer-agent): Level 0 / Basic in practice');
-  lines.push('- [Provider agent recipe](/recipes/provider-agent): Level 0 / Basic in practice');
+  lines.push('- [Consumer agent recipe](/recipes/consumer-agent): Simple tier in practice');
+  lines.push('- [Provider agent recipe](/recipes/provider-agent): Simple tier in practice');
   lines.push('');
 
   return lines.join('\n');
@@ -788,13 +783,13 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
 
   // Python sidebar exposes only a single page, so we render all tiers here
   // (except 'internal') as separate sections.
-  const tiersToRender = ['level0', 'basic', 'standard', 'advanced'];
+  const tiersToRender = ['simple', 'standard', 'advanced'];
 
   const lines: string[] = [];
   lines.push('---');
   lines.push('slug: /reference/sdk-python');
   lines.push('title: "Python SDK reference"');
-  lines.push(`description: "Auto-extracted surface of agirails@${sdk.package_version}, organised by tier (Level 0 → Basic → Standard → Advanced)."`);
+  lines.push(`description: "Auto-extracted surface of agirails@${sdk.package_version}, organised by tier (Simple → Standard → Advanced)."`);
   lines.push('schema_type: APIReference');
   lines.push(`last_verified: ${generatedAt.slice(0, 10)}`);
   lines.push('auto_extracted_source: "static/sdk-manifest.json"');
@@ -829,11 +824,8 @@ function renderSdkPythonPage(manifest: Manifest, generatedAt: string): string {
   lines.push('## Quick orientation');
   lines.push('');
   lines.push('```python');
-  lines.push('# Level 0: one-shot request / provide');
-  lines.push('from agirails import request, provide');
-  lines.push('');
-  lines.push('# Basic: long-lived agent with handlers');
-  lines.push('from agirails import Agent');
+  lines.push('# Simple: one-shot request / provide, or the long-lived Agent class');
+  lines.push('from agirails import request, provide, Agent');
   lines.push('');
   lines.push('# Standard: direct kernel / adapter usage');
   lines.push('from agirails import ACTPClient, CounterOfferMessage');
@@ -1086,7 +1078,7 @@ function main(): void {
   writeFile('reference/mcp-server/index.md', renderMcpPage(m.mcp, m._generatedAt));
   writeFile('reference/errors/index.md', renderErrorsPage(m.errors, m.divergences, m._generatedAt));
   writeFile('reference/sdk-js/index.md', renderSdkTsIndex(m, m._generatedAt));
-  writeFile('reference/sdk-js/basic.md', renderSdkTsPage('basic', m, m._generatedAt));
+  writeFile('reference/sdk-js/simple.md', renderSdkTsPage('simple', m, m._generatedAt));
   writeFile('reference/sdk-js/standard.md', renderSdkTsPage('standard', m, m._generatedAt));
   writeFile('reference/sdk-python/index.md', renderSdkPythonPage(m, m._generatedAt));
   writeFile('reference/agirails-md-v4.md', renderAgirailsMdV4Page(m.protocol, m._generatedAt));

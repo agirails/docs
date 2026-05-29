@@ -290,15 +290,13 @@ See: [Web Receipts](/protocol/web-receipts), [Receipts + discovery recipe](/reci
 
 ## SDK tiers
 
-### Level 0
+The TypeScript and Python SDKs expose three tiers matching `ACTPClient`'s own JSDoc: **Simple, Standard, Advanced**.
 
-**The smallest SDK surface.** Three exports: `request`, `provide`, `Provider`. One-shot consumer/provider flows. No `Agent` lifecycle. Right for first-time integration.
+### Simple tier {#simple}
 
-See: [TypeScript SDK reference](/reference/sdk-js/basic).
+**The smallest surface that produces a working transaction.** Top-level convenience exports (`request`, `provide`, `serviceDirectory`) plus the high-level `Agent` class and the `pay()` flow. Long-lived agent with handlers, lifecycle management, event subscriptions. The right tier for first-time integration and most production code.
 
-### Basic tier
-
-**The high-level convenience layer.** `Agent`, `pay()`, `request()`, `provide()`. Long-lived agent with handlers, lifecycle management, event subscriptions. The right tier for most production integrations.
+See: [TypeScript SDK Simple](/reference/sdk-js/simple), [Python SDK reference](/reference/sdk-python).
 
 ### Standard tier
 

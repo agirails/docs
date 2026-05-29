@@ -2,7 +2,7 @@
 
 # Manifest diff
 
-**Generated at**: 2026-05-29 10:42:13 UTC  ·  **Previous build**: 2026-05-29 09:11:26 UTC
+**Generated at**: 2026-05-29 17:18:25 UTC  ·  **Previous build**: 2026-05-29 10:42:13 UTC
 
 ### TS SDK symbols
 
@@ -14,7 +14,7 @@ _(no changes)_
 
 ### TS error classes
 
-**Removed (4)**: `ContractPausedError`, `DeadlinePassedError`, `DisputeWindowActiveError`, `EscrowNotFoundError`
+_(no changes)_
 
 ### Python error classes
 

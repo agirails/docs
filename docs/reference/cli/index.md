@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 

@@ -15,7 +15,7 @@ sidebar_position: 8
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 10:42:13 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 17:18:25 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 

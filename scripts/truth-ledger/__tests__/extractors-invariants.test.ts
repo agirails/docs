@@ -237,7 +237,7 @@ describe('sdk_api extractor', () => {
   });
 
   it('every symbol has name + tier (TS additionally has kind)', () => {
-    const VALID_TIERS = new Set(['level0', 'basic', 'standard', 'advanced', 'internal']);
+    const VALID_TIERS = new Set(['simple', 'standard', 'advanced', 'internal']);
     for (const sym of manifest.sdk_api.ts.symbols) {
       expect(typeof sym.name).toBe('string');
       expect(sym.name.length).toBeGreaterThan(0);

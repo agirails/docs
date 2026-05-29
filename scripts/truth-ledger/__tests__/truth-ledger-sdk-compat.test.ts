@@ -188,10 +188,10 @@ describe('divergences section', () => {
 });
 
 describe('tiers section', () => {
-  it('classifies ACTPClient as level0 in both SDKs', () => {
+  it('classifies ACTPClient as simple in both SDKs', () => {
     const t = manifest.tiers?.['ACTPClient'];
-    expect(t?.ts).toBe('level0');
-    expect(t?.python).toBe('level0');
+    expect(t?.ts).toBe('simple');
+    expect(t?.python).toBe('simple');
     expect(t?.sync_status).toBe('in-sync');
   });
 });

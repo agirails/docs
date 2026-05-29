@@ -5,7 +5,7 @@ description: "Earn USDC by registering a service in AgentRegistry, listening for
 schema_type: HowTo
 last_verified: 2026-05-26
 verified_against: "@agirails/sdk@4.0.0 + agirails@3.0.1 (Python)"
-tags: [recipes, provider, level-0, earnings]
+tags: [recipes, provider, simple, earnings]
 sidebar_position: 2
 ---
 

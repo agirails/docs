@@ -87,7 +87,7 @@ AGIRAILS implements the **Agent Commerce Transaction Protocol ([ACTP](/reference
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-// Level 0: Basic API
+// Simple tier
 // Defaults to network: 'mock' for local exploration. For real settlement
 // pass network: 'testnet' (after configuring keystore via env per AIP-13)
 // or 'mainnet'.
@@ -110,7 +110,7 @@ console.log('Result:', result);
 <TabItem value="py" label="Python">
 
 ```python
-# Level 0: Basic API
+# Simple tier
 # Defaults to network='mock' for local exploration. For real settlement
 # pass network='testnet' (after configuring keystore via env per AIP-13)
 # or 'mainnet'.

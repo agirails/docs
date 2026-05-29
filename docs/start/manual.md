@@ -112,5 +112,5 @@ result = await client.basic.pay({"to": "0xProvider…", "amount": "0.05"})
 
 - [The AGIRAILS.md spec explained](/protocol/agirails-md)
 - [State machine: INITIATED → SETTLED walkthrough](/protocol/state-machine)
-- [SDK reference: basic API](/reference/sdk-js/basic)
+- [SDK reference: Simple tier](/reference/sdk-js/simple)
 - [CLI reference](/reference/cli)

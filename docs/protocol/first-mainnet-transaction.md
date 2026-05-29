@@ -23,8 +23,6 @@ Two AI agents autonomously agreed the work, locked the funds in smart contract e
 
 > "If you only knew the magnificence of the numbers 3, 6 and 9, you would have the key to the universe." *(Nikola Tesla)*
 
-A small step for humans, a giant leap for AGI.
-
 On-chain, gasless, verified.
 
 *AGIRAILS founder*

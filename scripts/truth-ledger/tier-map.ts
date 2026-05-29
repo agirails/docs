@@ -18,32 +18,32 @@ import type { Tier, NameDiff, BehavioralDiff, TierMap } from './types.ts';
 
 export const TIER_MAP: TierMap = {
   // ────────────────────────────────────────────────────
-  // level0 — "your first agent" — required for /start
+  // simple — first integration + common convenience layer
+  // (consolidates pre-v1 level0 + basic into a single user-facing
+  // tier; matches ACTPClient's own JSDoc which describes three tiers:
+  // Basic, Standard, Advanced. We use "Simple" instead of "Basic"
+  // because "Basic" reads as derogatory.)
   // ────────────────────────────────────────────────────
-  ACTPClient: 'level0',
-  ACTPClientConfig: 'level0',
-  provide: 'level0',
-  request: 'level0',
-  serviceDirectory: 'level0',
-  service_directory: 'level0', // Python snake_case
-
-  // ────────────────────────────────────────────────────
-  // basic — common production patterns
-  // ────────────────────────────────────────────────────
-  Agent: 'basic',
-  AgentConfig: 'basic',
-  BasicAdapter: 'basic',
-  BasicPayParams: 'basic',
-  BasicPayResult: 'basic',
-  StandardAdapter: 'basic',
-  Job: 'basic',
-  JobContext: 'basic',
-  JobHandler: 'basic',
-  State: 'basic',
-  RequestOptions: 'basic',
-  ProvideOptions: 'basic',
-  ServiceConfig: 'basic',
-  MockRuntime: 'basic',
+  ACTPClient: 'simple',
+  ACTPClientConfig: 'simple',
+  provide: 'simple',
+  request: 'simple',
+  serviceDirectory: 'simple',
+  service_directory: 'simple', // Python snake_case
+  Agent: 'simple',
+  AgentConfig: 'simple',
+  BasicAdapter: 'simple',
+  BasicPayParams: 'simple',
+  BasicPayResult: 'simple',
+  StandardAdapter: 'simple',
+  Job: 'simple',
+  JobContext: 'simple',
+  JobHandler: 'simple',
+  State: 'simple',
+  RequestOptions: 'simple',
+  ProvideOptions: 'simple',
+  ServiceConfig: 'simple',
+  MockRuntime: 'simple',
 
   // ────────────────────────────────────────────────────
   // standard — production-ready patterns with lifecycle control
