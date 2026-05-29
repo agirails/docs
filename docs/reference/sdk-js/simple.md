@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # TypeScript SDK: Simple
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -39,9 +39,9 @@ The smallest surface that produces a working transaction. If you're integrating 
 | `JobHandler` | _re-export_ | Job handler function type | ✅ in-sync |
 | `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
 | `provide` | _re-export_ | Provide a service | ✅ in-sync |
-| `ProvideOptions` | _re-export_ | Options for provide() function (Basic API) | ✅ in-sync |
+| `ProvideOptions` | _re-export_ | Options for provide() function (Simple tier) | ✅ in-sync |
 | `request` | _re-export_ | Request a service | ✅ in-sync |
-| `RequestOptions` | _re-export_ | Options for request() function (Basic API) | ✅ in-sync |
+| `RequestOptions` | _re-export_ | Options for request() function (Simple tier) | ✅ in-sync |
 | `ServiceConfig` | _re-export_ | Service configuration | ✅ in-sync |
 | `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS-only (Python parity pending) |
 | `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |

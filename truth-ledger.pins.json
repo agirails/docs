@@ -5,8 +5,8 @@
   "source_pins": {
     "sdk-js": {
       "expected_path": "SDK and Runtime/sdk-js",
-      "head_sha": "ef499b9d92526bac9185df32f4b613af331fb77d",
-      "notes": "TS SDK. Wave A.19 part 2 (per-error JSDoc tags) was the last bump."
+      "head_sha": "0c82650a848531c6dfba18d9aeed0e4e36d00b61",
+      "notes": "TS SDK. Bumped for convenience-layer JSDoc Basic-API → Simple-tier alignment (matches docs taxonomy)."
     },
     "python-sdk-v2": {
       "expected_path": "SDK and Runtime/python-sdk-v2",

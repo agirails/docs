@@ -15,7 +15,7 @@ sidebar_position: 6
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.
 

@@ -4493,7 +4493,7 @@ actp CLI reference
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 
@@ -4595,7 +4595,7 @@ Base mainnet contracts (chain 8453)
 
 Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcify exact-match verification.
 
-**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Chain ID**: `8453` · **Block explorer**: [https://basescan.org](https://basescan.org) · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 ## USDC
 
@@ -4609,7 +4609,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842`](https://basescan.org/address/0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4626,7 +4626,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5`](https://basescan.org/address/0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4640,7 +4640,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009`](https://basescan.org/address/0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4654,7 +4654,7 @@ Production ACTP kernel + supporting contracts on Base mainnet, with live Sourcif
 
 **Address**: [`0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc`](https://basescan.org/address/0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4680,7 +4680,7 @@ Base Sepolia contracts (chain 84532)
 
 Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exact-match verification.
 
-**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Chain ID**: `84532` · **Block explorer**: [https://sepolia.basescan.org](https://sepolia.basescan.org) · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 ## MockUSDC
 
@@ -4692,7 +4692,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x9d25A874f046185d9237Cd4954C88D2B74B0021b`](https://sepolia.basescan.org/address/0x9d25A874f046185d9237Cd4954C88D2B74B0021b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4706,7 +4706,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB`](https://sepolia.basescan.org/address/0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4720,7 +4720,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656`](https://sepolia.basescan.org/address/0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4742,7 +4742,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb`](https://sepolia.basescan.org/address/0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 | Field | Value |
 |---|---|
@@ -4757,7 +4757,7 @@ Test ACTP kernel + supporting contracts on Base Sepolia, with live Sourcify exac
 
 **Address**: [`0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b`](https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b)
 
-**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:18:25 UTC)_
+**Verification**: ✅ Sourcify exact match _(checked 2026-05-29 17:33:29 UTC)_
 
 [warning]
 This contract is marked deprecated and retained only for legacy integration paths. Do not use for new code.
@@ -4819,7 +4819,7 @@ TypeScript SDK: Standard + Advanced
 
 # TypeScript SDK: Standard + Advanced
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 255 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -5108,7 +5108,7 @@ Python SDK reference
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 
@@ -5447,7 +5447,7 @@ Error reference
 
 # Error reference
 
-**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**TypeScript SDK**: 43 error classes · **Python SDK**: 47 error classes · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Every error in both SDKs extends from a common `ACTPError` (TS) / `ACTPError` (Python) base. The `code` column is the stable string identifier you can pattern-match against in `catch` blocks; this is preferred over `instanceof` checks for forward-compat. Errors without a `code` are abstract base classes that aren't thrown directly.
 
@@ -5809,7 +5809,7 @@ MCP server reference (@agirails/mcp-server)
 
 # MCP server reference
 
-**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `@agirails/mcp-server@0.2.0` · **Tools**: 20 (5 discovery + 14 runtime + 1 protocol bootstrap) · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Install via `npx @agirails/mcp-server` and wire into any MCP-compatible client (Claude Desktop, Cursor, Cline, Windsurf, VS Code + MCP). See [Get AGIRAILS into your AI tool: MCP server](/start/ai-environment/mcp-server) for setup.
 
@@ -6095,7 +6095,7 @@ AGIRAILS.md V4 schema
 
 # AGIRAILS.md V4 schema
 
-**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**AGIRAILS v4.0.0** · spec `ACTP` · network `base` · currency `USDC` · fee `1% ($0.05 min)` · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 This page is the auto-extracted reference for the canonical AGIRAILS.md V4 frontmatter: the schema that `parseAgirailsMdV4` validates against. Two artefacts use this schema:
 
@@ -6165,7 +6165,7 @@ Cross-SDK divergences
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 
@@ -7857,7 +7857,7 @@ TypeScript SDK: Simple
 
 # TypeScript SDK: Simple
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:18:25 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:33:29 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 
@@ -7881,9 +7881,9 @@ The smallest surface that produces a working transaction. If you're integrating 
 | `JobHandler` | _re-export_ | Job handler function type | ✅ in-sync |
 | `MockRuntime` | _re-export_ | MockRuntime - Core mock blockchain engine for ACTP protocol testing. | ✅ in-sync |
 | `provide` | _re-export_ | Provide a service | ✅ in-sync |
-| `ProvideOptions` | _re-export_ | Options for provide() function (Basic API) | ✅ in-sync |
+| `ProvideOptions` | _re-export_ | Options for provide() function (Simple tier) | ✅ in-sync |
 | `request` | _re-export_ | Request a service | ✅ in-sync |
-| `RequestOptions` | _re-export_ | Options for request() function (Basic API) | ✅ in-sync |
+| `RequestOptions` | _re-export_ | Options for request() function (Simple tier) | ✅ in-sync |
 | `ServiceConfig` | _re-export_ | Service configuration | ✅ in-sync |
 | `serviceDirectory` | _re-export_ | Singleton instance | 🟢 TS-only (Python parity pending) |
 | `StandardAdapter` | _re-export_ | StandardAdapter - Balanced API for transaction lifecycle control. | ✅ in-sync |
