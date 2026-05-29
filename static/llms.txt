@@ -62,6 +62,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Dispute flow](https://docs.agirails.io/recipes/dispute-flow)
 - [Receipts + discovery](https://docs.agirails.io/recipes/receipts-and-discovery)
 - [Keystore + deployment (AIP-13)](https://docs.agirails.io/recipes/keystore-and-deployment)
+- [Shipping to mainnet: production checklist](https://docs.agirails.io/recipes/production-checklist)
 - [n8n](https://docs.agirails.io/recipes/n8n), [LangChain](https://docs.agirails.io/recipes/langchain), [CrewAI](https://docs.agirails.io/recipes/crewai), [Claude Code plugin](https://docs.agirails.io/recipes/claude-code-plugin)
 
 ### Reference (auto-extracted from source)
@@ -73,6 +74,7 @@ For ingestion: `/llms-full.txt` carries the complete current docs payload as one
 - [Error reference](https://docs.agirails.io/reference/errors) (47 TS + 47 Python error classes + cross-SDK divergences)
 - [MCP server reference](https://docs.agirails.io/reference/mcp-server) (20 tools across 3 layers)
 - [AGIRAILS.md V4 schema](https://docs.agirails.io/reference/agirails-md-v4)
+- [Cross-SDK divergences](https://docs.agirails.io/reference/cross-sdk-divergences): single page synthesizing TS-only + Python-only + name diffs + behavioral diffs for multi-language stacks
 - [Glossary](https://docs.agirails.io/reference/glossary): every acronym, protocol term, and standard reference in one place (DefinedTermSet JSON-LD)
 
 ### Security

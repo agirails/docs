@@ -33,6 +33,7 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 
 ## Operations
 
+- [Shipping to mainnet: production checklist](/recipes/production-checklist): sequenced gates from pre-launch through ongoing operations
 - [Keystore + deployment (AIP-13)](/recipes/keystore-and-deployment): encrypted keystore, CI/CD with `ACTP_KEYSTORE_BASE64`, `actp deploy:check`
 
 ## Framework integrations

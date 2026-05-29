@@ -3,7 +3,7 @@ slug: /reference/sdk-python
 title: "Python SDK reference"
 description: "Auto-extracted surface of agirails@3.0.1, organised by tier (Level 0 → Basic → Standard → Advanced)."
 schema_type: APIReference
-last_verified: 2026-05-28
+last_verified: 2026-05-29
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 4
 
 # Python SDK reference
 
-**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-28 23:18:28 UTC
+**Package**: `agirails@3.0.1` · **Total symbols**: 277 · **Manifest generated**: 2026-05-29 08:38:18 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a TypeScript counterpart, is Python-only, or has signature drift the parity sprint is tracking.
 

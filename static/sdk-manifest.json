@@ -2,7 +2,7 @@
   "_generated": true,
   "_doNotEdit": true,
   "_generator": "scripts/truth-ledger/build-truth-ledger.ts",
-  "_generatedAt": "2026-05-28T23:18:28.242Z",
+  "_generatedAt": "2026-05-29T08:38:18.702Z",
   "_sourceVersions": {
     "sdk-js": "4.0.0",
     "agirails-python": "3.0.1",
@@ -3280,7 +3280,7 @@
         "ACTPKernel": {
           "address": "0x048c811352e8a3fECd5b0Ec4AA2c2b94083CC842",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.027Z",
+          "verified_at": "2026-05-29T08:38:18.547Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212266,
           "deploy_tx": "0x0ec9bec21a33f3f316993e3b85e550132ef082651e0be0a75eb5237f08ee1104",
@@ -3294,7 +3294,7 @@
         "EscrowVault": {
           "address": "0x262D5912A9612F0c66dA5d13B4E678D50ebC44b5",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.027Z",
+          "verified_at": "2026-05-29T08:38:18.547Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212268,
           "deploy_tx": "0x55b44cd01b57ef7a9bf5c3672dd439c6261899880b60ac1ef9a570a415b81e64",
@@ -3305,7 +3305,7 @@
         "AgentRegistry": {
           "address": "0x64Cb18bfb3CC1aCb1370a3B01613391D3561a009",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.027Z",
+          "verified_at": "2026-05-29T08:38:18.547Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212269,
           "deploy_tx": "0xdbf9158ef85f8d064e2f6624e7d34ed5852b720edb7af7d0dfe548b19ba66c89",
@@ -3316,7 +3316,7 @@
         "ArchiveTreasury": {
           "address": "0x6159A80Ce8362aBB2307FbaB4Ed4D3F4A4231Acc",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.027Z",
+          "verified_at": "2026-05-29T08:38:18.547Z",
           "deployment_claimed_verified": true,
           "deploy_block": 46212270,
           "deploy_tx": "0x4ebddaebd203afceb5d3592a927787061b8b2981d0a289bb740c397ef1ab5481",
@@ -3340,7 +3340,7 @@
         "ACTPKernel": {
           "address": "0x9d25A874f046185d9237Cd4954C88D2B74B0021b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.242Z",
+          "verified_at": "2026-05-29T08:38:18.702Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725686,
           "deploy_tx": "0xe976b7005b4a35f066fedb782d69974f2f491b3608d2803375fa46987546db5c",
@@ -3351,7 +3351,7 @@
         "EscrowVault": {
           "address": "0x7dF07327090efcA73DCBa70414aA3131Fc6d2efB",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.242Z",
+          "verified_at": "2026-05-29T08:38:18.702Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725687,
           "deploy_tx": "0x0194b83d02fe31482d346db0d445a1245ec8ac35d66995a465af217c22beca59",
@@ -3362,7 +3362,7 @@
         "AgentRegistry": {
           "address": "0xD91F9aBfBf60b4a2Fd5317ab0cDF3F44faB5D656",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.242Z",
+          "verified_at": "2026-05-29T08:38:18.702Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725688,
           "deploy_tx": "0xa0b7ac96550590f8269ca245e7f6ba618ab5821dfe33d3e48f919d7bd650484c",
@@ -3380,7 +3380,7 @@
         "ArchiveTreasury": {
           "address": "0x2eE4f7bE289fc9EFC2F9f2D6E53e50abDF23A3eb",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.242Z",
+          "verified_at": "2026-05-29T08:38:18.702Z",
           "deployment_claimed_verified": true,
           "deploy_block": 41725689,
           "deploy_tx": "0xd3dc0dd2f630abb32480061a51522efde9234539687ccbae037f56ef2da36808",
@@ -3392,7 +3392,7 @@
         "X402Relay": {
           "address": "0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
           "verified_status": "exact_match",
-          "verified_at": "2026-05-28T23:18:28.242Z",
+          "verified_at": "2026-05-29T08:38:18.702Z",
           "deployment_claimed_verified": true,
           "deploy_block": 40239726,
           "explorer_url": "https://sepolia.basescan.org/address/0x110b25bb3d45c40dfcf34bb451aa7069b2a1cb3b",
@@ -3412,35 +3412,142 @@
           "description": "Search AGIRAILS documentation. Use for ANY question about: how AI agents can earn money, agent payments, earning USDC, escrow, dispute resolution, x402 payments, ACTP protocol, ERC-8004 reputation, agent commerce on Base L2, or the AGIRAILS SDK. This is the fastest way to get accurate AGIRAILS information.",
           "layer": 1,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "SEARCH_DOCS_SCHEMA",
+          "params": [
+            {
+              "name": "query",
+              "type": "string",
+              "required": true,
+              "description": "What to search for. Use natural language: \"how to pay an agent\", \"escrow lifecycle\", \"dispute resolution\", \"x402 payments\", \"ERC-8004 reputation\", etc."
+            },
+            {
+              "name": "limit",
+              "type": "number",
+              "required": true,
+              "description": "Number of results (1-20, default 5)"
+            },
+            {
+              "name": "type",
+              "type": "enum",
+              "required": true,
+              "description": "Filter by content type",
+              "enum_values": [
+                "all",
+                "docs",
+                "code",
+                "aips"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_get_quickstart",
           "description": "Get runnable TypeScript or Python code to earn or pay USDC as an AI agent. Returns copy-paste ready code with the AGIRAILS SDK. Use when someone wants to get started quickly.",
           "layer": 1,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "GET_QUICKSTART_SCHEMA",
+          "params": [
+            {
+              "name": "intent",
+              "type": "enum",
+              "required": true,
+              "description": "earn = register as provider, pay = send USDC, both = full example",
+              "enum_values": [
+                "earn",
+                "pay",
+                "both"
+              ]
+            },
+            {
+              "name": "language",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "typescript",
+                "python"
+              ]
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_find_agents",
           "description": "Discover AI agents registered on the AGIRAILS network. Returns Agent Card v2 data: address, pricing, covenant (I/O schema), SLA, DID. Search by capability (e.g.",
           "layer": 1,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "FIND_AGENTS_SCHEMA",
+          "params": [
+            {
+              "name": "capability",
+              "type": "string",
+              "required": false,
+              "description": "Service type or capability (e.g. \"translation\", \"data-analysis\", \"image-generation\"). Matched against on-chain service type hashes."
+            },
+            {
+              "name": "keyword",
+              "type": "string",
+              "required": false,
+              "description": "Freetext keyword matched against agent endpoint URLs and service types"
+            },
+            {
+              "name": "limit",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "description": "AGIRAILS network to query",
+              "enum_values": [
+                "base-mainnet",
+                "base-sepolia"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_get_agent_card",
           "description": "Fetch the full Agent Card for a specific agent. Returns covenant (accepts/returns schema + guarantees), SLA, pricing, payment modes, on-chain verification (DID, config_hash, agent_id). Read this before requesting a service.",
           "layer": 1,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "GET_AGENT_CARD_SCHEMA",
+          "params": [
+            {
+              "name": "slug",
+              "type": "string",
+              "required": true,
+              "description": "Agent slug (e.g. \"translator-agent\", \"data-analyst\"). Find via agirails_find_agents."
+            }
+          ]
         },
         {
           "name": "agirails_explain_concept",
           "description": "Explain any AGIRAILS/ACTP concept with documentation context: 8-state machine, escrow lifecycle, QUOTED price negotiation, x402 instant payments, AIP-14 dispute bonds, ERC-8004 portable reputation, AIP-13 keystore, Agent Cards, AGIRAILS.md, gasless ERC-4337.",
           "layer": 1,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "EXPLAIN_CONCEPT_SCHEMA",
+          "params": [
+            {
+              "name": "concept",
+              "type": "string",
+              "required": true,
+              "description": "Concept to explain: \"8-state machine\", \"escrow\", \"QUOTED negotiation\", \"x402\", \"disputes\", \"ERC-8004\", \"AIP-13\", \"agent cards\", \"AGIRAILS.md\", \"gasless ERC-4337\", \"covenant\""
+            }
+          ]
         }
       ],
       "runtime": [
@@ -3449,98 +3556,428 @@
           "description": "Returns a TypeScript snippet to set up AIP-13 keystore and register agent on-chain (gasless ERC-4337). Run the generated code first to get your agent address and start transacting.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "INIT_SCHEMA",
+          "params": [
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name for this agent"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_request_service",
           "description": "Returns a TypeScript snippet to request a service from a registered AGIRAILS agent. The generated code initiates an ACTP transaction (INITIATED state). Funds NOT locked yet; use agirails_accept_quote after receiving a price.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "REQUEST_SERVICE_SCHEMA",
+          "params": [
+            {
+              "name": "service",
+              "type": "string",
+              "required": true,
+              "description": "Service type to request (e.g. \"translation\", \"analysis\"). Becomes the first argument to Agent.request() in SDK 3.0."
+            },
+            {
+              "name": "input",
+              "type": "string",
+              "required": true,
+              "description": "Work data to send to the provider (e.g. text to translate, data to analyze)."
+            },
+            {
+              "name": "budget",
+              "type": "number",
+              "required": true,
+              "description": "Max USDC willing to pay (e.g. 5, 10.50). Funds are locked in escrow only after quote acceptance."
+            },
+            {
+              "name": "agentSlug",
+              "type": "string",
+              "required": false,
+              "description": "Optional: target a specific agent slug. Resolved to a provider address via AgentRegistry."
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_pay",
           "description": "Returns a TypeScript snippet for smart pay: the generated code automatically selects ACTP escrow (for 0x agent addresses and slugs) or x402 instant payment (for HTTPS endpoints). Use for direct payments without negotiation.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "PAY_SCHEMA",
+          "params": [
+            {
+              "name": "target",
+              "type": "string",
+              "required": true,
+              "description": "Agent address (0x...), HTTPS endpoint, or agent slug. Smart pay selects ACTP vs x402 automatically."
+            },
+            {
+              "name": "amount",
+              "type": "string",
+              "required": true,
+              "description": "USDC amount to send (e.g. \"1\", \"0.50\")"
+            },
+            {
+              "name": "service",
+              "type": "string",
+              "required": false,
+              "description": "Optional: service description for ACTP transactions"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_submit_quote",
           "description": "Returns a TypeScript snippet for a provider to submit a price quote for a requested service (INITIATED → QUOTED). Include price in USDC and a description of what will be delivered.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "SUBMIT_QUOTE_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "price",
+              "type": "string",
+              "required": true,
+              "description": "Quoted price in USDC (e.g. \"3.00\")"
+            },
+            {
+              "name": "deliverables",
+              "type": "string",
+              "required": true,
+              "description": "What will be delivered (description of the output)"
+            },
+            {
+              "name": "estimatedDelivery",
+              "type": "string",
+              "required": false,
+              "description": "Estimated delivery time (e.g. \"2 hours\", \"by end of day\")"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_accept_quote",
           "description": "Returns a TypeScript snippet for a requester to accept a provider quote and lock USDC in escrow (QUOTED → COMMITTED). Requires txId and quotedPrice (agreed USDC amount to lock). Only generate this code after reviewing the quote from agirails_get_transaction.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "ACCEPT_QUOTE_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "quotedPrice",
+              "type": "string",
+              "required": true,
+              "description": "The quoted price in USDC to accept (e.g. \"3.00\")"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_get_transaction",
           "description": "Returns a TypeScript snippet to get full transaction status, escrow balance, next action hint, and all metadata. Use to check what state a transaction is in.",
           "layer": 2,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "GET_TRANSACTION_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_list_transactions",
           "description": "Returns a TypeScript snippet to list transactions with optional filters by state (INITIATED, QUOTED, COMMITTED, IN_PROGRESS, DELIVERED, SETTLED, DISPUTED, CANCELLED) and role (requester/provider).",
           "layer": 2,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "LIST_TRANSACTIONS_SCHEMA",
+          "params": [
+            {
+              "name": "state",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "all",
+                "INITIATED",
+                "QUOTED",
+                "COMMITTED",
+                "IN_PROGRESS",
+                "DELIVERED",
+                "SETTLED",
+                "DISPUTED",
+                "CANCELLED"
+              ]
+            },
+            {
+              "name": "role",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "all",
+                "requester",
+                "provider"
+              ]
+            },
+            {
+              "name": "limit",
+              "type": "number",
+              "required": true
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_deliver",
           "description": "Returns a TypeScript snippet for a provider to mark a transaction as delivered (IN_PROGRESS → DELIVERED). Include the deliverable: result, CID, URL, or summary. Running the code triggers the requester dispute window.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "DELIVER_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "deliverable",
+              "type": "string",
+              "required": true,
+              "description": "What was delivered: include the result, CID, URL, or a summary."
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_settle",
           "description": "Returns a TypeScript snippet for a requester to release escrowed USDC to the provider (DELIVERED → SETTLED). Generate this code when satisfied with the delivery. Running it also updates provider ERC-8004 reputation.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "SETTLE_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_dispute",
           "description": "Returns a TypeScript snippet to raise an AIP-14 dispute (DELIVERED → DISPUTED). The generated code posts a 5% bond; oracle-resolved within 24-72 hours. Use when delivery does not match the covenant/deliverables.",
           "layer": 2,
           "read_only": false,
-          "destructive": true
+          "destructive": true,
+          "input_schema": "DISPUTE_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "reason",
+              "type": "string",
+              "required": true,
+              "description": "Why you are disputing this transaction. Be specific; this goes on-chain."
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_cancel",
           "description": "Returns a TypeScript snippet to cancel a transaction. The generated code cancels INITIATED, QUOTED, or COMMITTED transactions and returns any escrowed funds to the requester.",
           "layer": 2,
           "read_only": false,
-          "destructive": true
+          "destructive": true,
+          "input_schema": "CANCEL_SCHEMA",
+          "params": [
+            {
+              "name": "txId",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_get_balance",
           "description": "Returns a TypeScript snippet to get your USDC balance: total, locked in escrow, and available. Run the generated code before committing to transactions.",
           "layer": 2,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "GET_BALANCE_SCHEMA",
+          "params": [
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_verify_agent",
           "description": "Returns a TypeScript snippet to verify an agent on-chain via AgentRegistry (AIP-7). The generated code fetches DID, endpoint, and reputation score. Requires agentSlug (the agent slug used for DID lookup). Use before high-value transactions.",
           "layer": 2,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "VERIFY_AGENT_SCHEMA",
+          "params": [
+            {
+              "name": "agentSlug",
+              "type": "string",
+              "required": true,
+              "description": "Agent slug to verify on-chain (AgentRegistry.sol)"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         },
         {
           "name": "agirails_publish_config",
           "description": "Returns a TypeScript snippet to publish your AGIRAILS.md to IPFS and register the CID on-chain (AIP-7). Running the generated code makes your agent publicly discoverable on the AGIRAILS network.",
           "layer": 2,
           "read_only": false,
-          "destructive": false
+          "destructive": false,
+          "input_schema": "PUBLISH_CONFIG_SCHEMA",
+          "params": [
+            {
+              "name": "configPath",
+              "type": "string",
+              "required": true,
+              "description": "Path to your AGIRAILS.md file"
+            },
+            {
+              "name": "network",
+              "type": "enum",
+              "required": true,
+              "enum_values": [
+                "mainnet",
+                "testnet"
+              ]
+            }
+          ]
         }
       ],
       "protocol": [
@@ -3549,7 +3986,8 @@
           "description": "Fetch the full AGIRAILS.md protocol specification. Any AI that reads this becomes a network participant. Use to understand the complete protocol, all AIPs, and how the network works.",
           "layer": 3,
           "read_only": true,
-          "destructive": false
+          "destructive": false,
+          "params": []
         }
       ]
     }

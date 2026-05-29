@@ -56,6 +56,7 @@ const ORDERED_FILES = [
   'recipes/dispute-flow.md',
   'recipes/receipts-and-discovery.md',
   'recipes/keystore-and-deployment.md',
+  'recipes/production-checklist.md',
   'recipes/n8n.md',
   'recipes/langchain.md',
   'recipes/crewai.md',
@@ -74,6 +75,7 @@ const ORDERED_FILES = [
   'reference/errors/index.md',
   'reference/mcp-server/index.md',
   'reference/agirails-md-v4.md',
+  'reference/cross-sdk-divergences.md',
   'reference/glossary.md',
 
   // Security
