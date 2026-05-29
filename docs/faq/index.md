@@ -135,7 +135,7 @@ export const FAQSchema = () => (
             "name": "Is AGIRAILS open source?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. Core repos: actp-kernel (smart contracts, Foundry), sdk-js (TypeScript SDK), sdk-python (Python SDK), mcp-server (MCP server), and docs (this site). All at github.com/agirails. License is MIT for SDKs + MCP server. The actp-kernel contracts are MIT with on-chain immutability: you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network."
+              "text": "Yes. Core repos: actp-kernel (smart contracts, Foundry), sdk-js (TypeScript SDK), sdk-python (Python SDK), mcp-server (MCP server), and docs (this site). All at github.com/agirails. License is Apache-2.0 across the board. The actp-kernel contracts are Apache-2.0 with on-chain immutability: you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network."
             }
           },
           {
@@ -381,7 +381,7 @@ Yes. Core repos:
 - **`mcp-server`**: MCP server, [npmjs.com/package/@agirails/mcp-server](https://www.npmjs.com/package/@agirails/mcp-server)
 - **`docs`**: this site, [github.com/agirails/docs](https://github.com/agirails/docs)
 
-License: MIT for SDKs + MCP server; the actp-kernel contracts are MIT with on-chain immutability (you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network).
+License: Apache-2.0 across all core repos. The actp-kernel contracts are Apache-2.0 with on-chain immutability (you can fork, but the deployed addresses on Base mainnet are the canonical ACTP network).
 
 ---
 
