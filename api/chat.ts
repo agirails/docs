@@ -1,6 +1,7 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 import { Index } from '@upstash/vector';
+import { BAD_PATTERNS_BLOCK, SURFACE_GROUNDING_BLOCK } from './_chat-grounding';
 
 // Edge runtime for better streaming support
 export const config = {
@@ -58,8 +59,16 @@ function validateInput(message: string): { valid: boolean; error?: string } {
   return { valid: true };
 }
 
-// System prompt with guardrails
-const SYSTEM_PROMPT = `You are the AGIRAILS assistant, helping developers integrate and use AGIRAILS and the ACTP protocol.
+// System prompt with guardrails.
+//
+// The prompt body is hand-written; BAD_PATTERNS_BLOCK and
+// SURFACE_GROUNDING_BLOCK are auto-generated at build time from
+// scripts/verify-recipes.ts and static/sdk-manifest.json respectively
+// (see scripts/generate-chat-grounding.ts; runs in prebuild). Both are
+// appended below so the LLM has the same ground-truth surface and the
+// same banned-pattern list the recipe gate uses.
+
+const SYSTEM_PROMPT_BODY = `You are the AGIRAILS assistant, helping developers integrate and use AGIRAILS and the ACTP protocol.
 
 STRICT RULES:
 1. ONLY answer questions about AGIRAILS, ACTP protocol, SDK, smart contracts, transactions, escrow, and related topics
@@ -273,6 +282,20 @@ ctx.incomingTransactions.forEach(function(tx) {
 
 BASE YOUR ANSWERS ON THE FOLLOWING CONTEXT FROM THE AGIRAILS DOCUMENTATION:`;
 
+// Compose the final SYSTEM_PROMPT by appending the auto-generated
+// blocks. Layer 1 (BAD_PATTERNS_BLOCK) is the same ban list verify-recipes
+// applies to docs — keeps chat output and docs in lockstep. Layer 2
+// (SURFACE_GROUNDING_BLOCK) is the manifest's "what's actually exported
+// where" — eliminates "did this symbol exist?" guessing.
+const SYSTEM_PROMPT = `${SYSTEM_PROMPT_BODY}
+
+============================================================
+${BAD_PATTERNS_BLOCK}
+
+============================================================
+${SURFACE_GROUNDING_BLOCK}
+============================================================`;
+
 // Format playground context for inclusion in prompt
 function formatPlaygroundContext(ctx: any): string {
   if (!ctx) return '';
@@ -386,29 +409,41 @@ export default async function handler(req: Request) {
       // Continue without RAG context if vector store fails
     }
 
-    // If no relevant context found, provide a helpful response
-    if (!context || relevanceScore < 0.3) {
-      context = `No specific documentation found for this query. The assistant should guide the user to relevant AGIRAILS resources or ask for clarification.
-
-Available topics include:
-- SDK installation and setup
-- Creating and managing transactions
-- Escrow flows and fund management
-- State machine and transaction lifecycle
-- Smart contract interaction
-- Dispute resolution
-- API reference`;
+    // Layer 3: tier the relevance score. The chat used to fabricate confidently
+    // at relevanceScore=0.31 because the system prompt didn't know it should be
+    // hedging. Three tiers now: high (>0.7), medium (0.3-0.7), low (<0.3).
+    //
+    // Implementation: a framing prefix gets injected into the system prompt
+    // based on the tier. The model still gets the RAG context (when any), but
+    // is told how strongly to trust it. Low-tier answers redirect to the docs
+    // index rather than guessing.
+    let confidenceFraming = '';
+    if (relevanceScore >= 0.7) {
+      // High confidence: trust the context, answer with code.
+      confidenceFraming = `RAG CONFIDENCE: HIGH (top score ${relevanceScore.toFixed(2)}). The retrieved context is strongly relevant. Answer confidently from it, following all rules above.`;
+    } else if (relevanceScore >= 0.3) {
+      // Medium confidence: hedge openly, link out.
+      confidenceFraming = `RAG CONFIDENCE: MEDIUM (top score ${relevanceScore.toFixed(2)}). The retrieved context is only partially relevant. Begin your answer with a one-line caveat: "I have partial matches for this in the docs. Verify the details against [linked recipe / reference page] before shipping." Use the context if it actually answers the question, otherwise point at the right docs section index (/recipes, /protocol, /reference, /security) and stop. Do NOT confidently fabricate.`;
+    } else {
+      // Low confidence: refuse to fabricate, redirect to docs.
+      confidenceFraming = `RAG CONFIDENCE: LOW (top score ${relevanceScore.toFixed(2)}). The retrieved context is not relevant to this question. Do NOT generate confident code or claims. Instead: (1) acknowledge you do not have a strong match in the docs, (2) point the user at the relevant section index (/recipes, /protocol, /reference, /security, /faq, https://agirails.app), (3) optionally suggest 2-3 specific docs pages they might want to read. Do NOT invent SDK methods, error codes, or APIs to fill the gap.`;
+      // Replace the over-generic fallback context with something tighter.
+      if (!context) {
+        context = 'No specific documentation matched this query above the relevance threshold.';
+      }
     }
 
-    // Build the full system prompt with context
+    // Build the full system prompt with context + confidence framing
     // NOTE: Playground context disabled to save tokens (Phase 2 feature)
     // const playgroundContextStr = formatPlaygroundContext(playgroundContext);
 
     const fullSystemPrompt = `${SYSTEM_PROMPT}
 
+${confidenceFraming}
+
 ${context}
 ---
-Remember: Stay focused on AGIRAILS. Be helpful and accurate.`;
+Remember: Stay focused on AGIRAILS. Be helpful and accurate. Respect the RAG CONFIDENCE tier above when deciding how strongly to commit to a code answer.`;
 
     // Filter out messages with empty content and convert to LLM format
     // Supports both v5 (content) and v6 (parts) message formats
