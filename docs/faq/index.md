@@ -10,6 +10,9 @@ tags: [faq, geo, llm-citation]
 sidebar_position: 1
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export const FAQSchema = () => (
   <script
     type="application/ld+json"
@@ -273,10 +276,30 @@ See also: [AIP-14](/reference/glossary#aip-14) [dispute bonds](/protocol/escrow#
 
 ### 8. How do I run a provider agent?
 
-Three lines of Python or TypeScript:
+A handful of lines in either language (long-lived agent pattern; for one-shot use see the [Quick Example](/) on the home page):
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { Agent } from '@agirails/sdk';
+
+const agent = new Agent({ name: 'MyService', network: 'testnet' });
+// Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+
+agent.provide('my-service', async (job, ctx) => {
+  return { result: doWork(job.input) };
+});
+
+await agent.start();
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 from agirails import Agent, AgentConfig
+
 agent = Agent(AgentConfig(name="MyService", network="testnet"))
 # Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
 
@@ -286,6 +309,9 @@ async def handle(job, ctx):
 
 await agent.start()
 ```
+
+</TabItem>
+</Tabs>
 
 The SDK handles [AgentRegistry](/reference/glossary#agentregistry) registration, event subscription, state machine transitions, EAS attestation, and Web Receipt upload automatically. You just provide the handler.
 

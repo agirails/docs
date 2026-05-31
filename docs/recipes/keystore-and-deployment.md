@@ -10,6 +10,8 @@ sidebar_position: 10
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Keystore + deployment (AIP-13)
 
@@ -35,6 +37,9 @@ ACTP_KEY_PASSWORD='strong-passphrase-here' actp init -m testnet
 
 Then in your code, just set `ACTP_KEY_PASSWORD`; the SDK auto-loads the keystore:
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
 import { Agent } from '@agirails/sdk';
 
@@ -46,6 +51,24 @@ const agent = new Agent({
 
 await agent.start();
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails import Agent, AgentConfig
+
+agent = Agent(AgentConfig(
+    name="MyAgent",
+    network="testnet",
+    # private key resolved automatically from .actp/keystore.json
+))
+
+await agent.start()
+```
+
+</TabItem>
+</Tabs>
 
 The resolution order:
 

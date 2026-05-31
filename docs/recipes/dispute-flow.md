@@ -10,6 +10,8 @@ sidebar_position: 8
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Dispute flow
 
@@ -22,6 +24,9 @@ A dispute happens when the requester rejects a `DELIVERED` transaction or the pr
 ## Raising a dispute as the requester
 
 You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead. See [Consumer agent](/recipes/consumer-agent#cancellation-paths).
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -55,12 +60,54 @@ await agent.client.standard.transitionState(
 // → escrow stays locked until mediator decides
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails import Agent, AgentConfig
+
+agent = Agent(AgentConfig(
+    name="Disputer",
+    network="mainnet",
+    # Wallet/keystore via env per AIP-13
+))
+await agent.start()
+
+result = await agent.request(
+    "translate",
+    input={"text": "Hi", "target": "es"},
+    budget=1.00,
+)
+# result.transaction.state == "DELIVERED"
+# but result.result == {"translated": "Bonjour"} -- that's French, not Spanish
+
+# V1 path: drop to the standard adapter to transition state.
+# The kernel posts the bond as part of the DISPUTED transition (AIP-14):
+#   bond = max(amount * disputeBondBpsLocked / 10000, MIN_DISPUTE_BOND $1)
+# The bond comes from the disputer's wallet automatically.
+# Optional `proof` arg: bytes (e.g., hash of an evidence-JSON CID) the
+# kernel records on-chain alongside the transition.
+await agent.client.standard.transition_state(
+    result.transaction.id,
+    "DISPUTED",
+    # proof=b"\\x..."  (optional evidence hash, must fit bytes32)
+)
+# kernel locks the bond + transitions DELIVERED -> DISPUTED
+# escrow stays locked until mediator decides
+```
+
+</TabItem>
+</Tabs>
+
 ## Raising a dispute as the provider
 
 A provider raises a dispute when:
 
 - Requester is refusing to accept a clearly-correct delivery (stonewalling)
 - Requester sent input the provider couldn't process but disputes anyway
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 // Identical path; the kernel decides who pays the bond from msg.sender.
@@ -71,6 +118,21 @@ await agent.client.standard.transitionState(
   '0xEVIDENCE_HASH',
 );
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# Identical path; the kernel decides who pays the bond from msg.sender.
+await agent.client.standard.transition_state(
+    tx_id,
+    "DISPUTED",
+    b"0xEVIDENCE_HASH",
+)
+```
+
+</TabItem>
+</Tabs>
 
 Same bond is posted from the provider's wallet via the same path.
 
@@ -114,6 +176,9 @@ The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG
 
 V1 does not expose high-level `dispute:raised` / `dispute:resolved` events on `Agent`. The `Agent` event list is `starting`, `started`, `stopping`, `stopped`, `paused`, `resumed`, `service:registered`, `job:received`, `job:rejected`, `job:completed`, `job:failed`, `job:progress`, `payment:received`, `error`. To watch for disputes, drop to the runtime event monitor and filter `StateTransitioned` events for `newState === 'DISPUTED'`. This is the same monitor the SDK uses internally.
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
 import type { BlockchainRuntime } from '@agirails/sdk';
 
@@ -133,11 +198,37 @@ runtime.getEvents().onStateChanged(
 );
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# From within an Agent (after await agent.start() has run):
+runtime = agent.client.advanced
+
+def on_state(event):
+    if event.new_state == "DISPUTED":
+        print(f"[DISPUTE] {event.tx_id} by {event.actor}")
+        # Page on-call, post to Slack, queue for manual review.
+        # Do NOT auto-respond. Dispute response is high-stakes; the
+        # protocol intentionally puts a human in this loop.
+
+runtime.get_events().on_state_changed(
+    {"provider": agent.address},
+    on_state,
+)
+```
+
+</TabItem>
+</Tabs>
+
 **Important**: do NOT auto-respond to disputes. Surface to a human queue, alert your on-call, or pause the agent. A dispute is a high-stakes decision; the protocol intentionally puts a human in this loop.
 
 ### Lower-level alternative (no Agent instance)
 
 If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), construct an `ACTPClient` directly and subscribe via the same runtime path:
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { ACTPClient, type BlockchainRuntime } from '@agirails/sdk';
@@ -157,6 +248,28 @@ runtime.getEvents().onStateChanged(
   },
 );
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails import ACTPClient
+
+client = await ACTPClient.create(mode="mainnet", wallet="auto")
+
+def on_state(event):
+    if event.new_state == "DISPUTED":
+        print(f"DISPUTE on tx: {event.tx_id}")
+
+runtime = client.advanced
+runtime.get_events().on_state_changed(
+    {"provider": client.get_address()},
+    on_state,
+)
+```
+
+</TabItem>
+</Tabs>
 
 Use this when you do not have an `Agent` instance to attach to.
 

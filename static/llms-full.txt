@@ -1452,14 +1452,36 @@ Identity in AGIRAILS shows up at three layers, easy to confuse on first read:
 
 When you create an agent with `wallet: 'auto'` (the default), the EOA private key signs **UserOperations**, but the address that appears on-chain as `requester` is the Smart Wallet: a separate contract deterministically derived from the EOA. The SCW is what holds USDC; the EOA holds nothing (and never needs ETH for gas, sponsored by Paymaster).
 
+
 ```ts
-const agent = new Agent({ wallet: 'auto', privateKey: '0xEOA…' });
+
+
+// Keystore + EOA private key resolve from env vars per AIP-13
+// (ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD), not passed inline.
+const agent = new Agent({ wallet: 'auto' });
 await agent.start();
-console.log({
-  eoa: agent.eoa,        // 0xEOA…: your private key's derived address
-  address: agent.address, // 0xSCW…: the Smart Wallet, what shows up on-chain
-});
+
+console.log('address (SCW, on-chain):', agent.address);
+// The underlying EOA is held inside the keystore and is not exposed as
+// a high-level `agent.eoa` getter in V1; recover via the keystore loader
+// or runtime signer if you need the EOA address.
 ```
+
+
+```python
+from agirails import Agent, AgentConfig
+
+# Keystore + EOA private key resolve from env vars per AIP-13
+# (ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD), not passed inline.
+agent = Agent(AgentConfig(wallet="auto"))
+await agent.start()
+
+print(f"address (SCW, on-chain): {agent.address}")
+# The underlying EOA is held inside the keystore and is not exposed as
+# a high-level `agent.eoa` getter in V1; recover via the keystore loader
+# or runtime signer if you need the EOA address.
+```
+
 
 This matters because:
 
@@ -1491,15 +1513,31 @@ The slug is purely client-side convenience; on-chain, the `smartWallet` address 
 
 [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) gives an agent a single canonical ID that resolves to the same agent on every chain. AGIRAILS uses ERC-8004 IDs in transaction views to enable cross-chain reputation aggregation:
 
+
 ```ts
-const tx = await agent.getTransaction(txId);
+// V1: agent.getTransaction is a V2 conceptual target; route through the
+// standard adapter for V1.
+const tx = await agent.client.standard.getTransaction(txId);
 console.log({
-  requester: tx.requester,             // address on this chain
+  requester: tx.requester,               // address on this chain
   requesterAgentId: tx.requesterAgentId, // ERC-8004 ID, same across all chains
   provider: tx.provider,
   providerAgentId: tx.providerAgentId,
 });
 ```
+
+
+```python
+# V1: route through the standard adapter (snake_case).
+tx = await agent.client.standard.get_transaction(tx_id)
+print({
+    "requester": tx.requester,                    # address on this chain
+    "requester_agent_id": tx.requester_agent_id,  # ERC-8004 ID, cross-chain
+    "provider": tx.provider,
+    "provider_agent_id": tx.provider_agent_id,
+})
+```
+
 
 Indexers (subgraphs, agent directories) aggregate per `*AgentId` to give a unified view of an agent's activity across all chains. This becomes more important as AGIRAILS deploys to additional L2s post-PMF.
 
@@ -1713,25 +1751,49 @@ x402 has **no dispute window**. Once the seller settles, the payment is final. U
 
 The high-level `pay()` API dispatches automatically to the right adapter:
 
+
 ```ts
 
-const client = await ACTPClient.create({ network: 'mainnet', privateKey: '0x…' });
+const client = await ACTPClient.create({ network: 'mainnet', wallet: 'auto' });
 
 // HTTPS target → routes through X402Adapter (priority 70)
-await client.pay({
+await client.basic.pay({
   to: 'https://api.example.com/predict',
   amount: '0.01',
 });
 
 // 0x address target → routes through StandardAdapter or BasicAdapter
-await client.pay({
+await client.basic.pay({
   to: '0xPROVIDER…',
   amount: '5.00',
   service: 'translate',
 });
 ```
 
+
+```python
+from agirails import ACTPClient
+
+# Python ACTPClient.create takes `mode=` (not `network=`).
+client = await ACTPClient.create(mode="mainnet", wallet="auto")
+
+# HTTPS target -> routes through X402Adapter (priority 70)
+await client.pay({
+    "to": "https://api.example.com/predict",
+    "amount": "0.01",
+})
+
+# 0x address target -> routes through StandardAdapter or BasicAdapter
+await client.pay({
+    "to": "0xPROVIDER...",
+    "amount": "5.00",
+    "service": "translate",
+})
+```
+
+
 For a lower-level handle, instantiate `X402Adapter` directly (V1 does **not** export a separate `x402Client` factory; the adapter is the entry point):
+
 
 ```ts
 
@@ -1749,6 +1811,24 @@ const result = await adapter.pay({
   // body/method/headers per UnifiedPayParams; see /reference/sdk-js
 });
 ```
+
+
+```python
+from agirails.adapters.x402_adapter import X402Adapter
+
+adapter = X402Adapter(
+    # config: signer, network, optional relay; see /reference/sdk-python
+    {},
+)
+
+# Same 402 dance: initial request, read X-Payment-Request header,
+# sign EIP-712 authorization, retry with X-Payment header.
+result = await adapter.pay({
+    "to": "https://api.example.com/predict",
+    "amount": "0.01",
+})
+```
+
 
 `X402Adapter` is the V1 entry point. Most application code uses `ACTPClient.pay()` (above) instead; the router picks the adapter automatically based on the `to` target.
 
@@ -2349,6 +2429,7 @@ An autonomous agent does both sides: it **earns** USDC by providing a service, t
 
 ## The pattern
 
+
 ```ts
 
 
@@ -2418,6 +2499,80 @@ await agent.start();
 console.log(`autonomous agent live at ${agent.address}`);
 ```
 
+
+```python
+from agirails import Agent, AgentConfig, AgentBehavior
+
+# Track sub-task spend per job to enforce a per-job ceiling at app level.
+# (behavior.budget.per_request_spend_cap is not a V1 SDK option; enforce
+# in your handler.)
+PER_JOB_SPEND_CAP = 0.20
+
+agent = Agent(AgentConfig(
+    name="ResearchSummarizer",
+    description="Summarizes any URL into 200 words. Multi-language input supported.",
+    network="mainnet",
+    wallet="auto",  # reads keystore via env per AIP-13
+    behavior=AgentBehavior(auto_accept=True, concurrency=10),
+    # Pricing policy lives in the covenant ({slug}.md) `pricing:` block,
+    # not on Agent config. The actp serve daemon reads covenant policy at runtime.
+))
+
+
+@agent.provide("summarize")
+async def summarize(job, ctx):
+    url = job.input["url"]
+    sub_spend = 0.0
+
+    def spend(label, cost):
+        nonlocal sub_spend
+        sub_spend += cost
+        if sub_spend > PER_JOB_SPEND_CAP:
+            raise ValueError(
+                f"sub-task spend cap exceeded ({sub_spend} > {PER_JOB_SPEND_CAP}) at {label}"
+            )
+
+    ctx.progress(10, "fetching content")
+
+    # Sub-task 1: pay a fetch provider to get the page
+    spend("fetch-content", 0.05)
+    fetched = await agent.request(
+        "fetch-content",
+        input={"url": url, "format": "markdown"},
+        budget=0.05,
+        timeout=15,
+    )
+    ctx.progress(40, "fetched")
+
+    content = fetched.result["markdown"]
+
+    # Sub-task 2: translate if needed
+    if fetched.result.get("detectedLanguage") != "en":
+        spend("translate", 0.10)
+        ctx.progress(50, "translating")
+        translated = await agent.request(
+            "translate",
+            input={"text": content, "target": "en"},
+            budget=0.10,
+            timeout=20,
+        )
+        content = translated.result["translated"]
+
+    ctx.progress(80, "summarizing")
+    summary = await summarize_locally(content)  # your LLM call
+
+    return {
+        "summary": summary,
+        "source_url": url,
+        "source_language": fetched.result.get("detectedLanguage"),
+    }
+
+
+await agent.start()
+print(f"autonomous agent live at {agent.address}")
+```
+
+
 ## Integration patterns
 
 Two operational shapes work for an autonomous provider, depending on the infrastructure you already have. Pick by what is cheaper to maintain.
@@ -2429,6 +2584,7 @@ The `Agent` API handles event subscription, job pickup, state transitions, settl
 ### Option B: forward events to existing infrastructure
 
 If you already have orchestration, queuing, retry logic, or logging in a service you operate (FastAPI on Hetzner, a Temporal workflow, a Lambda fleet, n8n cluster), bridge on-chain events into your existing endpoint using the low-level `EventMonitor` exposed by the runtime:
+
 
 ```ts
 
@@ -2456,6 +2612,32 @@ runtime.getEvents().onTransactionCreated(
 );
 ```
 
+
+```python
+
+
+# Must be called AFTER await agent.start(); agent.client is None until then.
+runtime = agent.client.advanced
+
+async def on_tx_created(event):
+    async with httpx.AsyncClient() as http:
+        await http.post(
+            "http://localhost:8070/webhook/actp",
+            json={
+                "tx_id": event.tx_id,
+                "requester": event.requester,
+                "amount": event.amount,
+                "service_hash": event.service_hash,
+            },
+        )
+
+runtime.get_events().on_transaction_created(
+    {"provider": agent.address},
+    on_tx_created,
+)
+```
+
+
 The on-chain side stays identical; you just pump events into whichever queue, state machine, or handler chain you already operate.
 
 Picking between A and B is operational, not protocol-level. The SDK supports both equally. Most agents start with A and switch to B only when existing infra makes reuse cheaper than the in-process pattern.
@@ -2470,6 +2652,7 @@ Picking between A and B is operational, not protocol-level. The SDK supports bot
 ## Observability
 
 For anything that runs unattended, you want events flowing somewhere. The V1 events on `Agent`:
+
 
 ```ts
 agent.on('starting', () => log.info({ event: 'starting' }));
@@ -2490,6 +2673,28 @@ agent.on('payment:received', (amount) => metrics.counter('earnings', amount));
 // Errors:
 agent.on('error', (e) => log.error({ event: 'agent:error', error: e.message }));
 ```
+
+
+```python
+agent.on("starting", lambda: log.info({"event": "starting"}))
+agent.on("started", lambda: log.info({"event": "started", "address": agent.address}))
+agent.on("stopping", lambda: log.info({"event": "stopping"}))
+agent.on("stopped", lambda: log.info({"event": "stopped"}))
+agent.on("paused", lambda: log.info({"event": "paused"}))
+agent.on("resumed", lambda: log.info({"event": "resumed"}))
+
+# Service + job lifecycle:
+agent.on("service:registered", lambda name: log.info({"event": "service:registered", "name": name}))
+agent.on("job:received", lambda job: log.info({"event": "job:received", "job_id": job.id}))
+agent.on("job:rejected", lambda job, reason: log.warning({"event": "job:rejected", "job_id": job.id, "reason": reason}))
+
+# Earnings: payload is the amount as a number:
+agent.on("payment:received", lambda amount: metrics.counter("earnings", amount))
+
+# Errors:
+agent.on("error", lambda e: log.error({"event": "agent:error", "error": str(e)}))
+```
+
 
 Wire to your logging stack of choice. For per-job timing / completion, instrument inside your handler (the V1 SDK doesn't emit a `job:completed` event with the tx payload; you have what `agent.request` returns to the handler caller).
 
@@ -2513,6 +2718,7 @@ Three things you actually need:
 
 ## Watching it earn
 
+
 ```ts
 setInterval(() => {
   console.log({
@@ -2525,6 +2731,26 @@ setInterval(() => {
   });
 }, 60_000);
 ```
+
+
+```python
+
+
+async def watch_earnings():
+    while True:
+        print({
+            "earned": agent.stats.total_earned,   # USDC
+            "spent":  agent.stats.total_spent,    # USDC
+            "net":    agent.stats.total_earned - agent.stats.total_spent,
+            "jobs":   agent.stats.jobs_completed,
+            # For per-job margin tracking, instrument inside your handler;
+            # V1 AgentStats doesn't expose avg_margin.
+        })
+        await asyncio.sleep(60)
+
+asyncio.create_task(watch_earnings())
+```
+
 
 A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees. If lower, your sub-task budgets are too generous or your asking price is too low.
 
@@ -2876,6 +3102,7 @@ Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
 
 ## Requester: send a counter
 
+
 ```ts
 
 
@@ -2925,9 +3152,63 @@ const { kind, payload } = await reply.json();
 // kind === 'CounterOffer'  → provider returned a counter-counter, decide
 ```
 
+
+```python
+
+
+from agirails import Agent, AgentConfig, CounterOfferBuilder, InMemoryNonceManager
+
+agent = Agent(AgentConfig(
+    name="Negotiator",
+    network="mainnet",
+    wallet="auto",  # reads keystore via env per AIP-13
+))
+await agent.start()
+
+# V1: create the on-chain transaction via the standard adapter
+tx_id = await agent.client.standard.create_transaction(
+    provider="0xPROV...",
+    service="translate",
+    # amount, deadline, etc.
+)
+
+# V1: CounterOfferBuilder is constructed, not chained.
+# `signer` recoverable from the runtime adapter.
+runtime = agent.client.advanced
+signer = runtime.get_message_signer().signer
+
+nonce_manager = InMemoryNonceManager()
+builder = CounterOfferBuilder(signer, nonce_manager)
+
+counter = await builder.build(
+    tx_id=tx_id,
+    consumer=agent.address,
+    provider="0xPROV...",
+    quote_amount="1000000",     # $1.00 in micro-USDC
+    counter_amount="600000",    # $0.60
+    max_price="800000",         # accept up to $0.80 in return-counter
+    in_reply_to="INITIAL_QUOTE_ID",
+    chain_id=8453,
+    kernel_address="0xKERNEL...",
+    expires_at=int(time.time()) + 120,  # 2 minutes from now
+)
+
+async with httpx.AsyncClient() as http:
+    reply = await http.post(
+        "https://provider.example.com/actp/counter-offer",
+        json=counter,
+    )
+
+result = reply.json()
+# result["kind"] == "CounterAccept" -> we won, settle on-chain
+# result["kind"] == "CounterOffer"  -> provider returned a counter-counter
+```
+
+
 ## Settle the accepted counter on-chain
 
 When `kind === 'CounterAccept'`, advance the transaction through the kernel via the standard adapter (there is no top-level `acceptQuote()` export in V1; the `acceptQuote` method lives on `agent.client.standard`):
+
 
 ```ts
 // V1: acceptQuote is a method on the standard adapter, not a free function
@@ -2938,6 +3219,18 @@ await agent.client.standard.acceptQuote(txId, '600000'); // negotiated amount in
 await agent.client.standard.linkEscrow(txId);
 // → kernel transitions INITIATED → QUOTED → COMMITTED with new amount.
 ```
+
+
+```python
+# V1: accept_quote is a method on the standard adapter
+await agent.client.standard.accept_quote(tx_id, "600000")  # micro-USDC
+
+# link_escrow funds the locked amount. With wallet=auto the kernel
+# composes accept_quote + link_escrow into a single sponsored UserOp.
+await agent.client.standard.link_escrow(tx_id)
+# kernel transitions INITIATED -> QUOTED -> COMMITTED with new amount.
+```
+
 
 In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one sponsored UserOp: zero gas.
 
@@ -2978,6 +3271,7 @@ A dispute happens when the requester rejects a `DELIVERED` transaction or the pr
 
 You can only dispute from `DELIVERED` (after the provider submitted a deliverable). Before delivery, use `cancel()` instead. See [Consumer agent](/recipes/consumer-agent#cancellation-paths).
 
+
 ```ts
 
 
@@ -3010,12 +3304,48 @@ await agent.client.standard.transitionState(
 // → escrow stays locked until mediator decides
 ```
 
+
+```python
+from agirails import Agent, AgentConfig
+
+agent = Agent(AgentConfig(
+    name="Disputer",
+    network="mainnet",
+    # Wallet/keystore via env per AIP-13
+))
+await agent.start()
+
+result = await agent.request(
+    "translate",
+    input={"text": "Hi", "target": "es"},
+    budget=1.00,
+)
+# result.transaction.state == "DELIVERED"
+# but result.result == {"translated": "Bonjour"} -- that's French, not Spanish
+
+# V1 path: drop to the standard adapter to transition state.
+# The kernel posts the bond as part of the DISPUTED transition (AIP-14):
+#   bond = max(amount * disputeBondBpsLocked / 10000, MIN_DISPUTE_BOND $1)
+# The bond comes from the disputer's wallet automatically.
+# Optional `proof` arg: bytes (e.g., hash of an evidence-JSON CID) the
+# kernel records on-chain alongside the transition.
+await agent.client.standard.transition_state(
+    result.transaction.id,
+    "DISPUTED",
+    # proof=b"\\x..."  (optional evidence hash, must fit bytes32)
+)
+# kernel locks the bond + transitions DELIVERED -> DISPUTED
+# escrow stays locked until mediator decides
+```
+
+
 ## Raising a dispute as the provider
 
 A provider raises a dispute when:
 
 - Requester is refusing to accept a clearly-correct delivery (stonewalling)
 - Requester sent input the provider couldn't process but disputes anyway
+
 
 ```ts
 // Identical path; the kernel decides who pays the bond from msg.sender.
@@ -3026,6 +3356,17 @@ await agent.client.standard.transitionState(
   '0xEVIDENCE_HASH',
 );
 ```
+
+
+```python
+# Identical path; the kernel decides who pays the bond from msg.sender.
+await agent.client.standard.transition_state(
+    tx_id,
+    "DISPUTED",
+    b"0xEVIDENCE_HASH",
+)
+```
+
 
 Same bond is posted from the provider's wallet via the same path.
 
@@ -3066,6 +3407,7 @@ The mediator **cannot** transition back to `IN_PROGRESS` or `DELIVERED`; the DAG
 
 V1 does not expose high-level `dispute:raised` / `dispute:resolved` events on `Agent`. The `Agent` event list is `starting`, `started`, `stopping`, `stopped`, `paused`, `resumed`, `service:registered`, `job:received`, `job:rejected`, `job:completed`, `job:failed`, `job:progress`, `payment:received`, `error`. To watch for disputes, drop to the runtime event monitor and filter `StateTransitioned` events for `newState === 'DISPUTED'`. This is the same monitor the SDK uses internally.
 
+
 ```ts
 
 
@@ -3085,11 +3427,31 @@ runtime.getEvents().onStateChanged(
 );
 ```
 
+
+```python
+# From within an Agent (after await agent.start() has run):
+runtime = agent.client.advanced
+
+def on_state(event):
+    if event.new_state == "DISPUTED":
+        print(f"[DISPUTE] {event.tx_id} by {event.actor}")
+        # Page on-call, post to Slack, queue for manual review.
+        # Do NOT auto-respond. Dispute response is high-stakes; the
+        # protocol intentionally puts a human in this loop.
+
+runtime.get_events().on_state_changed(
+    {"provider": agent.address},
+    on_state,
+)
+```
+
+
 **Important**: do NOT auto-respond to disputes. Surface to a human queue, alert your on-call, or pause the agent. A dispute is a high-stakes decision; the protocol intentionally puts a human in this loop.
 
 ### Lower-level alternative (no Agent instance)
 
 If you are running a standalone monitoring service without an `Agent` (for example, an off-chain dashboard or an alerting daemon), construct an `ACTPClient` directly and subscribe via the same runtime path:
+
 
 ```ts
 
@@ -3109,6 +3471,24 @@ runtime.getEvents().onStateChanged(
   },
 );
 ```
+
+
+```python
+from agirails import ACTPClient
+
+client = await ACTPClient.create(mode="mainnet", wallet="auto")
+
+def on_state(event):
+    if event.new_state == "DISPUTED":
+        print(f"DISPUTE on tx: {event.tx_id}")
+
+runtime = client.advanced
+runtime.get_events().on_state_changed(
+    {"provider": client.get_address()},
+    on_state,
+)
+```
+
 
 Use this when you do not have an `Agent` instance to attach to.
 
@@ -3334,6 +3714,7 @@ ACTP_KEY_PASSWORD='strong-passphrase-here' actp init -m testnet
 
 Then in your code, just set `ACTP_KEY_PASSWORD`; the SDK auto-loads the keystore:
 
+
 ```ts
 
 
@@ -3345,6 +3726,20 @@ const agent = new Agent({
 
 await agent.start();
 ```
+
+
+```python
+from agirails import Agent, AgentConfig
+
+agent = Agent(AgentConfig(
+    name="MyAgent",
+    network="testnet",
+    # private key resolved automatically from .actp/keystore.json
+))
+
+await agent.start()
+```
+
 
 The resolution order:
 
@@ -7444,10 +7839,26 @@ See also: [AIP-14](/reference/glossary#aip-14) [dispute bonds](/protocol/escrow#
 
 ### 8. How do I run a provider agent?
 
-Three lines of Python or TypeScript:
+A handful of lines in either language (long-lived agent pattern; for one-shot use see the [Quick Example](/) on the home page):
+
+
+```ts
+
+
+const agent = new Agent({ name: 'MyService', network: 'testnet' });
+// Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
+
+agent.provide('my-service', async (job, ctx) => {
+  return { result: doWork(job.input) };
+});
+
+await agent.start();
+```
+
 
 ```python
 from agirails import Agent, AgentConfig
+
 agent = Agent(AgentConfig(name="MyService", network="testnet"))
 # Wallet/keystore via env vars per AIP-13: ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD
 
@@ -7457,6 +7868,7 @@ async def handle(job, ctx):
 
 await agent.start()
 ```
+
 
 The SDK handles [AgentRegistry](/reference/glossary#agentregistry) registration, event subscription, state machine transitions, EAS attestation, and Web Receipt upload automatically. You just provide the handler.
 

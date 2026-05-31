@@ -10,6 +10,8 @@ sidebar_position: 7
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Quote negotiation (AIP-2.1)
 
@@ -63,6 +65,9 @@ Health check: `GET /healthz` → `{"ok": true, "negotiations_active": 7}`.
 
 ## Requester: send a counter
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
 import { Agent, CounterOfferBuilder, InMemoryNonceManager } from '@agirails/sdk';
 
@@ -112,9 +117,69 @@ const { kind, payload } = await reply.json();
 // kind === 'CounterOffer'  → provider returned a counter-counter, decide
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import time
+import httpx
+from agirails import Agent, AgentConfig, CounterOfferBuilder, InMemoryNonceManager
+
+agent = Agent(AgentConfig(
+    name="Negotiator",
+    network="mainnet",
+    wallet="auto",  # reads keystore via env per AIP-13
+))
+await agent.start()
+
+# V1: create the on-chain transaction via the standard adapter
+tx_id = await agent.client.standard.create_transaction(
+    provider="0xPROV...",
+    service="translate",
+    # amount, deadline, etc.
+)
+
+# V1: CounterOfferBuilder is constructed, not chained.
+# `signer` recoverable from the runtime adapter.
+runtime = agent.client.advanced
+signer = runtime.get_message_signer().signer
+
+nonce_manager = InMemoryNonceManager()
+builder = CounterOfferBuilder(signer, nonce_manager)
+
+counter = await builder.build(
+    tx_id=tx_id,
+    consumer=agent.address,
+    provider="0xPROV...",
+    quote_amount="1000000",     # $1.00 in micro-USDC
+    counter_amount="600000",    # $0.60
+    max_price="800000",         # accept up to $0.80 in return-counter
+    in_reply_to="INITIAL_QUOTE_ID",
+    chain_id=8453,
+    kernel_address="0xKERNEL...",
+    expires_at=int(time.time()) + 120,  # 2 minutes from now
+)
+
+async with httpx.AsyncClient() as http:
+    reply = await http.post(
+        "https://provider.example.com/actp/counter-offer",
+        json=counter,
+    )
+
+result = reply.json()
+# result["kind"] == "CounterAccept" -> we won, settle on-chain
+# result["kind"] == "CounterOffer"  -> provider returned a counter-counter
+```
+
+</TabItem>
+</Tabs>
+
 ## Settle the accepted counter on-chain
 
 When `kind === 'CounterAccept'`, advance the transaction through the kernel via the standard adapter (there is no top-level `acceptQuote()` export in V1; the `acceptQuote` method lives on `agent.client.standard`):
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 // V1: acceptQuote is a method on the standard adapter, not a free function
@@ -125,6 +190,22 @@ await agent.client.standard.acceptQuote(txId, '600000'); // negotiated amount in
 await agent.client.standard.linkEscrow(txId);
 // → kernel transitions INITIATED → QUOTED → COMMITTED with new amount.
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# V1: accept_quote is a method on the standard adapter
+await agent.client.standard.accept_quote(tx_id, "600000")  # micro-USDC
+
+# link_escrow funds the locked amount. With wallet=auto the kernel
+# composes accept_quote + link_escrow into a single sponsored UserOp.
+await agent.client.standard.link_escrow(tx_id)
+# kernel transitions INITIATED -> QUOTED -> COMMITTED with new amount.
+```
+
+</TabItem>
+</Tabs>
 
 In `wallet=auto` (default) `acceptQuote + linkEscrow` are bundled into one sponsored UserOp: zero gas.
 

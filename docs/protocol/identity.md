@@ -9,6 +9,9 @@ tags: [identity, ERC-8004, AgentRegistry, smart-wallet]
 sidebar_position: 8
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Agent identity
 
 <img src="/img/diagrams/identity-model.svg" alt="AGIRAILS identity layers: EOA, Smart Wallet, AgentRegistry slug, ERC-8004 cross-chain ID" style={{maxWidth: '100%', height: 'auto', margin: '1.5rem 0'}} />
@@ -28,14 +31,42 @@ Identity in AGIRAILS shows up at three layers, easy to confuse on first read:
 
 When you create an agent with `wallet: 'auto'` (the default), the EOA private key signs **UserOperations**, but the address that appears on-chain as `requester` is the Smart Wallet: a separate contract deterministically derived from the EOA. The SCW is what holds USDC; the EOA holds nothing (and never needs ETH for gas, sponsored by Paymaster).
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
-const agent = new Agent({ wallet: 'auto', privateKey: '0xEOA…' });
+import { Agent } from '@agirails/sdk';
+
+// Keystore + EOA private key resolve from env vars per AIP-13
+// (ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD), not passed inline.
+const agent = new Agent({ wallet: 'auto' });
 await agent.start();
-console.log({
-  eoa: agent.eoa,        // 0xEOA…: your private key's derived address
-  address: agent.address, // 0xSCW…: the Smart Wallet, what shows up on-chain
-});
+
+console.log('address (SCW, on-chain):', agent.address);
+// The underlying EOA is held inside the keystore and is not exposed as
+// a high-level `agent.eoa` getter in V1; recover via the keystore loader
+// or runtime signer if you need the EOA address.
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails import Agent, AgentConfig
+
+# Keystore + EOA private key resolve from env vars per AIP-13
+# (ACTP_KEYSTORE_BASE64 + ACTP_KEY_PASSWORD), not passed inline.
+agent = Agent(AgentConfig(wallet="auto"))
+await agent.start()
+
+print(f"address (SCW, on-chain): {agent.address}")
+# The underlying EOA is held inside the keystore and is not exposed as
+# a high-level `agent.eoa` getter in V1; recover via the keystore loader
+# or runtime signer if you need the EOA address.
+```
+
+</TabItem>
+</Tabs>
 
 This matters because:
 
@@ -67,15 +98,37 @@ The slug is purely client-side convenience; on-chain, the `smartWallet` address 
 
 [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) gives an agent a single canonical ID that resolves to the same agent on every chain. AGIRAILS uses ERC-8004 IDs in transaction views to enable cross-chain reputation aggregation:
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
-const tx = await agent.getTransaction(txId);
+// V1: agent.getTransaction is a V2 conceptual target; route through the
+// standard adapter for V1.
+const tx = await agent.client.standard.getTransaction(txId);
 console.log({
-  requester: tx.requester,             // address on this chain
+  requester: tx.requester,               // address on this chain
   requesterAgentId: tx.requesterAgentId, // ERC-8004 ID, same across all chains
   provider: tx.provider,
   providerAgentId: tx.providerAgentId,
 });
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+# V1: route through the standard adapter (snake_case).
+tx = await agent.client.standard.get_transaction(tx_id)
+print({
+    "requester": tx.requester,                    # address on this chain
+    "requester_agent_id": tx.requester_agent_id,  # ERC-8004 ID, cross-chain
+    "provider": tx.provider,
+    "provider_agent_id": tx.provider_agent_id,
+})
+```
+
+</TabItem>
+</Tabs>
 
 Indexers (subgraphs, agent directories) aggregate per `*AgentId` to give a unified view of an agent's activity across all chains. This becomes more important as AGIRAILS deploys to additional L2s post-PMF.
 

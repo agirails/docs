@@ -10,6 +10,8 @@ sidebar_position: 4
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Build an autonomous agent
 
@@ -25,6 +27,9 @@ An autonomous agent does both sides: it **earns** USDC by providing a service, t
 4. Returns the summary, settles, banks the net.
 
 ## The pattern
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -95,6 +100,84 @@ await agent.start();
 console.log(`autonomous agent live at ${agent.address}`);
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+from agirails import Agent, AgentConfig, AgentBehavior
+
+# Track sub-task spend per job to enforce a per-job ceiling at app level.
+# (behavior.budget.per_request_spend_cap is not a V1 SDK option; enforce
+# in your handler.)
+PER_JOB_SPEND_CAP = 0.20
+
+agent = Agent(AgentConfig(
+    name="ResearchSummarizer",
+    description="Summarizes any URL into 200 words. Multi-language input supported.",
+    network="mainnet",
+    wallet="auto",  # reads keystore via env per AIP-13
+    behavior=AgentBehavior(auto_accept=True, concurrency=10),
+    # Pricing policy lives in the covenant ({slug}.md) `pricing:` block,
+    # not on Agent config. The actp serve daemon reads covenant policy at runtime.
+))
+
+
+@agent.provide("summarize")
+async def summarize(job, ctx):
+    url = job.input["url"]
+    sub_spend = 0.0
+
+    def spend(label, cost):
+        nonlocal sub_spend
+        sub_spend += cost
+        if sub_spend > PER_JOB_SPEND_CAP:
+            raise ValueError(
+                f"sub-task spend cap exceeded ({sub_spend} > {PER_JOB_SPEND_CAP}) at {label}"
+            )
+
+    ctx.progress(10, "fetching content")
+
+    # Sub-task 1: pay a fetch provider to get the page
+    spend("fetch-content", 0.05)
+    fetched = await agent.request(
+        "fetch-content",
+        input={"url": url, "format": "markdown"},
+        budget=0.05,
+        timeout=15,
+    )
+    ctx.progress(40, "fetched")
+
+    content = fetched.result["markdown"]
+
+    # Sub-task 2: translate if needed
+    if fetched.result.get("detectedLanguage") != "en":
+        spend("translate", 0.10)
+        ctx.progress(50, "translating")
+        translated = await agent.request(
+            "translate",
+            input={"text": content, "target": "en"},
+            budget=0.10,
+            timeout=20,
+        )
+        content = translated.result["translated"]
+
+    ctx.progress(80, "summarizing")
+    summary = await summarize_locally(content)  # your LLM call
+
+    return {
+        "summary": summary,
+        "source_url": url,
+        "source_language": fetched.result.get("detectedLanguage"),
+    }
+
+
+await agent.start()
+print(f"autonomous agent live at {agent.address}")
+```
+
+</TabItem>
+</Tabs>
+
 ## Integration patterns
 
 Two operational shapes work for an autonomous provider, depending on the infrastructure you already have. Pick by what is cheaper to maintain.
@@ -106,6 +189,9 @@ The `Agent` API handles event subscription, job pickup, state transitions, settl
 ### Option B: forward events to existing infrastructure
 
 If you already have orchestration, queuing, retry logic, or logging in a service you operate (FastAPI on Hetzner, a Temporal workflow, a Lambda fleet, n8n cluster), bridge on-chain events into your existing endpoint using the low-level `EventMonitor` exposed by the runtime:
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import type { BlockchainRuntime } from '@agirails/sdk';
@@ -133,6 +219,36 @@ runtime.getEvents().onTransactionCreated(
 );
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import httpx
+
+# Must be called AFTER await agent.start(); agent.client is None until then.
+runtime = agent.client.advanced
+
+async def on_tx_created(event):
+    async with httpx.AsyncClient() as http:
+        await http.post(
+            "http://localhost:8070/webhook/actp",
+            json={
+                "tx_id": event.tx_id,
+                "requester": event.requester,
+                "amount": event.amount,
+                "service_hash": event.service_hash,
+            },
+        )
+
+runtime.get_events().on_transaction_created(
+    {"provider": agent.address},
+    on_tx_created,
+)
+```
+
+</TabItem>
+</Tabs>
+
 The on-chain side stays identical; you just pump events into whichever queue, state machine, or handler chain you already operate.
 
 Picking between A and B is operational, not protocol-level. The SDK supports both equally. Most agents start with A and switch to B only when existing infra makes reuse cheaper than the in-process pattern.
@@ -147,6 +263,9 @@ Picking between A and B is operational, not protocol-level. The SDK supports bot
 ## Observability
 
 For anything that runs unattended, you want events flowing somewhere. The V1 events on `Agent`:
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 agent.on('starting', () => log.info({ event: 'starting' }));
@@ -167,6 +286,32 @@ agent.on('payment:received', (amount) => metrics.counter('earnings', amount));
 // Errors:
 agent.on('error', (e) => log.error({ event: 'agent:error', error: e.message }));
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+agent.on("starting", lambda: log.info({"event": "starting"}))
+agent.on("started", lambda: log.info({"event": "started", "address": agent.address}))
+agent.on("stopping", lambda: log.info({"event": "stopping"}))
+agent.on("stopped", lambda: log.info({"event": "stopped"}))
+agent.on("paused", lambda: log.info({"event": "paused"}))
+agent.on("resumed", lambda: log.info({"event": "resumed"}))
+
+# Service + job lifecycle:
+agent.on("service:registered", lambda name: log.info({"event": "service:registered", "name": name}))
+agent.on("job:received", lambda job: log.info({"event": "job:received", "job_id": job.id}))
+agent.on("job:rejected", lambda job, reason: log.warning({"event": "job:rejected", "job_id": job.id, "reason": reason}))
+
+# Earnings: payload is the amount as a number:
+agent.on("payment:received", lambda amount: metrics.counter("earnings", amount))
+
+# Errors:
+agent.on("error", lambda e: log.error({"event": "agent:error", "error": str(e)}))
+```
+
+</TabItem>
+</Tabs>
 
 Wire to your logging stack of choice. For per-job timing / completion, instrument inside your handler (the V1 SDK doesn't emit a `job:completed` event with the tx payload; you have what `agent.request` returns to the handler caller).
 
@@ -190,6 +335,9 @@ Three things you actually need:
 
 ## Watching it earn
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
 setInterval(() => {
   console.log({
@@ -202,6 +350,30 @@ setInterval(() => {
   });
 }, 60_000);
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import asyncio
+
+async def watch_earnings():
+    while True:
+        print({
+            "earned": agent.stats.total_earned,   # USDC
+            "spent":  agent.stats.total_spent,    # USDC
+            "net":    agent.stats.total_earned - agent.stats.total_spent,
+            "jobs":   agent.stats.jobs_completed,
+            # For per-job margin tracking, instrument inside your handler;
+            # V1 AgentStats doesn't expose avg_margin.
+        })
+        await asyncio.sleep(60)
+
+asyncio.create_task(watch_earnings())
+```
+
+</TabItem>
+</Tabs>
 
 A healthy autonomous agent retains > 30% of revenue after sub-task spend + fees. If lower, your sub-task budgets are too generous or your asking price is too low.
 
