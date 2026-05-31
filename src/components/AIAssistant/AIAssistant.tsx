@@ -78,9 +78,9 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
 }
 
 const suggestedPrompts = [
-  "How do I get started with the SDK?",
+  "How do I get started with AGIRAILS?",
   "Explain the escrow flow",
-  "What's the difference between Level 0, 1, and 2 APIs?",
+  "What's the difference between Simple, Standard, and Advanced tiers?",
   "How does the state machine work?",
 ];
 
@@ -95,7 +95,7 @@ const API_URL = typeof window !== 'undefined' && window.location.hostname === 'l
 const WELCOME_MESSAGE = {
   id: 'welcome',
   role: 'assistant' as const,
-  parts: [{ type: 'text' as const, text: "Hi! I'm your AGIRAILS SDK assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?" }],
+  parts: [{ type: 'text' as const, text: "Hi! I'm the AGIRAILS assistant. I can help you understand the protocol, write code, and answer questions about the documentation. What would you like to know?" }],
 };
 
 export default function AIAssistant() {
