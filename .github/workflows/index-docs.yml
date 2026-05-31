@@ -1,0 +1,138 @@
+name: Refresh RAG index (Upstash Vector)
+
+# Re-indexes the AI assistant's RAG content into Upstash Vector. The
+# indexer pulls from the docs surface, the truth-ledger artefacts, and
+# the upstream SDK / kernel / claude-plugin / AIP source repos.
+#
+# Without this workflow the index drifts every time docs change, files
+# get renamed, or the SDK surface moves. Pre-Wave-A.29 the only refresh
+# path was "Damir runs the script locally", which produced ~weeks-old
+# stale data in production.
+#
+# Four triggers:
+#   - workflow_dispatch: manual (forced re-index, e.g. after big changes)
+#   - schedule: daily safety net (07:00 UTC, 1h after truth-ledger so
+#     the manifest is fresh by the time we index it). GitHub Actions
+#     cron over Vercel Cron because the indexer checks out 5 sibling
+#     source repos (sdk-js, sdk-python, actp-kernel, aips, claude-plugin);
+#     that workload fits actions/checkout natively, not a 300s Vercel
+#     function. Same pattern as truth-ledger-refresh.yml.
+#   - repository_dispatch (event: 'source-released'): downstream from
+#     SDK release webhooks (same trigger truth-ledger uses)
+#   - push on main: when docs / static llms / index-docs script change
+#
+# The indexer wipes the Upstash index by default before re-uploading,
+# so orphan chunks from removed / renamed source files (e.g. removed
+# .audit/* pages, renamed /architecture/operate -> /protocol/walk-away)
+# don't accumulate.
+#
+# Required Actions secrets:
+#   UPSTASH_VECTOR_REST_URL    (e.g. https://*.upstash.io)
+#   UPSTASH_VECTOR_REST_TOKEN  (write-scope token for the vector index)
+#   AGIRAILS_APP_PAT           (already present; for cloning private repo)
+#
+# These mirror what's in docs-site/.env.local for local runs.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 07:00 UTC. Truth-ledger runs at 06:00 UTC so the
+    # sdk-manifest.json the indexer pulls in is the freshest one.
+    - cron: '0 7 * * *'
+  repository_dispatch:
+    types: [source-released]
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'static/llms.txt'
+      - 'static/llms-full.txt'
+      - 'static/sdk-manifest.json'
+      - 'scripts/index-docs.ts'
+      - 'api/chat.ts'
+
+# Don't pile up indexer runs when many docs commits land in quick
+# succession; the latest one supersedes earlier in-flight runs.
+concurrency:
+  group: index-docs
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      # Workspace layout mirrors the local-dev / truth-ledger layout
+      # so the indexer's relative paths resolve identically in CI:
+      #   $GITHUB_WORKSPACE/
+      #     docs-site/
+      #     SDK and Runtime/
+      #       sdk-js/
+      #       python-sdk-v2/
+      #       claude-plugin/
+      #     Protocol/
+      #       actp-kernel/
+      #       aips/
+
+      - name: Checkout docs-site
+        uses: actions/checkout@v4
+        with:
+          path: docs-site
+
+      - name: Checkout sdk-js
+        uses: actions/checkout@v4
+        with:
+          repository: agirails/sdk-js
+          path: 'SDK and Runtime/sdk-js'
+
+      - name: Checkout sdk-python (local path python-sdk-v2)
+        uses: actions/checkout@v4
+        with:
+          repository: agirails/sdk-python
+          path: 'SDK and Runtime/python-sdk-v2'
+
+      - name: Checkout actp-kernel
+        uses: actions/checkout@v4
+        with:
+          repository: agirails/actp-kernel
+          path: Protocol/actp-kernel
+
+      - name: Checkout AIPs
+        uses: actions/checkout@v4
+        with:
+          repository: agirails/aips
+          path: Protocol/aips
+        continue-on-error: true
+
+      - name: Checkout claude-plugin
+        uses: actions/checkout@v4
+        with:
+          repository: agirails/claude-plugin
+          path: 'SDK and Runtime/claude-plugin'
+        continue-on-error: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install docs-site deps
+        working-directory: docs-site
+        run: npm ci
+
+      - name: Run RAG indexer (wipe + reindex)
+        working-directory: docs-site
+        env:
+          UPSTASH_VECTOR_REST_URL: ${{ secrets.UPSTASH_VECTOR_REST_URL }}
+          UPSTASH_VECTOR_REST_TOKEN: ${{ secrets.UPSTASH_VECTOR_REST_TOKEN }}
+        run: npm run index-docs
+
+      - name: Report
+        if: always()
+        run: |
+          echo "Index refresh complete on ${{ github.event_name }}."
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

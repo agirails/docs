@@ -640,13 +640,20 @@ async function uploadChunks(chunks: DocumentChunk[]): Promise<void> {
  * Main indexing function
  */
 async function main() {
+  // Flag: --no-wipe skips the index reset (incremental upsert only).
+  // Default is wipe-then-reindex so orphan chunks from removed / renamed
+  // source files don't accumulate. Was the root cause of pre-Wave A.29
+  // RAG staleness.
+  const noWipe = process.argv.includes('--no-wipe');
+
   console.log('='.repeat(60));
   console.log('AGIRAILS Documentation Indexer v3.0');
   console.log('='.repeat(60));
+  console.log(`Mode: ${noWipe ? 'incremental upsert (no wipe)' : 'wipe + reindex'}`);
   console.log('\nIndexing:');
   console.log('  - Documentation (concepts, guides)');
   console.log('  - Static files (llms.txt, llms-full.txt, sdk-manifest.json)');
-  console.log('  - TypeScript SDK (Level 0, Level 1, Level 2, Adapters)');
+  console.log('  - TypeScript SDK (Simple, Standard, Advanced tiers)');
   console.log('  - Python SDK (full parity)');
   console.log('  - Claude Plugin (MCP integration)');
   console.log('  - AIPs (AGIRAILS Improvement Proposals)');
@@ -665,6 +672,22 @@ async function main() {
     url: process.env.UPSTASH_VECTOR_REST_URL,
     token: process.env.UPSTASH_VECTOR_REST_TOKEN,
   });
+
+  // Wipe the index before reindex unless --no-wipe. This is one Upstash
+  // API call regardless of vector count, so the cost is constant. Without
+  // this, chunks from removed source files (e.g., the Wave A.24 .audit/
+  // purge or the A.26 architecture/operate -> protocol/walk-away rename)
+  // stay in the index forever as orphans and the RAG returns dead links.
+  if (!noWipe) {
+    console.log('\n0. Wiping existing index...');
+    try {
+      await vectorIndex.reset();
+      console.log('  Index wiped.');
+    } catch (error) {
+      console.error('  Reset failed:', error);
+      console.error('  Continuing with upsert (orphans may remain).');
+    }
+  }
 
   const allChunks: DocumentChunk[] = [];
 

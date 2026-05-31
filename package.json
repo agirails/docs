@@ -13,6 +13,8 @@
     "regen-report-metrics": "tsx scripts/regen-report-metrics.ts",
     "render-reference": "tsx scripts/render-reference.ts",
     "verify:recipes": "tsx scripts/verify-recipes.ts",
+    "index-docs": "tsx scripts/index-docs.ts",
+    "index-docs:no-wipe": "tsx scripts/index-docs.ts --no-wipe",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
