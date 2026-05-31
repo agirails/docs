@@ -40,6 +40,7 @@ import * as path from 'node:path';
 const ROOT = path.resolve(__dirname, '..');
 const VERIFY_RECIPES_PATH = path.join(ROOT, 'scripts', 'verify-recipes.ts');
 const MANIFEST_PATH = path.join(ROOT, 'static', 'sdk-manifest.json');
+const GLOSSARY_PATH = path.join(ROOT, 'docs', 'reference', 'glossary.md');
 const OUTPUT_PATH = path.join(ROOT, 'api', '_chat-grounding.ts');
 
 // ============================================================
@@ -216,18 +217,137 @@ function formatSurfaceGroundingBlock(manifest: Manifest): string {
 }
 
 // ============================================================
-// 3. Emit api/_chat-grounding.ts
+// 3. Extract glossary digest from docs/reference/glossary.md
+// ============================================================
+//
+// RAG retrieval misses on alphanumeric tokens like "INV-30", "AIP-14",
+// "EAS", "EOA", "SCW" because their embedding similarity to surrounding
+// prose is weak — these are short tight strings that don't carry
+// semantic context until the term is expanded. Live test caught it:
+// "What's INV-30?" came back as "I don't have specific information" even
+// though /protocol/escrow#inv-30--per-transaction-locked-bps is fully
+// documented and indexed.
+//
+// Fix: extract every `### Term` heading from glossary.md, take the first
+// sentence/paragraph as the definition, capture the explicit anchor ID
+// if present (via `{#anchor-id}`), and emit a compact lookup table. The
+// chat now has these definitions in-prompt — no RAG retrieval needed
+// for high-traffic protocol artifacts.
+
+interface GlossaryEntry {
+  term: string;
+  anchor: string;
+  definition: string;
+}
+
+function extractGlossaryDigest(): GlossaryEntry[] {
+  if (!fs.existsSync(GLOSSARY_PATH)) {
+    console.warn(`[generate-chat-grounding] WARN: glossary not found at ${GLOSSARY_PATH}`);
+    return [];
+  }
+  const src = fs.readFileSync(GLOSSARY_PATH, 'utf-8');
+
+  // Strip frontmatter.
+  const body = src.replace(/^---[\s\S]*?\n---\n/, '');
+
+  // Slugify a heading to Docusaurus' default kebab-case anchor. This is
+  // a simplified version (lowercases, replaces non-alphanumeric runs
+  // with dashes, trims dashes). Explicit `{#anchor}` IDs override.
+  const slugify = (s: string): string =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const entries: GlossaryEntry[] = [];
+  // Heading line: `### Term {#optional-anchor}`. Capture both the
+  // start of the heading line (headingStart) and the start of the
+  // body content (bodyStart = right after the heading). Need both
+  // because each entry's slice runs from THIS bodyStart up to the
+  // NEXT heading's headingStart (not bodyStart, which already cuts
+  // into the next entry's content).
+  const headingRegex = /^###\s+(.+?)(?:\s+\{#([^}]+)\})?\s*$/gm;
+  let m: RegExpExecArray | null;
+  const positions: Array<{ term: string; anchor: string; headingStart: number; bodyStart: number }> = [];
+  while ((m = headingRegex.exec(body)) !== null) {
+    const term = m[1].trim();
+    const anchor = (m[2] || slugify(term)).trim();
+    positions.push({
+      term,
+      anchor,
+      headingStart: m.index,
+      bodyStart: m.index + m[0].length,
+    });
+  }
+
+  for (let i = 0; i < positions.length; i++) {
+    const { term, anchor, bodyStart } = positions[i];
+    // Slice up to the NEXT heading's start (or any ## section break
+    // that comes first — the glossary uses ## as section dividers).
+    const upperBound = i + 1 < positions.length ? positions[i + 1].headingStart : body.length;
+    const between = body.slice(bodyStart, upperBound);
+    // If a ## section heading appears in `between`, truncate at it.
+    const sectionBreak = between.search(/\n## /);
+    const slice = (sectionBreak >= 0 ? between.slice(0, sectionBreak) : between).trim();
+
+    // Take the first non-empty paragraph after the heading. Skip any
+    // "See:" cross-reference lines and "**Bold-prefix**" tag-line styles
+    // that don't carry the definition.
+    const paragraphs = slice.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+    let definition = '';
+    for (const p of paragraphs) {
+      // Skip pure "See: [...]" cross-refs at top of an entry.
+      if (/^See:?\s/.test(p) && !definition) continue;
+      definition = p;
+      break;
+    }
+    if (!definition) continue;
+
+    // Strip markdown formatting and links to keep the digest compact.
+    definition = definition
+      .replace(/\*\*([^*]+)\*\*/g, '$1') // **bold** -> bold
+      .replace(/\*([^*]+)\*/g, '$1')      // *italic* -> italic
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [text](link) -> text
+      .replace(/`([^`]+)`/g, '$1')        // `code` -> code
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Cap each definition at ~200 chars to keep the digest tight.
+    if (definition.length > 240) {
+      definition = definition.slice(0, 230).replace(/\s+\S*$/, '') + '...';
+    }
+
+    entries.push({ term, anchor, definition });
+  }
+
+  return entries;
+}
+
+function formatGlossaryBlock(entries: GlossaryEntry[]): string {
+  const lines: string[] = [];
+  lines.push('CANONICAL GLOSSARY DIGEST — extracted from docs/reference/glossary.md.');
+  lines.push('Use this as the AUTHORITATIVE definition for any term listed below, even if RAG retrieval came back weak. Each term links to its canonical glossary entry (/reference/glossary#anchor).');
+  lines.push('');
+  for (const e of entries) {
+    lines.push(`- **${e.term}** (/reference/glossary#${e.anchor}): ${e.definition}`);
+  }
+  return lines.join('\n');
+}
+
+// ============================================================
+// 4. Emit api/_chat-grounding.ts
 // ============================================================
 
-function emit(badPatternsBlock: string, surfaceGroundingBlock: string): void {
+function emit(badPatternsBlock: string, surfaceGroundingBlock: string, glossaryBlock: string): void {
   // The chat function runs on Vercel edge runtime which can't `fs.readFile`
   // at runtime, so we bundle the blocks as TS string constants. Imports work
   // fine on edge.
   const content = `// AUTO-GENERATED by scripts/generate-chat-grounding.ts
 // DO NOT EDIT BY HAND. Regenerate via \`npm run prebuild\` (runs in CI on
 // every Vercel deploy). Source of truth:
-//   - scripts/verify-recipes.ts (BAD_PATTERNS)
-//   - static/sdk-manifest.json  (SURFACE_GROUNDING)
+//   - scripts/verify-recipes.ts        (BAD_PATTERNS)
+//   - static/sdk-manifest.json         (SURFACE_GROUNDING)
+//   - docs/reference/glossary.md       (GLOSSARY_DIGEST)
 // Touch those files; this re-renders.
 
 /* eslint-disable */
@@ -236,13 +356,16 @@ export const BAD_PATTERNS_BLOCK = ${JSON.stringify(badPatternsBlock)};
 
 export const SURFACE_GROUNDING_BLOCK = ${JSON.stringify(surfaceGroundingBlock)};
 
+export const GLOSSARY_DIGEST_BLOCK = ${JSON.stringify(glossaryBlock)};
+
 export const CHAT_GROUNDING_GENERATED_AT = ${JSON.stringify(new Date().toISOString())};
 `;
 
   fs.writeFileSync(OUTPUT_PATH, content, 'utf-8');
   console.log(`[generate-chat-grounding] wrote ${path.relative(ROOT, OUTPUT_PATH)}`);
-  console.log(`  BAD_PATTERNS_BLOCK:     ${badPatternsBlock.length} chars`);
+  console.log(`  BAD_PATTERNS_BLOCK:      ${badPatternsBlock.length} chars`);
   console.log(`  SURFACE_GROUNDING_BLOCK: ${surfaceGroundingBlock.length} chars`);
+  console.log(`  GLOSSARY_DIGEST_BLOCK:   ${glossaryBlock.length} chars`);
 }
 
 function main() {
@@ -255,10 +378,15 @@ function main() {
   console.log(`  TS symbols:     ${manifest.sdk_api.ts.symbols.length}`);
   console.log(`  Python symbols: ${manifest.sdk_api.python.symbols.length}`);
 
+  console.log('[generate-chat-grounding] extracting glossary digest from docs/reference/glossary.md...');
+  const glossary = extractGlossaryDigest();
+  console.log(`  ${glossary.length} terms extracted`);
+
   const badPatternsBlock = formatBadPatternsBlock(rules);
   const surfaceGroundingBlock = formatSurfaceGroundingBlock(manifest);
+  const glossaryBlock = formatGlossaryBlock(glossary);
 
-  emit(badPatternsBlock, surfaceGroundingBlock);
+  emit(badPatternsBlock, surfaceGroundingBlock, glossaryBlock);
 }
 
 main();

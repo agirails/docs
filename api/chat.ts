@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 import { Index } from '@upstash/vector';
-import { BAD_PATTERNS_BLOCK, SURFACE_GROUNDING_BLOCK } from './_chat-grounding';
+import { BAD_PATTERNS_BLOCK, SURFACE_GROUNDING_BLOCK, GLOSSARY_DIGEST_BLOCK } from './_chat-grounding';
 
 // Edge runtime for better streaming support
 export const config = {
@@ -294,6 +294,9 @@ ${BAD_PATTERNS_BLOCK}
 
 ============================================================
 ${SURFACE_GROUNDING_BLOCK}
+
+============================================================
+${GLOSSARY_DIGEST_BLOCK}
 ============================================================`;
 
 // Format playground context for inclusion in prompt
@@ -425,11 +428,22 @@ export default async function handler(req: Request) {
       // Medium confidence: hedge openly, link out.
       confidenceFraming = `RAG CONFIDENCE: MEDIUM (top score ${relevanceScore.toFixed(2)}). The retrieved context is only partially relevant. Begin your answer with a one-line caveat: "I have partial matches for this in the docs. Verify the details against [linked recipe / reference page] before shipping." Use the context if it actually answers the question, otherwise point at the right docs section index (/recipes, /protocol, /reference, /security) and stop. Do NOT confidently fabricate.`;
     } else {
-      // Low confidence: refuse to fabricate, redirect to docs.
-      confidenceFraming = `RAG CONFIDENCE: LOW (top score ${relevanceScore.toFixed(2)}). The retrieved context is not relevant to this question. Do NOT generate confident code or claims. Instead: (1) acknowledge you do not have a strong match in the docs, (2) point the user at the relevant section index (/recipes, /protocol, /reference, /security, /faq, https://agirails.app), (3) optionally suggest 2-3 specific docs pages they might want to read. Do NOT invent SDK methods, error codes, or APIs to fill the gap.`;
+      // Low confidence: RAG retrieval came back weak. Don't fabricate,
+      // but ALSO don't immediately bail — the prompt above carries
+      // structured grounding (SURFACE_GROUNDING + GLOSSARY_DIGEST +
+      // BAD_PATTERNS) that may already contain the answer. RAG fails on
+      // short alphanumeric tokens like "INV-30", "AIP-14", "EAS", "EOA"
+      // because embedding similarity is weak for tight identifier strings,
+      // but those exact terms are in the glossary digest above.
+      confidenceFraming = `RAG CONFIDENCE: LOW (top score ${relevanceScore.toFixed(2)}). The retrieved context is not strongly relevant.
+
+BEFORE answering, do these steps in order:
+1. Check whether the user's question references any term that appears in the GLOSSARY DIGEST section above (INV-N, AIP-N, EAS, EOA, SCW, ACTP, ERC-N, H¹, Sourcify, Mediator, EscrowVault, AgentRegistry, Paymaster, state names like INITIATED/COMMITTED/SETTLED, tier names like Simple/Standard/Advanced, etc.). If yes, answer FROM THE GLOSSARY DIGEST entry — it is the authoritative definition. Include the /reference/glossary#anchor link.
+2. Check whether the user is asking about an SDK symbol — if so, consult the SURFACE GROUNDING section above for which language exports it and at which tier.
+3. Only if NEITHER applies: acknowledge you do not have a strong match, suggest 2-3 specific docs pages the user might want to read (use the canonical path prefixes from the LINK RULES), and stop. Do NOT invent SDK methods, error codes, or APIs to fill the gap. Do NOT redirect the user to "Discord" or "GitHub issues" as the primary fallback — the structured grounding above is more authoritative than RAG retrieval for definitional questions.`;
       // Replace the over-generic fallback context with something tighter.
       if (!context) {
-        context = 'No specific documentation matched this query above the relevance threshold.';
+        context = 'No specific documentation matched this query above the relevance threshold. Defer to the GLOSSARY DIGEST and SURFACE GROUNDING sections above for definitional questions.';
       }
     }
 
