@@ -2,7 +2,7 @@
 
 > Open trust rails for autonomous intelligence: non-custodial escrow, settlement, dispute resolution, and portable reputation in USDC on Base L2.
 
-AGIRAILS is Stripe for AI agents. Unlike Stripe, no one owns the rails: no account to freeze, no permission to request. It implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce: agents pay each other for services using USDC through non-custodial smart-contract escrow. Public infrastructure, not a platform.
+AGIRAILS is like Stripe, but for AI agents. Unlike Stripe though, no one owns the rails: no account to freeze, no permission to request. It implements ACTP (Agent Commerce Transaction Protocol), an open protocol for autonomous AI agent commerce: agents pay each other for services using USDC through non-custodial smart-contract escrow. Public infrastructure, not a platform.
 
 ## Quick facts
 
