@@ -113,14 +113,15 @@ function extractBadPatterns(): ExtractedRule[] {
 }
 
 function formatBadPatternsBlock(rules: ExtractedRule[]): string {
+  // Compact one-line-per-rule form. Drop the raw regex source — the LLM
+  // doesn't need to match patterns, just to know what's wrong and the
+  // correct shape. Saves ~2K tokens vs the multi-line form.
   const lines: string[] = [];
-  lines.push('AUTO-EXTRACTED BANNED PATTERNS — generated from scripts/verify-recipes.ts.');
-  lines.push('These patterns are confirmed-wrong against the V1 SDK source. If you see RAG context that uses any of these shapes, IT IS WRONG even if it appears in the retrieved chunk. Substitute the FIX shown below.');
+  lines.push('BANNED API SHAPES (auto-extracted from scripts/verify-recipes.ts).');
+  lines.push('Each line: WRONG -> RIGHT. If RAG context shows the WRONG shape, IT IS WRONG even if cited as a quote. Use the RIGHT shape.');
   lines.push('');
-  rules.forEach((r, i) => {
-    lines.push(`${i + 1}. Pattern: \`${r.patternSrc}\``);
-    lines.push(`   Why wrong: ${r.reason}`);
-    lines.push(`   Correct shape: ${r.fix}`);
+  rules.forEach((r) => {
+    lines.push(`- ${r.reason}. Use: ${r.fix}`);
   });
   return lines.join('\n');
 }
@@ -172,46 +173,60 @@ function formatSurfaceGroundingBlock(manifest: Manifest): string {
   const tsByTier = groupSymbolsByTier(manifest.sdk_api.ts.symbols);
   const pyByTier = groupSymbolsByTier(manifest.sdk_api.python.symbols);
 
-  for (const tier of ['simple', 'standard'] as const) {
-    lines.push(`## ${tier[0].toUpperCase()}${tier.slice(1)} tier`);
-    lines.push(`TS:     ${tsByTier[tier].join(', ') || '(none)'}`);
-    lines.push(`Python: ${pyByTier[tier].join(', ') || '(none)'}`);
-    lines.push('');
+  // Simple tier: ~15 symbols per language, fully enumerated. This is
+  // the surface most chat questions concern, so worth the tokens.
+  lines.push('## Simple tier');
+  lines.push(`TS:     ${tsByTier.simple.join(', ') || '(none)'}`);
+  lines.push(`Python: ${pyByTier.simple.join(', ') || '(none)'}`);
+  lines.push('');
+
+  // Standard + Advanced: counts + canonical reference link only. Full
+  // enumeration eats ~3K tokens and the chat almost never cites
+  // standard/advanced symbols by name in answers — when it needs to, it
+  // can route the user to the reference page.
+  lines.push(`## Standard tier: ${tsByTier.standard.length} TS / ${pyByTier.standard.length} Python symbols — full list at /reference/sdk-js/standard and /reference/sdk-python.`);
+  lines.push(`## Advanced tier: ${tsByTier.advanced.length} TS / ${pyByTier.advanced.length} Python symbols — full list at /reference/sdk-js and /reference/sdk-python.`);
+  lines.push('');
+
+  // Cross-SDK divergences. The full lists are 100+ items each which eats
+  // TPM budget; the chat mostly needs them to refuse "did this exist in
+  // both SDKs?" confusion. Cite the counts + canonical reference page,
+  // and call out the highest-traffic gotcha cases inline (the symbols
+  // that triggered live-test hallucinations).
+  const tsOnlyCount = manifest.divergences.ts_only.sdk_api.length;
+  const pyOnlyCount = manifest.divergences.python_only.sdk_api.length;
+  lines.push(`## Cross-SDK divergences: ${tsOnlyCount} TS-only + ${pyOnlyCount} Python-only SDK exports — full table at /reference/cross-sdk-divergences.`);
+  lines.push('');
+  lines.push('Highest-traffic gotchas (do NOT camelCase Python names into TS imports):');
+  // Hand-curated short list of the symbols whose absence in TS keeps
+  // showing up in live tests. Updated in tandem with the docs surface.
+  const gotchas = ['upload_receipt', 'service_directory', 'fetch_receipt', 'discover_agents', 'compute_transaction_id'];
+  const pyOnly = new Set(manifest.divergences.python_only.sdk_api);
+  for (const g of gotchas) {
+    if (pyOnly.has(g)) {
+      lines.push(`  - Python has \`${g}\`. TS does NOT export the camelCase form. V1 TS routes through alternate path (see /reference/cross-sdk-divergences).`);
+    }
   }
-
-  // Advanced + internal as a compact aggregate (less critical for chat usage,
-  // but useful so the model doesn't fabricate names).
-  lines.push('## Advanced tier (sample; full list in /reference/sdk-js and /reference/sdk-python)');
-  lines.push(`TS sample:     ${tsByTier.advanced.slice(0, 40).join(', ')}${tsByTier.advanced.length > 40 ? ', ...' : ''}`);
-  lines.push(`Python sample: ${pyByTier.advanced.slice(0, 40).join(', ')}${pyByTier.advanced.length > 40 ? ', ...' : ''}`);
-  lines.push('');
-
-  // Cross-SDK divergences. Filtered (post-KNOWN_NAME_DIFFS), so this is the
-  // genuine "exists in one SDK, not in the other" list.
-  lines.push('## Genuinely TS-only exports (NOT in Python)');
-  lines.push(manifest.divergences.ts_only.sdk_api.join(', ') || '(none)');
-  lines.push('');
-  lines.push('## Genuinely Python-only exports (NOT in TS — do NOT camelCase these into TS imports)');
-  lines.push(manifest.divergences.python_only.sdk_api.join(', ') || '(none)');
   lines.push('');
 
   // Name diffs (curated).
   if (manifest.divergences.name_diffs.length > 0) {
     lines.push('## Curated cross-SDK name diffs (same concept, different name per SDK)');
     for (const d of manifest.divergences.name_diffs) {
-      const alias = d.python_has_alias ? ' (Python re-exports the TS name as alias)' : '';
+      const alias = d.python_has_alias ? ' (Python re-exports TS name as alias)' : '';
       lines.push(`- ${d.concept}: TS \`${d.ts}\` ↔ Python \`${d.python}\`${alias}`);
-      if (d.notes) lines.push(`  ${d.notes}`);
     }
     lines.push('');
   }
 
-  // Error-class divergences (frequent hallucination class).
-  lines.push('## TS-only error classes');
-  lines.push(manifest.divergences.ts_only.errors.join(', ') || '(none)');
-  lines.push('');
-  lines.push('## Python-only error classes');
-  lines.push(manifest.divergences.python_only.errors.join(', ') || '(none)');
+  // Error-class divergences (frequent hallucination class). Compact.
+  lines.push(`## Error class divergences: ${manifest.divergences.ts_only.errors.length} TS-only, ${manifest.divergences.python_only.errors.length} Python-only — full list at /reference/errors.`);
+  if (manifest.divergences.ts_only.errors.length > 0) {
+    lines.push(`TS-only errors: ${manifest.divergences.ts_only.errors.slice(0, 8).join(', ')}${manifest.divergences.ts_only.errors.length > 8 ? ', ...' : ''}`);
+  }
+  if (manifest.divergences.python_only.errors.length > 0) {
+    lines.push(`Python-only errors: ${manifest.divergences.python_only.errors.slice(0, 8).join(', ')}${manifest.divergences.python_only.errors.length > 8 ? ', ...' : ''}`);
+  }
 
   return lines.join('\n');
 }
@@ -312,9 +327,12 @@ function extractGlossaryDigest(): GlossaryEntry[] {
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Cap each definition at ~200 chars to keep the digest tight.
-    if (definition.length > 240) {
-      definition = definition.slice(0, 230).replace(/\s+\S*$/, '') + '...';
+    // Cap each definition at ~110 chars — enough to anchor the LLM
+    // to the correct concept while keeping the digest under Groq's
+    // TPM ceiling. The full definition is one click away via the
+    // /reference/glossary#anchor link.
+    if (definition.length > 120) {
+      definition = definition.slice(0, 110).replace(/\s+\S*$/, '') + '...';
     }
 
     entries.push({ term, anchor, definition });
