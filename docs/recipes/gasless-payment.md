@@ -10,6 +10,8 @@ sidebar_position: 5
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Gasless payment with `wallet=auto`
 
@@ -22,7 +24,10 @@ The SDK is configured with **two independent paymaster providers**: Coinbase as 
 This is AIP-12 in practice. The fallback below the paymaster layer is `wallet=eoa` (pay-your-own-gas mode) for power users or when both providers are unreachable.
 
 
-## TypeScript
+## The pattern
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -48,9 +53,8 @@ console.log('paid:', result.transaction.amount, 'USDC');
 console.log('gas paid in ETH:', 0); // always zero in auto mode
 ```
 
-The Smart Wallet address shows up as `agent.address`; the SCW is what the protocol records as `requester` on-chain. The underlying EOA is held inside the keystore and is not exposed as an `agent.eoa` getter in V1; access it through your keystore loader (or `agent.client` internals if you need to recover the signer). See [Identity](/protocol/identity).
-
-## Python
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 from agirails import Agent, AgentConfig
@@ -61,6 +65,8 @@ agent = Agent(AgentConfig(
     wallet="auto",                    # default; reads keystore env vars per AIP-13
 ))
 
+await agent.start()
+
 result = await agent.request(
     "translate",
     input={"text": "Hello", "target": "es"},
@@ -69,6 +75,11 @@ result = await agent.request(
 )
 print(f"paid: {result.transaction.amount} USDC")
 ```
+
+</TabItem>
+</Tabs>
+
+The Smart Wallet address shows up as `agent.address`; the SCW is what the protocol records as `requester` on-chain. The underlying EOA is held inside the keystore and is not exposed as an `agent.eoa` getter in V1; access it through your keystore loader (or `agent.client` internals if you need to recover the signer). See [Identity](/protocol/identity).
 
 ## What gets batched into one UserOp
 

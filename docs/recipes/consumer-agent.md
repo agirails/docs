@@ -10,6 +10,8 @@ sidebar_position: 3
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Build a consumer agent
 
@@ -27,7 +29,10 @@ This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'ma
 - An [EOA](/reference/glossary#eoa) private key (`ACTP_PRIVATE_KEY`): see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
 - Testnet USDC in your Smart Wallet: mint via the SDK's MockUSDC, never an external faucet
 
-## TypeScript
+## The pattern
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -55,7 +60,8 @@ console.log('paid:', result.transaction.amount, 'USDC');
 console.log('tx id:', result.transaction.id);
 ```
 
-## Python
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 from agirails import Agent, AgentConfig
@@ -68,6 +74,8 @@ agent = Agent(AgentConfig(
     # rather than passed as a kwarg.
 ))
 
+await agent.start()
+
 result = await agent.request(
     "translate",
     input={"text": "Hello, AGIRAILS!", "target": "es"},
@@ -78,6 +86,9 @@ result = await agent.request(
 print("result:", result.result)
 print("paid:", result.transaction.amount, "USDC")
 ```
+
+</TabItem>
+</Tabs>
 
 ## What happens under the hood
 

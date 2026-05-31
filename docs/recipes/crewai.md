@@ -83,7 +83,7 @@ crew = Crew(agents=[researcher], tasks=[task])
 result = crew.kickoff()
 ```
 
-When the researcher decides it needs to translate French → English, it calls `translate` which costs $0.10 USDC. Summary call costs $0.30. Total visible in `agirails.stats.totalSpent`.
+When the researcher decides it needs to translate French → English, it calls `translate` which costs $0.10 USDC. Summary call costs $0.30. Total visible in `agirails.stats.total_spent` (Python snake_case; the TS field is `agirails.stats.totalSpent`).
 
 
 ## Exposing a CrewAI workflow as a provider

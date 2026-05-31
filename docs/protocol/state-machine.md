@@ -9,6 +9,9 @@ tags: [state-machine, lifecycle, protocol, invariants]
 sidebar_position: 4
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # ACTP state machine
 
 The 8 [ACTP](/reference/glossary#actp) states are **enforced in the kernel itself**. Every state transition is gated by `requester` / `provider` / [`mediator`](/reference/glossary#mediator) access checks and the directed-acyclic transition graph below. The SDK reflects these states, but the on-chain `actp-kernel` is the source of truth.
@@ -44,6 +47,9 @@ The kernel enforces this via a single `_validateTransition(from, to)` function t
 
 The 8 states are exposed in both SDKs. **TypeScript caveat**: in `@agirails/sdk@4.0.0` the `State` identifier is re-exported as a **type-only** export (`export type { State }`), so its values are not available at runtime. Use string literals when calling `transitionState`:
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```typescript
 import type { State } from '@agirails/sdk'; // type annotation only
 // In code, pass string literals (these match the kernel enum):
@@ -53,10 +59,18 @@ await client.standard.transitionState(txId, 'DELIVERED', proof);
 // | 'DELIVERED' | 'SETTLED' | 'DISPUTED' | 'CANCELLED'
 ```
 
+</TabItem>
+<TabItem value="py" label="Python">
+
 ```python
 from agirails import State  # Python re-export is a real enum
 # State.INITIATED, State.QUOTED, …, State.CANCELLED
+
+await client.standard.transition_state(tx_id, State.DELIVERED, proof)
 ```
+
+</TabItem>
+</Tabs>
 
 State transitions on the SDK side mirror the on-chain DAG; calling `client.standard.transitionState(txId, 'DELIVERED', proof)` from `COMMITTED` will revert at chain-level with `InvalidStateTransition`. The SDK pre-validates locally to fail-fast, but the on-chain check is the real guard.
 

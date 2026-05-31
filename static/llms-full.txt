@@ -1167,6 +1167,7 @@ The kernel enforces this via a single `_validateTransition(from, to)` function t
 
 The 8 states are exposed in both SDKs. **TypeScript caveat**: in `@agirails/sdk@4.0.0` the `State` identifier is re-exported as a **type-only** export (`export type { State }`), so its values are not available at runtime. Use string literals when calling `transitionState`:
 
+
 ```typescript
 
 // In code, pass string literals (these match the kernel enum):
@@ -1176,10 +1177,14 @@ await client.standard.transitionState(txId, 'DELIVERED', proof);
 // | 'DELIVERED' | 'SETTLED' | 'DISPUTED' | 'CANCELLED'
 ```
 
+
 ```python
 from agirails import State  # Python re-export is a real enum
 # State.INITIATED, State.QUOTED, …, State.CANCELLED
+
+await client.standard.transition_state(tx_id, State.DELIVERED, proof)
 ```
+
 
 State transitions on the SDK side mirror the on-chain DAG; calling `client.standard.transitionState(txId, 'DELIVERED', proof)` from `COMMITTED` will revert at chain-level with `InvalidStateTransition`. The SDK pre-validates locally to fail-fast, but the on-chain check is the real guard.
 
@@ -1559,7 +1564,7 @@ This is the off-chain half of the trust model. The on-chain attestation says "pr
   "input": { "text": "Hello", "target": "es" },
   "output": { "translated": "Hola" },
   "metadata": {
-    "model": "claude-4-sonnet",
+    "model": "claude-sonnet-4-6",
     "modelVersion": "2026-03-01",
     "deliveredAt": "2026-05-26T12:00:00Z",
     "computationMs": 230,
@@ -1577,25 +1582,28 @@ The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the 
 
 In V1, receipt upload happens **automatically** as part of the `DELIVERED` transition on the provider side; no explicit call needed. The CLI tooling lives at `src/cli/receiptUpload.ts` for manual re-publish scenarios, and the `uploadReceipt` / `fetchReceipt` symbols are **not exposed as top-level exports** of `@agirails/sdk@4.0.0`. Fetching is done by IPFS CID directly:
 
+
 ```ts
 // V1 provider side: receipt upload is auto on DELIVERED. To re-publish
 // manually, use the CLI: `npx actp receipt:upload --tx  ...`
 // or import the internal helper if your version exposes it.
 
-// V1 consumer side: fetch by CID from any IPFS gateway
+// V1 consumer side: the on-chain pointer is tx.attestationUID (an EAS
+// attestation UID), not a direct CID. Decode the EAS attestation to
+// recover the receipt CID, then fetch from any IPFS gateway.
 const txId = '0xTRANSACTION…';
 const tx = await agent.client.standard.getTransaction(txId);
-const cid = tx?.deliveryProofUri; // shape depends on SDK version; check via /reference
+const attestationUID = tx?.attestationUID;
 
-if (cid) {
-  const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
-  const receipt = await fetch(url).then((r) => r.json());
-
-  // Verify signature against on-chain provider address yourself:
-  // signature recovery + signedHash comparison against
-  // tx.deliveryAttestation.uid is not wrapped in a single helper in V1.
+if (attestationUID) {
+  // const cid = await decodeAttestation(attestationUID); // your helper
+  // const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
+  // const receipt = await fetch(url).then((r) => r.json());
+  // Verify signature against on-chain provider address yourself;
+  // signature recovery + signedHash comparison is not wrapped in V1.
 }
 ```
+
 
 ```python
 # V1 Python: upload_receipt is exported; fetch_receipt is not yet in the
@@ -1610,6 +1618,7 @@ url = f"https://gateway.filebase.io/ipfs/{cid.replace('ipfs://', '')}"
 async with httpx.AsyncClient() as http:
     receipt = (await http.get(url)).json()
 ```
+
 
 A canonical `fetchReceipt` / `fetch_receipt` helper that does the verification dance is on the V2 roadmap; the V1 path is "fetch by CID + verify the signature your way."
 
@@ -2028,7 +2037,8 @@ Event-delivery latency depends on your RPC provider and Base block time (about t
 
 Only one case requires an HTTP server: receiving [x402](/reference/glossary#x402) instant payments, where the buyer sends an HTTP request directly to your service. For all ACTP escrow flows, you never need an open port. See [Per-call API billing (x402)](/recipes/per-call-api).
 
-## TypeScript
+## The pattern
+
 
 ```ts
 
@@ -2070,7 +2080,6 @@ await agent.start();
 console.log(`provider live at ${agent.address}`);
 ```
 
-## Python
 
 ```python
 from agirails import Agent, AgentConfig, AgentBehavior
@@ -2085,12 +2094,27 @@ agent = Agent(AgentConfig(
 
 @agent.provide("translate")
 async def translate(job, ctx):
+    ctx.progress(20, "received job")
+    # Validate input shape
+    text, target = job.input.get("text"), job.input.get("target")
+    if not text or not target:
+        raise ValueError("text + target required")
+
     ctx.progress(50, "calling LLM")
-    out = await call_my_llm(job.input["text"], job.input["target"])
-    return {"translated": out}
+    translated = await call_my_llm(text, target)
+
+    ctx.progress(95, "attesting")
+    # Return value becomes the on-chain EAS attestation payload
+    return {"translated": translated, "model": "gpt-4", "target": target}
+
+
+# payment:received emits the amount as a number (not an object)
+agent.on("payment:received", lambda amount: print(f"+{amount} USDC"))
 
 await agent.start()
+print(f"provider live at {agent.address}")
 ```
+
 
 ## How registration works
 
@@ -2191,7 +2215,8 @@ This recipe runs on Base Sepolia testnet. Replace `network: 'testnet'` with `'ma
 - An [EOA](/reference/glossary#eoa) private key (`ACTP_PRIVATE_KEY`): see [Keystore + deployment](/recipes/keystore-and-deployment) for the secure way
 - Testnet USDC in your Smart Wallet: mint via the SDK's MockUSDC, never an external faucet
 
-## TypeScript
+## The pattern
+
 
 ```ts
 
@@ -2219,7 +2244,6 @@ console.log('paid:', result.transaction.amount, 'USDC');
 console.log('tx id:', result.transaction.id);
 ```
 
-## Python
 
 ```python
 from agirails import Agent, AgentConfig
@@ -2232,6 +2256,8 @@ agent = Agent(AgentConfig(
     # rather than passed as a kwarg.
 ))
 
+await agent.start()
+
 result = await agent.request(
     "translate",
     input={"text": "Hello, AGIRAILS!", "target": "es"},
@@ -2242,6 +2268,7 @@ result = await agent.request(
 print("result:", result.result)
 print("paid:", result.transaction.amount, "USDC")
 ```
+
 
 ## What happens under the hood
 
@@ -2527,7 +2554,8 @@ The SDK is configured with **two independent paymaster providers**: Coinbase as 
 This is AIP-12 in practice. The fallback below the paymaster layer is `wallet=eoa` (pay-your-own-gas mode) for power users or when both providers are unreachable.
 
 
-## TypeScript
+## The pattern
+
 
 ```ts
 
@@ -2553,9 +2581,6 @@ console.log('paid:', result.transaction.amount, 'USDC');
 console.log('gas paid in ETH:', 0); // always zero in auto mode
 ```
 
-The Smart Wallet address shows up as `agent.address`; the SCW is what the protocol records as `requester` on-chain. The underlying EOA is held inside the keystore and is not exposed as an `agent.eoa` getter in V1; access it through your keystore loader (or `agent.client` internals if you need to recover the signer). See [Identity](/protocol/identity).
-
-## Python
 
 ```python
 from agirails import Agent, AgentConfig
@@ -2566,6 +2591,8 @@ agent = Agent(AgentConfig(
     wallet="auto",                    # default; reads keystore env vars per AIP-13
 ))
 
+await agent.start()
+
 result = await agent.request(
     "translate",
     input={"text": "Hello", "target": "es"},
@@ -2574,6 +2601,9 @@ result = await agent.request(
 )
 print(f"paid: {result.transaction.amount} USDC")
 ```
+
+
+The Smart Wallet address shows up as `agent.address`; the SCW is what the protocol records as `requester` on-chain. The underlying EOA is held inside the keystore and is not exposed as an `agent.eoa` getter in V1; access it through your keystore loader (or `agent.client` internals if you need to recover the signer). See [Identity](/protocol/identity).
 
 ## What gets batched into one UserOp
 
@@ -2751,14 +2781,14 @@ Python's `agirails` package does not currently expose an `X402Client`; the `X402
 ```python
 from agirails import ACTPClient
 
-async with ACTPClient.create(network="mainnet", wallet="auto") as client:
-    result = await client.pay(
-        to="https://provider.example.com/api/infer",
-        amount="0.005",
-    )
+client = await ACTPClient.create(mode="mainnet", wallet="auto")
+result = await client.pay({
+    "to": "https://provider.example.com/api/infer",
+    "amount": "0.005",
+})
 ```
 
-Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
+`ACTPClient.create()` takes `mode=` (`"mock"` / `"testnet"` / `"mainnet"`), not `network=`, and `client.pay()` takes a single params dict, not keyword args. Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
 
 
 ## Errors you should handle
@@ -3783,7 +3813,8 @@ LangChain agents reason in loops: "what tool do I need next?" → "call it" → 
 There's no official `langchain-agirails` package; the integration is ten lines of glue around the SDK.
 
 
-## TypeScript
+## The pattern
+
 
 ```ts
 
@@ -3826,9 +3857,6 @@ const result = await agent.invoke({
 });
 ```
 
-The LLM decides when to call `translate`; each invocation costs you USDC. The total spend bubbles up via `agirails.stats.totalSpent`.
-
-## Python
 
 ```python
 from langchain_core.tools import tool
@@ -3840,6 +3868,7 @@ agirails = Agent(AgentConfig(
     network="mainnet",
     # Wallet/keystore via env vars per AIP-13.
 ))
+await agirails.start()
 
 class TranslateInput(BaseModel):
     text: str = Field(description="text to translate")
@@ -3856,6 +3885,9 @@ async def translate(text: str, target: str) -> str:
     )
     return result.result["translated"]
 ```
+
+
+The LLM decides when to call `translate`; each invocation costs you USDC. The total spend bubbles up via `agirails.stats.totalSpent` (TS) / `agirails.stats.total_spent` (Python).
 
 ## Budget controls
 
@@ -4110,7 +4142,7 @@ crew = Crew(agents=[researcher], tasks=[task])
 result = crew.kickoff()
 ```
 
-When the researcher decides it needs to translate French → English, it calls `translate` which costs $0.10 USDC. Summary call costs $0.30. Total visible in `agirails.stats.totalSpent`.
+When the researcher decides it needs to translate French → English, it calls `translate` which costs $0.10 USDC. Summary call costs $0.30. Total visible in `agirails.stats.total_spent` (Python snake_case; the TS field is `agirails.stats.totalSpent`).
 
 
 ## Exposing a CrewAI workflow as a provider

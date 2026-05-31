@@ -10,6 +10,8 @@ sidebar_position: 2
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Build a provider agent
 
@@ -43,7 +45,10 @@ Event-delivery latency depends on your RPC provider and Base block time (about t
 
 Only one case requires an HTTP server: receiving [x402](/reference/glossary#x402) instant payments, where the buyer sends an HTTP request directly to your service. For all ACTP escrow flows, you never need an open port. See [Per-call API billing (x402)](/recipes/per-call-api).
 
-## TypeScript
+## The pattern
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { Agent } from '@agirails/sdk';
@@ -85,7 +90,8 @@ await agent.start();
 console.log(`provider live at ${agent.address}`);
 ```
 
-## Python
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 from agirails import Agent, AgentConfig, AgentBehavior
@@ -100,12 +106,29 @@ agent = Agent(AgentConfig(
 
 @agent.provide("translate")
 async def translate(job, ctx):
+    ctx.progress(20, "received job")
+    # Validate input shape
+    text, target = job.input.get("text"), job.input.get("target")
+    if not text or not target:
+        raise ValueError("text + target required")
+
     ctx.progress(50, "calling LLM")
-    out = await call_my_llm(job.input["text"], job.input["target"])
-    return {"translated": out}
+    translated = await call_my_llm(text, target)
+
+    ctx.progress(95, "attesting")
+    # Return value becomes the on-chain EAS attestation payload
+    return {"translated": translated, "model": "gpt-4", "target": target}
+
+
+# payment:received emits the amount as a number (not an object)
+agent.on("payment:received", lambda amount: print(f"+{amount} USDC"))
 
 await agent.start()
+print(f"provider live at {agent.address}")
 ```
+
+</TabItem>
+</Tabs>
 
 ## How registration works
 

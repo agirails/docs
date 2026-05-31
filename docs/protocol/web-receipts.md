@@ -9,6 +9,9 @@ tags: [web-receipts, EIP-712, agirails-app, IPFS]
 sidebar_position: 10
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Web Receipts
 
 After a transaction reaches `SETTLED`, the provider's deliverable is published as a **Web Receipt**: an [EIP-712](/reference/glossary#eip-712)-signed JSON object pinned to IPFS, with its content hash anchored on-chain via the delivery EAS attestation.
@@ -27,7 +30,7 @@ This is the off-chain half of the trust model. The on-chain attestation says "pr
   "input": { "text": "Hello", "target": "es" },
   "output": { "translated": "Hola" },
   "metadata": {
-    "model": "claude-4-sonnet",
+    "model": "claude-sonnet-4-6",
     "modelVersion": "2026-03-01",
     "deliveredAt": "2026-05-26T12:00:00Z",
     "computationMs": 230,
@@ -46,25 +49,32 @@ The `signedHash` must equal the `attestationUid` on-chain. If they diverge, the 
 
 In V1, receipt upload happens **automatically** as part of the `DELIVERED` transition on the provider side; no explicit call needed. The CLI tooling lives at `src/cli/receiptUpload.ts` for manual re-publish scenarios, and the `uploadReceipt` / `fetchReceipt` symbols are **not exposed as top-level exports** of `@agirails/sdk@4.0.0`. Fetching is done by IPFS CID directly:
 
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
+
 ```ts
 // V1 provider side: receipt upload is auto on DELIVERED. To re-publish
 // manually, use the CLI: `npx actp receipt:upload --tx <txId> ...`
 // or import the internal helper if your version exposes it.
 
-// V1 consumer side: fetch by CID from any IPFS gateway
+// V1 consumer side: the on-chain pointer is tx.attestationUID (an EAS
+// attestation UID), not a direct CID. Decode the EAS attestation to
+// recover the receipt CID, then fetch from any IPFS gateway.
 const txId = '0xTRANSACTION…';
 const tx = await agent.client.standard.getTransaction(txId);
-const cid = tx?.deliveryProofUri; // shape depends on SDK version; check via /reference
+const attestationUID = tx?.attestationUID;
 
-if (cid) {
-  const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
-  const receipt = await fetch(url).then((r) => r.json());
-
-  // Verify signature against on-chain provider address yourself:
-  // signature recovery + signedHash comparison against
-  // tx.deliveryAttestation.uid is not wrapped in a single helper in V1.
+if (attestationUID) {
+  // const cid = await decodeAttestation(attestationUID); // your helper
+  // const url = `https://gateway.filebase.io/ipfs/${cid.replace('ipfs://', '')}`;
+  // const receipt = await fetch(url).then((r) => r.json());
+  // Verify signature against on-chain provider address yourself;
+  // signature recovery + signedHash comparison is not wrapped in V1.
 }
 ```
+
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 # V1 Python: upload_receipt is exported; fetch_receipt is not yet in the
@@ -79,6 +89,9 @@ url = f"https://gateway.filebase.io/ipfs/{cid.replace('ipfs://', '')}"
 async with httpx.AsyncClient() as http:
     receipt = (await http.get(url)).json()
 ```
+
+</TabItem>
+</Tabs>
 
 A canonical `fetchReceipt` / `fetch_receipt` helper that does the verification dance is on the V2 roadmap; the V1 path is "fetch by CID + verify the signature your way."
 

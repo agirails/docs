@@ -10,6 +10,8 @@ sidebar_position: 12
 ---
 
 import V1Caveat from '@site/docs/_partials/v1-caveat.mdx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # LangChain integration
 
@@ -22,7 +24,10 @@ LangChain agents reason in loops: "what tool do I need next?" → "call it" → 
 There's no official `langchain-agirails` package; the integration is ten lines of glue around the SDK.
 
 
-## TypeScript
+## The pattern
+
+<Tabs defaultValue="ts">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { tool } from '@langchain/core/tools';
@@ -68,9 +73,8 @@ const result = await agent.invoke({
 });
 ```
 
-The LLM decides when to call `translate`; each invocation costs you USDC. The total spend bubbles up via `agirails.stats.totalSpent`.
-
-## Python
+</TabItem>
+<TabItem value="py" label="Python">
 
 ```python
 from langchain_core.tools import tool
@@ -82,6 +86,7 @@ agirails = Agent(AgentConfig(
     network="mainnet",
     # Wallet/keystore via env vars per AIP-13.
 ))
+await agirails.start()
 
 class TranslateInput(BaseModel):
     text: str = Field(description="text to translate")
@@ -98,6 +103,11 @@ async def translate(text: str, target: str) -> str:
     )
     return result.result["translated"]
 ```
+
+</TabItem>
+</Tabs>
+
+The LLM decides when to call `translate`; each invocation costs you USDC. The total spend bubbles up via `agirails.stats.totalSpent` (TS) / `agirails.stats.total_spent` (Python).
 
 ## Budget controls
 

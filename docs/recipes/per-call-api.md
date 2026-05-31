@@ -109,14 +109,14 @@ Python's `agirails` package does not currently expose an `X402Client`; the `X402
 ```python
 from agirails import ACTPClient
 
-async with ACTPClient.create(network="mainnet", wallet="auto") as client:
-    result = await client.pay(
-        to="https://provider.example.com/api/infer",
-        amount="0.005",
-    )
+client = await ACTPClient.create(mode="mainnet", wallet="auto")
+result = await client.pay({
+    "to": "https://provider.example.com/api/infer",
+    "amount": "0.005",
+})
 ```
 
-Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
+`ACTPClient.create()` takes `mode=` (`"mock"` / `"testnet"` / `"mainnet"`), not `network=`, and `client.pay()` takes a single params dict, not keyword args. Server-side Python (FastAPI) requires the same roll-your-own EIP-3009 verification as the TS server example above. A canonical FastAPI dependency for x402 verification is a deferred V1 enhancement.
 
 
 ## Errors you should handle
