@@ -2,7 +2,7 @@
 
 # Manifest diff
 
-**Generated at**: 2026-05-29 17:33:29 UTC  ·  **Previous build**: 2026-05-29 17:18:25 UTC
+**Generated at**: 2026-06-02 10:08:56 UTC  ·  **Previous build**: 2026-05-29 17:33:29 UTC
 
 ### TS SDK symbols
 

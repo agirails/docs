@@ -3,7 +3,7 @@ slug: /reference/cli
 title: "actp CLI reference"
 description: "All actp subcommands, args, and options. Auto-extracted from sdk-js (Commander) + python-sdk-v2 (Typer) sources via the truth-ledger pipeline."
 schema_type: APIReference
-last_verified: 2026-05-29
+last_verified: 2026-06-02
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # actp CLI reference
 
-**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-05-29 17:33:29 UTC
+**TypeScript SDK CLI** (`actp`): 42 commands · **Python SDK CLI** (`actp`): 39 commands · **Manifest generated**: 2026-06-02 10:08:56 UTC
 
 Both SDKs expose the same `actp` binary, with the command tree extracted directly from each runtime's Commander/Typer registration.
 

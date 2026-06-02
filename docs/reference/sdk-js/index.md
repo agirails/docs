@@ -3,7 +3,7 @@ slug: /reference/sdk-js
 title: "TypeScript SDK reference"
 description: "Auto-extracted surface of @agirails/sdk@4.0.0, organised by tier (Simple → Standard → Advanced)."
 schema_type: APIReference
-last_verified: 2026-05-29
+last_verified: 2026-06-02
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19

@@ -3,7 +3,7 @@ slug: /reference/sdk-js/simple
 title: "TypeScript SDK: Simple"
 description: "Simple tier of @agirails/sdk@4.0.0: top-level convenience (`request`, `provide`, `serviceDirectory`) plus the `Agent` class and `pay()` flow."
 schema_type: APIReference
-last_verified: 2026-05-29
+last_verified: 2026-06-02
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 1
 
 # TypeScript SDK: Simple
 
-**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-05-29 17:33:29 UTC
+**Package**: `@agirails/sdk@4.0.0` · **Symbols in this view**: 19 · **Total TS surface**: 283 · **Manifest generated**: 2026-06-02 10:08:56 UTC
 
 Every entry below is **auto-extracted from the SDK source itself** via the truth-ledger pipeline. The cross-SDK status column tells you whether the symbol has a Python counterpart, is TS-only, or has signature drift the parity sprint is tracking.
 

@@ -3,7 +3,7 @@ slug: /reference/cross-sdk-divergences
 title: "Cross-SDK divergences"
 description: "Every TypeScript-only symbol, every Python-only symbol, plus curated name and behavioral differences across the two SDKs. Auto-extracted from the truth-ledger manifest: 133 TS-only + 128 Python-only + 1 name diff + 1 behavioral diff."
 schema_type: APIReference
-last_verified: 2026-05-29
+last_verified: 2026-06-02
 auto_extracted_source: "static/sdk-manifest.json"
 stability: stable
 last_breaking_change: 2026-05-19
@@ -15,7 +15,7 @@ sidebar_position: 8
 
 # Cross-SDK divergences
 
-**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-05-29 17:33:29 UTC
+**TypeScript-only**: 133 symbols · **Python-only**: 128 symbols · **Name diffs**: 1 · **Behavioral diffs**: 1 · **Manifest generated**: 2026-06-02 10:08:56 UTC
 
 If you use both SDKs (multi-language stack, or porting code between them), this is the single page that tells you what is missing where. The data is the same as per-symbol `Cross-SDK status` columns in [`sdk-js`](/reference/sdk-js) and [`sdk-python`](/reference/sdk-python), but grouped for quick scanning.
 
