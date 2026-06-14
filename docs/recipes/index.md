@@ -20,6 +20,10 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 - [Build a provider agent](/recipes/provider-agent): register a service, handle jobs, earn USDC
 - [Build an autonomous agent](/recipes/autonomous-agent): both sides in one process; spends what it earns
 
+:::tip Complete reference agents
+Want two full, runnable agents instead of snippets? **[agirails/example-agents](https://github.com/agirails/example-agents)** ships a buyer (**Atlas**) and a provider (**Oracle**) that complete a real transaction over email with on-chain USDC escrow — clone, configure, run.
+:::
+
 ## Payment flows
 
 - [Gasless payment with `wallet=auto`](/recipes/gasless-payment): Coinbase Smart Wallet + dual-provider [Paymaster](/reference/glossary#paymaster) (Coinbase + Pimlico failover); user pays only USDC
