@@ -22,6 +22,7 @@ sidebar_position: 1
 - `DELIVERED → {SETTLED, DISPUTED}`
 - `DISPUTED → {SETTLED, CANCELLED}` (mediator only)
 - `SETTLED` / `CANCELLED` are terminal.
+- `IN_PROGRESS → CANCELLED` has a time-gated permissionless recovery: after `deadline + recoveryGrace`, anyone can call `recoverStalledInProgress` for a full refund to the requester. There is no `IN_PROGRESS → DISPUTED` edge.
 
 Machine-readable spec: [`/sdk-manifest.json`](/sdk-manifest.json) (`protocol.states`). Canonical text spec: [agirails.app/protocol/AGIRAILS.md](https://agirails.app/protocol/AGIRAILS.md).
 :::

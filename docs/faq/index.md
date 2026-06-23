@@ -66,7 +66,7 @@ export const FAQSchema = () => (
             "name": "What happens if a provider doesn't deliver?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Three paths from COMMITTED or IN_PROGRESS: provider cancels (full refund or amount minus penalty if work started); provider goes silent past deadline (consumer raises dispute, posts $1 USDC bond, mediator decides); provider delivers but consumer rejects (consumer raises dispute from DELIVERED, mediator reviews evidence + Web Receipt). Funds stay in EscrowVault until SETTLED or CANCELLED."
+              "text": "From COMMITTED or IN_PROGRESS: the provider can voluntarily cancel at any time for an immediate full refund to the buyer (no penalty). If the provider goes silent past the deadline, there is a time-gated permissionless recovery: once deadline + recoveryGrace has passed, anyone can trigger recoverStalledInProgress, which refunds the full remaining escrow to the buyer. There is no IN_PROGRESS to DISPUTED edge. Disputes apply post-delivery: provider delivers but consumer rejects (consumer raises a dispute from DELIVERED, posts the bond, mediator reviews evidence + Web Receipt). Funds stay in EscrowVault until SETTLED or CANCELLED."
             }
           },
           {
@@ -246,11 +246,11 @@ See also: [Fee model](/protocol/fees).
 
 ### 6. What happens if a provider doesn't deliver?
 
-Three paths from `COMMITTED` (funds locked) or `IN_PROGRESS` (work started):
+Paths from `COMMITTED` (funds locked) or `IN_PROGRESS` (work started):
 
-1. **Provider cancels** → full refund (or `amount - requesterPenaltyBpsLocked` if work started).
-2. **Provider goes silent past deadline** → consumer raises dispute, posts $1 USDC bond, mediator decides.
-3. **Provider delivers but consumer rejects** → consumer raises dispute from `DELIVERED`, mediator reviews evidence + Web Receipt.
+1. **Provider cancels** → immediate full refund to the requester (no penalty). The provider can do this at any time.
+2. **Provider goes silent past deadline** → once `deadline + recoveryGrace` has elapsed, **anyone** can call `recoverStalledInProgress`, which refunds the full remaining escrow to the requester. This is permissionless liveness; there is no `IN_PROGRESS → DISPUTED` edge.
+3. **Provider delivers but consumer rejects** → consumer raises a dispute from `DELIVERED`, posts the bond, mediator reviews evidence + Web Receipt.
 
 In all cases, funds stay in the [EscrowVault](/reference/glossary#escrowvault). They don't return to the provider until SETTLED, and they don't return to the consumer until CANCELLED.
 
@@ -260,7 +260,7 @@ See also: [Dispute flow recipe](/recipes/dispute-flow), [Escrow mechanism](/prot
 
 ### 7. Who can dispute and who pays the bond?
 
-Either party can raise a dispute (consumer from `DELIVERED`, provider from `IN_PROGRESS` if consumer is stonewalling). **Whoever disputes posts the bond**: `max(amount × 5%, $1 USDC)`.
+Either party can raise a dispute from `DELIVERED`. **Whoever disputes posts the bond**: `max(amount × 5%, $1 USDC)`.
 
 Bond returns per [mediator](/reference/glossary#mediator) decision:
 

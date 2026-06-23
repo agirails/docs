@@ -81,10 +81,15 @@ The implication: a malicious or compromised admin cannot retroactively raise dis
 | `INITIATED` → `CANCELLED` | No funds locked yet; no refund needed |
 | `QUOTED` → `CANCELLED` | No funds locked yet (escrow attaches at COMMITTED) |
 | `COMMITTED` → `CANCELLED` | Full amount refunded to requester |
-| `IN_PROGRESS` → `CANCELLED` | Amount minus `requesterPenaltyBpsLocked` refunded; penalty awarded to provider for partial work |
+| `IN_PROGRESS` → `CANCELLED` (provider) | Provider voluntary cancel only; the requester is blocked here ([H-4](/security/audits)). Full remaining amount refunded to requester, no penalty |
+| `IN_PROGRESS` → `CANCELLED` (recovery, permissionless) | After `deadline + recoveryGrace`, **anyone** calls `recoverStalledInProgress`; full remaining amount refunded to requester, no penalty. Liveness exit for a stalled provider |
 | `DELIVERED` → `DISPUTED` → mediator → `CANCELLED` | Per mediator decision (full / partial / penalty split) |
 
 The requester-penalty [BPS](/reference/glossary#bps) exists to prevent griefing: cancellation after the provider has begun work shouldn't be free.
+
+:::note Delivery during the recovery grace
+The grace window is bilateral. A provider that completed the work can still **deliver** (and be paid) right up until `deadline + recoveryGrace`, even past the original delivery deadline. The permissionless recovery only fires if the provider has neither delivered nor cancelled by then, so the buyer's earliest unilateral exit from `IN_PROGRESS` is `deadline + recoveryGrace`.
+:::
 
 ## See also
 

@@ -22,6 +22,10 @@ The 8 [ACTP](/reference/glossary#actp) states are **enforced in the kernel itsel
 - `CANCELLED` is reachable from `INITIATED`, `QUOTED`, `COMMITTED`, `IN_PROGRESS`, and `DISPUTED`.
 - `SETTLED` and `CANCELLED` are **terminal**; no transitions out.
 
+:::note Time-gated permissionless recovery from `IN_PROGRESS`
+There is **no** `IN_PROGRESS → DISPUTED` edge. If a provider stalls in `IN_PROGRESS`, liveness is preserved by a permissionless exit: once `deadline + recoveryGrace` has elapsed, **anyone** can call `recoverStalledInProgress`, which moves the transaction to `CANCELLED` and refunds the full remaining escrow to the requester (no penalty). The grace is a bilateral window: before it expires the provider can still **deliver** (and be paid) right up until `deadline + recoveryGrace`, or voluntarily cancel for a full refund; the permissionless recovery fires only if the provider does neither. The requester cannot cancel from `IN_PROGRESS` ([H-4](/protocol/escrow#refund-paths)), so the buyer's earliest unilateral exit is `deadline + recoveryGrace`.
+:::
+
 ## The 8 states
 
 | Value | State | Trigger | Who can transition |
