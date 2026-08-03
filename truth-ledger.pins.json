@@ -1,17 +1,17 @@
 {
   "_doc": "Pinned SHAs and coverage floors for the truth-ledger extractor inputs. The extractor verifies each pinned repo's HEAD matches the declared sha before reading source files. Mismatches fail the build (strict) or warn (loose). This is the trust gate on the verifier itself: a compromise of any upstream is forced to also update its pin here, making the pin bump the explicit review point. Bump via: npm run truth-ledger:bump-pins (writes current HEADs to this file; the resulting diff is what you review in PR).",
-  "_updated_at": "2026-05-29",
+  "_updated_at": "2026-08-03",
   "_strict_mode_env": "Set TRUTH_LEDGER_PINS=strict to fail on mismatch. Default is warn-only so a developer pulling new SDK source can iterate; CI sets strict.",
   "source_pins": {
     "sdk-js": {
       "expected_path": "SDK and Runtime/sdk-js",
-      "head_sha": "0c82650a848531c6dfba18d9aeed0e4e36d00b61",
-      "notes": "TS SDK. Bumped for convenience-layer JSDoc Basic-API → Simple-tier alignment (matches docs taxonomy)."
+      "head_sha": "76e10ad630e5d1163d8c75d597597e9f3d3c1742",
+      "notes": "TS SDK. Bumped 63 commits (releases 4.1.x-4.9.0: receipts V3, AIP-16 delivery, AIP-18 buyer privacy, sync/reconcile, 4.9.0 network resolution). Clean fast-forward, behind_by 0."
     },
     "python-sdk-v2": {
       "expected_path": "SDK and Runtime/python-sdk-v2",
-      "head_sha": "f12f3015aa857f045ea4b31b8bd875f7fa69e06a",
-      "notes": "Python SDK. Wave A.19 part 2 added docstring triage tags."
+      "head_sha": "1343a98bb496f9c99db3cf7249761b58dcecb262",
+      "notes": "Python SDK. Bumped 17 commits (parity Waves 0-6C to 4.8.0 + release-gate/CI fixes). Clean fast-forward, behind_by 0."
     },
     "agirails-mcp-server": {
       "expected_path": "Platform/agirails-mcp-server",
@@ -25,8 +25,8 @@
     },
     "agirails.app/web": {
       "expected_path": "Platform/agirails.app/web",
-      "head_sha": "fa9895df123ce51b8ad818c585da2d23d8298479",
-      "notes": "Canonical AGIRAILS.md spec source. Wave A.16 references block + hallucination guard."
+      "head_sha": "4dc7e0eb4d1b5117155b065aefc2d9d6d350d3ec",
+      "notes": "Canonical AGIRAILS.md spec source. Bumped 53 commits (bilateral receipts, dashboard heartbeat, owner-doc draft lookup). Clean fast-forward, behind_by 0."
     }
   },
   "coverage_floors": {
