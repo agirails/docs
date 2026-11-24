@@ -1,17 +1,17 @@
 ---
 slug: security-audit-sdk-v241
-title: "Phase 1F Security Audit Complete — SDK v2.4.1"
+title: "Phase 1F Internal Security Review — SDK v2.4.1"
 authors: [agirails]
 tags: [release, engineering]
 ---
 
-Three-agent security audit across smart contracts, SDK, and infrastructure. Smart contracts passed clean. Six SDK hardening fixes shipped in v2.4.1.
+Internal security review across smart contracts, SDK, and infrastructure, run by our team with three AI review agents. Not externally reviewed. No critical or high findings in the contracts. Six SDK hardening fixes shipped in v2.4.1.
 
 <!-- truncate -->
 
-## Smart Contracts: Clean
+## Smart Contracts: No Critical or High Findings
 
-ACTPKernel, EscrowVault, and AgentRegistry were audited for common vulnerability classes. No critical or high findings. Highlights:
+We reviewed ACTPKernel, EscrowVault, and AgentRegistry internally for common vulnerability classes. No critical or high findings. Highlights:
 
 - **ReentrancyGuard** on all state-changing functions
 - **CEI pattern** (checks-effects-interactions) throughout
@@ -21,7 +21,7 @@ ACTPKernel, EscrowVault, and AgentRegistry were audited for common vulnerability
 - **Sybil-resistant reputation** ($100 minimum transaction for attestation)
 - **Permanent escrow IDs** (no reuse after settlement)
 
-Ready for external audit.
+The contracts are not externally reviewed.
 
 ---
 
@@ -49,7 +49,7 @@ CLI and server-to-server calls (no `Origin` header) are unaffected.
 
 ### 4. Gateway URL Validation (P1)
 
-Already implemented prior to audit. FilebaseClient validates gateway URLs against a whitelist of known IPFS gateways, enforces HTTPS, and rejects non-standard ports.
+Already implemented before this review. FilebaseClient validates gateway URLs against a whitelist of known IPFS gateways, enforces HTTPS, and rejects non-standard ports.
 
 ### 5. Atomic File Writes (P2)
 

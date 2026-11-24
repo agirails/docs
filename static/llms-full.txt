@@ -258,7 +258,7 @@ Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
-**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle, audited and live. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
+**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle. Live on Base. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
 
 ---
 
@@ -7187,7 +7187,7 @@ The limits. If your threat model needs these, layer additional defenses on top o
 - **Compromised client device**. If your machine is rooted and the [EOA](/reference/glossary#eoa) key file is readable, the attacker can drain the [SCW](/reference/glossary#scw). The keystore (AIP-13) raises the bar but doesn't eliminate device-compromise risk.
 - **Bridge attacks on USDC itself**. ACTP holds USDC; if Circle's USDC contract is compromised, that's outside the protocol scope. (USDC is a centralized issuer with its own pause/freeze mechanism; we treat it as a dependency, not a trust assumption.)
 - **L2 / Base sequencer failure**. Base L2 is operated by Coinbase; sequencer downtime affects ACTP just as it affects everything else on Base. Cross-rollup or self-custodial fallbacks are out of v1 scope.
-- **Smart Wallet implementation bugs**. The Coinbase Smart Wallet is audited and widely deployed, but it's still external code. We pin known-good versions in `aa.factory` config and re-evaluate on every release.
+- **Smart Wallet implementation bugs**. The Coinbase Smart Wallet is widely deployed, but it's still external code. We pin known-good versions in `aa.factory` config and re-evaluate on every release.
 - **AGIRAILS.md identity-file collisions**. Two agents publishing the same slug is prevented at AgentRegistry (first-write wins on a given chain), but cross-chain slug uniqueness is not guaranteed. Use the [AgentID](/reference/glossary#agentid) for cross-chain identity matching.
 - **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement (you can't create a flood of in-progress transactions without locking USDC for each) but not eliminated. Future work: per-requester rate limits.
 

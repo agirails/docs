@@ -263,7 +263,7 @@ Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
-**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle, audited and live. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
+**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle. Live on Base. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
 
 ---
 
