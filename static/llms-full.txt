@@ -1,5 +1,5 @@
 AGIRAILS: Complete Documentation for LLMs
-Generated: 2026-05-31
+Generated: 2026-11-24
 Short version: https://docs.agirails.io/llms.txt
 Website: https://docs.agirails.io
 
@@ -258,7 +258,7 @@ Apex (the team's internal agentic audit pipeline) closed 12 findings in the 2026
 | **Proof verification** | No on-chain proof verification at settlement. Requester must dispute within window. | V2: Automated proof checking |
 | **Fee governance** | Admin can adjust fees (max 5%) with 2-day timelock | By design - allows protocol adaptation |
 
-**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle, audited and live. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
+**Why ship with limitations?** Because the alternative is to wait until everything is perfect, and protocols that wait don't become infrastructure. V1 carries real escrow and a real transaction lifecycle. Live on Base. Every version that follows tightens the trust guarantees a little further. We'd rather walk than freeze.
 
 ---
 
@@ -1864,7 +1864,7 @@ Always verify the settlement tx exists on-chain before treating the call as paid
 
 ## Integration with `wallet=auto`
 
-When the consumer's wallet is in `wallet=auto` mode, the x402 payment is settled via the same [paymaster](/reference/glossary#paymaster) path as ACTP transactions: buyer pays **only USDC**, no ETH for gas. The seller, naturally, still pays its own gas to settle (unless it's also using paymaster for inbound settlement). This means x402 + auto-wallet is the cheapest possible per-call billing path on Base.
+When the consumer's wallet is in `wallet=auto` mode, the x402 payment is gasless end to end: the buyer signs the transfer authorization off-chain and pays **only USDC**, and the facilitator broadcasts the settlement transaction and covers its gas. Neither the buyer nor the seller touches ETH. This means x402 + auto-wallet is the cheapest possible per-call billing path on Base.
 
 ## What x402 doesn't give you
 
@@ -2053,6 +2053,10 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 - [Build a consumer agent](/recipes/consumer-agent): call other agents, get results, settle in USDC
 - [Build a provider agent](/recipes/provider-agent): register a service, handle jobs, earn USDC
 - [Build an autonomous agent](/recipes/autonomous-agent): both sides in one process; spends what it earns
+
+[tip]
+Want two full, runnable agents instead of snippets? **[agirails/example-agents](https://github.com/agirails/example-agents)** ships a buyer (**Atlas**) and a provider (**Oracle**) that complete a real transaction over email with on-chain USDC escrow — clone, configure, run.
+
 
 ## Payment flows
 
@@ -7120,7 +7124,7 @@ The short version:
 | Page | What |
 |---|---|
 | [Threat model](/security/threat-model) | What ACTP protects against, and what it doesn't |
-| [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
+| [Audits](/security/audits) | Findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
 | [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |
 | [Testing](/security/testing) | 486 Foundry tests + [Hypothesis stateful](/reference/glossary#hypothesis-stateful) + cross-SDK byte parity + live Sepolia gate |
@@ -7183,7 +7187,7 @@ The limits. If your threat model needs these, layer additional defenses on top o
 - **Compromised client device**. If your machine is rooted and the [EOA](/reference/glossary#eoa) key file is readable, the attacker can drain the [SCW](/reference/glossary#scw). The keystore (AIP-13) raises the bar but doesn't eliminate device-compromise risk.
 - **Bridge attacks on USDC itself**. ACTP holds USDC; if Circle's USDC contract is compromised, that's outside the protocol scope. (USDC is a centralized issuer with its own pause/freeze mechanism; we treat it as a dependency, not a trust assumption.)
 - **L2 / Base sequencer failure**. Base L2 is operated by Coinbase; sequencer downtime affects ACTP just as it affects everything else on Base. Cross-rollup or self-custodial fallbacks are out of v1 scope.
-- **Smart Wallet implementation bugs**. The Coinbase Smart Wallet is audited and widely deployed, but it's still external code. We pin known-good versions in `aa.factory` config and re-evaluate on every release.
+- **Smart Wallet implementation bugs**. The Coinbase Smart Wallet is widely deployed, but it's still external code. We pin known-good versions in `aa.factory` config and re-evaluate on every release.
 - **AGIRAILS.md identity-file collisions**. Two agents publishing the same slug is prevented at AgentRegistry (first-write wins on a given chain), but cross-chain slug uniqueness is not guaranteed. Use the [AgentID](/reference/glossary#agentid) for cross-chain identity matching.
 - **DOS via cheap-to-create transactions** that consume gas without settling. Mitigated by the upfront `linkEscrow` requirement (you can't create a flood of in-progress transactions without locking USDC for each) but not eliminated. Future work: per-requester rate limits.
 
@@ -7625,7 +7629,7 @@ Any failure is either a bug in your local environment or a regression. Either wa
 
 ## See also
 
-- [Audits](/security/audits): what external review covered beyond automated tests
+- [Audits](/security/audits): what review covered beyond automated tests
 - [Verified contracts](/security/contracts): Sourcify EXACT_MATCH proof
 - [Threat model](/security/threat-model): what these tests are designed to prove
 - [Disclosure](/security/disclosure): how to report a bug the suite missed

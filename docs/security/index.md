@@ -28,7 +28,7 @@ The short version:
 | Page | What |
 |---|---|
 | [Threat model](/security/threat-model) | What ACTP protects against, and what it doesn't |
-| [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
+| [Audits](/security/audits) | Findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
 | [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |
 | [Testing](/security/testing) | 486 Foundry tests + [Hypothesis stateful](/reference/glossary#hypothesis-stateful) + cross-SDK byte parity + live Sepolia gate |

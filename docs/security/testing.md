@@ -132,7 +132,7 @@ Any failure is either a bug in your local environment or a regression. Either wa
 
 ## See also
 
-- [Audits](/security/audits): what external review covered beyond automated tests
+- [Audits](/security/audits): what review covered beyond automated tests
 - [Verified contracts](/security/contracts): Sourcify EXACT_MATCH proof
 - [Threat model](/security/threat-model): what these tests are designed to prove
 - [Disclosure](/security/disclosure): how to report a bug the suite missed
