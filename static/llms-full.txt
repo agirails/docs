@@ -7124,7 +7124,7 @@ The short version:
 | Page | What |
 |---|---|
 | [Threat model](/security/threat-model) | What ACTP protects against, and what it doesn't |
-| [Audits](/security/audits) | External audits performed, findings closed, future audits appended |
+| [Audits](/security/audits) | Findings closed, future audits appended |
 | [Verified contracts](/security/contracts) | All 8 contracts with live Sourcify status + invariants enforced per contract |
 | [Formal verification (H¹=0)](/security/formal-verification) | Sheaf-cohomology proof of structural completeness; reproducible from the YAML spec |
 | [Testing](/security/testing) | 486 Foundry tests + [Hypothesis stateful](/reference/glossary#hypothesis-stateful) + cross-SDK byte parity + live Sepolia gate |
@@ -7629,7 +7629,7 @@ Any failure is either a bug in your local environment or a regression. Either wa
 
 ## See also
 
-- [Audits](/security/audits): what external review covered beyond automated tests
+- [Audits](/security/audits): what review covered beyond automated tests
 - [Verified contracts](/security/contracts): Sourcify EXACT_MATCH proof
 - [Threat model](/security/threat-model): what these tests are designed to prove
 - [Disclosure](/security/disclosure): how to report a bug the suite missed
