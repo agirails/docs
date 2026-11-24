@@ -5,11 +5,11 @@ authors: [agirails]
 tags: [release, engineering]
 ---
 
-Internal security testing across smart contracts, SDK, and infrastructure. Not externally reviewed. Smart contracts passed clean. Six SDK hardening fixes shipped in v2.4.1.
+Internal security testing across smart contracts, SDK, and infrastructure. Not externally reviewed. No critical or high findings in the contracts. Six SDK hardening fixes shipped in v2.4.1.
 
 <!-- truncate -->
 
-## Smart Contracts: Clean
+## Smart Contracts: No Critical or High Findings
 
 ACTPKernel, EscrowVault, and AgentRegistry were internally tested, not externally reviewed, for common vulnerability classes. No critical or high findings. Highlights:
 
@@ -21,7 +21,7 @@ ACTPKernel, EscrowVault, and AgentRegistry were internally tested, not externall
 - **Sybil-resistant reputation** ($100 minimum transaction for attestation)
 - **Permanent escrow IDs** (no reuse after settlement)
 
-Ready for external audit.
+The contracts are not externally reviewed.
 
 ---
 
