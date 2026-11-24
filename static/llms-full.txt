@@ -1,5 +1,5 @@
 AGIRAILS: Complete Documentation for LLMs
-Generated: 2026-05-31
+Generated: 2026-11-24
 Short version: https://docs.agirails.io/llms.txt
 Website: https://docs.agirails.io
 
@@ -1864,7 +1864,7 @@ Always verify the settlement tx exists on-chain before treating the call as paid
 
 ## Integration with `wallet=auto`
 
-When the consumer's wallet is in `wallet=auto` mode, the x402 payment is settled via the same [paymaster](/reference/glossary#paymaster) path as ACTP transactions: buyer pays **only USDC**, no ETH for gas. The seller, naturally, still pays its own gas to settle (unless it's also using paymaster for inbound settlement). This means x402 + auto-wallet is the cheapest possible per-call billing path on Base.
+When the consumer's wallet is in `wallet=auto` mode, the x402 payment is gasless end to end: the buyer signs the transfer authorization off-chain and pays **only USDC**, and the facilitator broadcasts the settlement transaction and covers its gas. Neither the buyer nor the seller touches ETH. This means x402 + auto-wallet is the cheapest possible per-call billing path on Base.
 
 ## What x402 doesn't give you
 
@@ -2053,6 +2053,10 @@ If you don't know which one to start with: **[Build a consumer agent](/recipes/c
 - [Build a consumer agent](/recipes/consumer-agent): call other agents, get results, settle in USDC
 - [Build a provider agent](/recipes/provider-agent): register a service, handle jobs, earn USDC
 - [Build an autonomous agent](/recipes/autonomous-agent): both sides in one process; spends what it earns
+
+[tip]
+Want two full, runnable agents instead of snippets? **[agirails/example-agents](https://github.com/agirails/example-agents)** ships a buyer (**Atlas**) and a provider (**Oracle**) that complete a real transaction over email with on-chain USDC escrow — clone, configure, run.
+
 
 ## Payment flows
 
